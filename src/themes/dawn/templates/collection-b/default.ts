@@ -31,26 +31,41 @@ export const template: PageConfig = {
       widgets: [],
     },
 
-    // Collection Content Section B
+    // Collection Products Section B
     {
-      id: "collection-content-section-b",
+      id: "collection-products-section-b",
       name: "Collection Products B",
       type: SECTION_TYPES.CONTENT_SECTION,
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 16, right: 16, bottom: 16, left: 16 } },
-          tablet: { padding: { top: 24, right: 24, bottom: 24, left: 24 } },
-          desktop: { padding: { top: 32, right: 32, bottom: 32, left: 32 } },
+          mobile: { padding: { top: 40, right: 0, bottom: 40, left: 0 } },
+          tablet: { padding: { top: 56, right: 0, bottom: 56, left: 0 } },
+          desktop: { padding: { top: 80, right: 0, bottom: 80, left: 0 } },
         },
       },
       widgets: [
         {
-          id: "dawn-collection-widget-b",
-          name: "Collection Products",
-          type: WIDGET_TYPES.CollectionWidget,
-          settings: { variant: "v1" },
+          id: "dawn-collection-products-b",
+          name: "Collection Products Grid",
+          type: WIDGET_TYPES.ProductGrid,
           dataSourceKey: "collection",
+          settings: {
+            variant: "v1",
+            heading: "",
+            showActionButton: true,
+            actionButtonText: "t:common.product_card.add_to_cart_button_text",
+            soldOutText: "t:common.product_card.sold_out_text",
+            showBadge: true,
+            showRating: true,
+            autoplay: false,
+            infinite: false,
+            iconStyle: "arrow",
+            navigationPosition: "outside",
+            navigationButtonVariant: "outline",
+            viewAllButtonText: "t:common.collection_page.view_all_button_text",
+            redirectionLink: "/collections/all",
+          },
         },
       ],
     },

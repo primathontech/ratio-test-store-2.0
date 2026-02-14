@@ -1,12 +1,11 @@
 import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
-import { getStaticLocale } from "@/bootstrap/i18n";
+import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
 import { MetaTagGenerator, SEOFactory } from "@shopkit/seo";
 import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
 import { Metadata } from "next";
-import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
@@ -164,10 +163,10 @@ export default async function ProductPage({
   try {
     const themeName = getThemeName();
 
-    // Run these operations in parallel since they're independent
-    const [locale, messages, product] = await Promise.all([
-      getStaticLocale(),
-      getMessages(),
+    // Get locale first, then run other operations in parallel
+    const locale = getStaticLocale();
+    const [messages, product] = await Promise.all([
+      loadMessages(locale as "en", "products"),
       fetchProduct(params.handle),
     ]);
 
@@ -200,8 +199,8 @@ export default async function ProductPage({
           productData={{
             id: product.id,
             title: product.title,
-            price: parseFloat(product.priceRange.minVariantPrice.amount),
-            currency: product.priceRange.minVariantPrice.currencyCode,
+            price: parseFloat(product.priceRange?.minVariantPrice?.amount || "0"),
+            currency: product.priceRange?.minVariantPrice?.currencyCode || "INR",
           }}
         />
         {pageContent}
@@ -221,11 +220,11 @@ const fetchProduct = cache(async (handle: string): Promise<any | null> => {
   try {
     const commerceClient = getCommerceClient();
 
-    const product = await commerceClient.getProduct({
+    const response = await commerceClient.getProduct({
       handle,
     });
 
-    return product;
+    return response.data;
   } catch (error) {
     console.error(`Error fetching product ${handle}:`, error);
     return null;

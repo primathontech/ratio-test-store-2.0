@@ -579,7 +579,8 @@
     },
     "collection_page": {
       "filter_title": "Filters",
-      "sort_dropdown_button_text": "Sort by"
+      "sort_dropdown_button_text": "Sort by",
+      "view_all_button_text": "View all"
     }
   }
 }

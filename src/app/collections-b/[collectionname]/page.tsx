@@ -1,11 +1,10 @@
 import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
-import { getStaticLocale } from "@/bootstrap/i18n";
+import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
 import { MetaTagGenerator, SEOFactory } from "@shopkit/seo";
 import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
-import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
@@ -136,9 +135,10 @@ export default async function CollectionPage({
   try {
     const themeName = getThemeName();
     const locale = getStaticLocale();
-    const messages = await getMessages();
-
-    const collection = await fetchCollection(params.collectionname);
+    const [messages, collection] = await Promise.all([
+      loadMessages(locale as "en", "collections"),
+      fetchCollection(params.collectionname),
+    ]);
 
     if (!collection) {
       notFound();

@@ -17,6 +17,12 @@ module.exports = createNextConfig({
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "dev-gk-pages.dev.gokwik.in",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 

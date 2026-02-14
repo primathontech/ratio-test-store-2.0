@@ -168,7 +168,7 @@ export const StickyFooter = ({
         className="flex-1 rounded-full p-[1px] w-full"
         style={{
           background: isProductPage
-            ? "linear-gradient(93.81deg, rgba(221, 221, 221, 0.2) 7.84%, rgba(248, 248, 248, 0.4) 80.06%);"
+            ? "linear-gradient(93.81deg, rgba(221, 221, 221, 0.2) 7.84%, rgba(248, 248, 248, 0.4) 80.06%)"
             : "linear-gradient(90deg, #DDDDDD 50%, #F8F8F8 100%)",
         }}
       >
@@ -237,7 +237,7 @@ export const StickyFooter = ({
         className="p-[1px] rounded-full overflow-hidden"
         style={{
           background: isProductPage
-            ? "linear-gradient(90deg, #DDDDDD 20%, #DDDDDD) 40%)"
+            ? "linear-gradient(90deg, #DDDDDD 20%, #DDDDDD 40%)"
             : "linear-gradient(90deg, #DDDDDD 50%, #F8F8F8 100%)",
         }}
       >

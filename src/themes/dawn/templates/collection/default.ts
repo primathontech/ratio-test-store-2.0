@@ -144,37 +144,40 @@ export const template: PageConfig = {
       ],
     },
 
-    // Collection Widget Section
+    // Collection Products Section
     {
-      id: "collection-widget-section",
-      name: "Collection Widget",
+      id: "collection-products-section",
+      name: "Collection Products",
       type: SECTION_TYPES.CONTENT_SECTION,
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 40, right: 0, bottom: 40, left: 0 } },
+          tablet: { padding: { top: 56, right: 0, bottom: 56, left: 0 } },
+          desktop: { padding: { top: 80, right: 0, bottom: 80, left: 0 } },
+        },
       },
       widgets: [
         {
-          id: "collection-widget",
-          name: "Collection Widget",
-          type: WIDGET_TYPES.CollectionWidget,
+          id: "collection-products-widget",
+          name: "Collection Products Grid",
+          type: WIDGET_TYPES.ProductGrid,
           dataSourceKey: "collectionData",
           settings: {
             variant: "v1",
-            autoLoadMore: true,
+            heading: "",
             showActionButton: true,
             actionButtonText: "t:common.product_card.add_to_cart_button_text",
-            actionButtonTextMobile:
-              "t:common.product_card.add_to_cart_button_text_mobile",
             soldOutText: "t:common.product_card.sold_out_text",
-            soldOutTextMobile: "t:common.product_card.sold_out_text_mobile",
-            currencySymbol: "₹",
             showBadge: true,
             showRating: true,
-            actionButtonTextColor: "#fff",
-            sectionTextColor: "#1D1D1D",
-            filterTitle: "t:common.collection_page.filter_title",
-            sortDropdownText:
-              "t:common.collection_page.sort_dropdown_button_text",
+            autoplay: false,
+            infinite: false,
+            iconStyle: "arrow",
+            navigationPosition: "outside",
+            navigationButtonVariant: "outline",
+            viewAllButtonText: "t:common.collection_page.view_all_button_text",
+            redirectionLink: "/collections/all",
           },
         },
       ],
