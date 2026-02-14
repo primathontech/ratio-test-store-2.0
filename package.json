@@ -1,6 +1,6 @@
 {
   "name": "storefront-starter-app",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4344",
@@ -59,7 +59,7 @@
     "@shopkit/asset-cache": "^1.0.0",
     "@shopkit/builder": "^0.1.1",
     "@shopkit/cart": "^0.1.1",
-    "@shopkit/cli": "^0.1.0",
+    "@shopkit/cli": "^0.2.0",
     "@shopkit/core": "^0.1.0",
     "@shopkit/data-layer": "^1.0.0",
     "@shopkit/discounts": "^0.1.2",
