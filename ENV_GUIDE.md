@@ -12,49 +12,92 @@ cp .env.example .env.local
 nano .env.local
 ```
 
-## Variable Reference
+---
 
-### Platform Configuration
+## Merchant Configuration
 
-| Variable        | Required | Description                              |
-| --------------- | -------- | ---------------------------------------- |
-| `PLATFORM`      | Yes      | Commerce platform: `shopify` or `custom` |
-| `MERCHANT_NAME` | Yes      | Theme/merchant identifier (e.g., `dawn`) |
+| Variable                    | Required | Description                                  |
+| --------------------------- | -------- | -------------------------------------------- |
+| `NEXT_PUBLIC_MERCHANT_NAME` | Yes      | Merchant identifier (e.g., `bblunt`, `dawn`) |
+| `NEXT_PUBLIC_PLATFORM`      | Yes      | Commerce platform: `shopify` or `custom`     |
+| `NEXT_PUBLIC_THEME_NAME`    | Yes      | Active theme name (e.g., `dawn`)             |
 
 ```env
-PLATFORM=shopify
-MERCHANT_NAME=dawn
+NEXT_PUBLIC_MERCHANT_NAME=bblunt
+NEXT_PUBLIC_PLATFORM=custom
+NEXT_PUBLIC_THEME_NAME=dawn
 ```
 
 ---
 
-### Shopify Configuration
+## Visual Editor Configuration
 
-Required when `PLATFORM=shopify`:
-
-| Variable                                      | Required | Description                             |
-| --------------------------------------------- | -------- | --------------------------------------- |
-| `NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN`            | Yes      | Your Shopify store domain               |
-| `NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Yes      | Storefront API access token             |
-| `SHOPIFY_STORE_DOMAIN`                        | Yes      | Same as above (server-side)             |
-| `SHOPIFY_STOREFRONT_ACCESS_TOKEN`             | Yes      | Same as above (server-side)             |
-| `SHOPIFY_ADMIN_ACCESS_TOKEN`                  | Optional | Admin API token (for advanced features) |
-| `SHOPIFY_API_VERSION`                         | Optional | API version (default: `2025-04`)        |
+| Variable                     | Required | Description                                    |
+| ---------------------------- | -------- | ---------------------------------------------- |
+| `NEXT_PUBLIC_EDITOR_API_URL` | Optional | Visual editor backend URL                      |
+| `ENABLE_EDITOR_CHANGES`      | Optional | Enable/disable editor changes (`true`/`false`) |
 
 ```env
-# Public (client-side)
-NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=shpat_xxxxxxxxxxxxx
-NEXT_PUBLIC_SHOPIFY_API_VERSION=2025-04
-
-# Server-side
-SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-SHOPIFY_STOREFRONT_ACCESS_TOKEN=shpat_xxxxxxxxxxxxx
-SHOPIFY_ADMIN_ACCESS_TOKEN=shpat_admin_xxxxxxxxxxxxx
-SHOPIFY_API_VERSION=2025-04
+NEXT_PUBLIC_EDITOR_API_URL=https://visual-editor-be.primathontech.co.in
+ENABLE_EDITOR_CHANGES=false
 ```
 
-#### How to Get Shopify Tokens
+---
+
+## Collection & Product Configuration
+
+| Variable                                      | Required | Description                                          |
+| --------------------------------------------- | -------- | ---------------------------------------------------- |
+| `FEATURED_COLLECTIONS`                        | Optional | Comma-separated collection handles for navigation    |
+| `HOMEPAGE_FEATURED_COLLECTIONS`               | Optional | Comma-separated collection handles for homepage      |
+| `HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT` | Optional | Max products per homepage collection (default: `12`) |
+
+```env
+# Featured collections for navigation/sidebar
+FEATURED_COLLECTIONS="all,new-launches,bestseller,combos,hair-care"
+
+# Collections displayed on homepage
+HOMEPAGE_FEATURED_COLLECTIONS="most-loved,bestsellers,new-arrivals"
+
+# Limit products shown per collection on homepage
+HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT=12
+```
+
+---
+
+## Shopify Configuration
+
+Required when `NEXT_PUBLIC_PLATFORM=shopify` or using Shopify as data source:
+
+### Server-side Variables
+
+| Variable                          | Required | Description                      |
+| --------------------------------- | -------- | -------------------------------- |
+| `SHOPIFY_STORE_DOMAIN`            | Yes      | Shopify store domain             |
+| `SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Yes      | Storefront API access token      |
+| `SHOPIFY_API_VERSION`             | Optional | API version (default: `2025-04`) |
+
+### Client-side Variables
+
+| Variable                                      | Required | Description                      |
+| --------------------------------------------- | -------- | -------------------------------- |
+| `NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN`            | Yes      | Same as server-side (for client) |
+| `NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN` | Yes      | Same as server-side (for client) |
+| `NEXT_PUBLIC_SHOPIFY_API_VERSION`             | Optional | Same as server-side (for client) |
+
+```env
+# Server-side
+SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-storefront-token
+SHOPIFY_API_VERSION="2025-04"
+
+# Client-side (same values)
+NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-storefront-token
+NEXT_PUBLIC_SHOPIFY_API_VERSION="2025-04"
+```
+
+### How to Get Shopify Tokens
 
 1. Go to **Shopify Admin** → **Settings** → **Apps and sales channels**
 2. Click **Develop apps** → **Create an app**
@@ -68,147 +111,137 @@ SHOPIFY_API_VERSION=2025-04
 
 ---
 
-### Custom Backend Configuration
+## GoKwik Configuration
 
-Required when `PLATFORM=custom`:
+### Merchant Identifiers
 
-| Variable                     | Required | Description                      |
-| ---------------------------- | -------- | -------------------------------- |
-| `NEXT_PUBLIC_CUSTOM_API_URL` | Yes      | Base URL for your custom API     |
-| `NEXT_PUBLIC_MERCHANT_ID`    | Yes      | Your merchant identifier         |
-| `CUSTOM_API_SECRET`          | Optional | API secret for server-side calls |
+| Variable                  | Required | Description                       |
+| ------------------------- | -------- | --------------------------------- |
+| `NEXT_PUBLIC_GOKWIK_MID`  | Yes      | GoKwik Merchant ID                |
+| `NEXT_PUBLIC_STORE_ID`    | Yes      | Store ID (usually same as MID)    |
+| `NEXT_PUBLIC_MERCHANT_ID` | Yes      | Merchant ID (usually same as MID) |
+
+### Configuration
+
+| Variable                         | Required | Description                             |
+| -------------------------------- | -------- | --------------------------------------- |
+| `NEXT_PUBLIC_GOKWIK_ENVIRONMENT` | Yes      | `sandbox`, `qa`, or `production`        |
+| `NEXT_PUBLIC_GOKWIK_TYPE`        | Optional | Integration type (e.g., `merchantInfo`) |
+| `NEXT_PUBLIC_GOKWIK_SCRIPT_URL`  | Yes      | GoKwik SDK URL                          |
+| `NEXT_PUBLIC_GOKWIK_ENABLED`     | Optional | Enable/disable GoKwik (`true`/`false`)  |
 
 ```env
-NEXT_PUBLIC_CUSTOM_API_URL=https://api.yourstore.com
-NEXT_PUBLIC_MERCHANT_ID=your-merchant-id
-CUSTOM_API_SECRET=your-api-secret
+# Merchant IDs
+NEXT_PUBLIC_GOKWIK_MID="your-merchant-id"
+NEXT_PUBLIC_STORE_ID="your-merchant-id"
+NEXT_PUBLIC_MERCHANT_ID="your-merchant-id"
+
+# Configuration
+NEXT_PUBLIC_GOKWIK_ENVIRONMENT="qa"          # qa, sandbox, production
+NEXT_PUBLIC_GOKWIK_TYPE="merchantInfo"
+NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://qa.pdp.gokwik.co"
+NEXT_PUBLIC_GOKWIK_ENABLED=true
 ```
 
-#### Custom API Requirements
+### Environment URLs
 
-Your custom API should implement these endpoints:
+| Environment | Script URL                      |
+| ----------- | ------------------------------- |
+| QA          | `https://qa.pdp.gokwik.co`      |
+| Sandbox     | `https://sandbox.pdp.gokwik.co` |
+| Production  | `https://pdp.gokwik.co`         |
+
+---
+
+## Custom Backend API Endpoints
+
+Required when `NEXT_PUBLIC_PLATFORM=custom`:
+
+| Variable                                   | Required | Description                     |
+| ------------------------------------------ | -------- | ------------------------------- |
+| `NEXT_PUBLIC_CUSTOM_API_PRODUCT_URL`       | Yes      | Product service API base URL    |
+| `NEXT_PUBLIC_CUSTOM_API_CART_URL`          | Yes      | Cart/Order service API base URL |
+| `NEXT_PUBLIC_CUSTOM_API_CUSTOMER_URL`      | Optional | Customer service API base URL   |
+| `NEXT_PUBLIC_CUSTOM_API_ORDER_HISTORY_URL` | Optional | Order history service API       |
+| `NEXT_PUBLIC_CUSTOM_API_INVENTORY_URL`     | Optional | Inventory service API           |
+| `NEXT_PUBLIC_GOKWIK_DISCOUNT_API_URL`      | Optional | Discount service API            |
+
+```env
+# Product Service
+NEXT_PUBLIC_CUSTOM_API_PRODUCT_URL="https://api.example.com/products"
+
+# Cart/Order Service
+NEXT_PUBLIC_CUSTOM_API_CART_URL="https://api.example.com/orders"
+
+# Customer Service
+NEXT_PUBLIC_CUSTOM_API_CUSTOMER_URL="https://api.example.com/customers"
+
+# Order History Service
+NEXT_PUBLIC_CUSTOM_API_ORDER_HISTORY_URL="https://api.example.com/order-history"
+
+# Inventory Service
+NEXT_PUBLIC_CUSTOM_API_INVENTORY_URL="https://api.example.com/inventory"
+
+# Discount Service
+NEXT_PUBLIC_GOKWIK_DISCOUNT_API_URL="https://api.example.com/discounts"
+```
+
+### API Endpoint Requirements
+
+Your custom APIs should implement these endpoints:
+
+**Product Service** (`NEXT_PUBLIC_CUSTOM_API_PRODUCT_URL`):
 
 ```
-GET  /products              # List products
-GET  /products/:handle      # Single product
-GET  /collections           # List collections
-GET  /collections/:handle   # Single collection with products
-POST /cart                  # Create cart
-PUT  /cart/:id              # Update cart
-GET  /cart/:id              # Get cart
-POST /checkout              # Create checkout
+GET  /products                    # List products
+GET  /products/:handle            # Single product by handle
+GET  /collections                 # List collections
+GET  /collections/:handle         # Collection with products
+```
+
+**Cart Service** (`NEXT_PUBLIC_CUSTOM_API_CART_URL`):
+
+```
+POST /cart                        # Create cart
+GET  /cart/:id                    # Get cart
+PUT  /cart/:id                    # Update cart
+POST /cart/:id/items              # Add item to cart
+DELETE /cart/:id/items/:itemId    # Remove item from cart
+```
+
+**Order History** (`NEXT_PUBLIC_CUSTOM_API_ORDER_HISTORY_URL`):
+
+```
+GET  /orders                      # List orders for customer
+GET  /orders/:id                  # Single order details
 ```
 
 ---
 
-### GoKwik Checkout Integration
+## Additional Integrations
 
-| Variable                              | Required | Description                                |
-| ------------------------------------- | -------- | ------------------------------------------ |
-| `NEXT_PUBLIC_GOKWIK_MID`              | Yes      | GoKwik Merchant ID                         |
-| `NEXT_PUBLIC_GOKWIK_ENVIRONMENT`      | Yes      | `sandbox` or `production`                  |
-| `NEXT_PUBLIC_GOKWIK_TYPE`             | Optional | Integration type                           |
-| `NEXT_PUBLIC_GOKWIK_SCRIPT_URL`       | Optional | CDN URL (default: `https://cdn.gokwik.co`) |
-| `NEXT_PUBLIC_GOKWIK_BANNER_MESSAGE_1` | Optional | Banner message 1                           |
-| `NEXT_PUBLIC_GOKWIK_BANNER_MESSAGE_2` | Optional | Banner message 2                           |
+### Video SDK
+
+| Variable                        | Required | Description       |
+| ------------------------------- | -------- | ----------------- |
+| `NEXT_PUBLIC_VIDEO_APP_SDK_URL` | Optional | Video app SDK URL |
 
 ```env
-NEXT_PUBLIC_GOKWIK_MID=GK_MERCHANT_123
-NEXT_PUBLIC_GOKWIK_ENVIRONMENT=sandbox
-NEXT_PUBLIC_GOKWIK_TYPE=standard
-NEXT_PUBLIC_GOKWIK_SCRIPT_URL=https://cdn.gokwik.co
-NEXT_PUBLIC_GOKWIK_BANNER_MESSAGE_1=Free shipping on orders above ₹499
-NEXT_PUBLIC_GOKWIK_BANNER_MESSAGE_2=Easy returns within 7 days
+NEXT_PUBLIC_VIDEO_APP_SDK_URL="https://cdn.example.com/video-sdk.js"
 ```
-
----
-
-### GoKwik KwikPass (Authentication)
-
-| Variable                           | Required | Description               |
-| ---------------------------------- | -------- | ------------------------- |
-| `NEXT_PUBLIC_KWIKPASS_MID`         | Yes      | KwikPass Merchant ID      |
-| `NEXT_PUBLIC_KWIKPASS_ENVIRONMENT` | Yes      | `sandbox` or `production` |
-| `NEXT_PUBLIC_KWIKPASS_SCRIPT_URL`  | Optional | CDN URL                   |
-
-```env
-NEXT_PUBLIC_KWIKPASS_MID=KP_MERCHANT_123
-NEXT_PUBLIC_KWIKPASS_ENVIRONMENT=sandbox
-NEXT_PUBLIC_KWIKPASS_SCRIPT_URL=https://cdn.gokwik.co
-```
-
----
-
-### Order History API
-
-| Variable                                   | Required | Description               |
-| ------------------------------------------ | -------- | ------------------------- |
-| `NEXT_PUBLIC_CUSTOM_API_ORDER_HISTORY_URL` | Optional | API URL for order history |
-
-```env
-NEXT_PUBLIC_CUSTOM_API_ORDER_HISTORY_URL=https://api.yourstore.com/orders
-```
-
----
 
 ### Analytics & Tracking
 
-| Variable                              | Required | Description                 |
-| ------------------------------------- | -------- | --------------------------- |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID`       | Optional | Google Analytics 4 ID       |
-| `NEXT_PUBLIC_GTM_ID`                  | Optional | Google Tag Manager ID       |
-| `NEXT_PUBLIC_FB_PIXEL_ID`             | Optional | Facebook Pixel ID           |
-| `NEXT_PUBLIC_GOOGLE_ADS_ID`           | Optional | Google Ads conversion ID    |
-| `NEXT_PUBLIC_GOOGLE_CONVERSION_LABEL` | Optional | Google Ads conversion label |
+| Variable                        | Required | Description           |
+| ------------------------------- | -------- | --------------------- |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional | Google Analytics 4 ID |
+| `NEXT_PUBLIC_GTM_ID`            | Optional | Google Tag Manager ID |
+| `NEXT_PUBLIC_FB_PIXEL_ID`       | Optional | Facebook Pixel ID     |
 
 ```env
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
 NEXT_PUBLIC_FB_PIXEL_ID=123456789012345
-NEXT_PUBLIC_GOOGLE_ADS_ID=AW-123456789
-NEXT_PUBLIC_GOOGLE_CONVERSION_LABEL=AbCdEfGhIjKlMnOp
-```
-
----
-
-### Theme Configuration
-
-| Variable                     | Required | Description                    |
-| ---------------------------- | -------- | ------------------------------ |
-| `NEXT_PUBLIC_THEME_NAME`     | Optional | Active theme (default: `dawn`) |
-| `NEXT_PUBLIC_DEFAULT_LOCALE` | Optional | Default locale (default: `en`) |
-
-```env
-NEXT_PUBLIC_THEME_NAME=dawn
-NEXT_PUBLIC_DEFAULT_LOCALE=en
-```
-
----
-
-### Caching (Optional)
-
-| Variable    | Required | Description                            |
-| ----------- | -------- | -------------------------------------- |
-| `REDIS_URL` | Optional | Redis connection URL for caching       |
-| `CACHE_TTL` | Optional | Cache TTL in seconds (default: `3600`) |
-
-```env
-REDIS_URL=redis://localhost:6379
-CACHE_TTL=3600
-```
-
----
-
-### App Configuration
-
-| Variable              | Required | Description                   |
-| --------------------- | -------- | ----------------------------- |
-| `NEXT_PUBLIC_APP_URL` | Optional | App URL (for og:url, sitemap) |
-| `NODE_ENV`            | Auto     | `development` or `production` |
-
-```env
-NEXT_PUBLIC_APP_URL=https://yourstore.com
-NODE_ENV=development
 ```
 
 ---
@@ -232,60 +265,101 @@ Next.js loads environment files in this order:
 
 ## Complete Examples
 
-### Shopify Store (Production)
+### Custom Platform (Development/QA)
 
 ```env
-# Platform
-PLATFORM=shopify
-MERCHANT_NAME=mystore
+# =============================================================================
+# MERCHANT CONFIGURATION
+# =============================================================================
+NEXT_PUBLIC_MERCHANT_NAME=bblunt
+NEXT_PUBLIC_PLATFORM=custom
+NEXT_PUBLIC_THEME_NAME=dawn
 
-# Shopify
-NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=mystore.myshopify.com
-NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=shpat_xxxx
-SHOPIFY_STORE_DOMAIN=mystore.myshopify.com
-SHOPIFY_STOREFRONT_ACCESS_TOKEN=shpat_xxxx
-SHOPIFY_ADMIN_ACCESS_TOKEN=shpat_admin_xxxx
-SHOPIFY_API_VERSION=2025-04
+# =============================================================================
+# VISUAL EDITOR CONFIGURATION
+# =============================================================================
+NEXT_PUBLIC_EDITOR_API_URL=https://visual-editor-be.primathontech.co.in
+ENABLE_EDITOR_CHANGES=false
 
-# GoKwik Checkout
-NEXT_PUBLIC_GOKWIK_MID=GK_MYSTORE
-NEXT_PUBLIC_GOKWIK_ENVIRONMENT=production
+# =============================================================================
+# COLLECTION & PRODUCT CONFIGURATION
+# =============================================================================
+FEATURED_COLLECTIONS="all,new-launches,bestseller,combos,hair-care"
+HOMEPAGE_FEATURED_COLLECTIONS="most-loved,for-hair-fall,for-dry-hair"
+HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT=12
 
-# KwikPass Auth
-NEXT_PUBLIC_KWIKPASS_MID=KP_MYSTORE
-NEXT_PUBLIC_KWIKPASS_ENVIRONMENT=production
+# =============================================================================
+# SHOPIFY CONFIGURATION (Data Source)
+# =============================================================================
+SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
+SHOPIFY_API_VERSION="2025-04"
 
-# Analytics
-NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_FB_PIXEL_ID=123456789012345
+NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
+NEXT_PUBLIC_SHOPIFY_API_VERSION="2025-04"
 
-# App
-NEXT_PUBLIC_APP_URL=https://mystore.com
-NODE_ENV=production
+# =============================================================================
+# GOKWIK CONFIGURATION
+# =============================================================================
+NEXT_PUBLIC_GOKWIK_MID="your-merchant-id"
+NEXT_PUBLIC_STORE_ID="your-merchant-id"
+NEXT_PUBLIC_MERCHANT_ID="your-merchant-id"
+
+NEXT_PUBLIC_GOKWIK_ENVIRONMENT="qa"
+NEXT_PUBLIC_GOKWIK_TYPE="merchantInfo"
+NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://qa.pdp.gokwik.co"
+NEXT_PUBLIC_GOKWIK_ENABLED=true
+
+# =============================================================================
+# CUSTOM BACKEND API ENDPOINTS
+# =============================================================================
+NEXT_PUBLIC_CUSTOM_API_PRODUCT_URL="https://api.dev.example.com/products"
+NEXT_PUBLIC_CUSTOM_API_CART_URL="https://api.dev.example.com/orders"
+NEXT_PUBLIC_CUSTOM_API_CUSTOMER_URL="https://api.dev.example.com/customers"
+NEXT_PUBLIC_CUSTOM_API_ORDER_HISTORY_URL="https://api.dev.example.com/order-history"
+NEXT_PUBLIC_CUSTOM_API_INVENTORY_URL="https://api.dev.example.com/inventory"
+NEXT_PUBLIC_GOKWIK_DISCOUNT_API_URL="https://api.dev.example.com/discounts"
 ```
 
-### Custom Backend (Development)
+### Shopify Platform (Production)
 
 ```env
-# Platform
-PLATFORM=custom
-MERCHANT_NAME=devstore
+# =============================================================================
+# MERCHANT CONFIGURATION
+# =============================================================================
+NEXT_PUBLIC_MERCHANT_NAME=mystore
+NEXT_PUBLIC_PLATFORM=shopify
+NEXT_PUBLIC_THEME_NAME=dawn
 
-# Custom API
-NEXT_PUBLIC_CUSTOM_API_URL=http://localhost:8080
-NEXT_PUBLIC_MERCHANT_ID=dev-merchant
+# =============================================================================
+# SHOPIFY CONFIGURATION
+# =============================================================================
+SHOPIFY_STORE_DOMAIN=mystore.myshopify.com
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=shpat_xxxxxxxxxxxx
+SHOPIFY_API_VERSION="2025-04"
 
-# GoKwik (Sandbox)
-NEXT_PUBLIC_GOKWIK_MID=GK_TEST
-NEXT_PUBLIC_GOKWIK_ENVIRONMENT=sandbox
+NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=mystore.myshopify.com
+NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=shpat_xxxxxxxxxxxx
+NEXT_PUBLIC_SHOPIFY_API_VERSION="2025-04"
 
-# KwikPass (Sandbox)
-NEXT_PUBLIC_KWIKPASS_MID=KP_TEST
-NEXT_PUBLIC_KWIKPASS_ENVIRONMENT=sandbox
+# =============================================================================
+# GOKWIK CONFIGURATION
+# =============================================================================
+NEXT_PUBLIC_GOKWIK_MID="prod-merchant-id"
+NEXT_PUBLIC_STORE_ID="prod-merchant-id"
+NEXT_PUBLIC_MERCHANT_ID="prod-merchant-id"
 
-# App
-NEXT_PUBLIC_APP_URL=http://localhost:4344
-NODE_ENV=development
+NEXT_PUBLIC_GOKWIK_ENVIRONMENT="production"
+NEXT_PUBLIC_GOKWIK_TYPE="merchantInfo"
+NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://pdp.gokwik.co"
+NEXT_PUBLIC_GOKWIK_ENABLED=true
+
+# =============================================================================
+# ANALYTICS
+# =============================================================================
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_FB_PIXEL_ID=123456789012345
 ```
 
 ---
@@ -308,7 +382,14 @@ NODE_ENV=development
 
 1. Verify `NEXT_PUBLIC_GOKWIK_MID` is correct
 2. Check `NEXT_PUBLIC_GOKWIK_ENVIRONMENT` matches your GoKwik dashboard
-3. Ensure your domain is whitelisted in GoKwik dashboard
+3. Ensure `NEXT_PUBLIC_GOKWIK_SCRIPT_URL` is correct for your environment
+4. Check `NEXT_PUBLIC_GOKWIK_ENABLED=true`
+
+### "Custom API calls failing"
+
+1. Verify all `NEXT_PUBLIC_CUSTOM_API_*` URLs are correct
+2. Check CORS is enabled on your API servers
+3. Ensure APIs are accessible from browser (for client-side calls)
 
 ---
 
@@ -318,3 +399,4 @@ NODE_ENV=development
 2. **Use different tokens** for development and production
 3. **Rotate tokens** if they're accidentally exposed
 4. **Server-side variables** (without `NEXT_PUBLIC_`) are never sent to the browser
+5. **API keys in `NEXT_PUBLIC_*`** are visible to users - only use public/storefront tokens
