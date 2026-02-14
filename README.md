@@ -191,20 +191,37 @@ Creates a complete theme structure with templates and locales.
 
 ## Environment Variables
 
+See **[ENV_GUIDE.md](./ENV_GUIDE.md)** for complete documentation.
+
+### Quick Reference
+
 ```env
-# Commerce Platform
+# Platform
 PLATFORM=shopify                    # or 'custom'
 MERCHANT_NAME=dawn                  # Theme/merchant name
 
-# Shopify Configuration
+# Shopify
 NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
 NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
 SHOPIFY_ADMIN_ACCESS_TOKEN=your-admin-token
 SHOPIFY_API_VERSION=2025-04
 
-# GoKwik Integration (optional)
+# Custom Backend (if PLATFORM=custom)
+NEXT_PUBLIC_CUSTOM_API_URL=https://api.yourstore.com
+NEXT_PUBLIC_MERCHANT_ID=your-merchant-id
+
+# GoKwik Checkout
 NEXT_PUBLIC_GOKWIK_MID=your-merchant-id
 NEXT_PUBLIC_GOKWIK_ENVIRONMENT=sandbox
+
+# KwikPass Auth
+NEXT_PUBLIC_KWIKPASS_MID=your-merchant-id
+NEXT_PUBLIC_KWIKPASS_ENVIRONMENT=sandbox
+
+# Analytics (optional)
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
+NEXT_PUBLIC_FB_PIXEL_ID=123456789012345
 ```
 
 ## Commit Message Format
@@ -230,6 +247,7 @@ chore: update dependencies
 | File                     | Description                         |
 | ------------------------ | ----------------------------------- |
 | `README.md`              | This file - project overview        |
+| `ENV_GUIDE.md`           | Environment variables guide         |
 | `GETTING_STARTED.md`     | Detailed setup guide                |
 | `SYSTEM_ARCHITECTURE.md` | Complete architecture documentation |
 | `AGENTS.md`              | AI agent instructions               |
