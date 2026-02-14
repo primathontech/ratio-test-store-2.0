@@ -5,8 +5,7 @@ import { Slot } from "@radix-ui/react-slot";
 import type { BaseComponentProps } from "./types";
 
 export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
-    BaseComponentProps {
+  extends React.ButtonHTMLAttributes<HTMLButtonElement>, BaseComponentProps {
   /**
    * If true, the button will render as a child slot
    */

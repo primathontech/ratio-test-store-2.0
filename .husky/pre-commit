@@ -1,0 +1,114 @@
+#!/bin/sh
+
+echo '🏗️👷 Running storefront-starter pre-commit checks...'
+
+# ── Phase 1: Performance Governance ──
+
+# Validate widget structure (only staged widget files)
+echo ''
+echo '📦 Validating widget structure...'
+bun run validate:widget --staged-only ||
+(
+    echo '❌ Widget Structure Validation Failed!
+            Fix the structural issues listed above, add changes and try to commit again.'
+    false;
+)
+
+# Validate template structure (only staged template files)
+echo ''
+echo '📋 Validating template structure...'
+bun run validate:template --staged-only ||
+(
+    echo '❌ Template Validation Failed!
+            Fix the template issues listed above, add changes and try to commit again.'
+    false;
+)
+
+# Validate route structure (only staged route files)
+echo ''
+echo '🛤️  Validating route structure...'
+bun run validate:route --staged-only ||
+(
+    echo '❌ Route Validation Failed!
+            Fix the route issues listed above, add changes and try to commit again.'
+    false;
+)
+
+# ── Phase 2: Code Quality ──
+
+# Check ESLint Standards (only on staged src/ .ts/.tsx files)
+echo ''
+echo '🔍 Running ESLint on staged files...'
+STAGED_TS_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^src/.*\.(ts|tsx)$' | tr '\n' ' ')
+if [ -n "$STAGED_TS_FILES" ]; then
+    bun run lint ||
+    (
+            echo '😤🏀👋😤 ESLint Check Failed! 😤🏀👋😤
+                🚨 MEMORY LEAK PREVENTION: Check for timer cleanups, event listener removals, and observer disconnections.
+                🚀 PERFORMANCE: Check for CWV-impacting patterns (LCP, CLS, INP). See rule messages for details.
+                Make the required changes listed above, add changes and try to commit again.'
+            false;
+    )
+else
+    echo 'No TypeScript files staged. Skipping ESLint.'
+fi
+
+# Validate assets (images, videos, fonts) - only staged files
+echo ''
+echo '🖼️  Validating asset sizes...'
+bun run validate:assets --staged-only ||
+(
+    echo '❌ Asset Validation Failed!
+            Images must be under 500KB, videos under 5MB, fonts under 100KB.
+            Compress your assets and try again.'
+    false;
+)
+
+# Performance score (only if widget/theme files are staged)
+echo ''
+echo '📊 Calculating performance score...'
+bun run perf:score ||
+(
+    echo '❌ Performance Score Below Minimum (75/100)!
+            Review the score report above. Fix error-level issues to improve your score.
+            Warnings reduce score slightly — fix them for a higher grade.'
+    false;
+)
+
+# ── Phase 3: Build Verification ──
+
+# Generate types (required for type check — .generated files are gitignored)
+echo ''
+echo '⚙️  Generating types...'
+bun run generate ||
+(
+    echo '❌ Type generation failed! Check your widget/template/i18n structure.'
+    false;
+)
+
+# Check tsconfig standards
+echo ''
+echo '🔧 Running type check...'
+bun run check-types ||
+(
+    echo '🤡😂❌🤡 Failed Type check. 🤡😂❌🤡
+            Are you seriously trying to write that? Make the changes required above.'
+    false;
+)
+
+# If everything passes... Now we can build
+echo '🤔🤔🤔🤔... Alright... Code looks good to me... Trying to build now. 🤔🤔🤔🤔'
+
+bun run build ||
+(
+    echo '❌👷🔨❌ Better call Bob... Because your build failed ❌👷🔨❌
+            Build failed: View the errors above to see why.
+    '
+    false;
+)
+
+# If everything passes... Now we can commit
+echo '✅✅✅✅ Great Job... I am committing this now. ✅✅✅✅'
+
+# Run lint-staged for all files
+npx lint-staged

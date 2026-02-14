@@ -79,11 +79,11 @@ export default function KwikPassCustom() {
       } else {
         console.warn(
           "KwikPassCustom: No valid login data found in event:",
-          event.detail,
+          event.detail
         );
       }
     },
-    [login],
+    [login]
   );
 
   // Effect hook to add event listeners once the script is loaded

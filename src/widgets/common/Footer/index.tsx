@@ -9,12 +9,7 @@ import { FooterVariants } from "./variants";
  *
  * Renders the appropriate variant based on settings.
  */
-export function Footer({
-  data,
-  settings,
-  className,
-  locale,
-}: FooterProps) {
+export function Footer({ data, settings, className, locale }: FooterProps) {
   const variant = settings?.variant || "v1";
   const VariantComponent =
     FooterVariants[variant as keyof typeof FooterVariants];

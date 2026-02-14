@@ -28,7 +28,7 @@ self.addEventListener("install", (event) => {
       })
       .catch((error) => {
         console.error("Service Worker: Install failed:", error);
-      }),
+      })
   );
 });
 
@@ -46,7 +46,7 @@ self.addEventListener("activate", (event) => {
               console.log("Service Worker: Deleting old cache:", cacheName);
               return caches.delete(cacheName);
             }
-          }),
+          })
         );
       })
       .then(() => {
@@ -55,7 +55,7 @@ self.addEventListener("activate", (event) => {
       })
       .catch((error) => {
         console.error("Service Worker: Activation failed:", error);
-      }),
+      })
   );
 });
 
@@ -112,7 +112,7 @@ function shouldBypassCache(request) {
 
   // Check if URL matches any no-cache patterns
   return NO_CACHE_API_PATTERNS.some((pattern) =>
-    pathname.includes(pattern.toLowerCase()),
+    pathname.includes(pattern.toLowerCase())
   );
 }
 
@@ -333,5 +333,5 @@ async function handleGetCacheStatus(event) {
 }
 
 console.log(
-  "WELLVERSED Service Worker: Loaded successfully for WELLVERSED Storefront",
+  "WELLVERSED Service Worker: Loaded successfully for WELLVERSED Storefront"
 );

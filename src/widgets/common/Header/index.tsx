@@ -9,12 +9,7 @@ import { HeaderVariants } from "./variants";
  *
  * Renders the appropriate variant based on settings.
  */
-export function Header({
-  data,
-  settings,
-  className,
-  locale,
-}: HeaderProps) {
+export function Header({ data, settings, className, locale }: HeaderProps) {
   const variant = settings?.variant || "v1";
   const VariantComponent =
     HeaderVariants[variant as keyof typeof HeaderVariants];

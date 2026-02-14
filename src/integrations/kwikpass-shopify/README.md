@@ -77,7 +77,10 @@ function Header() {
 ### 3. Get Customer Access Token
 
 ```typescript
-import { getCustomerAccessToken, getCustomerAccessTokenMultipass } from "@/integrations/kwikpass-shopify";
+import {
+  getCustomerAccessToken,
+  getCustomerAccessTokenMultipass,
+} from "@/integrations/kwikpass-shopify";
 
 // Get token from KwikPass response
 const accessToken = await getCustomerAccessToken(kwikpassToken);
@@ -146,42 +149,45 @@ export {
 ## Auth Utilities (Shopify-specific)
 
 ### `decodeKpToken(token)`
+
 Decode and validate a KwikPass JWT token.
 
 ### `getCustomerAccessToken(kpToken)`
+
 Exchange KwikPass token for Shopify Customer Access Token.
 
 ### `getCustomerAccessTokenMultipass(multipassToken)`
+
 Exchange Multipass token for Shopify Customer Access Token.
 
 ## Events
 
 ### Analytics Events Dispatched
 
-| Event | When | Data |
-|-------|------|------|
-| `PRODUCT_VIEW` | Product page viewed | productId, title, price |
-| `COLLECTION_VIEW` | Collection page viewed | collectionId, title |
-| `PAGE_VIEW` | Page viewed | path, title |
-| `LOGIN` | User logged in | userId, phone, shopifyCustomerId |
-| `LOGOUT` | User logged out | userId |
+| Event             | When                   | Data                             |
+| ----------------- | ---------------------- | -------------------------------- |
+| `PRODUCT_VIEW`    | Product page viewed    | productId, title, price          |
+| `COLLECTION_VIEW` | Collection page viewed | collectionId, title              |
+| `PAGE_VIEW`       | Page viewed            | path, title                      |
+| `LOGIN`           | User logged in         | userId, phone, shopifyCustomerId |
+| `LOGOUT`          | User logged out        | userId                           |
 
 ### Window Events
 
-| Event | When | Detail |
-|-------|------|--------|
+| Event                  | When             | Detail                    |
+| ---------------------- | ---------------- | ------------------------- |
 | `kwikpassLoginSuccess` | Login successful | User data + Shopify token |
-| `kwikpassLogout` | User logged out | - |
+| `kwikpassLogout`       | User logged out  | -                         |
 
 ## Differences from kwikpass-custom
 
-| Feature | kwikpass-shopify | kwikpass-custom |
-|---------|------------------|-----------------|
-| Customer auth | Shopify Multipass | Custom backend |
-| Session storage | Shopify Customer API | localStorage |
-| Token decoding | Multipass + JWT | Basic JWT |
-| Customer data | Shopify Customer object | Custom user object |
-| Auth utilities | `AuthUtils.ts` exports | None |
+| Feature         | kwikpass-shopify        | kwikpass-custom    |
+| --------------- | ----------------------- | ------------------ |
+| Customer auth   | Shopify Multipass       | Custom backend     |
+| Session storage | Shopify Customer API    | localStorage       |
+| Token decoding  | Multipass + JWT         | Basic JWT          |
+| Customer data   | Shopify Customer object | Custom user object |
+| Auth utilities  | `AuthUtils.ts` exports  | None               |
 
 ## Authentication Flow
 

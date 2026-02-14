@@ -37,6 +37,7 @@ A **theme** defines the visual identity and configuration for a storefront.
 **Location:** `@/themes/{theme-name}/`
 
 **Structure:**
+
 ```
 themes/
 └── dawn/                           # Theme name
@@ -55,6 +56,7 @@ themes/
 ```
 
 **theme.json** - Contains design tokens:
+
 ```json
 {
   "id": "dawn_default",
@@ -84,10 +86,15 @@ A **template** defines the structure of a page - what sections and widgets appea
 **Location:** `@/themes/{theme}/templates/{template-name}/{variant}.ts`
 
 **Template Structure:**
+
 ```typescript
 import type { PageConfig } from "@shopkit/builder";
 import { WIDGET_TYPES } from "@/widgets/.generated/types";
-import { SECTION_TYPES, SECTION_LAYOUT_OPTIONS, DATA_SOURCE_TYPES } from "@shopkit/builder";
+import {
+  SECTION_TYPES,
+  SECTION_LAYOUT_OPTIONS,
+  DATA_SOURCE_TYPES,
+} from "@shopkit/builder";
 
 export const template: PageConfig = {
   id: "dawn-home",
@@ -118,9 +125,9 @@ export const template: PageConfig = {
           id: "header-widget",
           name: "Header",
           type: WIDGET_TYPES.Header,
-          dataSourceKey: "headerData",  // Links to dataSources
+          dataSourceKey: "headerData", // Links to dataSources
           settings: {
-            variant: "v2",              // Widget variant
+            variant: "v2", // Widget variant
             height: 65,
             // Translations use t: prefix
             navigation: "t:common.header.navigation",
@@ -134,14 +141,14 @@ export const template: PageConfig = {
 
 **Key Template Concepts:**
 
-| Concept | Description |
-|---------|-------------|
-| `dataSources` | Define what data to fetch (products, collections, static data) |
-| `sections` | Page layout containers (header, content, footer) |
-| `widgets` | UI components that render within sections |
-| `dataSourceKey` | Links a widget to its data source |
-| `settings` | Configuration passed to the widget |
-| `t:` prefix | Translation keys resolved at render time |
+| Concept         | Description                                                    |
+| --------------- | -------------------------------------------------------------- |
+| `dataSources`   | Define what data to fetch (products, collections, static data) |
+| `sections`      | Page layout containers (header, content, footer)               |
+| `widgets`       | UI components that render within sections                      |
+| `dataSourceKey` | Links a widget to its data source                              |
+| `settings`      | Configuration passed to the widget                             |
+| `t:` prefix     | Translation keys resolved at render time                       |
 
 ### 3. Widgets
 
@@ -150,6 +157,7 @@ export const template: PageConfig = {
 **Location:** `@/widgets/common/{WidgetName}/`
 
 **Widget Structure:**
+
 ```
 ProductGrid/
 ├── index.tsx           # Main component (variant router)
@@ -165,6 +173,7 @@ ProductGrid/
 ```
 
 **Main Widget Component (index.tsx):**
+
 ```typescript
 "use client";
 
@@ -188,6 +197,7 @@ export function ProductGrid({ data, settings, className, locale }: ProductGridPr
 ```
 
 **Variant Registry (variants.ts):**
+
 ```typescript
 import { V1 } from "./V1";
 import { V2 } from "./V2";
@@ -202,10 +212,12 @@ export type ProductGridVariantType = keyof typeof ProductGridVariants;
 ```
 
 **Widget Props Interface:**
+
 ```typescript
 export interface ProductGridProps {
-  data: any;           // Data from dataSource
-  settings: {          // Settings from template
+  data: any; // Data from dataSource
+  settings: {
+    // Settings from template
     variant?: string;
     heading?: string;
     showRating?: boolean;
@@ -255,19 +267,22 @@ export const WIDGET_TYPES = {
 **Sections** are containers that wrap widgets and handle layout.
 
 **Section Types:**
+
 ```typescript
-SECTION_TYPES.HEADER_SECTION   // Special handling for sticky headers
-SECTION_TYPES.CONTENT_SECTION  // General content
-SECTION_TYPES.FOOTER_SECTION   // Page footer
+SECTION_TYPES.HEADER_SECTION; // Special handling for sticky headers
+SECTION_TYPES.CONTENT_SECTION; // General content
+SECTION_TYPES.FOOTER_SECTION; // Page footer
 ```
 
 **Layout Options:**
+
 ```typescript
-SECTION_LAYOUT_OPTIONS.FULL   // Full width (edge to edge)
-SECTION_LAYOUT_OPTIONS.PAGE   // Constrained to max-width container
+SECTION_LAYOUT_OPTIONS.FULL; // Full width (edge to edge)
+SECTION_LAYOUT_OPTIONS.PAGE; // Constrained to max-width container
 ```
 
 **Responsive Settings:**
+
 ```typescript
 {
   settings: {
@@ -288,6 +303,7 @@ Translations are resolved using the `t:` prefix in template settings.
 **Translation Key Format:** `t:{namespace}.{path}`
 
 **Example:**
+
 ```typescript
 // In template
 settings: {
@@ -309,14 +325,16 @@ settings: {
 ### 7. Data Sources
 
 **Data Source Types:**
+
 ```typescript
-DATA_SOURCE_TYPES.STATIC               // Static/hardcoded data
-DATA_SOURCE_TYPES.COLLECTION_BY_HANDLES // Fetch collections by handle
-DATA_SOURCE_TYPES.PRODUCT_BY_HANDLE    // Fetch product by handle
-DATA_SOURCE_TYPES.PRODUCTS             // Fetch products list
+DATA_SOURCE_TYPES.STATIC; // Static/hardcoded data
+DATA_SOURCE_TYPES.COLLECTION_BY_HANDLES; // Fetch collections by handle
+DATA_SOURCE_TYPES.PRODUCT_BY_HANDLE; // Fetch product by handle
+DATA_SOURCE_TYPES.PRODUCTS; // Fetch products list
 ```
 
 **Example:**
+
 ```typescript
 dataSources: {
   // Static data (no API call)
@@ -366,6 +384,7 @@ dataSources: {
 ```
 
 **Page Component Example:**
+
 ```typescript
 // app/page.tsx
 export default async function HomePage() {
@@ -409,11 +428,11 @@ import { getCommerceClient } from "@/config/commerce";
 import { SectionWrapper } from "@/ui/layout/SectionWrapper";
 
 const pageBuilderOptions = {
-  widgets: WIDGET_MANIFEST,           // App's widget registry
+  widgets: WIDGET_MANIFEST, // App's widget registry
   commerceClient: getCommerceClient(), // Data fetching client
-  themeLoader,                        // Loads theme.json
-  templateLoader,                     // Loads templates
-  sectionRenderer,                    // SectionWrapper component
+  themeLoader, // Loads theme.json
+  templateLoader, // Loads templates
+  sectionRenderer, // SectionWrapper component
   defaultLocale: "en",
 };
 
@@ -641,6 +660,7 @@ apps/starter/src/
 To create a new page (e.g., `/about`), follow these steps:
 
 #### Step 1: Create Template File
+
 ```bash
 # Create: themes/dawn/templates/about/default.ts
 ```
@@ -648,7 +668,11 @@ To create a new page (e.g., `/about`), follow these steps:
 ```typescript
 import type { PageConfig } from "@shopkit/builder";
 import { WIDGET_TYPES } from "@/widgets/.generated/types";
-import { SECTION_TYPES, SECTION_LAYOUT_OPTIONS, DATA_SOURCE_TYPES } from "@shopkit/builder";
+import {
+  SECTION_TYPES,
+  SECTION_LAYOUT_OPTIONS,
+  DATA_SOURCE_TYPES,
+} from "@shopkit/builder";
 
 export const template: PageConfig = {
   id: "about-page",
@@ -667,7 +691,7 @@ export const template: PageConfig = {
           id: "header-widget",
           type: WIDGET_TYPES.Header,
           dataSourceKey: "headerData",
-          settings: { variant: "v2", /* ... */ },
+          settings: { variant: "v2" /* ... */ },
         },
       ],
     },
@@ -691,7 +715,7 @@ export const template: PageConfig = {
         {
           id: "footer-widget",
           type: WIDGET_TYPES.Footer,
-          settings: { variant: "v1", /* ... */ },
+          settings: { variant: "v1" /* ... */ },
         },
       ],
     },
@@ -700,6 +724,7 @@ export const template: PageConfig = {
 ```
 
 #### Step 2: Create Next.js Page
+
 ```bash
 # Create: app/about/page.tsx
 ```
@@ -741,6 +766,7 @@ export default async function AboutPage() {
 ```
 
 #### Step 3: Add Translations (Optional)
+
 ```bash
 # Create: themes/dawn/locales/pages/about/en.json
 ```
@@ -755,46 +781,47 @@ export default async function AboutPage() {
 ```
 
 #### Step 4: Update Template Types (Optional)
+
 ```bash
 # Run: bun run generate:templates
 ```
 
 ### Common Patterns to Copy
 
-| Need | Copy From |
-|------|-----------|
-| Header section | `templates/home/default.ts` lines 186-225 |
-| Footer section | `templates/home/default.ts` lines 1044-1091 |
-| Product grid | `templates/home/default.ts` lines 313-376 |
-| Banner carousel | `templates/home/default.ts` lines 227-252 |
+| Need            | Copy From                                   |
+| --------------- | ------------------------------------------- |
+| Header section  | `templates/home/default.ts` lines 186-225   |
+| Footer section  | `templates/home/default.ts` lines 1044-1091 |
+| Product grid    | `templates/home/default.ts` lines 313-376   |
+| Banner carousel | `templates/home/default.ts` lines 227-252   |
 
 ### Available Widget Types
 
 Reference: `@/widgets/.generated/types.ts`
 
 ```typescript
-WIDGET_TYPES.Header
-WIDGET_TYPES.Footer
-WIDGET_TYPES.ProductGrid
-WIDGET_TYPES.BannerCarousel
-WIDGET_TYPES.AnnouncementBar
-WIDGET_TYPES.ShopByCategory
-WIDGET_TYPES.ShopByConcerns
-WIDGET_TYPES.Testimonials
-WIDGET_TYPES.FAQ
-WIDGET_TYPES.ProductGallery
-WIDGET_TYPES.ProductInfo
-WIDGET_TYPES.CollectionWidget
+WIDGET_TYPES.Header;
+WIDGET_TYPES.Footer;
+WIDGET_TYPES.ProductGrid;
+WIDGET_TYPES.BannerCarousel;
+WIDGET_TYPES.AnnouncementBar;
+WIDGET_TYPES.ShopByCategory;
+WIDGET_TYPES.ShopByConcerns;
+WIDGET_TYPES.Testimonials;
+WIDGET_TYPES.FAQ;
+WIDGET_TYPES.ProductGallery;
+WIDGET_TYPES.ProductInfo;
+WIDGET_TYPES.CollectionWidget;
 // ... see manifest.ts for full list
 ```
 
 ### Available Data Source Types
 
 ```typescript
-DATA_SOURCE_TYPES.STATIC                 // Hardcoded data
-DATA_SOURCE_TYPES.COLLECTION_BY_HANDLES  // Fetch collections
-DATA_SOURCE_TYPES.PRODUCT_BY_HANDLE      // Fetch single product
-DATA_SOURCE_TYPES.PRODUCTS               // Fetch product list
+DATA_SOURCE_TYPES.STATIC; // Hardcoded data
+DATA_SOURCE_TYPES.COLLECTION_BY_HANDLES; // Fetch collections
+DATA_SOURCE_TYPES.PRODUCT_BY_HANDLE; // Fetch single product
+DATA_SOURCE_TYPES.PRODUCTS; // Fetch product list
 ```
 
 ---
@@ -805,22 +832,23 @@ The CLI provides commands for generating, validating, and managing widgets, temp
 
 ### Generator Commands
 
-| Command | Description | Usage |
-|---------|-------------|-------|
-| `bun run generate` | Run all generators | Runs widgets + templates + i18n |
-| `bun run generate:widgets` | Generate widget registry | Creates `manifest.ts` and `types.ts` |
-| `bun run generate:templates` | Generate template types | Creates template type definitions |
-| `bun run generate:i18n` | Generate i18n manifest | Creates translation manifests |
+| Command                      | Description              | Usage                                |
+| ---------------------------- | ------------------------ | ------------------------------------ |
+| `bun run generate`           | Run all generators       | Runs widgets + templates + i18n      |
+| `bun run generate:widgets`   | Generate widget registry | Creates `manifest.ts` and `types.ts` |
+| `bun run generate:templates` | Generate template types  | Creates template type definitions    |
+| `bun run generate:i18n`      | Generate i18n manifest   | Creates translation manifests        |
 
 ### Scaffold Commands (Create New)
 
-| Command | Description | Example |
-|---------|-------------|---------|
-| `bun run g widget <name>` | Create new widget | `bun run g widget ProductCard` |
-| `bun run g template <name>` | Create new template | `bun run g template about` |
-| `bun run g theme <name>` | Create new theme | `bun run g theme custom` |
+| Command                     | Description         | Example                        |
+| --------------------------- | ------------------- | ------------------------------ |
+| `bun run g widget <name>`   | Create new widget   | `bun run g widget ProductCard` |
+| `bun run g template <name>` | Create new template | `bun run g template about`     |
+| `bun run g theme <name>`    | Create new theme    | `bun run g theme custom`       |
 
 **Shorthand:**
+
 ```bash
 bun run g widget MyWidget      # Same as: shopkit g widget MyWidget
 bun run g:widget MyWidget      # Alternative syntax
@@ -828,35 +856,36 @@ bun run g:widget MyWidget      # Alternative syntax
 
 ### Watch Commands (Development)
 
-| Command | Description |
-|---------|-------------|
+| Command                 | Description                                    |
+| ----------------------- | ---------------------------------------------- |
 | `bun run watch:widgets` | Watch widgets folder, auto-regenerate manifest |
-| `bun run watch:locales` | Watch locales folder, auto-regenerate i18n |
-| `bun run dev:watch` | Run dev server with all watchers |
+| `bun run watch:locales` | Watch locales folder, auto-regenerate i18n     |
+| `bun run dev:watch`     | Run dev server with all watchers               |
 
 ### Validation Commands
 
-| Command | Description |
-|---------|-------------|
-| `bun run validate:widget` | Validate widget structure |
-| `bun run validate:template` | Validate template structure |
-| `bun run validate:route` | Validate route static generation |
-| `bun run validate:assets` | Validate asset sizes |
+| Command                     | Description                      |
+| --------------------------- | -------------------------------- |
+| `bun run validate:widget`   | Validate widget structure        |
+| `bun run validate:template` | Validate template structure      |
+| `bun run validate:route`    | Validate route static generation |
+| `bun run validate:assets`   | Validate asset sizes             |
 
 ### Performance Commands
 
-| Command | Description |
-|---------|-------------|
-| `bun run perf:score` | Score widgets (0-100 based on ESLint) |
-| `bun run perf:score:all` | Score all widgets (not just staged) |
-| `bun run perf:critical` | Check critical widgets aren't lazy-loaded |
-| `bun run perf:audit` | Audit third-party scripts |
-| `bun run perf:rules` | List all performance rules |
-| `bun run perf:check` | Run all perf validations + lint + score |
+| Command                  | Description                               |
+| ------------------------ | ----------------------------------------- |
+| `bun run perf:score`     | Score widgets (0-100 based on ESLint)     |
+| `bun run perf:score:all` | Score all widgets (not just staged)       |
+| `bun run perf:critical`  | Check critical widgets aren't lazy-loaded |
+| `bun run perf:audit`     | Audit third-party scripts                 |
+| `bun run perf:rules`     | List all performance rules                |
+| `bun run perf:check`     | Run all perf validations + lint + score   |
 
 ### Common Workflows
 
 **After creating a new widget:**
+
 ```bash
 # 1. Create widget folder and files
 bun run g widget MyNewWidget
@@ -870,18 +899,21 @@ bun run generate:widgets
 ```
 
 **After modifying translations:**
+
 ```bash
 # Regenerate i18n manifest
 bun run generate:i18n
 ```
 
 **Before committing:**
+
 ```bash
 # Run all validations
 bun run perf:check
 ```
 
 **Development with auto-reload:**
+
 ```bash
 # Watches widgets and locales, auto-regenerates
 bun run dev:watch
@@ -970,6 +1002,7 @@ widgets: [
 ```
 
 **Data Flow:**
+
 ```
 Template dataSources → Page Builder → Commerce Client → API → Widget data prop
 ```
@@ -981,14 +1014,15 @@ The cart uses Zustand for state management with localStorage persistence.
 **Cart Store Location:** `@shopkit/cart` (configured in `@/bootstrap/cart.ts`)
 
 **Key Exports:**
+
 ```typescript
 import {
-  useCartStore,      // Full store access
-  useCart,      // Add item hook
-  useCartItems,      // Get cart items
-  useCartCount,      // Get item count
-  useCartTotal,      // Get total price
-  useIsInCart,       // Check if product is in cart
+  useCartStore, // Full store access
+  useCart, // Add item hook
+  useCartItems, // Get cart items
+  useCartCount, // Get item count
+  useCartTotal, // Get total price
+  useIsInCart, // Check if product is in cart
 } from "@shopkit/cart";
 ```
 
@@ -1039,6 +1073,7 @@ function AddToCartButton({ product, variant }) {
 ```
 
 **Cart Store State:**
+
 ```typescript
 interface CartState {
   items: CartItem[];
@@ -1062,10 +1097,12 @@ interface CartState {
 The cart drawer displays cart contents and provides checkout access.
 
 **Platform-specific implementations:**
+
 - `integrations/cart-drawer-shopify/` - For Shopify stores
 - `integrations/cart-drawer-custom/` - For custom backends
 
 **Component Hierarchy:**
+
 ```
 CustomCartDrawer (or ShopifyCartDrawer)
 ├── LoadingSpinner
@@ -1087,6 +1124,7 @@ CustomCartDrawer (or ShopifyCartDrawer)
 ```
 
 **Using Cart Drawer in Layout:**
+
 ```typescript
 // app/layout.tsx
 const CustomCartDrawer = dynamic(
@@ -1111,6 +1149,7 @@ export default function RootLayout({ children }) {
 Checkout is handled by the GoKwik SDK via platform-specific integrations.
 
 **Platform-specific implementations:**
+
 - `integrations/checkout-shopify/` - For Shopify stores
 - `integrations/checkout-custom/` - For custom backends
 
@@ -1156,6 +1195,7 @@ function CartSummary() {
 ```
 
 **Checkout Service Flow:**
+
 ```
 1. User clicks Checkout button
    ↓
@@ -1232,20 +1272,21 @@ function CartSummary() {
 
 ### 6. Key Files Reference
 
-| Purpose | File Location |
-|---------|---------------|
-| Commerce client config | `@/config/commerce/index.ts` |
-| Cart bootstrap | `@/bootstrap/cart.ts` |
-| Cart drawer (Custom) | `@/integrations/cart-drawer-custom/` |
-| Cart drawer (Shopify) | `@/integrations/cart-drawer-shopify/` |
-| Checkout (Custom) | `@/integrations/checkout-custom/` |
-| Checkout (Shopify) | `@/integrations/checkout-shopify/` |
-| Add to cart in widget | Use `useCart` from `@shopkit/cart` |
-| Analytics events | Use `publishEvent` from `@shopkit/analytics` |
+| Purpose                | File Location                                |
+| ---------------------- | -------------------------------------------- |
+| Commerce client config | `@/config/commerce/index.ts`                 |
+| Cart bootstrap         | `@/bootstrap/cart.ts`                        |
+| Cart drawer (Custom)   | `@/integrations/cart-drawer-custom/`         |
+| Cart drawer (Shopify)  | `@/integrations/cart-drawer-shopify/`        |
+| Checkout (Custom)      | `@/integrations/checkout-custom/`            |
+| Checkout (Shopify)     | `@/integrations/checkout-shopify/`           |
+| Add to cart in widget  | Use `useCart` from `@shopkit/cart`           |
+| Analytics events       | Use `publishEvent` from `@shopkit/analytics` |
 
 ### 7. Common Patterns
 
 **Add to Cart in a Widget:**
+
 ```typescript
 import { useCart, useCartStore } from "@shopkit/cart";
 
@@ -1259,15 +1300,17 @@ useCartStore.getState().openCart();
 ```
 
 **Check Cart State:**
+
 ```typescript
 import { useCartItems, useCartTotal, useCartCount } from "@shopkit/cart";
 
-const items = useCartItems();      // CartItem[]
-const total = useCartTotal();      // number
-const count = useCartCount();      // number
+const items = useCartItems(); // CartItem[]
+const total = useCartTotal(); // number
+const count = useCartCount(); // number
 ```
 
 **Update Quantity:**
+
 ```typescript
 import { useCartStore } from "@shopkit/cart";
 

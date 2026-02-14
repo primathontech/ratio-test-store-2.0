@@ -77,7 +77,7 @@ export interface UseCustomCheckoutReturn {
    * Initialize and start the checkout process
    */
   startCheckout: (
-    config: Omit<CheckoutConfig, "eventHandlers">,
+    config: Omit<CheckoutConfig, "eventHandlers">
   ) => Promise<void>;
 
   /**
@@ -110,7 +110,7 @@ export interface UseCustomCheckoutReturn {
  * Hook for Gokwik checkout integration
  */
 export function useCustomCheckout(
-  options: UseCustomCheckoutOptions = {},
+  options: UseCustomCheckoutOptions = {}
 ): UseCustomCheckoutReturn {
   const {
     onCheckoutSuccess,
@@ -231,7 +231,7 @@ export function useCustomCheckout(
       closeCartOnSuccess,
       clearCart,
       closeCart,
-    ],
+    ]
   );
 
   const [isGokwikAvailable, setIsGokwikAvailable] = useState(false);
@@ -248,7 +248,9 @@ export function useCustomCheckout(
     };
 
     // Check immediately
-    if (checkAvailability()) return;
+    if (checkAvailability()) {
+      return;
+    }
 
     // Poll for script availability (script might load after component mounts)
     const interval = setInterval(() => {

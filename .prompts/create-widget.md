@@ -8,6 +8,7 @@
 ### Task: Create a new widget called `{WIDGET_NAME}`
 
 **Widget Requirements:**
+
 - Widget name: {WIDGET_NAME}
 - Purpose: {DESCRIPTION}
 - Props/Settings: {LIST_PROPS}
@@ -16,6 +17,7 @@
 ### Files to Create:
 
 1. **Main component:** `src/widgets/common/{WIDGET_NAME}/index.tsx`
+
    ```typescript
    "use client";
    import React from "react";
@@ -48,6 +50,7 @@
 ### Example Usage:
 
 Replace placeholders:
+
 - `{WIDGET_NAME}` = "TeamMembers"
 - `{DESCRIPTION}` = "Displays team member cards in a grid"
 - `{LIST_PROPS}` = "members: array, columns: number, showBio: boolean"

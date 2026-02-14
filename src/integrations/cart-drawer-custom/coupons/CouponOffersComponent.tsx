@@ -69,7 +69,7 @@ const CouponCard: React.FC<CouponCardProps> = React.memo(
         </div>
       </div>
     );
-  },
+  }
 );
 
 CouponCard.displayName = "CouponCard";
@@ -113,14 +113,14 @@ export const CouponOffersComponent: React.FC = () => {
     () =>
       process.env.NEXT_PUBLIC_DISCLAIMER ||
       "*Applicable on select products only. T&C apply",
-    [],
+    []
   );
 
   const checkoutNote = useMemo(
     () =>
       process.env.NEXT_PUBLIC_CHECKOUT_NOTE ||
       "*All coupons will apply on checkout",
-    [],
+    []
   );
 
   // Reset scroll position when cart items change

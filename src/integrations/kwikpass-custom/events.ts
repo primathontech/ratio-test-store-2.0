@@ -149,7 +149,7 @@ export function dispatchProductViewEvent(data: KwikPassProductEventData): void {
 }
 
 export function dispatchCollectionViewEvent(
-  data: KwikPassCollectionEventData,
+  data: KwikPassCollectionEventData
 ): void {
   dispatcher.dispatch(KwikPassEventType.COLLECTION_VIEW, data);
 }
@@ -186,7 +186,7 @@ declare global {
       type: string,
       eventName: string,
       params?: Record<string, any>,
-      options?: { eventID?: string },
+      options?: { eventID?: string }
     ) => void;
   }
 }

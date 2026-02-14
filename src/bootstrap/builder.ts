@@ -122,7 +122,7 @@ const themeLoader: IThemeLoader = {
       throw new Error(
         `Theme not found for merchant "${merchantName}". ` +
           `Ensure ${themePath} exists and exports valid theme data. ` +
-          `Original error: ${errorMessage}`,
+          `Original error: ${errorMessage}`
       );
     }
   },
@@ -143,7 +143,7 @@ const templateLoader: ITemplateLoader = {
   async loadTemplate(
     merchantName: string,
     templateName: string,
-    variant: string,
+    variant: string
   ) {
     const templatePath = `@/themes/${merchantName}/templates/${templateName}/${variant}`;
 
@@ -155,7 +155,7 @@ const templateLoader: ITemplateLoader = {
       if (!module?.template) {
         throw new Error(
           `Template file must export a 'template' object. ` +
-            `Found exports: ${Object.keys(module).join(", ") || "none"}`,
+            `Found exports: ${Object.keys(module).join(", ") || "none"}`
         );
       }
 
@@ -174,13 +174,13 @@ const templateLoader: ITemplateLoader = {
         `Template not found: "${templateName}" (variant: "${variant}") ` +
           `for merchant "${merchantName}". ` +
           `Ensure ${templatePath}.ts exists and exports { template }. ` +
-          `Original error: ${errorMessage}`,
+          `Original error: ${errorMessage}`
       );
     }
   },
 
   async loadVariantRegistry(
-    merchantName: string,
+    merchantName: string
   ): Promise<VariantRegistryResult | null> {
     try {
       return await import(

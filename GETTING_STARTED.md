@@ -151,6 +151,7 @@ git rebase upstream/main
 ### Protected Files
 
 These files are typically customized per project and may cause conflicts:
+
 - `.env.local` - Environment configuration
 - `src/config/commerce.ts` - Commerce settings
 - `src/themes/*/` - Theme customizations

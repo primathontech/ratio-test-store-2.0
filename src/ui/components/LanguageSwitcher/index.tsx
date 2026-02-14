@@ -35,7 +35,7 @@ export function LanguageSwitcher() {
         }, 100);
       });
     },
-    [locale],
+    [locale]
   );
 
   return (

@@ -3,9 +3,7 @@
   "name": "dawn",
   "role": "live",
   "version": "1.0.0",
-  "supportedLanguages": [
-    "en"
-  ],
+  "supportedLanguages": ["en"],
   "defaultLanguage": "en",
   "config": {
     "colors": {

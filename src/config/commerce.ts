@@ -50,7 +50,7 @@ export function getCommerceClient() {
     throw new Error(
       `Failed to get commerce client: ${
         error instanceof Error ? error.message : String(error)
-      }`,
+      }`
     );
   }
 }

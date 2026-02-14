@@ -21,26 +21,30 @@ integrations/
 
 ## Platform Types
 
-| Platform | Description | Cart API | Checkout |
-|----------|-------------|----------|----------|
-| **Shopify** | Shopify Storefront API | GraphQL Cart API | Shopify Checkout URL or GoKwik |
-| **Custom** | Custom backend (non-Shopify) | REST API | GoKwik only |
+| Platform    | Description                  | Cart API         | Checkout                       |
+| ----------- | ---------------------------- | ---------------- | ------------------------------ |
+| **Shopify** | Shopify Storefront API       | GraphQL Cart API | Shopify Checkout URL or GoKwik |
+| **Custom**  | Custom backend (non-Shopify) | REST API         | GoKwik only                    |
 
 ## Integration Categories
 
 ### 1. Authentication (`kwikpass-*`)
+
 Handles user authentication via KwikPass (OTP-based login).
 
 **Files:**
+
 - `KwikPass{Platform}.tsx` - Main component (loads script)
 - `KwikPassScript{Platform}.tsx` - Script loader
 - `KwikPass{Platform}Service.ts` - Service class
 - `useKwikPass{Platform}.ts` - React hook
 
 ### 2. Checkout (`checkout-*`)
+
 Handles GoKwik checkout flow.
 
 **Files:**
+
 - `Checkout{Platform}.tsx` - Main component (loads script in layout)
 - `CheckoutScript{Platform}.tsx` - Script loader
 - `CheckoutButton{Platform}.tsx` - Checkout button component
@@ -52,9 +56,11 @@ Handles GoKwik checkout flow.
 - `types.ts` - TypeScript interfaces
 
 ### 3. Cart Drawer (`cart-drawer-*`)
+
 Slide-out cart UI with checkout integration.
 
 **Files:**
+
 - `{Platform}CartDrawer.tsx` - Main drawer component
 - `components/` - UI components (CartItem, CartSummary, EmptyCartView, etc.)
 - `coupons/` - Coupon-related components and hooks
@@ -65,24 +71,30 @@ Slide-out cart UI with checkout integration.
 ## Naming Conventions
 
 ### Folders
+
 ```
 {feature}-{platform}/
 ```
+
 Examples: `checkout-custom/`, `cart-drawer-shopify/`
 
 ### Components
+
 ```
 {Feature}{Platform}.tsx          # Main component
 {Feature}Button{Platform}.tsx    # Button component
 {Feature}Script{Platform}.tsx    # Script loader
 ```
+
 Examples: `CheckoutCustom.tsx`, `CheckoutButtonCustom.tsx`, `CheckoutScriptCustom.tsx`
 
 ### Services & Hooks
+
 ```
 {Platform}{Feature}Service.ts    # Service class
 use{Platform}{Feature}.ts        # React hook
 ```
+
 Examples: `CustomCheckoutService.ts`, `useCustomCheckout.ts`
 
 ---
@@ -192,10 +204,11 @@ mkdir -p src/integrations/{feature}-{platform}/{components,styles}
 ```typescript
 // app/layout.tsx
 const MyFeature = dynamic(
-  () => import("@/integrations/my-feature-custom").then((mod) => ({
-    default: mod.MyFeatureCustom,
-  })),
-  { ssr: false },
+  () =>
+    import("@/integrations/my-feature-custom").then((mod) => ({
+      default: mod.MyFeatureCustom,
+    })),
+  { ssr: false }
 );
 ```
 
@@ -218,6 +231,7 @@ content: [
 Each integration may require specific environment variables. See the individual integration READMEs for details.
 
 Common variables:
+
 ```env
 # GoKwik
 NEXT_PUBLIC_GOKWIK_MID=your-merchant-id

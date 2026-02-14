@@ -4,8 +4,7 @@ import * as React from "react";
 import type { BaseComponentProps } from "./types";
 
 export interface BadgeProps
-  extends React.HTMLAttributes<HTMLSpanElement>,
-    BaseComponentProps {
+  extends React.HTMLAttributes<HTMLSpanElement>, BaseComponentProps {
   /**
    * Badge content
    */

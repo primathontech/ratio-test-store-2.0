@@ -1,0 +1,24 @@
+#!/bin/sh
+
+commit_regex='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,50}'
+
+if ! grep -qE "$commit_regex" "$1"; then
+    echo "🚨🚨 INVALID COMMIT MESSAGE FORMAT! 🚨🚨"
+    echo ""
+    echo "Your commit message must follow Conventional Commits format:"
+    echo ""
+    echo "  <type>[optional scope]: <description>"
+    echo ""
+    echo "Allowed types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"
+    echo ""
+    echo "Examples:"
+    echo "  feat: add newsletter signup widget"
+    echo "  fix(cart): resolve quantity update bug"
+    echo "  chore: update dependencies"
+    echo ""
+    echo "Your message was: $(cat $1)"
+    exit 1
+fi
+
+echo "✅ Commit message format is valid!"
+echo "📝 Message: $(cat $1)"

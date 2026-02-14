@@ -63,7 +63,7 @@ export function CheckoutButtonCustom({
       closeCartOnSuccess,
       clearCart,
       closeCart,
-    },
+    }
   );
 
   const handleCheckout = async () => {

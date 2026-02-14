@@ -77,7 +77,7 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
   // Helper functions for individual loading states
   const setItemLoading = (
     itemId: string,
-    action: "increment" | "decrement" | "remove" | "add" | null,
+    action: "increment" | "decrement" | "remove" | "add" | null
   ) => {
     setLoadingStates((prev) => ({
       ...prev,
@@ -140,9 +140,11 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
       setCursorPosition({ x: e.clientX, y: e.clientY });
 
       const cartDrawer = document.querySelector(
-        '[data-testid="bblunt-cart-drawer"]',
+        '[data-testid="bblunt-cart-drawer"]'
       );
-      if (!cartDrawer) return;
+      if (!cartDrawer) {
+        return;
+      }
 
       const drawerRect = cartDrawer.getBoundingClientRect();
       const isOverDrawer = e.clientX >= drawerRect.left;

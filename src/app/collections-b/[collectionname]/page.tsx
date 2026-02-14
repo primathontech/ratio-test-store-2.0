@@ -12,7 +12,7 @@ export const revalidate = 3600;
 export const dynamicParams = true;
 
 const seoSystem = SEOFactory.createForEnvironment(
-  process.env.NODE_ENV as "development" | "staging" | "production",
+  process.env.NODE_ENV as "development" | "staging" | "production"
 );
 
 export async function generateStaticParams() {
@@ -102,7 +102,7 @@ export async function generateMetadata({
           type: "application/ld+json" as const,
           children: JSON.stringify(schema),
           key: `structured-data-${index}`,
-        }),
+        })
       );
 
       return {
@@ -111,7 +111,7 @@ export async function generateMetadata({
           ...metadata.other,
           // Add structured data as script tags in head
           "script:type=application/ld+json": structuredDataScripts.map(
-            (script) => script.children,
+            (script) => script.children
           ),
         },
       };

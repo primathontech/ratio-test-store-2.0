@@ -121,7 +121,8 @@ const TooltipContent = React.forwardRef<
         }
 
         .tooltip-content[data-side="top"][data-align="start"] .tooltip-arrow,
-        .tooltip-content[data-side="bottom"][data-align="start"] .tooltip-arrow {
+        .tooltip-content[data-side="bottom"][data-align="start"]
+          .tooltip-arrow {
           left: 12px;
           transform: rotate(45deg);
         }

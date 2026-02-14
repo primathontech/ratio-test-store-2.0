@@ -16,27 +16,27 @@ function validateCheckoutEnv(): void {
   // Validate required environment variables
   if (!process.env.NEXT_PUBLIC_GOKWIK_MID) {
     throw new Error(
-      "NEXT_PUBLIC_GOKWIK_MID (Merchant ID) is required when GoKwik is enabled",
+      "NEXT_PUBLIC_GOKWIK_MID (Merchant ID) is required when GoKwik is enabled"
     );
   }
 
   // Validate environment
   if (!process.env.NEXT_PUBLIC_GOKWIK_ENVIRONMENT) {
     throw new Error(
-      `Invalid NEXT_PUBLIC_GOKWIK_ENVIRONMENT: ${process.env.NEXT_PUBLIC_GOKWIK_ENVIRONMENT}`,
+      `Invalid NEXT_PUBLIC_GOKWIK_ENVIRONMENT: ${process.env.NEXT_PUBLIC_GOKWIK_ENVIRONMENT}`
     );
   }
 
   // Warn about missing optional but recommended variables
   if (!process.env.NEXT_PUBLIC_STORE_ID) {
     console.warn(
-      "NEXT_PUBLIC_STORE_ID is not set. Checkout functionality may not work correctly.",
+      "NEXT_PUBLIC_STORE_ID is not set. Checkout functionality may not work correctly."
     );
   }
 
   if (!process.env.NEXT_PUBLIC_FB_PIXEL_ID) {
     console.warn(
-      "NEXT_PUBLIC_FB_PIXEL_ID is not set. Facebook conversion tracking will be disabled.",
+      "NEXT_PUBLIC_FB_PIXEL_ID is not set. Facebook conversion tracking will be disabled."
     );
   }
 }

@@ -77,7 +77,7 @@ export interface UseShopifyCheckoutReturn {
    * Initialize and start the checkout process
    */
   startCheckout: (
-    config: Omit<CheckoutConfig, "eventHandlers">,
+    config: Omit<CheckoutConfig, "eventHandlers">
   ) => Promise<void>;
 
   /**
@@ -110,7 +110,7 @@ export interface UseShopifyCheckoutReturn {
  * Hook for Gokwik checkout integration
  */
 export function useShopifyCheckout(
-  options: UseShopifyCheckoutOptions = {},
+  options: UseShopifyCheckoutOptions = {}
 ): UseShopifyCheckoutReturn {
   const {
     onCheckoutSuccess,
@@ -231,7 +231,7 @@ export function useShopifyCheckout(
       closeCartOnSuccess,
       clearCart,
       closeCart,
-    ],
+    ]
   );
 
   const [isGokwikAvailable, setIsGokwikAvailable] = useState(false);
@@ -248,7 +248,9 @@ export function useShopifyCheckout(
     };
 
     // Check immediately
-    if (checkAvailability()) return;
+    if (checkAvailability()) {
+      return;
+    }
 
     // Poll for script availability (script might load after component mounts)
     const interval = setInterval(() => {

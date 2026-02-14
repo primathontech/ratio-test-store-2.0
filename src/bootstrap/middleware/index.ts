@@ -40,10 +40,6 @@ export { getABTestCookies, handleABTestRewrites } from "./ab-testing";
 export { shouldSkipMiddleware } from "./utils";
 
 // Types
-export type {
-  ABTestCookies,
-  LocaleResult,
-  MiddlewareConfig,
-} from "./types";
+export type { ABTestCookies, LocaleResult, MiddlewareConfig } from "./types";
 
 export { defaultMiddlewareConfig } from "./types";

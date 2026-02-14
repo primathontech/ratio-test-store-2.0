@@ -14,18 +14,18 @@ export const revalidate = 3600;
 export const dynamicParams = true;
 
 const seoSystem = SEOFactory.createForEnvironment(
-  process.env.NODE_ENV as "development" | "staging" | "production",
+  process.env.NODE_ENV as "development" | "staging" | "production"
 );
 
 export async function generateStaticParams() {
   const homepageFeaturedCollections = process.env.FEATURED_COLLECTIONS;
   const productsPerCollection = parseInt(
-    process.env.HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT || "8",
+    process.env.HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT || "8"
   );
 
   if (!homepageFeaturedCollections) {
     console.error(
-      "HOMEPAGE_FEATURED_COLLECTIONS environment variable not found",
+      "HOMEPAGE_FEATURED_COLLECTIONS environment variable not found"
     );
     return [];
   }
@@ -50,17 +50,17 @@ export async function generateStaticParams() {
             (product: any) =>
               product?.handle
                 ? [{ collectionname, handle: product.handle }]
-                : [],
+                : []
           );
         }
         return [];
       })
       .catch((err: any) => {
         console.warn(
-          `Collection handle '${collectionname}' not found, skipping`,
+          `Collection handle '${collectionname}' not found, skipping`
         );
         return [];
-      }),
+      })
   );
 
   // Wait for all collection requests to complete in parallel
@@ -71,7 +71,7 @@ export async function generateStaticParams() {
 
   // Remove duplicate products (based on handle but keeping first found collection)
   const uniquePairs = Array.from(
-    new Map(collectionProductPairs.map((item) => [item.handle, item])).values(),
+    new Map(collectionProductPairs.map((item) => [item.handle, item])).values()
   );
 
   // Return pairs directly - the collection API already validated these products exist
@@ -143,7 +143,7 @@ export async function generateMetadata({
           type: "application/ld+json" as const,
           children: JSON.stringify(schema),
           key: `structured-data-${index}`,
-        }),
+        })
       );
 
       return {
@@ -152,7 +152,7 @@ export async function generateMetadata({
           ...metadata.other,
           // Add structured data as script tags in head
           "script:type=application/ld+json": structuredDataScripts.map(
-            (script) => script.children,
+            (script) => script.children
           ),
         },
       };
@@ -214,8 +214,11 @@ export default async function CollectionProductPage({
           productData={{
             id: product.id,
             title: product.title,
-            price: parseFloat(product.priceRange?.minVariantPrice?.amount || "0"),
-            currency: product.priceRange?.minVariantPrice?.currencyCode || "INR",
+            price: parseFloat(
+              product.priceRange?.minVariantPrice?.amount || "0"
+            ),
+            currency:
+              product.priceRange?.minVariantPrice?.currencyCode || "INR",
           }}
         />
         {pageContent}

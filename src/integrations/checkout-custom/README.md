@@ -127,36 +127,36 @@ NEXT_PUBLIC_CUSTOM_API_ORDER_HISTORY_URL=https://your-api-url.com
 
 ### CheckoutButtonCustom
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | ReactNode | "Checkout" | Button content |
-| `className` | string | - | CSS classes |
-| `style` | CSSProperties | - | Inline styles |
-| `disabled` | boolean | false | Disable button |
-| `onCheckoutStart` | () => void | - | Called when checkout starts |
-| `onCheckoutSuccess` | (order) => void | - | Called on success |
-| `onCheckoutError` | (error) => void | - | Called on error |
-| `clearCartOnSuccess` | boolean | true | Clear cart after success |
-| `closeCartOnSuccess` | boolean | true | Close cart drawer after success |
-| `redirectPath` | string | - | Custom redirect path |
-| `buttonProps` | ButtonHTMLAttributes | - | Additional button props |
+| Prop                 | Type                 | Default    | Description                     |
+| -------------------- | -------------------- | ---------- | ------------------------------- |
+| `children`           | ReactNode            | "Checkout" | Button content                  |
+| `className`          | string               | -          | CSS classes                     |
+| `style`              | CSSProperties        | -          | Inline styles                   |
+| `disabled`           | boolean              | false      | Disable button                  |
+| `onCheckoutStart`    | () => void           | -          | Called when checkout starts     |
+| `onCheckoutSuccess`  | (order) => void      | -          | Called on success               |
+| `onCheckoutError`    | (error) => void      | -          | Called on error                 |
+| `clearCartOnSuccess` | boolean              | true       | Clear cart after success        |
+| `closeCartOnSuccess` | boolean              | true       | Close cart drawer after success |
+| `redirectPath`       | string               | -          | Custom redirect path            |
+| `buttonProps`        | ButtonHTMLAttributes | -          | Additional button props         |
 
 ### BuyNowButtonCustom
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `variantId` | string | Yes | Product variant ID |
-| `productId` | string | Yes | Product ID |
-| `title` | string | Yes | Product title |
-| `price` | { amount, currencyCode } | Yes | Product price |
-| `quantity` | number | Yes | Quantity to purchase |
-| `imageUrl` | string | No | Product image URL |
-| `children` | ReactNode | No | Button content (default: "Buy Now") |
-| `className` | string | No | CSS classes |
-| `onCheckoutStart` | () => void | No | Called when checkout starts |
-| `onCheckoutSuccess` | (order) => void | No | Called on success |
-| `onCheckoutError` | (error) => void | No | Called on error |
-| `loadingContent` | ReactNode | No | Custom loading state |
+| Prop                | Type                     | Required | Description                         |
+| ------------------- | ------------------------ | -------- | ----------------------------------- |
+| `variantId`         | string                   | Yes      | Product variant ID                  |
+| `productId`         | string                   | Yes      | Product ID                          |
+| `title`             | string                   | Yes      | Product title                       |
+| `price`             | { amount, currencyCode } | Yes      | Product price                       |
+| `quantity`          | number                   | Yes      | Quantity to purchase                |
+| `imageUrl`          | string                   | No       | Product image URL                   |
+| `children`          | ReactNode                | No       | Button content (default: "Buy Now") |
+| `className`         | string                   | No       | CSS classes                         |
+| `onCheckoutStart`   | () => void               | No       | Called when checkout starts         |
+| `onCheckoutSuccess` | (order) => void          | No       | Called on success                   |
+| `onCheckoutError`   | (error) => void          | No       | Called on error                     |
+| `loadingContent`    | ReactNode                | No       | Custom loading state                |
 
 ## How It Works
 
@@ -228,7 +228,7 @@ CustomCheckoutService.resetEventListeners(): void
 
 ```typescript
 interface CheckoutConfig {
-  cartToken: string;      // Cart token (not cart ID)
+  cartToken: string; // Cart token (not cart ID)
   items: CartItem[];
   total: number;
   currencyCode: string;
@@ -251,11 +251,13 @@ interface CheckoutConfig {
 **Cause:** `isGokwikAvailable` is false because the SDK hasn't loaded.
 
 **Solutions:**
+
 1. Ensure `<CheckoutCustom />` is in the layout (not lazy-loaded)
 2. Check browser console for script errors
 3. Verify environment variables are set
 
 **Debug:** Add console logs to see the state:
+
 ```typescript
 console.log("isGokwikAvailable:", isGokwikAvailable);
 console.log("window.gokwikSdk:", !!window.gokwikSdk);
@@ -281,12 +283,14 @@ import CheckoutScriptCustom from "./CheckoutScriptCustom";
 ### Checkout Modal Not Opening
 
 **Causes:**
+
 1. `window.gokwikSdk` is not defined
 2. Cart token is missing or invalid
 3. `createCheckout` API call failed
 4. GoKwik SDK error
 
 **Debug:**
+
 ```typescript
 console.log("cartToken:", cartToken);
 console.log("gokwikSdk:", !!window.gokwikSdk);
@@ -298,6 +302,7 @@ console.log("initCheckout:", typeof window.gokwikSdk?.initCheckout);
 **Cause:** Event listener not receiving `orderSuccess` message.
 
 **Debug:** Check if message listener is attached:
+
 ```typescript
 // In CustomCheckoutService.attachEventListeners()
 console.log("orderSuccess event listener added");
@@ -307,13 +312,13 @@ console.log("orderSuccess event listener added");
 
 The integration dispatches these events:
 
-| Event | When | Data |
-|-------|------|------|
-| `INITIATE_CHECKOUT` | Checkout button clicked | cartValue, currency, items |
-| `ADD_PAYMENT_INFO` | Checkout started | cartValue, paymentType |
-| `STARTED_CHECKOUT_GK` | GoKwik checkout initiated | cartValue, currency |
-| `PURCHASE` | Order completed | orderId, cartValue, items |
-| `ORDER_COMPLETED` | Order success | orderId, amount, currency |
+| Event                 | When                      | Data                       |
+| --------------------- | ------------------------- | -------------------------- |
+| `INITIATE_CHECKOUT`   | Checkout button clicked   | cartValue, currency, items |
+| `ADD_PAYMENT_INFO`    | Checkout started          | cartValue, paymentType     |
+| `STARTED_CHECKOUT_GK` | GoKwik checkout initiated | cartValue, currency        |
+| `PURCHASE`            | Order completed           | orderId, cartValue, items  |
+| `ORDER_COMPLETED`     | Order success             | orderId, amount, currency  |
 
 ## Related Files
 

@@ -9,17 +9,17 @@ Before generating pages, widgets, templates, or integrations, **ALWAYS read thes
 
 ## Quick Command Reference
 
-| Task | Documentation Section |
-|------|----------------------|
-| Create new page | `SYSTEM_ARCHITECTURE.md` → "Quick Start: Create a New Page" |
-| Create new widget | `SYSTEM_ARCHITECTURE.md` → "Creating New Widgets" |
-| Create new template | `SYSTEM_ARCHITECTURE.md` → "Creating New Templates" |
-| Add integration | `src/integrations/README.md` |
-| Understand data flow | `SYSTEM_ARCHITECTURE.md` → "Page Rendering Flow" |
-| **Add to cart** | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow" |
-| **Checkout flow** | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow" |
-| **Data fetching** | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow" → "Data Layer" |
-| **CLI commands** | `SYSTEM_ARCHITECTURE.md` → "CLI Commands" |
+| Task                 | Documentation Section                                            |
+| -------------------- | ---------------------------------------------------------------- |
+| Create new page      | `SYSTEM_ARCHITECTURE.md` → "Quick Start: Create a New Page"      |
+| Create new widget    | `SYSTEM_ARCHITECTURE.md` → "Creating New Widgets"                |
+| Create new template  | `SYSTEM_ARCHITECTURE.md` → "Creating New Templates"              |
+| Add integration      | `src/integrations/README.md`                                     |
+| Understand data flow | `SYSTEM_ARCHITECTURE.md` → "Page Rendering Flow"                 |
+| **Add to cart**      | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow"                |
+| **Checkout flow**    | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow"                |
+| **Data fetching**    | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow" → "Data Layer" |
+| **CLI commands**     | `SYSTEM_ARCHITECTURE.md` → "CLI Commands"                        |
 
 ## Essential CLI Commands
 
@@ -46,17 +46,20 @@ bun run perf:check           # Run all validations
 ## File Patterns
 
 ### New Page
+
 1. Template: `src/themes/dawn/templates/{page-name}/default.ts`
 2. Next.js Page: `src/app/{page-name}/page.tsx`
 3. Translations (optional): `src/themes/dawn/locales/pages/{page-name}/en.json`
 
 ### New Widget
+
 1. Run: `bun run g widget {WidgetName}` (scaffolds the folder)
 2. Or manually create: `src/widgets/common/{WidgetName}/`
 3. Files: `index.tsx`, `variants.ts`, `types.ts`, `V1/index.tsx`
 4. Run: `bun run generate:widgets` (REQUIRED - updates manifest)
 
 ### New Integration
+
 1. Folder: `src/integrations/{feature}-{platform}/`
 2. Follow pattern from existing integrations
 
@@ -71,6 +74,7 @@ bun run perf:check           # Run all validations
 ## Before You Code
 
 Ask yourself:
+
 - [ ] Have I read the relevant documentation?
 - [ ] Am I following the existing naming conventions?
 - [ ] Am I using the variant pattern for widgets?
@@ -80,21 +84,23 @@ Ask yourself:
 
 Ready-to-use prompt templates are in `.prompts/` folder:
 
-| Task | Prompt Template |
-|------|-----------------|
-| Create new page | `.prompts/create-page.md` |
-| Create new widget | `.prompts/create-widget.md` |
-| Add section to template | `.prompts/add-section.md` |
+| Task                    | Prompt Template             |
+| ----------------------- | --------------------------- |
+| Create new page         | `.prompts/create-page.md`   |
+| Create new widget       | `.prompts/create-widget.md` |
+| Add section to template | `.prompts/add-section.md`   |
 
 ### How to Use Prompt Templates
 
 **Option 1: Reference the template**
+
 ```
 Create a new "Contact Us" page at /contact.
 Follow the instructions in .prompts/create-page.md
 ```
 
 **Option 2: Fill in the template**
+
 ```
 Create a new page:
 - Page name: Contact Us
@@ -107,6 +113,7 @@ Follow the instructions in .prompts/create-page.md
 ## Example Prompts That Work Well
 
 ### Create a New Page
+
 ```
 Create a new "Contact Us" page at /contact with:
 - Header (copy from home template)
@@ -119,6 +126,7 @@ Read src/SYSTEM_ARCHITECTURE.md first, then follow "Quick Start: Create a New Pa
 ```
 
 ### Create a New Widget
+
 ```
 Create a new "TeamMembers" widget that displays team member cards.
 - Support v1 variant (grid layout)
@@ -128,6 +136,7 @@ Read src/SYSTEM_ARCHITECTURE.md section "Creating New Widgets"
 ```
 
 ### Add Section to Existing Page
+
 ```
 Add a testimonials section to the home page template.
 - Use the existing Testimonials widget (WIDGET_TYPES.Testimonials)
@@ -138,6 +147,7 @@ Read src/SYSTEM_ARCHITECTURE.md section "Templates"
 ```
 
 ### Add to Cart Functionality
+
 ```
 Add an "Add to Cart" button to my ProductCard component.
 - Use useCart hook from @shopkit/cart
@@ -148,6 +158,7 @@ Read src/SYSTEM_ARCHITECTURE.md section "Commerce & Cart Flow"
 ```
 
 ### Implement Checkout
+
 ```
 How does checkout work in this app?
 What files do I need to modify to customize the checkout button?

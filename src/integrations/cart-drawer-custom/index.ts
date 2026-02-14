@@ -7,4 +7,8 @@
 export { CustomCartDrawer } from "./CustomCartDrawer";
 
 // Types
-export type { CustomCartDrawerProps, CouponOffer, UseCouponsReturn } from "./types";
+export type {
+  CustomCartDrawerProps,
+  CouponOffer,
+  UseCouponsReturn,
+} from "./types";

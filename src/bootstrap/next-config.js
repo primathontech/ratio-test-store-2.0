@@ -131,7 +131,7 @@ const NO_CACHE = "no-cache, no-store, must-revalidate";
  */
 function buildStaticHeaders(
   additionalPaths = [],
-  additionalCorsStaticPaths = [],
+  additionalCorsStaticPaths = []
 ) {
   const paths = [...DEFAULT_STATIC_PATHS, ...additionalPaths];
 
@@ -327,7 +327,7 @@ function createNextConfig(options = {}) {
   const headers = [
     ...buildStaticHeaders(
       cache.additionalStaticPaths,
-      cache.additionalCorsStaticPaths,
+      cache.additionalCorsStaticPaths
     ),
     ...buildCorsStaticHeaders(),
     ...buildDynamicContentHeaders(cache),

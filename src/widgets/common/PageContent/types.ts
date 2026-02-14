@@ -21,4 +21,7 @@ export interface PageContentData {
 /**
  * Props for the PageContent component
  */
-export type PageContentProps = WidgetProps<PageContentData, PageContentSettings>;
+export type PageContentProps = WidgetProps<
+  PageContentData,
+  PageContentSettings
+>;

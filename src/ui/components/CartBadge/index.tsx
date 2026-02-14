@@ -46,7 +46,9 @@ const CartBadge = memo(
     const itemCount = useCartTotalQuantity();
 
     // Don't render anything if cart is empty
-    if (itemCount === 0) return null;
+    if (itemCount === 0) {
+      return null;
+    }
 
     // Provide default values for potentially undefined props
     const bgColor = backgroundColor || "#ff0000";
@@ -79,7 +81,7 @@ const CartBadge = memo(
         {itemCount > 99 ? "99+" : itemCount}
       </Badge>
     );
-  },
+  }
 );
 
 CartBadge.displayName = "CartBadge";

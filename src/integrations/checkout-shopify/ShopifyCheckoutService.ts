@@ -118,7 +118,7 @@ export class ShopifyCheckoutService {
     } catch (error) {
       console.error("GoKwik checkout initialization error:", error);
       eventHandlers.onError?.(
-        error instanceof Error ? error : new Error("Unknown checkout error"),
+        error instanceof Error ? error : new Error("Unknown checkout error")
       );
       throw error;
     }
@@ -129,7 +129,7 @@ export class ShopifyCheckoutService {
    */
   private static dispatchCartViewEvent(
     cartId: string,
-    items: CartItem[],
+    items: CartItem[]
   ): void {
     if (!cartId) {
       return;
@@ -151,7 +151,7 @@ export class ShopifyCheckoutService {
   private static dispatchCheckoutStartEvent(
     cartId: string,
     total: number,
-    currencyCode: string,
+    currencyCode: string
   ): void {
     dispatchCheckoutStartEvent({
       cart_id: cartId,
@@ -262,7 +262,7 @@ export class ShopifyCheckoutService {
         txn_id: orderId,
         sale_amount: orderAmount,
         is_iframe: true,
-      },
+      }
     );
   }
 
@@ -318,7 +318,7 @@ export class ShopifyCheckoutService {
   private static clearCartStorage(): void {
     // Clear cart storage (localStorage)
     const storage = new DefaultCartStorage(
-      process.env.NEXT_PUBLIC_MERCHANT_NAME,
+      process.env.NEXT_PUBLIC_MERCHANT_NAME
     );
     storage.clear();
   }

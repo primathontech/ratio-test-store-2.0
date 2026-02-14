@@ -125,36 +125,36 @@ NEXT_PUBLIC_FB_PIXEL_ID=your-fb-pixel-id
 
 ### CheckoutButtonShopify
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `children` | ReactNode | "Checkout" | Button content |
-| `className` | string | - | CSS classes |
-| `style` | CSSProperties | - | Inline styles |
-| `disabled` | boolean | false | Disable button |
-| `onCheckoutStart` | () => void | - | Called when checkout starts |
-| `onCheckoutSuccess` | (order) => void | - | Called on success |
-| `onCheckoutError` | (error) => void | - | Called on error |
-| `clearCartOnSuccess` | boolean | true | Clear cart after success |
-| `closeCartOnSuccess` | boolean | true | Close cart drawer after success |
-| `redirectPath` | string | - | Custom redirect path |
-| `buttonProps` | ButtonHTMLAttributes | - | Additional button props |
+| Prop                 | Type                 | Default    | Description                     |
+| -------------------- | -------------------- | ---------- | ------------------------------- |
+| `children`           | ReactNode            | "Checkout" | Button content                  |
+| `className`          | string               | -          | CSS classes                     |
+| `style`              | CSSProperties        | -          | Inline styles                   |
+| `disabled`           | boolean              | false      | Disable button                  |
+| `onCheckoutStart`    | () => void           | -          | Called when checkout starts     |
+| `onCheckoutSuccess`  | (order) => void      | -          | Called on success               |
+| `onCheckoutError`    | (error) => void      | -          | Called on error                 |
+| `clearCartOnSuccess` | boolean              | true       | Clear cart after success        |
+| `closeCartOnSuccess` | boolean              | true       | Close cart drawer after success |
+| `redirectPath`       | string               | -          | Custom redirect path            |
+| `buttonProps`        | ButtonHTMLAttributes | -          | Additional button props         |
 
 ### BuyNowButtonShopify
 
-| Prop | Type | Required | Description |
-|------|------|----------|-------------|
-| `variantId` | string | Yes | Product variant ID (Shopify GID) |
-| `productId` | string | Yes | Product ID (Shopify GID) |
-| `title` | string | Yes | Product title |
-| `price` | { amount, currencyCode } | Yes | Product price |
-| `quantity` | number | Yes | Quantity to purchase |
-| `imageUrl` | string | No | Product image URL |
-| `children` | ReactNode | No | Button content (default: "Buy Now") |
-| `className` | string | No | CSS classes |
-| `onCheckoutStart` | () => void | No | Called when checkout starts |
-| `onCheckoutSuccess` | (order) => void | No | Called on success |
-| `onCheckoutError` | (error) => void | No | Called on error |
-| `loadingContent` | ReactNode | No | Custom loading state |
+| Prop                | Type                     | Required | Description                         |
+| ------------------- | ------------------------ | -------- | ----------------------------------- |
+| `variantId`         | string                   | Yes      | Product variant ID (Shopify GID)    |
+| `productId`         | string                   | Yes      | Product ID (Shopify GID)            |
+| `title`             | string                   | Yes      | Product title                       |
+| `price`             | { amount, currencyCode } | Yes      | Product price                       |
+| `quantity`          | number                   | Yes      | Quantity to purchase                |
+| `imageUrl`          | string                   | No       | Product image URL                   |
+| `children`          | ReactNode                | No       | Button content (default: "Buy Now") |
+| `className`         | string                   | No       | CSS classes                         |
+| `onCheckoutStart`   | () => void               | No       | Called when checkout starts         |
+| `onCheckoutSuccess` | (order) => void          | No       | Called on success                   |
+| `onCheckoutError`   | (error) => void          | No       | Called on error                     |
+| `loadingContent`    | ReactNode                | No       | Custom loading state                |
 
 ## Exports
 
@@ -168,25 +168,39 @@ export { BuyNowButtonShopify } from "./BuyNowButtonShopify";
 
 // Service & Hook
 export { ShopifyCheckoutService } from "./ShopifyCheckoutService";
-export { useShopifyCheckout, convertCartItemsForCheckout } from "./useShopifyCheckout";
+export {
+  useShopifyCheckout,
+  convertCartItemsForCheckout,
+} from "./useShopifyCheckout";
 
 // Config & Events
 export { getCheckoutConfig } from "./config";
-export { dispatchCartViewEvent, dispatchCheckoutStartEvent, dispatchCheckoutCompleteEvent } from "./events";
+export {
+  dispatchCartViewEvent,
+  dispatchCheckoutStartEvent,
+  dispatchCheckoutCompleteEvent,
+} from "./events";
 
 // Types
-export type { CheckoutButtonShopifyProps, BuyNowButtonShopifyProps } from "./types";
-export type { CartItem, CheckoutConfig, CheckoutEventHandlers } from "./ShopifyCheckoutService";
+export type {
+  CheckoutButtonShopifyProps,
+  BuyNowButtonShopifyProps,
+} from "./types";
+export type {
+  CartItem,
+  CheckoutConfig,
+  CheckoutEventHandlers,
+} from "./ShopifyCheckoutService";
 ```
 
 ## Differences from checkout-custom
 
-| Feature | checkout-shopify | checkout-custom |
-|---------|-----------------|-----------------|
-| Cart API | Shopify GraphQL | Custom REST |
-| Variant IDs | Shopify GIDs | Custom IDs |
-| Customer auth | Shopify Multipass | KwikPass only |
-| Checkout fallback | Shopify Checkout URL | None |
+| Feature           | checkout-shopify     | checkout-custom |
+| ----------------- | -------------------- | --------------- |
+| Cart API          | Shopify GraphQL      | Custom REST     |
+| Variant IDs       | Shopify GIDs         | Custom IDs      |
+| Customer auth     | Shopify Multipass    | KwikPass only   |
+| Checkout fallback | Shopify Checkout URL | None            |
 
 ## Related Files
 

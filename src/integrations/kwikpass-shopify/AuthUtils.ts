@@ -9,7 +9,7 @@ const getShopifyConfig = () => {
 
   if (!domain || !storefrontAccessToken) {
     throw new Error(
-      "Missing required Shopify configuration. Please set NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN and NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN environment variables.",
+      "Missing required Shopify configuration. Please set NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN and NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN environment variables."
     );
   }
 
@@ -31,7 +31,7 @@ const storefrontClient = createShopifyClient();
 
 export const customerAccessTokenCreate = async (
   email: string,
-  password: string,
+  password: string
 ) => {
   try {
     const response = await storefrontClient.request(
@@ -54,7 +54,7 @@ export const customerAccessTokenCreate = async (
             password: password,
           },
         },
-      },
+      }
     );
 
     return response?.data?.customerAccessTokenCreate;
@@ -65,7 +65,7 @@ export const customerAccessTokenCreate = async (
 };
 
 export const customerAccessTokenCreateWithMultipass = async (
-  multipassToken: string,
+  multipassToken: string
 ) => {
   try {
     const response = await storefrontClient.request(
@@ -85,7 +85,7 @@ export const customerAccessTokenCreateWithMultipass = async (
         variables: {
           multipassToken,
         },
-      },
+      }
     );
 
     return response?.data?.customerAccessTokenCreateWithMultipass;
@@ -135,7 +135,7 @@ export const getCustomerAccessToken = async (customer: ICustomer) => {
 
     const userTokenData = await customerAccessTokenCreate(
       customer.email,
-      customer.password,
+      customer.password
     );
 
     if (!userTokenData?.customerAccessToken?.accessToken) {
@@ -156,7 +156,7 @@ export const getCustomerAccessTokenMultipass = async (customer: ICustomer) => {
     }
 
     const userTokenData = await customerAccessTokenCreateWithMultipass(
-      customer.multipassToken,
+      customer.multipassToken
     );
 
     if (!userTokenData?.customerAccessToken?.accessToken) {

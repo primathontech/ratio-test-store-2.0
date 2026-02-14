@@ -8,6 +8,7 @@
 ### Task: Create a new page at `/{PAGE_PATH}`
 
 **Page Requirements:**
+
 - Page name: {PAGE_NAME}
 - URL path: /{PAGE_PATH}
 - Sections needed: {LIST_SECTIONS}
@@ -28,6 +29,7 @@
 ### Example Usage:
 
 Replace placeholders:
+
 - `{PAGE_NAME}` = "About Us"
 - `{PAGE_PATH}` = "about"
 - `{LIST_SECTIONS}` = "Hero banner, Team section, FAQ"

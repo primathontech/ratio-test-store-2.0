@@ -7,6 +7,7 @@
 The `bootstrap/` folder centralizes all @shopkit package setup and configuration. These files act as "composition roots" - the single place where packages are configured for this specific app.
 
 **Why separate from `lib/`?**
+
 - Package configuration is distinct from app-specific business logic
 - Makes it clear which files configure external packages
 - Easier to find and update package settings
@@ -14,18 +15,18 @@ The `bootstrap/` folder centralizes all @shopkit package setup and configuration
 
 ## Files
 
-| File | Package | Purpose |
-|------|---------|---------|
-| `builder.ts` | `@shopkit/builder` | Theme/template loaders, widget registry, page builder factory |
-| `cart.ts` | `@shopkit/cart` | Cart services, storage, currency config, `AppCartInitializer` |
-| `i18n.ts` | `@shopkit/i18n` | Server-side i18n utilities (`getLocale`, `loadMessages`) |
-| `i18n-config.ts` | `@shopkit/i18n` | Client-safe i18n config (locales, default locale) |
-| `i18n-request.ts` | `next-intl` | next-intl request configuration |
-| `theme.ts` | `@shopkit/core` | Theme loading utility (`getTheme`) |
-| `next-config.js` | `next` | Next.js config factory (`createNextConfig`) |
-| `next-config.types.ts` | `next` | TypeScript types for next-config |
-| `middleware/` | `next` | Middleware factory (`createMiddleware`) |
-| `index.ts` | N/A | Barrel exports |
+| File                   | Package            | Purpose                                                       |
+| ---------------------- | ------------------ | ------------------------------------------------------------- |
+| `builder.ts`           | `@shopkit/builder` | Theme/template loaders, widget registry, page builder factory |
+| `cart.ts`              | `@shopkit/cart`    | Cart services, storage, currency config, `AppCartInitializer` |
+| `i18n.ts`              | `@shopkit/i18n`    | Server-side i18n utilities (`getLocale`, `loadMessages`)      |
+| `i18n-config.ts`       | `@shopkit/i18n`    | Client-safe i18n config (locales, default locale)             |
+| `i18n-request.ts`      | `next-intl`        | next-intl request configuration                               |
+| `theme.ts`             | `@shopkit/core`    | Theme loading utility (`getTheme`)                            |
+| `next-config.js`       | `next`             | Next.js config factory (`createNextConfig`)                   |
+| `next-config.types.ts` | `next`             | TypeScript types for next-config                              |
+| `middleware/`          | `next`             | Middleware factory (`createMiddleware`)                       |
+| `index.ts`             | N/A                | Barrel exports                                                |
 
 ## Usage
 
@@ -48,6 +49,7 @@ import { createMiddleware } from "@/bootstrap/middleware";
 ### `builder.ts` - Page Builder Configuration
 
 Configures `@shopkit/builder` with:
+
 - Widget manifest from generated files
 - Theme loader (reads from theme JSON files)
 - Template loader (reads page configs from JSON)
@@ -69,6 +71,7 @@ const content = await pageBuilder.renderPage({
 ### `cart.ts` - Cart Configuration
 
 Configures `@shopkit/cart` with:
+
 - Cart service (API integration)
 - Cart storage (localStorage persistence)
 - Default currency code
@@ -84,6 +87,7 @@ import { AppCartInitializer } from "@/bootstrap/cart";
 ### `i18n.ts` - Server-side i18n
 
 Server-side utilities for `@shopkit/i18n`:
+
 - `getLocale()` - Get current locale
 - `getStaticLocale()` - Get static locale for build
 - `loadMessages()` - Load translation messages
@@ -100,6 +104,7 @@ const messages = await getMessages();
 ### `i18n-config.ts` - Client-safe i18n Config
 
 Static configuration that can be imported in client components:
+
 - Supported locales
 - Default locale
 - Locale names
@@ -137,13 +142,12 @@ module.exports = createNextConfig({
       { protocol: "https", hostname: "mycdn.com", pathname: "/**" },
     ],
   },
-  redirects: [
-    { source: "/old", destination: "/new", permanent: true },
-  ],
+  redirects: [{ source: "/old", destination: "/new", permanent: true }],
 });
 ```
 
 **Default configurations included:**
+
 - Shopify CDN image patterns (`cdn.shopify.com`, `**.shopifycdn.com`)
 - Image optimization (webp/avif, 1yr cache, device sizes)
 - Static asset cache headers (`/_next/static`, `/images`, `/fonts`, `/assets`)
@@ -153,6 +157,7 @@ module.exports = createNextConfig({
 - Production console removal
 
 **App-specific options:**
+
 - `i18nPath` - Path to next-intl config (default: `"./src/bootstrap/i18n-request.ts"`, set to `false` to disable)
 - `images.additionalRemotePatterns` - Custom image domains
 - `cache.additionalStaticPaths` - Custom static paths
@@ -190,6 +195,7 @@ export function middleware(request: NextRequest) {
 ```
 
 **Core functionality:**
+
 - Locale detection from cookies/headers
 - Locale cookie management
 - A/B test rewrites (home, product, collection variants)
@@ -198,11 +204,13 @@ export function middleware(request: NextRequest) {
 ## AI Agent Guidelines
 
 **When to modify bootstrap files:**
+
 - Changing how a package is configured (e.g., different cart storage strategy)
 - Adding new package configurations
 - Updating package initialization options
 
 **When NOT to modify bootstrap files:**
+
 - Adding app-specific business logic (use `lib/` instead)
 - Creating new components (use `app-shell/` or `widgets/`)
 - Adding utility functions (use `lib/utils/` or `lib/hooks/`)
@@ -239,9 +247,9 @@ src/
 
 ## Relationship to Other Folders
 
-| Folder | Purpose | Imports From |
-|--------|---------|--------------|
-| `bootstrap/` | Package configuration | `@shopkit/*` packages |
-| `app-shell/` | App wrapper components | `bootstrap/`, `@shopkit/*` |
-| `lib/` | App-specific code | `bootstrap/`, `@shopkit/*` |
-| `app/` | Next.js pages | `bootstrap/`, `app-shell/`, `lib/` |
+| Folder       | Purpose                | Imports From                       |
+| ------------ | ---------------------- | ---------------------------------- |
+| `bootstrap/` | Package configuration  | `@shopkit/*` packages              |
+| `app-shell/` | App wrapper components | `bootstrap/`, `@shopkit/*`         |
+| `lib/`       | App-specific code      | `bootstrap/`, `@shopkit/*`         |
+| `app/`       | Next.js pages          | `bootstrap/`, `app-shell/`, `lib/` |

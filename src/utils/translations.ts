@@ -49,7 +49,7 @@ function normalizeIdPart(value?: string): string {
 function buildDynamicTemplateId(
   themeName: string,
   templateName: string,
-  variant: string,
+  variant: string
 ): string {
   return `${normalizeIdPart(themeName)}_${normalizeIdPart(templateName)}_${normalizeIdPart(variant)}`;
 }
@@ -132,14 +132,14 @@ function extractPageName(templateId: string): string | undefined {
  * Load variant registry for a theme
  */
 async function loadVariantRegistry(
-  themeName: string,
+  themeName: string
 ): Promise<VariantRegistryResult | null> {
   try {
     return await import(`@/themes/${themeName}/templates/variant-registry`);
   } catch (err) {
     console.error(
       `[TemplateLoader] Failed to load variant registry for ${themeName}`,
-      err,
+      err
     );
     return null;
   }
@@ -149,7 +149,9 @@ async function loadVariantRegistry(
  * Helper method to get nested value from object using dot notation
  */
 function getNestedValue(obj: any, path: string | undefined): any {
-  if (!path) return undefined;
+  if (!path) {
+    return undefined;
+  }
   return path.split(".").reduce((prev, curr) => {
     return prev && prev[curr] !== undefined ? prev[curr] : undefined;
   }, obj);
@@ -161,7 +163,7 @@ function getNestedValue(obj: any, path: string | undefined): any {
 async function determineVariant(
   themeName: string,
   templateType: string,
-  apiData: any,
+  apiData: any
 ): Promise<string> {
   try {
     const result = await loadVariantRegistry(themeName);
@@ -190,7 +192,7 @@ async function determineVariant(
   } catch (error) {
     console.warn(
       `Failed to load variant registry for template type ${templateType}:`,
-      error,
+      error
     );
     return "default";
   }
@@ -242,7 +244,7 @@ const isEditorChangesEnabled = () => {
  * ```
  */
 export async function getTranslations(
-  params: GetTranslationsParams,
+  params: GetTranslationsParams
 ): Promise<Record<string, any>> {
   try {
     const { themeId, templateId, language } = params;
@@ -251,14 +253,18 @@ export async function getTranslations(
     if (!isEditorChangesEnabled()) {
       // Map templateId to page name for local message loading
       // templateId format: "common" or "dawn_home_default" -> page name: "home"
-      const pageName = templateId === "common" ? undefined : extractPageName(templateId);
-      return await loadMessages(language as Locale, pageName as PageName | undefined);
+      const pageName =
+        templateId === "common" ? undefined : extractPageName(templateId);
+      return await loadMessages(
+        language as Locale,
+        pageName as PageName | undefined
+      );
     }
 
     const apiUrl = process.env.NEXT_PUBLIC_EDITOR_API_URL;
     if (!apiUrl) {
       throw new Error(
-        "NEXT_PUBLIC_EDITOR_API_URL environment variable is not set",
+        "NEXT_PUBLIC_EDITOR_API_URL environment variable is not set"
       );
     }
 
@@ -275,7 +281,7 @@ export async function getTranslations(
             "Content-Type": "application/json",
           },
           signal: controller.signal,
-        },
+        }
       );
     } finally {
       clearTimeout(timeoutId);
@@ -283,7 +289,7 @@ export async function getTranslations(
 
     if (!response.ok) {
       console.warn(
-        `[i18n] Translation API responded with status ${response.status}. Falling back to local messages.`,
+        `[i18n] Translation API responded with status ${response.status}. Falling back to local messages.`
       );
       return await getMessages();
     }
@@ -295,7 +301,7 @@ export async function getTranslations(
     } catch (parseError) {
       console.warn(
         "[i18n] Failed to parse translation API response. Falling back to local messages.",
-        parseError,
+        parseError
       );
       return await getMessages();
     }
@@ -306,13 +312,13 @@ export async function getTranslations(
     }
 
     console.warn(
-      "[i18n] Translation API returned invalid shape. Falling back to local messages.",
+      "[i18n] Translation API returned invalid shape. Falling back to local messages."
     );
     return await getMessages();
   } catch (error) {
     console.error(
       `Error fetching translations for ${params.themeId}/${params.templateId}/${params.language}:`,
-      error,
+      error
     );
     // Final fallback to local messages to keep the app functional
     try {
@@ -320,7 +326,7 @@ export async function getTranslations(
     } catch (localFallbackError) {
       console.error(
         "[i18n] Failed to load local messages via getMessages() as a fallback:",
-        localFallbackError,
+        localFallbackError
       );
       // Preserve the original error context but avoid crashing silently
       throw error instanceof Error ? error : new Error(String(error));
@@ -367,7 +373,7 @@ export async function getRouteTranslations({
     const resolvedVariant = await determineVariant(
       themeName,
       templateName,
-      apiData,
+      apiData
     );
     const templateId = getTemplateId({
       themeName,

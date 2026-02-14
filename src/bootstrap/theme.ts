@@ -35,7 +35,9 @@ let isConfigured = false;
  * multiple times - subsequent calls are no-ops.
  */
 export function configureAppTheme(): void {
-  if (isConfigured) return;
+  if (isConfigured) {
+    return;
+  }
 
   configureThemeLoader({
     async loadTheme(themeName: string) {
@@ -75,9 +77,7 @@ export function configureAppTheme(): void {
  * // theme.config contains colors, typography, etc.
  * ```
  */
-export async function getTheme(
-  themeName: string
-): Promise<Theme | null> {
+export async function getTheme(themeName: string): Promise<Theme | null> {
   // Ensure theme loader is configured
   configureAppTheme();
 

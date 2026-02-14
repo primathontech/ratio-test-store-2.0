@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Box, Flex, Image } from "@/ui/atomic";
-import { ShopifyCheckoutButton } from "@/integrations/checkout-shopify";
+import { CheckoutButtonShopify } from "@/integrations/checkout-shopify";
 import { formatPaiseToINR } from "@/utils";
 
 interface ShopifyCartSummaryProps {
@@ -71,7 +71,7 @@ export const ShopifyCartSummary: React.FC<ShopifyCartSummaryProps> = ({
       </Flex>
 
       {/* Checkout Button */}
-      <ShopifyCheckoutButton
+      <CheckoutButtonShopify
         className={`checkout-btn w-full h-[45px] bg-primary text-white border-none rounded-[10px] cursor-pointer transition-colors flex items-center justify-center py-[5px] px-[45px] font-body ${isLoading ? "bg-black/50" : "bg-black"}`}
         onCheckoutSuccess={onCheckoutSuccess}
         onCheckoutError={onCheckoutError}
@@ -111,7 +111,7 @@ export const ShopifyCartSummary: React.FC<ShopifyCartSummaryProps> = ({
             </span>
           </>
         )}
-      </ShopifyCheckoutButton>
+      </CheckoutButtonShopify>
     </Box>
   );
 };

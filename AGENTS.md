@@ -4,22 +4,22 @@
 
 ## Quick Reference
 
-| Package | Purpose | Key Export |
-|---------|---------|------------|
-| `@shopkit/core` | Theme system & auth context | `ThemeProvider`, `useAuth` |
-| `@shopkit/builder` | Configuration-driven page building | `createPageBuilder`, `WidgetRegistry` |
-| `@shopkit/data-layer` | Commerce API abstraction | `createCommerceClient` |
-| `@shopkit/cart` | Cart state management (Zustand) | `useCartStore`, `useCart` |
-| `@shopkit/discounts` | Discount/coupon system | `useDiscount` |
-| `@shopkit/analytics` | Multi-platform event tracking | `ShopkitAnalytics`, `publishEvent` |
-| `@shopkit/i18n` | Internationalization | `useTranslation`, `TranslationService` |
-| `@shopkit/seo` | SEO & structured data | `SEOManager`, `MetaTagGenerator` |
-| `@shopkit/asset-cache` | Browser caching & service worker | `initAssetCache`, `AssetLoader` |
-| `@shopkit/sandbox` | BoxLite live preview client | `BoxLiteClient`, `SandboxManager` |
-| `@shopkit/ai-store-builder` | AI merchant onboarding | `StoreAgent`, `WebsiteScraper` |
-| `@shopkit/cli` | CLI tools (generators, validators, perf) | `shopkit` binary |
-| `@shopkit/app-shell` | App wrapper components | `AppShell`, `AppHead`, `AppAnalytics` |
-| `@shopkit/webhooks` | Shopify webhook handling utilities | `handleShopifyWebhook`, `verifyShopifyWebhook` |
+| Package                     | Purpose                                  | Key Export                                     |
+| --------------------------- | ---------------------------------------- | ---------------------------------------------- |
+| `@shopkit/core`             | Theme system & auth context              | `ThemeProvider`, `useAuth`                     |
+| `@shopkit/builder`          | Configuration-driven page building       | `createPageBuilder`, `WidgetRegistry`          |
+| `@shopkit/data-layer`       | Commerce API abstraction                 | `createCommerceClient`                         |
+| `@shopkit/cart`             | Cart state management (Zustand)          | `useCartStore`, `useCart`                      |
+| `@shopkit/discounts`        | Discount/coupon system                   | `useDiscount`                                  |
+| `@shopkit/analytics`        | Multi-platform event tracking            | `ShopkitAnalytics`, `publishEvent`             |
+| `@shopkit/i18n`             | Internationalization                     | `useTranslation`, `TranslationService`         |
+| `@shopkit/seo`              | SEO & structured data                    | `SEOManager`, `MetaTagGenerator`               |
+| `@shopkit/asset-cache`      | Browser caching & service worker         | `initAssetCache`, `AssetLoader`                |
+| `@shopkit/sandbox`          | BoxLite live preview client              | `BoxLiteClient`, `SandboxManager`              |
+| `@shopkit/ai-store-builder` | AI merchant onboarding                   | `StoreAgent`, `WebsiteScraper`                 |
+| `@shopkit/cli`              | CLI tools (generators, validators, perf) | `shopkit` binary                               |
+| `@shopkit/app-shell`        | App wrapper components                   | `AppShell`, `AppHead`, `AppAnalytics`          |
+| `@shopkit/webhooks`         | Shopify webhook handling utilities       | `handleShopifyWebhook`, `verifyShopifyWebhook` |
 
 ---
 
@@ -70,21 +70,27 @@
 **Purpose:** Theme management with CSS variables and authentication context.
 
 **Key Concepts:**
+
 - Server/client boundary separation for Next.js App Router
 - Theme loading from JSON files or API
 - CSS variable generation for Tailwind integration
 
 **Main Exports:**
+
 ```typescript
 // Client-side (use in "use client" components)
 import { ThemeProvider, useTheme } from "@shopkit/core/theme/client";
 import { AuthProvider, useAuth } from "@shopkit/core/context";
 
 // Server-side (use in server components)
-import { getActiveTheme, configureThemeLoader } from "@shopkit/core/theme/server";
+import {
+  getActiveTheme,
+  configureThemeLoader,
+} from "@shopkit/core/theme/server";
 ```
 
 **Usage Pattern:**
+
 ```typescript
 // In app/layout.tsx
 export default async function RootLayout({ children }) {
@@ -107,6 +113,7 @@ function MyComponent() {
 ```
 
 **Theme Structure:**
+
 ```json
 {
   "colors": {
@@ -131,12 +138,14 @@ function MyComponent() {
 **Purpose:** Configuration-driven page building system with widgets and data sources.
 
 **Key Concepts:**
+
 - PageConfig JSON defines page structure
 - WidgetRegistry maps widget types to React components
 - DataSources auto-fetch commerce data
 - Section-based layouts with responsive settings
 
 **Main Exports:**
+
 ```typescript
 import {
   // Page Builder
@@ -163,6 +172,7 @@ import type {
 ```
 
 **Analytics Components:**
+
 ```typescript
 // AnalyticsInitializer - Initializes ShopkitAnalytics + page view tracking
 // Used in AppShell or layout wrappers
@@ -188,6 +198,7 @@ import type {
 ```
 
 **PageConfig Structure:**
+
 ```typescript
 const pageConfig: PageConfig = {
   id: "home",
@@ -241,6 +252,7 @@ const pageConfig: PageConfig = {
 ```
 
 **Widget Component Pattern:**
+
 ```typescript
 // Define a widget component
 interface MyWidgetProps extends WidgetProps {
@@ -263,6 +275,7 @@ widgetRegistry.register("MyWidget", MyWidget);
 ```
 
 **Creating Page Builder:**
+
 ```typescript
 const pageBuilder = createPageBuilder({
   widgetRegistry,
@@ -290,6 +303,7 @@ const content = await pageBuilder.renderPage({
 **Purpose:** Unified commerce API abstraction for Shopify and custom backends.
 
 **Main Exports:**
+
 ```typescript
 import {
   createCommerceClient,
@@ -307,6 +321,7 @@ import type {
 ```
 
 **Creating a Client:**
+
 ```typescript
 // Shopify client
 const client = createCommerceClient({
@@ -330,6 +345,7 @@ const customClient = createCommerceClient({
 ```
 
 **Common Methods:**
+
 ```typescript
 // Products
 const product = await client.getProduct({ handle: "product-slug" });
@@ -348,6 +364,7 @@ const orders = await client.getOrderHistory(customerId);
 ```
 
 **Response Pattern:**
+
 ```typescript
 interface IResponse<T> {
   success: boolean;
@@ -372,6 +389,7 @@ if (response.success) {
 **Purpose:** Cart state management using Zustand with localStorage persistence.
 
 **Main Exports:**
+
 ```typescript
 import {
   // Store
@@ -399,6 +417,7 @@ import {
 ```
 
 **Configuration:**
+
 ```typescript
 // In your app initialization (e.g., bootstrap/cart.ts)
 configureCart({
@@ -410,6 +429,7 @@ configureCart({
 ```
 
 **Using Cart Hooks:**
+
 ```typescript
 // Add to cart
 function AddToCartButton({ product, variant }) {
@@ -457,6 +477,7 @@ function ProductCard({ product }) {
 ```
 
 **CartInitializer Component:**
+
 ```typescript
 // In app/layout.tsx - initializes cart from storage
 <CartInitializer merchantName="my-store">
@@ -471,15 +492,24 @@ function ProductCard({ product }) {
 **Purpose:** Discount code validation and application.
 
 **Main Exports:**
+
 ```typescript
 import { useDiscount } from "@shopkit/discounts";
-import type { IDiscountService, DiscountResult, AppliedDiscount } from "@shopkit/discounts";
+import type {
+  IDiscountService,
+  DiscountResult,
+  AppliedDiscount,
+} from "@shopkit/discounts";
 ```
 
 **Implementing a Discount Service:**
+
 ```typescript
 class MyDiscountService implements IDiscountService {
-  async applyDiscount(code: string, cartTotal: number): Promise<DiscountResult> {
+  async applyDiscount(
+    code: string,
+    cartTotal: number
+  ): Promise<DiscountResult> {
     const response = await fetch("/api/discount", {
       method: "POST",
       body: JSON.stringify({ code, cartTotal }),
@@ -498,6 +528,7 @@ class MyDiscountService implements IDiscountService {
 ```
 
 **Using the Hook:**
+
 ```typescript
 function CouponForm() {
   const {
@@ -542,6 +573,7 @@ function CouponForm() {
 **Purpose:** Unified analytics tracking across multiple platforms.
 
 **Supported Platforms:**
+
 - Google Analytics 4
 - Facebook Pixel (single & multi-pixel)
 - MoEngage
@@ -550,6 +582,7 @@ function CouponForm() {
 - KwikPass / KwikCheckout
 
 **Main Exports:**
+
 ```typescript
 import {
   ShopkitAnalytics,
@@ -560,6 +593,7 @@ import {
 ```
 
 **Setup:**
+
 ```typescript
 // In app/layout.tsx
 <ShopkitAnalytics
@@ -581,6 +615,7 @@ import {
 ```
 
 **Publishing Events:**
+
 ```typescript
 import { publishEvent, EventType } from "@shopkit/analytics";
 
@@ -628,6 +663,7 @@ publishEvent({
 **Purpose:** Internationalization for Next.js with server/client separation.
 
 **Main Exports:**
+
 ```typescript
 // Main entry (types & factories)
 import { createI18nConfig, TranslationService } from "@shopkit/i18n";
@@ -643,6 +679,7 @@ import { createLocaleMiddleware } from "@shopkit/i18n/middleware";
 ```
 
 **Configuration:**
+
 ```typescript
 // bootstrap/i18n-config.ts
 export const i18nConfig = createI18nConfig({
@@ -657,6 +694,7 @@ export const i18nConfig = createI18nConfig({
 ```
 
 **Using Translations:**
+
 ```typescript
 // In client components
 function ProductTitle({ product }) {
@@ -676,6 +714,7 @@ function ProductTitle({ product }) {
 
 **Translation in PageConfig:**
 Use `t:` prefix for translation keys:
+
 ```typescript
 {
   settings: {
@@ -692,6 +731,7 @@ Use `t:` prefix for translation keys:
 **Purpose:** Comprehensive SEO with meta tags, structured data, and sitemaps.
 
 **Main Exports:**
+
 ```typescript
 import {
   SEOManager,
@@ -704,6 +744,7 @@ import {
 ```
 
 **Creating SEO System:**
+
 ```typescript
 const seo = SEOFactory.createSEOSystem({
   siteName: "My Store",
@@ -716,6 +757,7 @@ const seo = SEOFactory.createSEOSystem({
 ```
 
 **Generating Meta Tags:**
+
 ```typescript
 // For product page
 const productMeta = seo.metaTagGenerator.generateProductMeta({
@@ -736,6 +778,7 @@ const collectionMeta = seo.metaTagGenerator.generateCollectionMeta({
 ```
 
 **Structured Data (JSON-LD):**
+
 ```typescript
 const productJsonLd = seo.structuredDataGenerator.generateProductSchema({
   name: product.title,
@@ -762,6 +805,7 @@ const productJsonLd = seo.structuredDataGenerator.generateProductSchema({
 **Purpose:** Browser-side asset caching with Service Worker support.
 
 **Main Exports:**
+
 ```typescript
 import {
   initAssetCache,
@@ -772,6 +816,7 @@ import {
 ```
 
 **Initialization:**
+
 ```typescript
 await initAssetCache({
   enabled: true,
@@ -785,6 +830,7 @@ await initAssetCache({
 ```
 
 **Using AssetLoader:**
+
 ```typescript
 // Load and cache an asset
 const imageBlob = await AssetLoader.load("https://cdn.example.com/image.jpg", {
@@ -801,6 +847,7 @@ await CacheManager.clear();
 ```
 
 **Caching Strategies:**
+
 - `cache-first`: Check cache, fallback to network (for static assets)
 - `network-first`: Try network, fallback to cache (for dynamic content)
 - `stale-while-revalidate`: Return cached, update in background
@@ -812,21 +859,15 @@ await CacheManager.clear();
 **Purpose:** TypeScript client for BoxLite sandbox - live code preview.
 
 **Main Exports:**
-```typescript
-import {
-  BoxLiteClient,
-  SandboxManager,
-  SocketManager,
-} from "@shopkit/sandbox";
 
-import type {
-  SandboxState,
-  ToolResponse,
-  FileContent,
-} from "@shopkit/sandbox";
+```typescript
+import { BoxLiteClient, SandboxManager, SocketManager } from "@shopkit/sandbox";
+
+import type { SandboxState, ToolResponse, FileContent } from "@shopkit/sandbox";
 ```
 
 **REST API Client:**
+
 ```typescript
 const client = new BoxLiteClient({
   baseUrl: "http://localhost:5100",
@@ -838,11 +879,14 @@ const sandbox = await client.createSandbox();
 console.log("Sandbox ID:", sandbox.sandbox_id);
 
 // Write files
-await client.writeFile("/src/App.tsx", `
+await client.writeFile(
+  "/src/App.tsx",
+  `
   export default function App() {
     return <h1>Hello World</h1>;
   }
-`);
+`
+);
 
 // Start dev server
 await client.startDevServer();
@@ -852,6 +896,7 @@ const screenshot = await client.getScreenshot();
 ```
 
 **WebSocket Manager (Real-time):**
+
 ```typescript
 const manager = new SandboxManager();
 await manager.initialize();
@@ -883,6 +928,7 @@ manager.sendChatMessage("Create a product grid component");
 **Purpose:** AI-powered merchant onboarding and store generation using Claude.
 
 **Main Exports:**
+
 ```typescript
 import {
   configure,
@@ -895,6 +941,7 @@ import {
 ```
 
 **Configuration:**
+
 ```typescript
 configure({
   shopify: {
@@ -912,6 +959,7 @@ configure({
 ```
 
 **Using StoreAgent:**
+
 ```typescript
 const agent = new StoreAgent();
 
@@ -951,6 +999,7 @@ console.log("Assets migrated:", result.assets);
 **Purpose:** Unified CLI for storefront development - generators, validators, and performance tools.
 
 **Main Commands:**
+
 ```bash
 # Schematics (scaffolding)
 shopkit g theme <name>         # Generate a new theme
@@ -980,6 +1029,7 @@ shopkit perf:rules             # List all performance rules
 ```
 
 **Programmatic Usage:**
+
 ```typescript
 import {
   // Generators
@@ -1007,6 +1057,7 @@ import {
 ```
 
 **App Script Configuration:**
+
 ```json
 {
   "scripts": {
@@ -1025,6 +1076,7 @@ import {
 ```
 
 **CLI Options:**
+
 ```
 --staged-only     Validate only staged files (for pre-commit hooks)
 --widget=<name>   Target specific widget for scoring
@@ -1041,6 +1093,7 @@ import {
 **Purpose:** App wrapper components that abstract provider nesting complexity.
 
 **Main Exports:**
+
 ```typescript
 import {
   AppShell,
@@ -1056,6 +1109,7 @@ import {
 ```
 
 **Usage in layout.tsx:**
+
 ```typescript
 import { AppShell, AppHead, AppAnalytics } from "@shopkit/app-shell";
 
@@ -1083,6 +1137,7 @@ export default async function RootLayout({ children }) {
 **Purpose:** Shopify webhook handling utilities for cache invalidation and page revalidation.
 
 **Main Exports:**
+
 ```typescript
 import {
   // Main handler
@@ -1119,6 +1174,7 @@ import {
 ```
 
 **Usage in API Routes:**
+
 ```typescript
 // src/app/api/webhooks/shopify/products/create/route.ts
 import { handleShopifyWebhook } from "@shopkit/webhooks";
@@ -1134,11 +1190,13 @@ export async function POST(request: NextRequest) {
 ```
 
 **Webhook Types:**
+
 - `product.created`, `product.updated`, `product.deleted`
 - `collection.created`, `collection.updated`, `collection.deleted`
 - `inventory.updated`
 
 **Environment Variables:**
+
 - `SHOPIFY_WEBHOOK_SECRET` - Required for HMAC signature verification
 
 ---
@@ -1149,11 +1207,11 @@ export async function POST(request: NextRequest) {
 
 The app uses three wrapper components to abstract away complexity from AI agents:
 
-| Component | Location | Purpose |
-|-----------|----------|---------|
-| `AppHead` | `<head>` | A/B testing, DNS prefetch, favicon, Clarity |
-| `AppShell` | `<body>` | Provider nesting (theme, auth, cart, i18n) |
-| `AppAnalytics` | `<body>` (end) | GA, PostHog, Facebook Pixel |
+| Component      | Location       | Purpose                                     |
+| -------------- | -------------- | ------------------------------------------- |
+| `AppHead`      | `<head>`       | A/B testing, DNS prefetch, favicon, Clarity |
+| `AppShell`     | `<body>`       | Provider nesting (theme, auth, cart, i18n)  |
+| `AppAnalytics` | `<body>` (end) | GA, PostHog, Facebook Pixel                 |
 
 ```typescript
 // src/app/layout.tsx - SIMPLIFIED with all three wrappers
@@ -1200,12 +1258,14 @@ export default async function RootLayout({ children }) {
 Handles all `<head>` scripts and resource hints. Reads from environment variables.
 
 **What AppHead handles internally (DO NOT modify):**
+
 - A/B Testing scripts (PRT config) - `beforeInteractive`
 - Favicon
 - DNS prefetch for CDN domains
 - Microsoft Clarity script
 
 **Environment Variables:**
+
 ```env
 NEXT_PUBLIC_PRT_CONFIG_URL=https://prt.example.com/config.js
 NEXT_PUBLIC_PRT_AB_URL=https://prt.example.com/ab.js
@@ -1213,6 +1273,7 @@ NEXT_PUBLIC_CLARITY_ID=your-clarity-id
 ```
 
 **Optional Config Override:**
+
 ```typescript
 <AppHead config={{
   abTesting: { prtConfigUrl: "...", prtAbUrl: "..." },
@@ -1229,6 +1290,7 @@ NEXT_PUBLIC_CLARITY_ID=your-clarity-id
 The `AppShell` component abstracts away provider nesting complexity. **AI agents should use AppShell instead of manually nesting providers.**
 
 **What AppShell handles internally (DO NOT modify):**
+
 - `RouteLoader` - Navigation loading bar
 - `NextIntlClientProvider` - i18n translations
 - `ThemeProvider` - CSS variables and theme
@@ -1247,12 +1309,14 @@ The `AppShell` component abstracts away provider nesting complexity. **AI agents
 Handles all analytics scripts at the end of `<body>`. Reads from environment variables.
 
 **What AppAnalytics handles internally (DO NOT modify):**
+
 - URL parameter extraction (UTM, experiment, affiliate)
 - Google Analytics 4 (gtag.js)
 - PostHog analytics
 - Facebook Pixel with Conversions API (CAPI)
 
 **Environment Variables:**
+
 ```env
 NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_GA_ADS_ID=AW-XXXXXXXXXX
@@ -1263,6 +1327,7 @@ NEXT_PUBLIC_PIXEL_CAPI_URL=https://api.example.com/pixel
 ```
 
 **Usage:**
+
 ```typescript
 // Basic - uses env vars for all configuration
 <AppAnalytics />
@@ -1384,14 +1449,14 @@ The `bootstrap/` folder centralizes package configurations (composition roots) s
 
 ### Bootstrap Files
 
-| File | Package | Purpose |
-|------|---------|---------|
-| `bootstrap/builder.ts` | `@shopkit/builder` | Theme/template loaders, widget registry |
-| `bootstrap/cart.ts` | `@shopkit/cart` | Cart services, storage, currency config |
-| `bootstrap/i18n.ts` | `@shopkit/i18n` | Server-side i18n utilities |
-| `bootstrap/i18n-config.ts` | `@shopkit/i18n` | Client-safe i18n config |
-| `bootstrap/theme.ts` | `@shopkit/core` | Theme loading utility |
-| `bootstrap/index.ts` | N/A | Barrel exports |
+| File                       | Package            | Purpose                                 |
+| -------------------------- | ------------------ | --------------------------------------- |
+| `bootstrap/builder.ts`     | `@shopkit/builder` | Theme/template loaders, widget registry |
+| `bootstrap/cart.ts`        | `@shopkit/cart`    | Cart services, storage, currency config |
+| `bootstrap/i18n.ts`        | `@shopkit/i18n`    | Server-side i18n utilities              |
+| `bootstrap/i18n-config.ts` | `@shopkit/i18n`    | Client-safe i18n config                 |
+| `bootstrap/theme.ts`       | `@shopkit/core`    | Theme loading utility                   |
+| `bootstrap/index.ts`       | N/A                | Barrel exports                          |
 
 ### Import Guidelines
 
@@ -1632,21 +1697,21 @@ integrations/
 
 ### Platform Types
 
-| Platform | Backend | Cart API | Checkout |
-|----------|---------|----------|----------|
-| **Shopify** | Shopify Storefront API | GraphQL | Shopify Checkout or GoKwik |
-| **Custom** | Custom REST API | REST | GoKwik only |
+| Platform    | Backend                | Cart API | Checkout                   |
+| ----------- | ---------------------- | -------- | -------------------------- |
+| **Shopify** | Shopify Storefront API | GraphQL  | Shopify Checkout or GoKwik |
+| **Custom**  | Custom REST API        | REST     | GoKwik only                |
 
 ### Naming Conventions
 
-| Type | Pattern | Example |
-|------|---------|---------|
-| Folder | `{feature}-{platform}/` | `checkout-custom/` |
-| Main component | `{Feature}{Platform}.tsx` | `CheckoutCustom.tsx` |
-| Button | `{Feature}Button{Platform}.tsx` | `CheckoutButtonCustom.tsx` |
-| Script | `{Feature}Script{Platform}.tsx` | `CheckoutScriptCustom.tsx` |
-| Service | `{Platform}{Feature}Service.ts` | `CustomCheckoutService.ts` |
-| Hook | `use{Platform}{Feature}.ts` | `useCustomCheckout.ts` |
+| Type           | Pattern                         | Example                    |
+| -------------- | ------------------------------- | -------------------------- |
+| Folder         | `{feature}-{platform}/`         | `checkout-custom/`         |
+| Main component | `{Feature}{Platform}.tsx`       | `CheckoutCustom.tsx`       |
+| Button         | `{Feature}Button{Platform}.tsx` | `CheckoutButtonCustom.tsx` |
+| Script         | `{Feature}Script{Platform}.tsx` | `CheckoutScriptCustom.tsx` |
+| Service        | `{Platform}{Feature}Service.ts` | `CustomCheckoutService.ts` |
+| Hook           | `use{Platform}{Feature}.ts`     | `useCustomCheckout.ts`     |
 
 ### Script Loading Best Practices
 
@@ -1693,6 +1758,7 @@ layout.tsx
 ```
 
 For detailed documentation, see:
+
 - [integrations/README.md](src/integrations/README.md) - Full architecture guide
 - [checkout-custom/README.md](src/integrations/checkout-custom/README.md) - Checkout integration details
 
@@ -1735,9 +1801,9 @@ For detailed documentation, see:
 
 ## Version Compatibility
 
-| Package | React | Next.js | Node.js |
-|---------|-------|---------|---------|
-| All @shopkit packages | 18.x | 14.x+ | 18.x+ |
+| Package               | React | Next.js | Node.js |
+| --------------------- | ----- | ------- | ------- |
+| All @shopkit packages | 18.x  | 14.x+   | 18.x+   |
 
 ---
 
@@ -1745,17 +1811,17 @@ For detailed documentation, see:
 
 ## Related Documentation
 
-| Document | Description |
-|----------|-------------|
-| [SYSTEM_ARCHITECTURE.md](src/SYSTEM_ARCHITECTURE.md) | How templates, widgets, themes, and config work together |
-| [integrations/README.md](src/integrations/README.md) | Platform-specific integrations architecture |
-| [checkout-custom/README.md](src/integrations/checkout-custom/README.md) | GoKwik checkout for Custom platform |
-| [checkout-shopify/README.md](src/integrations/checkout-shopify/README.md) | GoKwik checkout for Shopify platform |
-| [cart-drawer-custom/README.md](src/integrations/cart-drawer-custom/README.md) | Cart drawer for Custom platform |
-| [cart-drawer-shopify/README.md](src/integrations/cart-drawer-shopify/README.md) | Cart drawer for Shopify platform |
-| [kwikpass-custom/README.md](src/integrations/kwikpass-custom/README.md) | KwikPass auth for Custom platform |
-| [kwikpass-shopify/README.md](src/integrations/kwikpass-shopify/README.md) | KwikPass auth for Shopify platform |
+| Document                                                                        | Description                                              |
+| ------------------------------------------------------------------------------- | -------------------------------------------------------- |
+| [SYSTEM_ARCHITECTURE.md](src/SYSTEM_ARCHITECTURE.md)                            | How templates, widgets, themes, and config work together |
+| [integrations/README.md](src/integrations/README.md)                            | Platform-specific integrations architecture              |
+| [checkout-custom/README.md](src/integrations/checkout-custom/README.md)         | GoKwik checkout for Custom platform                      |
+| [checkout-shopify/README.md](src/integrations/checkout-shopify/README.md)       | GoKwik checkout for Shopify platform                     |
+| [cart-drawer-custom/README.md](src/integrations/cart-drawer-custom/README.md)   | Cart drawer for Custom platform                          |
+| [cart-drawer-shopify/README.md](src/integrations/cart-drawer-shopify/README.md) | Cart drawer for Shopify platform                         |
+| [kwikpass-custom/README.md](src/integrations/kwikpass-custom/README.md)         | KwikPass auth for Custom platform                        |
+| [kwikpass-shopify/README.md](src/integrations/kwikpass-shopify/README.md)       | KwikPass auth for Shopify platform                       |
 
 ---
 
-*This guide is auto-generated and maintained for AI agent consumption. For human-readable docs, see individual package README files.*
+_This guide is auto-generated and maintained for AI agent consumption. For human-readable docs, see individual package README files._

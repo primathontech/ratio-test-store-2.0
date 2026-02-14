@@ -34,7 +34,7 @@ export const CartItem: React.FC<CartItemProps> = ({
 
   // State for managing the input value
   const [inputValue, setInputValue] = useState<string>(
-    item.quantity.toString(),
+    item.quantity.toString()
   );
   const [isUpdating, setIsUpdating] = useState<boolean>(false);
 
@@ -46,7 +46,7 @@ export const CartItem: React.FC<CartItemProps> = ({
   // Helper function to check if item is loading
   const isItemLoading = (
     itemId: string,
-    action: "increment" | "decrement" | "remove" | "add",
+    action: "increment" | "decrement" | "remove" | "add"
   ) => {
     return loadingStates[itemId] === action;
   };
@@ -58,7 +58,7 @@ export const CartItem: React.FC<CartItemProps> = ({
 
   // Handler for quantity input changes
   const handleQuantityInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = e.target.value;
     // Allow empty string for better UX while typing

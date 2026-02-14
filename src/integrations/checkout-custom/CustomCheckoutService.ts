@@ -1,4 +1,3 @@
-import { CommerceClient } from "./../../../../wellversed/src/lib/commerce/core/interface";
 /**
  * Custom Checkout Service
  *
@@ -87,7 +86,9 @@ export class CustomCheckoutService {
    * @returns Cookie value or empty string if not found
    */
   private static getCookie(name: string): string {
-    if (typeof document === "undefined") return "";
+    if (typeof document === "undefined") {
+      return "";
+    }
 
     try {
       const value = `; ${document.cookie}`;
@@ -164,7 +165,7 @@ export class CustomCheckoutService {
 
       if (!checkoutResponse.message) {
         throw new Error(
-          `Checkout API failed: ${checkoutResponse?.message || "Unknown error"} - ${checkoutResponse?.error || "API request failed"}`,
+          `Checkout API failed: ${checkoutResponse?.message || "Unknown error"} - ${checkoutResponse?.error || "API request failed"}`
         );
       }
 
@@ -212,7 +213,7 @@ export class CustomCheckoutService {
     } catch (error) {
       console.error("GoKwik checkout initialization error:", error);
       eventHandlers.onError?.(
-        error instanceof Error ? error : new Error("Unknown checkout error"),
+        error instanceof Error ? error : new Error("Unknown checkout error")
       );
       throw error;
     }
@@ -223,7 +224,7 @@ export class CustomCheckoutService {
    */
   private static dispatchCartViewEvent(
     cartToken: string,
-    items: CartItem[],
+    items: CartItem[]
   ): void {
     if (!cartToken) {
       return;
@@ -245,7 +246,7 @@ export class CustomCheckoutService {
   private static dispatchCheckoutStartEvent(
     cartToken: string,
     total: number,
-    currencyCode: string,
+    currencyCode: string
   ): void {
     dispatchCheckoutStartEvent({
       cart_id: cartToken,
@@ -323,7 +324,7 @@ export class CustomCheckoutService {
 
           window.location.href = finalRedirectPath;
         }, 2000);
-      },
+      }
     );
 
     // Listen for orderSuccess message event
@@ -412,7 +413,7 @@ export class CustomCheckoutService {
         txn_id: orderId,
         sale_amount: orderAmount,
         is_iframe: true,
-      },
+      }
     );
   }
 
@@ -460,7 +461,7 @@ export class CustomCheckoutService {
   private static clearCartStorage(): void {
     // Clear cart storage (localStorage)
     const storage = new DefaultCartStorage(
-      process.env.NEXT_PUBLIC_MERCHANT_NAME,
+      process.env.NEXT_PUBLIC_MERCHANT_NAME
     );
     storage.clear();
   }

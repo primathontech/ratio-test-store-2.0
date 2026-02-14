@@ -1,0 +1,61 @@
+{
+  "$schema": "Dependency allowlist for widget and template development. Only packages listed here can be imported in src/widgets/ and src/themes/. To add a new package, raise a PR with justification and bundle size impact.",
+
+  "allowed": [
+    "react",
+    "react-dom",
+
+    "next",
+    "next/image",
+    "next/link",
+    "next/dynamic",
+    "next/navigation",
+    "next/font",
+    "next/font/google",
+    "next/font/local",
+
+    "next-intl",
+
+    "clsx",
+    "tailwind-merge",
+    "zod",
+    "swr",
+    "zustand",
+
+    "embla-carousel-react",
+    "keen-slider",
+    "keen-slider/react",
+
+    "@radix-ui/react-icons",
+    "@radix-ui/react-tooltip",
+    "@radix-ui/themes",
+
+    "@shopify/hydrogen-react",
+    "@shopify/storefront-api-client",
+
+    "shopkit-analytics"
+  ],
+
+  "blocked_with_reason": {
+    "lodash": "Use native JS methods (Array.map, filter, reduce) or import specific function from lodash-es",
+    "moment": "Use Intl.DateTimeFormat (built-in, 0KB) or date-fns (tree-shakeable)",
+    "axios": "Use native fetch() via page builder dataSources — widgets should not make HTTP requests directly",
+    "jquery": "Use React patterns — direct DOM manipulation is not allowed in widgets",
+    "styled-components": "Use Tailwind utility classes — the project uses Tailwind for all styling",
+    "emotion": "Use Tailwind utility classes — the project uses Tailwind for all styling",
+    "@emotion/react": "Use Tailwind utility classes — the project uses Tailwind for all styling",
+    "@emotion/styled": "Use Tailwind utility classes — the project uses Tailwind for all styling",
+    "chart.js": "Heavy charting library (~60KB). Discuss with core team if charting is needed",
+    "d3": "Heavy visualization library (~80KB). Discuss with core team if needed",
+    "animate.css": "Use CSS transform animations or Tailwind animate utilities",
+    "font-awesome": "Use @radix-ui/react-icons (already approved) or inline SVGs",
+    "@fortawesome/fontawesome-free": "Use @radix-ui/react-icons (already approved) or inline SVGs",
+    "material-icons": "Use @radix-ui/react-icons (already approved) or inline SVGs",
+    "ionicons": "Use @radix-ui/react-icons (already approved) or inline SVGs",
+    "react-query": "Use swr (already approved) for client-side data fetching, or page builder dataSources for server-side",
+    "@tanstack/react-query": "Use swr (already approved) for client-side data fetching, or page builder dataSources for server-side",
+    "framer-motion": "Use CSS transitions/transforms or Tailwind animate. Framer adds ~30KB to bundle",
+    "gsap": "Use CSS transitions/transforms. GSAP adds ~30KB and requires license for commercial use",
+    "swiper": "Use embla-carousel-react (already approved) — lighter and already in the project"
+  }
+}

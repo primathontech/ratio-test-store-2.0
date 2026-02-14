@@ -44,7 +44,7 @@ export const useCoupons = (): UseCouponsReturn => {
           title: discount.title,
           code: discount.code,
           description: discount.description,
-        }),
+        })
       );
 
       setCoupons(transformedCoupons);

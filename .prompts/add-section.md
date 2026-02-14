@@ -8,6 +8,7 @@
 ### Task: Add a new section to `{TEMPLATE_PATH}`
 
 **Section Requirements:**
+
 - Section name: {SECTION_NAME}
 - Widget to use: {WIDGET_TYPE}
 - Position: {POSITION} (e.g., "after banner carousel", "before footer")
@@ -20,6 +21,7 @@
 2. **Find the position** to insert the new section
 
 3. **Add section config:**
+
    ```typescript
    {
      id: "{section-id}",
@@ -49,6 +51,7 @@
    ```
 
 4. **Add data source** (if the widget needs data):
+
    ```typescript
    dataSources: {
      // ... existing sources
@@ -66,6 +69,7 @@
 ### Example Usage:
 
 Replace placeholders:
+
 - `{TEMPLATE_PATH}` = "home"
 - `{SECTION_NAME}` = "Featured Testimonials"
 - `{WIDGET_TYPE}` = "Testimonials"

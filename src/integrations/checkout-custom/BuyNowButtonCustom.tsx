@@ -58,7 +58,7 @@ export function BuyNowButtonCustom({
     // Validate required parameters
     if (!variantId) {
       const error = new Error(
-        "Cannot proceed with Buy Now: Product variant ID is required",
+        "Cannot proceed with Buy Now: Product variant ID is required"
       );
       onCheckoutError?.(error);
       return;
@@ -66,7 +66,7 @@ export function BuyNowButtonCustom({
 
     if (!isGokwikReady) {
       const error = new Error(
-        "Cannot proceed with Buy Now: Gokwik service is not ready. Please wait for the script to load.",
+        "Cannot proceed with Buy Now: Gokwik service is not ready. Please wait for the script to load."
       );
       onCheckoutError?.(error);
       return;
@@ -75,7 +75,7 @@ export function BuyNowButtonCustom({
     // Validate price and quantity
     if (!price || typeof price.amount !== "number" || price.amount <= 0) {
       const error = new Error(
-        "Cannot proceed with Buy Now: Invalid product price",
+        "Cannot proceed with Buy Now: Invalid product price"
       );
       onCheckoutError?.(error);
       return;

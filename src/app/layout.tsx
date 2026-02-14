@@ -50,7 +50,7 @@ const KwikPassCustom = dynamic(
     import("@/integrations/kwikpass-custom").then((mod) => ({
       default: mod.KwikPassCustom,
     })),
-  { ssr: false },
+  { ssr: false }
 );
 
 const CustomCartDrawer = dynamic(
@@ -58,7 +58,7 @@ const CustomCartDrawer = dynamic(
     import("@/integrations/cart-drawer-custom").then((mod) => ({
       default: mod.CustomCartDrawer,
     })),
-  { ssr: false },
+  { ssr: false }
 );
 
 // =============================================================================

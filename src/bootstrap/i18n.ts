@@ -31,7 +31,11 @@ import {
   loadMessages as loadMessagesFromManifest,
   type LocaleManifest,
 } from "@/locales/.generated/manifest";
-import { isValidLocale, type Locale, type PageName } from "@/locales/.generated/types";
+import {
+  isValidLocale,
+  type Locale,
+  type PageName,
+} from "@/locales/.generated/types";
 import {
   createGetStaticLocale,
   createGetLocale,

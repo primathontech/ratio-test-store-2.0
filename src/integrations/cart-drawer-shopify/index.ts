@@ -7,4 +7,8 @@
 export { ShopifyCartDrawer } from "./ShopifyCartDrawer";
 
 // Types
-export type { ShopifyCartDrawerProps, CouponOffer, UseCouponsReturn } from "./types";
+export type {
+  ShopifyCartDrawerProps,
+  CouponOffer,
+  UseCouponsReturn,
+} from "./types";

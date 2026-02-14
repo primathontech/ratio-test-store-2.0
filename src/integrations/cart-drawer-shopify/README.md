@@ -90,9 +90,9 @@ function CartIcon() {
 
 ### ShopifyCartDrawer
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `locale` | "en" | "en" | Locale for translations |
+| Prop     | Type | Default | Description             |
+| -------- | ---- | ------- | ----------------------- |
+| `locale` | "en" | "en"    | Locale for translations |
 
 ## Exports
 
@@ -101,7 +101,11 @@ function CartIcon() {
 export { ShopifyCartDrawer } from "./ShopifyCartDrawer";
 
 // Types
-export type { ShopifyCartDrawerProps, CouponOffer, UseCouponsReturn } from "./types";
+export type {
+  ShopifyCartDrawerProps,
+  CouponOffer,
+  UseCouponsReturn,
+} from "./types";
 ```
 
 ## Component Hierarchy
@@ -126,6 +130,7 @@ ShopifyCartDrawer
 ## Features
 
 ### Cart Items
+
 - Product image, title, variant options
 - Quantity increment/decrement buttons
 - Remove item button
@@ -134,17 +139,20 @@ ShopifyCartDrawer
 - Variant option display (size, color, etc.)
 
 ### Coupon Offers
+
 - Fetches available coupons via `useCoupons` hook
 - Displays coupon cards with copy functionality
 - Loading skeletons during fetch
 - Horizontal scroll for multiple coupons
 
 ### Custom Cursor
+
 - Shows a close icon when hovering over the overlay
 - Follows mouse position
 - Hidden when over the cart drawer or modals
 
 ### Body Scroll Lock
+
 - Prevents body scrolling when cart is open
 - Restores scroll on close
 
@@ -162,11 +170,11 @@ content: [
 
 ### Key CSS Classes
 
-| Element | Classes |
-|---------|---------|
-| Overlay | `fixed inset-0 bg-cart-overlay-dark` |
-| Drawer | `fixed top-0 right-0 max-w-[460px] h-full bg-white` |
-| Animation | `transition-transform translate-x-0/full` |
+| Element   | Classes                                             |
+| --------- | --------------------------------------------------- |
+| Overlay   | `fixed inset-0 bg-cart-overlay-dark`                |
+| Drawer    | `fixed top-0 right-0 max-w-[460px] h-full bg-white` |
+| Animation | `transition-transform translate-x-0/full`           |
 
 ## Dependencies
 
@@ -178,7 +186,9 @@ content: [
 ## Shopify-Specific Features
 
 ### Price Formatting
+
 Uses Shopify Money object with currencyCode:
+
 ```typescript
 {
   amount: "29.99",
@@ -187,25 +197,29 @@ Uses Shopify Money object with currencyCode:
 ```
 
 ### Variant Options
+
 Displays variant options like:
+
 - Size: Medium
 - Color: Blue
 
 ### Compare at Price
+
 Shows original price when item is on sale.
 
 ### Inventory
+
 Can show stock levels based on Shopify inventory.
 
 ## Differences from cart-drawer-custom
 
-| Feature | cart-drawer-shopify | cart-drawer-custom |
-|---------|---------------------|-------------------|
+| Feature         | cart-drawer-shopify     | cart-drawer-custom     |
+| --------------- | ----------------------- | ---------------------- |
 | Checkout button | `CheckoutButtonShopify` | `CheckoutButtonCustom` |
-| Cart summary | `ShopifyCartSummary` | `CustomCartSummary` |
-| Price format | Shopify Money | Custom format |
-| Cart API | Shopify GraphQL | Custom REST |
-| Variant display | Shopify options | Custom fields |
+| Cart summary    | `ShopifyCartSummary`    | `CustomCartSummary`    |
+| Price format    | Shopify Money           | Custom format          |
+| Cart API        | Shopify GraphQL         | Custom REST            |
+| Variant display | Shopify options         | Custom fields          |
 
 ## Related Files
 

@@ -74,7 +74,10 @@ function Header() {
 ### 3. Handle Login Events
 
 ```typescript
-import { handleKwikpassLogin, fireUserEngagementEvent } from "@/integrations/kwikpass-custom";
+import {
+  handleKwikpassLogin,
+  fireUserEngagementEvent,
+} from "@/integrations/kwikpass-custom";
 
 // Listen for login success
 window.addEventListener("kwikpassLoginSuccess", (event) => {
@@ -132,35 +135,39 @@ export {
 
 ### Analytics Events Dispatched
 
-| Event | When | Data |
-|-------|------|------|
-| `PRODUCT_VIEW` | Product page viewed | productId, title, price |
-| `COLLECTION_VIEW` | Collection page viewed | collectionId, title |
-| `PAGE_VIEW` | Page viewed | path, title |
-| `LOGIN` | User logged in | userId, phone |
-| `LOGOUT` | User logged out | userId |
+| Event             | When                   | Data                    |
+| ----------------- | ---------------------- | ----------------------- |
+| `PRODUCT_VIEW`    | Product page viewed    | productId, title, price |
+| `COLLECTION_VIEW` | Collection page viewed | collectionId, title     |
+| `PAGE_VIEW`       | Page viewed            | path, title             |
+| `LOGIN`           | User logged in         | userId, phone           |
+| `LOGOUT`          | User logged out        | userId                  |
 
 ### Window Events
 
-| Event | When | Detail |
-|-------|------|--------|
+| Event                  | When             | Detail    |
+| ---------------------- | ---------------- | --------- |
 | `kwikpassLoginSuccess` | Login successful | User data |
-| `kwikpassLogout` | User logged out | - |
+| `kwikpassLogout`       | User logged out  | -         |
 
 ## Utility Functions
 
 ### `handleKwikpassLogin(userData)`
+
 Process login response and store user session.
 
 ### `fireUserEngagementEvent(eventName, data)`
+
 Fire custom engagement events to KwikPass.
 
 ### `getCartToken()`
+
 Get the current cart token for checkout.
 
 ## Icon Components
 
 The integration exports reusable icon components:
+
 - `KwikPassLogo` - KwikPass branding
 - `Close` - Close/X icon
 - `LogOut` - Logout icon
@@ -168,11 +175,11 @@ The integration exports reusable icon components:
 
 ## Differences from kwikpass-shopify
 
-| Feature | kwikpass-custom | kwikpass-shopify |
-|---------|-----------------|------------------|
-| Customer auth | Custom backend | Shopify Multipass |
-| Session storage | localStorage | Shopify Customer API |
-| Token decoding | Basic | Multipass decode |
+| Feature         | kwikpass-custom | kwikpass-shopify     |
+| --------------- | --------------- | -------------------- |
+| Customer auth   | Custom backend  | Shopify Multipass    |
+| Session storage | localStorage    | Shopify Customer API |
+| Token decoding  | Basic           | Multipass decode     |
 
 ## Related Files
 

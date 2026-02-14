@@ -1,0 +1,481 @@
+{
+  "extends": ["next/core-web-vitals", "prettier"],
+  "plugins": ["@typescript-eslint", "prettier", "unused-imports"],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": "latest",
+    "sourceType": "module"
+  },
+  "overrides": [
+    {
+      "files": ["*.ts", "*.tsx"],
+      "parserOptions": {
+        "project": "./tsconfig.json"
+      }
+    },
+    {
+      "files": ["next.config.js", "*.config.js", "src/bootstrap/*.js"],
+      "rules": {
+        "@typescript-eslint/no-var-requires": "off"
+      }
+    },
+    {
+      // STATIC PAGES - Enforce static generation on ALL page routes
+      // Extended from specific paths to cover any new pages agencies create.
+      // API routes are excluded — they are allowed to be dynamic.
+      "files": [
+        "src/app/page.tsx",
+        "src/app/*/page.tsx",
+        "src/app/*/*/page.tsx",
+        "src/app/*/*/*/page.tsx",
+        "src/app/*/*/*/*/page.tsx"
+      ],
+      "excludedFiles": ["src/app/api/**"],
+      "rules": {
+        // Block dynamic APIs in these specific static pages
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "next/headers",
+                "importNames": ["cookies", "headers", "draftMode"],
+                "message": "❌ STATIC PAGE VIOLATION: This page must be static. Don't use cookies(), headers(), or draftMode(). Move auth/dynamic logic to middleware, layout, or client component."
+              },
+              {
+                "name": "next/navigation",
+                "importNames": ["useSearchParams"],
+                "message": "❌ STATIC PAGE VIOLATION: useSearchParams makes pages dynamic. Use params instead or move to client component with Suspense."
+              },
+              {
+                "name": "@/lib/i18n/server-utils",
+                "importNames": ["getLocale"],
+                "message": "❌ STATIC PAGE VIOLATION: getLocale() uses cookies() and headers() internally, making pages dynamic. Use a static locale approach instead."
+              },
+              {
+                "name": "next/cache",
+                "importNames": ["noStore", "unstable_noStore"],
+                "message": "❌ [STATIC] noStore() disables the Next.js data cache and forces dynamic rendering. All pages must be statically generated."
+              }
+            ]
+          }
+        ],
+        "no-restricted-syntax": [
+          "error",
+          {
+            "selector": "CallExpression[callee.name='cookies']",
+            "message": "❌ STATIC PAGE VIOLATION: cookies() detected in static page. This forces dynamic rendering."
+          },
+          {
+            "selector": "CallExpression[callee.name='headers']",
+            "message": "❌ STATIC PAGE VIOLATION: headers() detected in static page. This forces dynamic rendering."
+          },
+          {
+            "selector": "Identifier[name='searchParams']",
+            "message": "⚠️ WARNING: searchParams usage detected. This will make the page dynamic. Ensure this is intentional or use params instead."
+          },
+          {
+            "selector": "ExportNamedDeclaration[declaration.declarations.0.id.name='dynamic'][declaration.declarations.0.init.value='force-dynamic']",
+            "message": "❌ STATIC PAGE VIOLATION: export const dynamic = 'force-dynamic' detected. This page should be static. Remove this export or move page to dynamic section."
+          },
+          {
+            "selector": "ExportNamedDeclaration[declaration.declarations.0.id.name='revalidate'][declaration.declarations.0.init.value=0]",
+            "message": "❌ STATIC PAGE VIOLATION: revalidate = 0 forces dynamic rendering. Use revalidate > 0 for ISR or remove for full static."
+          },
+          {
+            "selector": "Property[key.value='cache'][value.value='no-store']",
+            "message": "❌ [STATIC] cache: 'no-store' disables data caching and forces dynamic rendering. Remove this option to use default static caching."
+          },
+          {
+            "selector": "Property[key.name='cache'][value.value='no-store']",
+            "message": "❌ [STATIC] cache: 'no-store' disables data caching and forces dynamic rendering. Remove this option to use default static caching."
+          },
+          {
+            "selector": "CallExpression[callee.name='noStore']",
+            "message": "❌ [STATIC] noStore() forces dynamic rendering. All pages must be statically generated with ISR."
+          }
+        ]
+      }
+    },
+    {
+      // MEMORY LEAK PREVENTION - React/Next.js Components (Practical warnings)
+      "files": ["*.tsx", "*.jsx"],
+      "rules": {
+        "no-restricted-syntax": [
+          "warn",
+          {
+            "selector": "CallExpression[callee.name='setInterval']",
+            "message": "⚠️ MEMORY LEAK RISK: setInterval detected. Remember to clear it in useEffect cleanup: return () => clearInterval(intervalId)"
+          },
+          {
+            "selector": "CallExpression[callee.name='setTimeout']",
+            "message": "⚠️ MEMORY LEAK RISK: setTimeout detected. Consider clearing it in useEffect cleanup to prevent state updates on unmounted components: return () => clearTimeout(timeoutId)"
+          },
+          {
+            "selector": "CallExpression[callee.property.name='addEventListener']",
+            "message": "⚠️ MEMORY LEAK RISK: addEventListener detected. Remember to remove it in useEffect cleanup: return () => element.removeEventListener()"
+          },
+          {
+            "selector": "NewExpression[callee.name='WebSocket']",
+            "message": "⚠️ MEMORY LEAK RISK: WebSocket created. Remember to call .close() in useEffect cleanup."
+          },
+          {
+            "selector": "NewExpression[callee.name='EventSource']",
+            "message": "⚠️ MEMORY LEAK RISK: EventSource (SSE) created. Remember to call .close() in useEffect cleanup."
+          },
+          {
+            "selector": "NewExpression[callee.name='IntersectionObserver']",
+            "message": "⚠️ MEMORY LEAK RISK: IntersectionObserver created. Remember to call .disconnect() in useEffect cleanup."
+          },
+          {
+            "selector": "NewExpression[callee.name='MutationObserver']",
+            "message": "⚠️ MEMORY LEAK RISK: MutationObserver created. Remember to call .disconnect() in useEffect cleanup."
+          },
+          {
+            "selector": "NewExpression[callee.name='ResizeObserver']",
+            "message": "⚠️ MEMORY LEAK RISK: ResizeObserver created. Remember to call .disconnect() in useEffect cleanup."
+          },
+          {
+            "selector": "CallExpression[callee.property.name='subscribe']",
+            "message": "⚠️ MEMORY LEAK RISK: .subscribe() detected. Remember to unsubscribe in useEffect cleanup."
+          }
+        ]
+      }
+    },
+    {
+      // ═══════════════════════════════════════════════════════════════════
+      // WIDGET PERFORMANCE GOVERNANCE
+      // Applies to all widget code in src/widgets/ and src/themes/
+      // Enforces LCP, CLS, INP, Image, Video, Font, CSS, JS, and
+      // Third-Party Script performance rules.
+      // ═══════════════════════════════════════════════════════════════════
+      "files": [
+        "src/widgets/**/*.ts",
+        "src/widgets/**/*.tsx",
+        "src/themes/**/*.ts",
+        "src/themes/**/*.tsx"
+      ],
+      "rules": {
+        // ─────────────────────────────────────────────────
+        // [LCP] LARGEST CONTENTFUL PAINT PROTECTION
+        // ─────────────────────────────────────────────────
+
+        // L1: Block raw <img> — require next/image (promotes global warn to error)
+        // next/image provides: WebP/AVIF format, responsive srcset, required dimensions, lazy loading
+        "@next/next/no-img-element": "error",
+
+        // L3: Block synchronous <script> tags — they block HTML parsing and delay LCP
+        "@next/next/no-sync-scripts": "error",
+
+        // Dependency allowlist — blocks unapproved packages that bloat the bundle
+        // (LCP, INP, JS performance combined)
+        "no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "lodash",
+                "message": "[INP] lodash adds ~70KB to the bundle. Use native JS methods (map, filter, reduce) or import specific function from lodash-es."
+              },
+              {
+                "name": "moment",
+                "message": "[INP] moment adds ~70KB. Use Intl.DateTimeFormat (built-in, 0KB) or date-fns (tree-shakeable)."
+              },
+              {
+                "name": "axios",
+                "message": "[BUNDLE] Use native fetch() via page builder dataSources. Widgets should not make HTTP requests directly."
+              },
+              {
+                "name": "jquery",
+                "message": "[BUNDLE] jQuery is not allowed. Use React patterns — direct DOM manipulation is not permitted in widgets."
+              },
+              {
+                "name": "styled-components",
+                "message": "[CSS] Use Tailwind utility classes. The project uses Tailwind for all styling."
+              },
+              {
+                "name": "@emotion/react",
+                "message": "[CSS] Use Tailwind utility classes. The project uses Tailwind for all styling."
+              },
+              {
+                "name": "@emotion/styled",
+                "message": "[CSS] Use Tailwind utility classes. The project uses Tailwind for all styling."
+              },
+              {
+                "name": "chart.js",
+                "message": "[INP] chart.js adds ~60KB. Discuss with core team if charting is needed."
+              },
+              {
+                "name": "d3",
+                "message": "[INP] d3 adds ~80KB. Discuss with core team if visualization is needed."
+              },
+              {
+                "name": "animate.css",
+                "message": "[CSS] Use CSS transform animations or Tailwind animate utilities."
+              },
+              {
+                "name": "font-awesome",
+                "message": "[CLS] Icon fonts cause layout shifts. Use @radix-ui/react-icons (already approved) or inline SVGs."
+              },
+              {
+                "name": "@fortawesome/fontawesome-free",
+                "message": "[CLS] Icon fonts cause layout shifts. Use @radix-ui/react-icons (already approved) or inline SVGs."
+              },
+              {
+                "name": "material-icons",
+                "message": "[CLS] Icon fonts cause layout shifts. Use @radix-ui/react-icons (already approved) or inline SVGs."
+              },
+              {
+                "name": "ionicons",
+                "message": "[CLS] Icon fonts cause layout shifts. Use @radix-ui/react-icons (already approved) or inline SVGs."
+              },
+              {
+                "name": "framer-motion",
+                "message": "[INP] framer-motion adds ~30KB. Use CSS transitions/transforms or Tailwind animate utilities."
+              },
+              {
+                "name": "gsap",
+                "message": "[INP] gsap adds ~30KB and requires commercial license. Use CSS transitions/transforms."
+              },
+              {
+                "name": "swiper",
+                "message": "[BUNDLE] Use embla-carousel-react (already approved) — lighter and already in the project."
+              },
+              {
+                "name": "react-query",
+                "message": "[BUNDLE] Use swr (already approved) or page builder dataSources for server-side data."
+              },
+              {
+                "name": "@tanstack/react-query",
+                "message": "[BUNDLE] Use swr (already approved) or page builder dataSources for server-side data."
+              }
+            ],
+            "patterns": [
+              {
+                "group": ["lodash/*"],
+                "message": "[INP] Use lodash-es for tree-shakeable imports, or native JS methods."
+              }
+            ]
+          }
+        ],
+
+        "no-restricted-syntax": [
+          "error",
+
+          // ── LCP RULES ──
+
+          // L4: Block external stylesheet links in widget JSX — render-blocking CSS
+          {
+            "selector": "JSXOpeningElement[name.name='link'] JSXAttribute[name.name='rel'][value.value='stylesheet']",
+            "message": "[LCP] External stylesheets block rendering. The browser cannot paint anything until the CSS downloads. Use Tailwind classes or inline styles."
+          },
+
+          // L5: Block document.write() — destroys preload scanner
+          {
+            "selector": "CallExpression[callee.object.name='document'][callee.property.name='write']",
+            "message": "[LCP] document.write() destroys the browser preload scanner, adding seconds to page load. This is never acceptable."
+          },
+          {
+            "selector": "CallExpression[callee.object.name='document'][callee.property.name='writeln']",
+            "message": "[LCP] document.writeln() destroys the browser preload scanner. This is never acceptable."
+          },
+
+          // ── CLS RULES ──
+
+          // C2: Warn on <video> usage — validation script checks for dimensions
+          {
+            "selector": "JSXOpeningElement[name.name='video']",
+            "message": "[CLS] <video> element detected. Ensure width/height attributes or style={{ aspectRatio: '16/9' }} are set to prevent layout shift."
+          },
+
+          // C3: Warn on <iframe> usage — validation script checks for dimensions
+          {
+            "selector": "JSXOpeningElement[name.name='iframe']",
+            "message": "[CLS] <iframe> element detected. Ensure width/height attributes are set to prevent layout shift."
+          },
+
+          // C7: Block dangerouslySetInnerHTML — unpredictable layout + XSS risk
+          {
+            "selector": "JSXAttribute[name.name='dangerouslySetInnerHTML']",
+            "message": "[CLS] dangerouslySetInnerHTML can inject content that causes layout shifts and bypasses performance checks. Use React components to render dynamic content."
+          },
+
+          // ── INP RULES ──
+
+          // I1: Block namespace/barrel imports — prevents tree-shaking
+          {
+            "selector": "ImportNamespaceSpecifier",
+            "message": "[INP] import * pulls the entire package into the bundle. Use named imports: import { specificFunction } from 'package'. This allows tree-shaking."
+          },
+
+          // ── JS/BUNDLE RULES ──
+
+          // J4: Block fetch() in widgets — data comes via page builder props
+          {
+            "selector": "CallExpression[callee.name='fetch']",
+            "message": "[BUNDLE] fetch() is not allowed in widgets. Widgets receive data through the 'data' prop from the page builder. Add a dataSource to your template's dataSources config."
+          },
+          {
+            "selector": "CallExpression[callee.object.name='window'][callee.property.name='fetch']",
+            "message": "[BUNDLE] window.fetch() is not allowed in widgets. Widgets receive data through the 'data' prop from the page builder."
+          },
+
+          // J5: Block require() in widgets — breaks code splitting
+          {
+            "selector": "CallExpression[callee.name='require']",
+            "message": "[BUNDLE] require() prevents code splitting. Use ES import syntax: import { fn } from 'package'."
+          },
+
+          // ── THIRD-PARTY SCRIPT RULES ──
+
+          // T1: Block <script> tags in widget JSX
+          {
+            "selector": "JSXOpeningElement[name.name='script']",
+            "message": "[THIRD-PARTY] <script> tags are not allowed in widgets. External scripts bypass all performance optimization. Use an approved npm package."
+          },
+
+          // T2: Block dynamic script creation via DOM
+          {
+            "selector": "CallExpression[callee.object.name='document'][callee.property.name='createElement'] Literal[value='script']",
+            "message": "[THIRD-PARTY] document.createElement('script') is not allowed. External scripts bypass performance optimization."
+          },
+
+          // T4: Block window.location assignment — use Next.js Link/router
+          {
+            "selector": "AssignmentExpression[left.object.object.name='window'][left.object.property.name='location']",
+            "message": "[LCP] window.location assignment causes full page reload. Use next/link or useRouter().push() for navigation."
+          },
+          {
+            "selector": "AssignmentExpression[left.object.name='location'][left.property.name='href']",
+            "message": "[LCP] location.href assignment causes full page reload. Use next/link or useRouter().push() for navigation."
+          }
+        ],
+
+        // ── MEMORY LEAK RULES (promoted to error for widgets) ──
+        // Leaks increase heap → GC pauses → blocks main thread → worse INP
+
+        "no-restricted-globals": [
+          "error",
+          {
+            "name": "event",
+            "message": "Use local event parameter instead of global 'event'."
+          }
+        ]
+      }
+    },
+    {
+      // ═══════════════════════════════════════════════════════════════════
+      // WIDGET PERFORMANCE GOVERNANCE — WARNING-LEVEL RULES
+      // Separate override because ESLint no-restricted-syntax can only
+      // have one severity level per override block.
+      // These are educational — they don't block commits.
+      // ═══════════════════════════════════════════════════════════════════
+      "files": [
+        "src/widgets/**/*.ts",
+        "src/widgets/**/*.tsx",
+        "src/themes/**/*.ts",
+        "src/themes/**/*.tsx"
+      ],
+      "rules": {
+        // ── Using a separate key to avoid overriding the error-level rules ──
+        // ── These are captured by the scoring script via ESLint output ──
+
+        // L6: Warn on CSS background-image for large visuals
+        // background-image is invisible to preload scanner — can't use fetchpriority
+        // (Detected via scoring script since ESLint can only have one no-restricted-syntax per override)
+
+        // V2: Warn on autoplay video without muted
+        // Browsers block unmuted autoplay — video won't play
+        // (Detected via scoring script)
+
+        // I6/I7: Heavy computation warnings
+        // (Detected via scoring script — ESLint AST analysis is limited for these)
+
+        // CS3: Excessive inline style objects
+        // (Detected via scoring script)
+
+        // Promote html-link-for-pages to error for widgets
+        "@next/next/no-html-link-for-pages": "error"
+      }
+    }
+  ],
+  "rules": {
+    // CRITICAL ERRORS - Block commits (break functionality)
+    "prettier/prettier": "error",
+    "no-undef": "off",
+    "no-unused-expressions": "error",
+    "no-unreachable": "error",
+    "no-dupe-keys": "error",
+    "no-duplicate-case": "error",
+    "no-empty": "error",
+    "no-extra-boolean-cast": "error",
+    "no-func-assign": "error",
+    "no-inner-declarations": "error",
+    "no-invalid-regexp": "error",
+    "no-irregular-whitespace": "error",
+    "no-obj-calls": "error",
+    "no-sparse-arrays": "error",
+    "use-isnan": "error",
+    "valid-typeof": "error",
+
+    // SECURITY ERRORS - Block commits (security risks)
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-script-url": "error",
+
+    // REACT ERRORS - Block commits (break React apps)
+    "react/jsx-key": "error",
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-undef": "error",
+    "react/no-direct-mutation-state": "error",
+    "react/require-render-return": "error",
+
+    // MEMORY LEAK PREVENTION - Global Rules (Removed overly strict setInterval restriction)
+
+    // NEXT.JS PERFORMANCE - Upgraded to errors (your static pages need optimization)
+    "@next/next/no-img-element": "warn",
+    "@next/next/no-html-link-for-pages": "warn",
+    "@next/next/no-sync-scripts": "warn",
+
+    // NEXT.JS WARNINGS - Allow commits (development flexibility)
+    "@next/next/no-assign-module-variable": "warn",
+    "react/no-unknown-property": "warn",
+
+    // TYPESCRIPT ERRORS - Block commits (type safety)
+    "@typescript-eslint/no-var-requires": "error",
+    "@typescript-eslint/ban-ts-comment": "error",
+
+    // CODE QUALITY WARNINGS - Allow commits (best practices)
+
+    // Disable base rule to avoid conflicts with unused-imports plugin
+    "@typescript-eslint/no-unused-vars": "off",
+    // Auto-remove unused imports on save
+    "unused-imports/no-unused-imports": "warn",
+    "unused-imports/no-unused-vars": [
+      "warn",
+      {
+        "vars": "all",
+        "varsIgnorePattern": "^_",
+        "args": "after-used",
+        "argsIgnorePattern": "^_"
+      }
+    ],
+    "@typescript-eslint/no-explicit-any": "warn",
+    "@typescript-eslint/explicit-function-return-type": "off",
+    "@typescript-eslint/explicit-module-boundary-types": "off",
+    "@typescript-eslint/no-empty-function": "warn",
+    "prefer-const": "warn",
+    "no-var": "warn",
+    "no-console": "warn",
+    "eqeqeq": "warn",
+    "curly": "warn",
+    "react-hooks/exhaustive-deps": "warn",
+    "react/no-unescaped-entities": "warn"
+  },
+  "env": {
+    "browser": true,
+    "es2021": true,
+    "node": true
+  }
+}

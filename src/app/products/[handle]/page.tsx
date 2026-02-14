@@ -13,18 +13,18 @@ export const revalidate = 3600;
 export const dynamicParams = true;
 
 const seoSystem = SEOFactory.createForEnvironment(
-  process.env.NODE_ENV as "development" | "staging" | "production",
+  process.env.NODE_ENV as "development" | "staging" | "production"
 );
 
 export async function generateStaticParams() {
   const homepageFeaturedCollections = process.env.HOMEPAGE_FEATURED_COLLECTIONS;
   const productsPerCollection = parseInt(
-    process.env.HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT || "8",
+    process.env.HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT || "8"
   );
 
   if (!homepageFeaturedCollections) {
     console.error(
-      "HOMEPAGE_FEATURED_COLLECTIONS environment variable not found",
+      "HOMEPAGE_FEATURED_COLLECTIONS environment variable not found"
     );
     return [];
   }
@@ -45,8 +45,8 @@ export async function generateStaticParams() {
       })
       .then((collectionResponse: any) => {
         if (collectionResponse?.products) {
-          return collectionResponse.products.flatMap(
-            (product: any) => (product?.handle ? [product.handle] : []),
+          return collectionResponse.products.flatMap((product: any) =>
+            product?.handle ? [product.handle] : []
           );
         }
         return [];
@@ -54,7 +54,7 @@ export async function generateStaticParams() {
       .catch((err: any) => {
         console.warn(`Collection handle '${handle}' not found, skipping`);
         return [];
-      }),
+      })
   );
 
   // Wait for all collection requests to complete in parallel
@@ -130,7 +130,7 @@ export async function generateMetadata({
           type: "application/ld+json" as const,
           children: JSON.stringify(schema),
           key: `structured-data-${index}`,
-        }),
+        })
       );
 
       return {
@@ -139,7 +139,7 @@ export async function generateMetadata({
           ...metadata.other,
           // Add structured data as script tags in head
           "script:type=application/ld+json": structuredDataScripts.map(
-            (script) => script.children,
+            (script) => script.children
           ),
         },
       };
@@ -199,8 +199,11 @@ export default async function ProductPage({
           productData={{
             id: product.id,
             title: product.title,
-            price: parseFloat(product.priceRange?.minVariantPrice?.amount || "0"),
-            currency: product.priceRange?.minVariantPrice?.currencyCode || "INR",
+            price: parseFloat(
+              product.priceRange?.minVariantPrice?.amount || "0"
+            ),
+            currency:
+              product.priceRange?.minVariantPrice?.currencyCode || "INR",
           }}
         />
         {pageContent}

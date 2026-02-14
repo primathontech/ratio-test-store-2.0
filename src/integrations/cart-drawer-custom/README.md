@@ -89,9 +89,9 @@ function CartIcon() {
 
 ### CustomCartDrawer
 
-| Prop | Type | Default | Description |
-|------|------|---------|-------------|
-| `locale` | "en" | "en" | Locale for translations |
+| Prop     | Type | Default | Description             |
+| -------- | ---- | ------- | ----------------------- |
+| `locale` | "en" | "en"    | Locale for translations |
 
 ## Exports
 
@@ -100,7 +100,11 @@ function CartIcon() {
 export { CustomCartDrawer } from "./CustomCartDrawer";
 
 // Types
-export type { CustomCartDrawerProps, CouponOffer, UseCouponsReturn } from "./types";
+export type {
+  CustomCartDrawerProps,
+  CouponOffer,
+  UseCouponsReturn,
+} from "./types";
 ```
 
 ## Component Hierarchy
@@ -125,6 +129,7 @@ CustomCartDrawer
 ## Features
 
 ### Cart Items
+
 - Product image, title, variant
 - Quantity increment/decrement buttons
 - Remove item button
@@ -132,17 +137,20 @@ CustomCartDrawer
 - Price display with formatting
 
 ### Coupon Offers
+
 - Fetches available coupons via `useCoupons` hook
 - Displays coupon cards with copy functionality
 - Loading skeletons during fetch
 - Horizontal scroll for multiple coupons
 
 ### Custom Cursor
+
 - Shows a close icon when hovering over the overlay
 - Follows mouse position
 - Hidden when over the cart drawer or modals
 
 ### Body Scroll Lock
+
 - Prevents body scrolling when cart is open
 - Restores scroll on close
 
@@ -160,11 +168,11 @@ content: [
 
 ### Key CSS Classes
 
-| Element | Classes |
-|---------|---------|
-| Overlay | `fixed inset-0 bg-cart-overlay-dark` |
-| Drawer | `fixed top-0 right-0 max-w-[460px] h-full bg-white` |
-| Animation | `transition-transform translate-x-0/full` |
+| Element   | Classes                                             |
+| --------- | --------------------------------------------------- |
+| Overlay   | `fixed inset-0 bg-cart-overlay-dark`                |
+| Drawer    | `fixed top-0 right-0 max-w-[460px] h-full bg-white` |
+| Animation | `transition-transform translate-x-0/full`           |
 
 ## Dependencies
 
@@ -175,12 +183,12 @@ content: [
 
 ## Differences from cart-drawer-shopify
 
-| Feature | cart-drawer-custom | cart-drawer-shopify |
-|---------|-------------------|---------------------|
-| Checkout button | `CheckoutButtonCustom` | `CheckoutButtonShopify` |
-| Cart summary | `CustomCartSummary` | `ShopifyCartSummary` |
-| Price formatting | Custom format | Shopify format |
-| Cart API | Custom REST | Shopify GraphQL |
+| Feature          | cart-drawer-custom     | cart-drawer-shopify     |
+| ---------------- | ---------------------- | ----------------------- |
+| Checkout button  | `CheckoutButtonCustom` | `CheckoutButtonShopify` |
+| Cart summary     | `CustomCartSummary`    | `ShopifyCartSummary`    |
+| Price formatting | Custom format          | Shopify format          |
+| Cart API         | Custom REST            | Shopify GraphQL         |
 
 ## Related Files
 

@@ -10,7 +10,7 @@ export { useContextAwareHomeURL, useContextAwareURL } from "./navigation";
 export function formatCurrency(
   amount: number,
   currencyCode: string = "INR",
-  locale: string = "en-IN",
+  locale: string = "en-IN"
 ): string {
   return new Intl.NumberFormat(locale, {
     style: "currency",
@@ -38,7 +38,7 @@ export function formatPaiseToINR(paise: number): string {
  */
 export function generateProductNavigationURL(
   handle: string,
-  collectionHandle?: string,
+  collectionHandle?: string
 ): string {
   if (collectionHandle) {
     return `/collections/${collectionHandle}/products/${handle}`;
@@ -50,7 +50,9 @@ export function generateProductNavigationURL(
  * Truncate a string to a maximum length
  */
 export function truncate(str: string, maxLength: number): string {
-  if (str.length <= maxLength) return str;
+  if (str.length <= maxLength) {
+    return str;
+  }
   return str.slice(0, maxLength - 3) + "...";
 }
 
@@ -91,7 +93,7 @@ export function getMerchantName(): string {
  */
 export function formatPrice(
   amount: number,
-  currencyCode: string = "INR",
+  currencyCode: string = "INR"
 ): string {
   return new Intl.NumberFormat("en-IN", {
     style: "currency",

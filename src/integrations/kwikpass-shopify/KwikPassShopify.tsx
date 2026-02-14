@@ -71,7 +71,7 @@ export default function KwikPassShopify() {
         }
       }
     },
-    [login],
+    [login]
   );
 
   // Effect hook to add event listeners once the script is loaded
