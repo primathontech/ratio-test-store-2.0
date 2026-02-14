@@ -7,10 +7,11 @@ A production-ready, performance-optimized e-commerce storefront built with **Nex
 - **Next.js 14** with App Router and Server Components
 - **Modular Widget System** - Reusable, configurable components with A/B variant support
 - **Theme Support** - Easy customization via JSON configuration
-- **Multi-platform** - Works with Shopify or custom backends
+- **Custom Backend Support** - Built for GoKwik's microservices architecture
+- **Shopify Compatible** - Optional Shopify Storefront API integration
 - **Performance Governance** - Built-in validation, scoring, and CI enforcement
 - **i18n Ready** - Built-in internationalization with next-intl
-- **GoKwik Integration** - Checkout and authentication
+- **GoKwik Integration** - Checkout and authentication out of the box
 
 ## Quick Start
 
@@ -22,7 +23,7 @@ cd my-store
 # Install dependencies
 bun install
 
-# Copy environment example
+# Copy environment example and configure
 cp .env.example .env.local
 
 # Start development server
@@ -30,6 +31,53 @@ bun run dev
 
 # Open http://localhost:4344
 ```
+
+## Configuration
+
+### Minimum Required Environment Variables
+
+Create a `.env.local` file with these essential variables:
+
+```env
+# =============================================================================
+# MERCHANT CONFIGURATION
+# =============================================================================
+NEXT_PUBLIC_MERCHANT_NAME=your-merchant        # Your merchant identifier
+NEXT_PUBLIC_PLATFORM=custom                    # Use 'custom' for GoKwik backend
+NEXT_PUBLIC_THEME_NAME=dawn                    # Theme to use
+
+# =============================================================================
+# SHOPIFY CONFIGURATION (Data Source)
+# =============================================================================
+# Product data is fetched from Shopify Storefront API
+SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
+SHOPIFY_API_VERSION="2025-04"
+
+NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
+NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
+NEXT_PUBLIC_SHOPIFY_API_VERSION="2025-04"
+
+# =============================================================================
+# GOKWIK CONFIGURATION
+# =============================================================================
+NEXT_PUBLIC_GOKWIK_MID="your-merchant-id"
+NEXT_PUBLIC_STORE_ID="your-merchant-id"
+NEXT_PUBLIC_MERCHANT_ID="your-merchant-id"
+
+NEXT_PUBLIC_GOKWIK_ENVIRONMENT="qa"            # qa, sandbox, or production
+NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://qa.pdp.gokwik.co"
+NEXT_PUBLIC_GOKWIK_ENABLED=true
+
+# =============================================================================
+# CUSTOM BACKEND API ENDPOINTS
+# =============================================================================
+NEXT_PUBLIC_CUSTOM_API_PRODUCT_URL="https://your-api/products"
+NEXT_PUBLIC_CUSTOM_API_CART_URL="https://your-api/orders"
+NEXT_PUBLIC_CUSTOM_API_ORDER_HISTORY_URL="https://your-api/order-history"
+```
+
+See **[ENV_GUIDE.md](./ENV_GUIDE.md)** for complete documentation of all environment variables.
 
 ## Project Structure
 
@@ -44,6 +92,9 @@ storefront-starter/
 │   ├── bootstrap/           # App initialization (builder, i18n, middleware)
 │   ├── config/              # Commerce and app configuration
 │   ├── integrations/        # Platform integrations (checkout, auth)
+│   │   ├── cart-drawer-*/   # Cart drawer implementations
+│   │   ├── checkout-*/      # Checkout integrations (GoKwik)
+│   │   └── kwikpass-*/      # Authentication (KwikPass)
 │   ├── locales/             # i18n translation files
 │   ├── themes/              # Theme configurations and templates
 │   │   └── dawn/            # Default theme
@@ -57,6 +108,38 @@ storefront-starter/
 ├── .eslintrc.json           # ESLint with performance rules
 ├── .prettierrc              # Prettier configuration
 └── package.json
+```
+
+## Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        STOREFRONT STARTER                        │
+├─────────────────────────────────────────────────────────────────┤
+│                                                                  │
+│  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐       │
+│  │   Shopify    │    │   GoKwik     │    │   GoKwik     │       │
+│  │  Storefront  │    │    Cart      │    │   Checkout   │       │
+│  │     API      │    │   Service    │    │   (PDP SDK)  │       │
+│  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘       │
+│         │                   │                   │                │
+│         ▼                   ▼                   ▼                │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │                    DATA LAYER                            │    │
+│  │  • Product data from Shopify                            │    │
+│  │  • Cart management via GoKwik                           │    │
+│  │  • Checkout via GoKwik PDP SDK                          │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                              │                                   │
+│                              ▼                                   │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │                   WIDGET SYSTEM                          │    │
+│  │  • Header, Footer, PageContent                          │    │
+│  │  • A/B variant support                                  │    │
+│  │  • Theme-aware styling                                  │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                                                                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 ## CLI Commands
@@ -189,39 +272,43 @@ bun run g:theme minimal
 
 Creates a complete theme structure with templates and locales.
 
-## Environment Variables
+## Integrations
 
-See **[ENV_GUIDE.md](./ENV_GUIDE.md)** for complete documentation.
+### GoKwik Checkout
 
-### Quick Reference
+The storefront uses GoKwik's PDP SDK for checkout. Configuration:
 
 ```env
-# Platform
-PLATFORM=shopify                    # or 'custom'
-MERCHANT_NAME=dawn                  # Theme/merchant name
+NEXT_PUBLIC_GOKWIK_MID="your-merchant-id"
+NEXT_PUBLIC_GOKWIK_ENVIRONMENT="qa"          # qa, sandbox, production
+NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://qa.pdp.gokwik.co"
+```
 
-# Shopify
-NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
-NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
+| Environment | Script URL                      |
+| ----------- | ------------------------------- |
+| QA          | `https://qa.pdp.gokwik.co`      |
+| Sandbox     | `https://sandbox.pdp.gokwik.co` |
+| Production  | `https://pdp.gokwik.co`         |
+
+### Custom Backend APIs
+
+The storefront connects to these microservices:
+
+| Service         | Environment Variable                       | Purpose            |
+| --------------- | ------------------------------------------ | ------------------ |
+| Product Service | `NEXT_PUBLIC_CUSTOM_API_PRODUCT_URL`       | Product catalog    |
+| Cart Service    | `NEXT_PUBLIC_CUSTOM_API_CART_URL`          | Cart operations    |
+| Order History   | `NEXT_PUBLIC_CUSTOM_API_ORDER_HISTORY_URL` | Order tracking     |
+| Inventory       | `NEXT_PUBLIC_CUSTOM_API_INVENTORY_URL`     | Stock availability |
+| Discounts       | `NEXT_PUBLIC_GOKWIK_DISCOUNT_API_URL`      | Coupon/discounts   |
+
+### Shopify (Optional)
+
+If using Shopify as product data source:
+
+```env
+SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
 SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
-SHOPIFY_ADMIN_ACCESS_TOKEN=your-admin-token
-SHOPIFY_API_VERSION=2025-04
-
-# Custom Backend (if PLATFORM=custom)
-NEXT_PUBLIC_CUSTOM_API_URL=https://api.yourstore.com
-NEXT_PUBLIC_MERCHANT_ID=your-merchant-id
-
-# GoKwik Checkout
-NEXT_PUBLIC_GOKWIK_MID=your-merchant-id
-NEXT_PUBLIC_GOKWIK_ENVIRONMENT=sandbox
-
-# KwikPass Auth
-NEXT_PUBLIC_KWIKPASS_MID=your-merchant-id
-NEXT_PUBLIC_KWIKPASS_ENVIRONMENT=sandbox
-
-# Analytics (optional)
-NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_FB_PIXEL_ID=123456789012345
 ```
 
 ## Commit Message Format
@@ -273,7 +360,8 @@ git merge upstream/main
 - **State**: Zustand
 - **Data Fetching**: SWR
 - **i18n**: next-intl
-- **Commerce**: Shopify Hydrogen React
+- **Commerce**: Shopify Hydrogen React (for product data)
+- **Checkout**: GoKwik PDP SDK
 - **Icons**: Radix UI Icons
 - **Carousel**: Embla Carousel
 
