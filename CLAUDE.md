@@ -140,7 +140,7 @@ Read src/SYSTEM_ARCHITECTURE.md section "Templates"
 ### Add to Cart Functionality
 ```
 Add an "Add to Cart" button to my ProductCard component.
-- Use useAddToCart hook from @shopkit/cart
+- Use useCart hook from @shopkit/cart
 - Fire analytics event after adding
 - Show loading state
 

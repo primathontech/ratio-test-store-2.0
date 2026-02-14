@@ -984,7 +984,7 @@ The cart uses Zustand for state management with localStorage persistence.
 ```typescript
 import {
   useCartStore,      // Full store access
-  useAddToCart,      // Add item hook
+  useCart,      // Add item hook
   useCartItems,      // Get cart items
   useCartCount,      // Get item count
   useCartTotal,      // Get total price
@@ -996,11 +996,11 @@ import {
 
 ```typescript
 // In ProductCard or ProductInfo widget
-import { useAddToCart } from "@shopkit/cart";
+import { useCart } from "@shopkit/cart";
 import { publishEvent, EventType } from "@shopkit/analytics";
 
 function AddToCartButton({ product, variant }) {
-  const { addToCart, isLoading } = useAddToCart();
+  const { addToCart, isLoading } = useCart();
 
   const handleAddToCart = async () => {
     // 1. Add to cart state
@@ -1198,7 +1198,7 @@ function CartSummary() {
 │           ↓                                                              │
 │  3. ADD TO CART                                                          │
 │     ┌────────────┐                                                       │
-│     │ Add Button │ → useAddToCart() called                             │
+│     │ Add Button │ → useCart() called                             │
 │     │  clicked   │ → Cart state updated (Zustand)                      │
 │     └────────────┘ → Analytics event fired                              │
 │           ↓        → Cart drawer opens (optional)                       │
@@ -1240,16 +1240,16 @@ function CartSummary() {
 | Cart drawer (Shopify) | `@/integrations/cart-drawer-shopify/` |
 | Checkout (Custom) | `@/integrations/checkout-custom/` |
 | Checkout (Shopify) | `@/integrations/checkout-shopify/` |
-| Add to cart in widget | Use `useAddToCart` from `@shopkit/cart` |
+| Add to cart in widget | Use `useCart` from `@shopkit/cart` |
 | Analytics events | Use `publishEvent` from `@shopkit/analytics` |
 
 ### 7. Common Patterns
 
 **Add to Cart in a Widget:**
 ```typescript
-import { useAddToCart, useCartStore } from "@shopkit/cart";
+import { useCart, useCartStore } from "@shopkit/cart";
 
-const { addToCart, isLoading } = useAddToCart();
+const { addToCart, isLoading } = useCart();
 
 // Add item
 await addToCart({ variantId, quantity: 1, product: {...} });

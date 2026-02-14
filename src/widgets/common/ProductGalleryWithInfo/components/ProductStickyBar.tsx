@@ -5,7 +5,7 @@ import Image from "next/image";
 import { useResponsive } from "@/hooks";
 import { calculateDiscountPercentage } from "../utils";
 import { EventType, publishEvent } from "shopkit-analytics";
-import { useAddToCart } from "@shopkit/cart";
+import { useCartStore, mapProductToCartItem } from "@shopkit/cart";
 
 interface ProductStickyBarProps {
   data: any;
@@ -28,8 +28,9 @@ export const ProductStickyBar: React.FC<ProductStickyBarProps> = ({
   discount,
   rupeeSymbol,
 }) => {
-  const { addToCart, loadingStates } = useAddToCart();
+  const { addItem } = useCartStore();
   const { isTablet } = useResponsive();
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
   const isLoading = loadingStates[data?.id] || false;
   const isAvailable = data?.availableForSale !== false;
 
@@ -53,6 +54,7 @@ export const ProductStickyBar: React.FC<ProductStickyBarProps> = ({
 
   const handleAddToCart = async () => {
     try {
+      setLoadingStates((prev) => ({ ...prev, [data?.id]: true }));
       publishEvent({
         type: EventType.ADD_TO_CART,
         productId: data?.id,
@@ -61,13 +63,12 @@ export const ProductStickyBar: React.FC<ProductStickyBarProps> = ({
         currency: "INR",
         quantity: 1,
       });
-      await addToCart({
-        ...data,
-        variantId: selectedVariantId || data.variantId,
-        quantity: 1,
-      });
+      const cartItem = mapProductToCartItem(data, selectedVariantId || data.variantId, 1);
+      await addItem(cartItem);
     } catch (error) {
       console.error("Failed to add to cart:", error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, [data?.id]: false }));
     }
   };
 

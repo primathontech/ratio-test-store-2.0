@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Spinner from "../../ProductGrid/common/Spinner";
-import { useAddToCart } from "@shopkit/cart";
+import { useCartStore, mapProductToCartItem } from "@shopkit/cart";
 
 interface AddToCartWithQuantityProps {
   product: any;
@@ -23,7 +23,8 @@ export function AddToCartWithQuantity({
 }: AddToCartWithQuantityProps) {
   const [quantity, setQuantity] = useState(initialQuantity);
   const [inputValue, setInputValue] = useState(initialQuantity.toString());
-  const { addToCart, loadingStates } = useAddToCart();
+  const { addItem } = useCartStore();
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
 
   const isLoading = loadingStates[product.id] || false;
 
@@ -77,13 +78,13 @@ export function AddToCartWithQuantity({
 
   const handleAddToCart = async () => {
     try {
-      await addToCart({
-        ...product,
-        variantId: selectedVariantId || product.variantId,
-        quantity,
-      });
+      setLoadingStates((prev) => ({ ...prev, [product.id]: true }));
+      const cartItem = mapProductToCartItem(product, selectedVariantId || product.variantId, quantity);
+      await addItem(cartItem);
     } catch (error) {
       console.error("Failed to add to cart:", error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, [product.id]: false }));
     }
   };
 

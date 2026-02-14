@@ -9,7 +9,7 @@
 | `@shopkit/core` | Theme system & auth context | `ThemeProvider`, `useAuth` |
 | `@shopkit/builder` | Configuration-driven page building | `createPageBuilder`, `WidgetRegistry` |
 | `@shopkit/data-layer` | Commerce API abstraction | `createCommerceClient` |
-| `@shopkit/cart` | Cart state management (Zustand) | `useCartStore`, `useAddToCart` |
+| `@shopkit/cart` | Cart state management (Zustand) | `useCartStore`, `useCart` |
 | `@shopkit/discounts` | Discount/coupon system | `useDiscount` |
 | `@shopkit/analytics` | Multi-platform event tracking | `ShopkitAnalytics`, `publishEvent` |
 | `@shopkit/i18n` | Internationalization | `useTranslation`, `TranslationService` |
@@ -379,7 +379,7 @@ import {
   configureCart,
 
   // Hooks
-  useAddToCart,
+  useCart,
   useCartCount,
   useCartItems,
   useCartTotal,
@@ -413,7 +413,7 @@ configureCart({
 ```typescript
 // Add to cart
 function AddToCartButton({ product, variant }) {
-  const { addToCart, isLoading } = useAddToCart();
+  const { addToCart, isLoading } = useCart();
 
   const handleAdd = () => {
     addToCart({
@@ -1338,7 +1338,7 @@ export default async function ProductPage({ params }) {
 ```typescript
 import type { WidgetProps } from "@shopkit/builder";
 import { useTranslation } from "@shopkit/i18n/client";
-import { useAddToCart } from "@shopkit/cart";
+import { useCart } from "@shopkit/cart";
 import { publishEvent, EventType } from "@shopkit/analytics";
 
 interface ProductGridProps extends WidgetProps {
@@ -1348,7 +1348,7 @@ interface ProductGridProps extends WidgetProps {
 
 export function ProductGrid({ products, columns, breakpoint }: ProductGridProps) {
   const t = useTranslation();
-  const { addToCart } = useAddToCart();
+  const { addToCart } = useCart();
 
   const handleAddToCart = (product: Product) => {
     addToCart({ ... });
@@ -1397,7 +1397,7 @@ The `bootstrap/` folder centralizes package configurations (composition roots) s
 
 ```typescript
 // ✅ PREFERRED: Direct package imports
-import { useCartStore, useAddToCart } from "@shopkit/cart";
+import { useCartStore, useCart } from "@shopkit/cart";
 import { useDiscount } from "@shopkit/discounts";
 
 // ✅ PREFERRED: Bootstrap utilities for configured instances
@@ -1517,7 +1517,7 @@ storefront-builder/
 │   ├── cart/                    # Cart state
 │   │   └── src/
 │   │       ├── store.ts         # Zustand store
-│   │       ├── hooks/           # useAddToCart, etc.
+│   │       ├── hooks/           # useCart, etc.
 │   │       └── services/        # CartService, CartStorage
 │   │
 │   ├── discounts/               # Discount system

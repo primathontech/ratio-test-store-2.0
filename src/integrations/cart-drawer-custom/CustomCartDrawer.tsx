@@ -30,8 +30,10 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
     closeCart,
     openCart,
     removeItem,
-    updateItemQuantity,
-    isLoading,
+    incrementItem,
+    decrementItem,
+    setItemQuantity,
+    isLoading: isLoading,
     error,
     cartToken,
   } = useCartStore();
@@ -84,29 +86,19 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
   };
 
   // Enhanced cart action handlers with individual loading states
-  const handleQuantityIncrement = async (
-    itemId: string,
-    currentQuantity: number,
-  ) => {
+  const handleQuantityIncrement = async (itemId: string) => {
     setItemLoading(itemId, "increment");
     try {
-      await updateItemQuantity(itemId, currentQuantity + 1);
+      await incrementItem(itemId);
     } finally {
       setItemLoading(itemId, null);
     }
   };
 
-  const handleQuantityDecrement = async (
-    itemId: string,
-    currentQuantity: number,
-  ) => {
-    if (currentQuantity <= 1) {
-      return;
-    }
-
+  const handleQuantityDecrement = async (itemId: string) => {
     setItemLoading(itemId, "decrement");
     try {
-      await updateItemQuantity(itemId, Math.max(1, currentQuantity - 1));
+      await decrementItem(itemId);
     } finally {
       setItemLoading(itemId, null);
     }
@@ -289,7 +281,7 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
                         item={item}
                         finalCurrencyCode={finalCurrencyCode}
                         loadingStates={loadingStates}
-                        updateItemQuantity={updateItemQuantity}
+                        setItemQuantity={setItemQuantity}
                         onQuantityIncrement={handleQuantityIncrement}
                         onQuantityDecrement={handleQuantityDecrement}
                         onItemRemove={handleItemRemove}

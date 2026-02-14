@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 
-import { useCartQuantity, useResponsive } from "@/hooks";
+import { useResponsive } from "@/hooks";
 
 import { Box } from "@/ui/atomic";
 import { ProductGridProps, ProductResponse } from "../types";
@@ -15,7 +15,7 @@ import { EventType, publishEvent } from "shopkit-analytics";
 import { LazyViewAllButton } from "../components/LazyViewAllButton";
 
 import "../style.css";
-import { useAddToCart } from "@shopkit/cart";
+import { useCartStore, mapProductToCartItem } from "@shopkit/cart";
 
 /**
  * ProductGrid V2 Component - Tabbed Collections Version
@@ -31,15 +31,23 @@ import { useAddToCart } from "@shopkit/cart";
  */
 
 export function V2({ data, settings }: ProductGridProps) {
-  const { addToCart } = useAddToCart();
   const { isMobileTab, isTablet } = useResponsive();
-  const {
-    incrementQuantity,
-    decrementQuantity,
-    isInCart,
-    getCartItem,
-    isProductLoading,
-  } = useCartQuantity();
+  const { addItem, incrementItem, decrementItem, items, loadingItems } = useCartStore();
+
+  // Helper functions to work with cart items
+  const getCartItem = (product: any) => {
+    const variantId = product?.variant?.id || product?.variantId;
+    return items.find((item) => item.variantId === variantId);
+  };
+
+  const isInCart = (product: any) => {
+    return !!getCartItem(product);
+  };
+
+  const isProductLoading = (product: any) => {
+    const variantId = product?.variant?.id || product?.variantId;
+    return loadingItems[variantId] || false;
+  };
 
   // Destructure all settings in one place
   const {
@@ -106,6 +114,7 @@ export function V2({ data, settings }: ProductGridProps) {
   };
   const handleAddToCart = async (product: ProductResponse) => {
     const currentPrice = (Number(product?.price) || 0) / 100;
+    const variantId = product?.variant?.id || (product as any)?.variantId;
     try {
       publishEvent({
         type: EventType.ADD_TO_CART,
@@ -117,15 +126,29 @@ export function V2({ data, settings }: ProductGridProps) {
       });
       // Normalize product structure: API returns product.variant (single object)
       // but cart mapper expects product.variants (array)
-      const variantId = product?.variant?.id;
       const normalizedProduct = {
         ...product,
         variants:
           (product as any)?.variants || (product?.variant ? [product.variant] : []),
       };
-      await addToCart(normalizedProduct, variantId, 1);
+      const cartItem = mapProductToCartItem(normalizedProduct, variantId, 1);
+      await addItem(cartItem);
     } catch (error) {
       console.error("Failed to add product to cart:", error);
+    }
+  };
+
+  const handleIncrement = async (product: ProductResponse) => {
+    const cartItem = getCartItem(product);
+    if (cartItem) {
+      await incrementItem(cartItem.id);
+    }
+  };
+
+  const handleDecrement = async (product: ProductResponse) => {
+    const cartItem = getCartItem(product);
+    if (cartItem) {
+      await decrementItem(cartItem.id);
     }
   };
 
@@ -221,8 +244,8 @@ export function V2({ data, settings }: ProductGridProps) {
           >
             {productsToDisplay.map((product: any) => {
               const productAddToCart = () => handleAddToCart(product);
-              const productIncrement = () => incrementQuantity(product);
-              const productDecrement = () => decrementQuantity(product);
+              const productIncrement = () => handleIncrement(product);
+              const productDecrement = () => handleDecrement(product);
 
               return (
                 <ProductCard

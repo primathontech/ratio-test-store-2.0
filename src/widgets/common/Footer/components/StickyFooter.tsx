@@ -10,8 +10,9 @@ import { EventType, publishEvent } from "shopkit-analytics";
 import {
   useCartCount,
   useCartTotalQuantity,
-  useAddToCart,
   useCartToggle,
+  useCartStore,
+  mapProductToCartItem,
 } from "@shopkit/cart";
 
 export type MobileNavigationItem = {
@@ -39,8 +40,9 @@ export const StickyFooter = ({
   const pathname = usePathname();
   const itemCount = useCartCount();
   const totalQuantity = useCartTotalQuantity();
-  const { addToCart, loadingStates } = useAddToCart();
+  const { addItem, isLoading: cartIsLoading } = useCartStore();
   const toggleCart = useCartToggle();
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
 
   const [showGreenTransition, setShowGreenTransition] = useState(false);
   const [showBlackTransition, setShowBlackTransition] = useState(false);
@@ -109,6 +111,7 @@ export const StickyFooter = ({
     }
 
     try {
+      setLoadingStates((prev) => ({ ...prev, [productData.id]: true }));
       publishEvent({
         type: EventType.ADD_TO_CART,
         productId: productData?.id,
@@ -117,9 +120,12 @@ export const StickyFooter = ({
         currency: "INR",
         quantity: 1,
       });
-      await addToCart(productData, selectedVariantId, 1);
+      const cartItem = mapProductToCartItem(productData, selectedVariantId, 1);
+      await addItem(cartItem);
     } catch (error) {
       console.error("Failed to add to cart:", error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, [productData.id]: false }));
     }
   };
 

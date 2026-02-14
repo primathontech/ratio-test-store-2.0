@@ -8,7 +8,7 @@ import { ProductGridProps } from "../types";
 import ProductCard from "../common/ProductCard";
 import { BbluntCarousel } from "../common/BbluntCarousel";
 import "../style.css";
-import { useAddToCart } from "@shopkit/cart";
+import { useCartStore, mapProductToCartItem } from "@shopkit/cart";
 
 /**
  * ProductGrid V2 Component - Carousel Version
@@ -24,16 +24,15 @@ import { useAddToCart } from "@shopkit/cart";
  */
 
 export function V1({ data, settings }: ProductGridProps) {
-  const { addToCart, loadingStates } = useAddToCart();
+  const { addItem } = useCartStore();
   const { isMobileTab, isTablet } = useResponsive();
 
   // Handle add to cart for individual products
   const handleAddToCart = async (product: any) => {
     try {
-      await addToCart({
-        ...product,
-        quantity: 1,
-      });
+      const variantId = product?.variant?.id || product?.variantId;
+      const cartItem = mapProductToCartItem(product, variantId, 1);
+      await addItem(cartItem);
     } catch (error) {
       console.error("Failed to add product to cart:", error);
     }

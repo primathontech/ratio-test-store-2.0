@@ -12,7 +12,7 @@ import { generateProductNavigationURL } from "@/utils/navigation";
 import Spinner from "../../ProductGrid/common/Spinner";
 import { ProductCardToast } from "../../ProductGrid/common/ProductCardToast";
 import { EventType, publishEvent } from "shopkit-analytics";
-import { useAddToCart, useCartStore } from "@shopkit/cart";
+import { useCartStore, mapProductToCartItem } from "@shopkit/cart";
 
 enum PRODUCT_INFO_METAFIELD_KEYS {
   RATING = "rating",
@@ -65,15 +65,15 @@ export function BbluntProductInfo(props: BbluntProductInfoData) {
   const [selectedVariantId, setSelectedVariantId] = useState<string>();
   const { isMobile, isTablet, isDesktop } = useResponsive();
   const showMobileLikeLayout = isMobile || isTablet;
-  const { addToCart, loadingStates } = useAddToCart();
+  const { addItem, isOpen: isCartOpen, isLoading: cartIsLoading } = useCartStore();
+  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>({});
   const isLoading = loadingStates[data?.id] || false;
   const router = useRouter();
   const pathname = usePathname();
   const [showToast, setShowToast] = useState(false);
-  const isCartOpen = useCartStore((state) => state.isOpen);
-  const cartIsLoading = useCartStore((state) => state.isLoading);
   const handleAddToCart = async () => {
     try {
+      setLoadingStates((prev) => ({ ...prev, [data?.id]: true }));
       publishEvent({
         type: EventType.ADD_TO_CART,
         productId: data?.id,
@@ -82,16 +82,15 @@ export function BbluntProductInfo(props: BbluntProductInfoData) {
         currency: "INR",
         quantity: 1,
       });
-      await addToCart({
-        ...data,
-        variantId: selectedVariantId || data.variantId,
-        quantity: 1,
-      });
+      const cartItem = mapProductToCartItem(data, selectedVariantId || data.variantId, 1);
+      await addItem(cartItem);
       if (!isCartOpen) {
         setShowToast(true);
       }
     } catch (error) {
       console.error("Failed to add to cart:", error);
+    } finally {
+      setLoadingStates((prev) => ({ ...prev, [data?.id]: false }));
     }
   };
 

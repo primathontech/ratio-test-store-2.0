@@ -14,7 +14,7 @@ import { ProductResponse } from "../types";
 import { formatPaiseToINR } from "@/utils";
 import { ProductCardToast } from "./ProductCardToast";
 import { normalizeValue } from "../../ProductAdditionalInfoSection/utils/getAdditionalInfoItems";
-import { CartItem, useCartStore } from "@shopkit/cart";
+import { CartItem,  useCartStore } from "@shopkit/cart";
 
 interface ProductCardProps {
   product: ProductResponse;
@@ -65,8 +65,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
   const [isLoading, setIsLoading] = useState(false);
 
   const [showToast, setShowToast] = useState(false);
-  const isCartOpen = useCartStore((state) => state.isOpen);
-  const cartIsLoading = useCartStore((state) => state.isLoading);
+  const { isOpen: isCartOpen, isLoading: cartIsLoading } = useCartStore();
   const {
     showActionButton = true,
     actionButtonText = "Add to cart",

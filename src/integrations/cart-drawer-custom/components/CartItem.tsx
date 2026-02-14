@@ -13,18 +13,9 @@ interface CartItemProps {
   loadingStates: {
     [key: string]: "increment" | "decrement" | "remove" | "add" | null;
   };
-  updateItemQuantity: (
-    itemId: string,
-    currentQuantity: number,
-  ) => Promise<void>;
-  onQuantityIncrement: (
-    itemId: string,
-    currentQuantity: number,
-  ) => Promise<void>;
-  onQuantityDecrement: (
-    itemId: string,
-    currentQuantity: number,
-  ) => Promise<void>;
+  setItemQuantity: (itemId: string, quantity: number) => Promise<void>;
+  onQuantityIncrement: (itemId: string) => Promise<void>;
+  onQuantityDecrement: (itemId: string) => Promise<void>;
   onItemRemove: (itemId: string) => Promise<void>;
 }
 
@@ -36,7 +27,7 @@ export const CartItem: React.FC<CartItemProps> = ({
   loadingStates,
   onQuantityIncrement,
   onQuantityDecrement,
-  updateItemQuantity,
+  setItemQuantity,
   onItemRemove,
 }) => {
   const { closeCart } = useCartStore();
@@ -104,7 +95,7 @@ export const CartItem: React.FC<CartItemProps> = ({
       setInputValue("1");
       setIsUpdating(true);
       try {
-        await onQuantityIncrement(item.id, 0); // This will set quantity to 1
+        await setItemQuantity(item.id, 1);
       } finally {
         setIsUpdating(false);
       }
@@ -136,7 +127,7 @@ export const CartItem: React.FC<CartItemProps> = ({
     if (finalQuantity !== item.quantity) {
       setIsUpdating(true);
       try {
-        await updateItemQuantity(item.id, finalQuantity);
+        await setItemQuantity(item.id, finalQuantity);
       } finally {
         setIsUpdating(false);
       }
@@ -186,13 +177,7 @@ export const CartItem: React.FC<CartItemProps> = ({
 
   // Handler for decrement button click
   const handleDecrementClick = async () => {
-    if (item.quantity === 1) {
-      // If quantity is 1, remove the item
-      await handleRemoveClick();
-    } else {
-      // If quantity > 1, decrement normally
-      await onQuantityDecrement(item.id, item.quantity);
-    }
+    await onQuantityDecrement(item.id);
   };
 
   // Handler for increment button click with max quantity check
@@ -206,7 +191,7 @@ export const CartItem: React.FC<CartItemProps> = ({
         currency: "INR",
         quantity: 1,
       });
-      await onQuantityIncrement(item.id, item.quantity);
+      await onQuantityIncrement(item.id);
     }
   };
 
