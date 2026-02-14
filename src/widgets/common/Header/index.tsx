@@ -1,30 +1,21 @@
 "use client";
 
 import React from "react";
-import { HeaderVariants } from "./variants";
 import { HeaderProps } from "./types";
+import { HeaderVariants } from "./variants";
 
 /**
- * Main Header Component
- * Renders the appropriate variant based on settings
+ * Header Widget
+ *
+ * Renders the appropriate variant based on settings.
  */
-// Default settings
-const defaultSettings = {
-  variant: "v1",
-  isFixed: false,
-  height: 70,
-  logoWidth: 140,
-  showCartIcon: true,
-  showLanguageSwitcher: false,
-};
-
 export function Header({
   data,
-  settings = defaultSettings,
+  settings,
   className,
   locale,
 }: HeaderProps) {
-  const variant = settings.variant || "v1";
+  const variant = settings?.variant || "v1";
   const VariantComponent =
     HeaderVariants[variant as keyof typeof HeaderVariants];
 

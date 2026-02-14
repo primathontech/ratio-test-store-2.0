@@ -25,4 +25,7 @@ export const variantRegistry = {
   [TEMPLATE_TYPES["collection-b"]]: {
     default: () => import("./collection-b/default").then((m) => m.template),
   },
+  [TEMPLATE_TYPES.orders]: {
+    default: () => import("./orders/default").then((m) => m.template),
+  },
 };

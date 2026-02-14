@@ -1,36 +1,7 @@
 {
-  "dawn_collection_default": {
-    "banner_carousel": [
-      {
-        "id": 0,
-        "type": "IMAGE",
-        "mobileSrc": "https://bblunt.com/cdn/shop/files/mob_cta_freehf.jpg?v=1755509235&width=500",
-        "desktopSrc": "https://bblunt.com/cdn/shop/files/web_cta_freehf.jpg?v=1755509235&width=1400",
-        "indicatorHeading": "Bestsellers",
-        "indicatorSubHeading": "Explore more",
-        "href": "/pages/trimmers-for-men",
-        "alt": "BBLUNT Bestseller Products"
-      },
-      {
-        "id": 1,
-        "type": "VIDEO",
-        "mobileSrc": "/dawn/videos/home-banner-video-one.mp4",
-        "desktopSrc": "/dawn/videos/home-banner-video-one.mp4",
-        "indicatorHeading": "Bestsellers",
-        "indicatorSubHeading": "Shop now",
-        "href": "/collections/new-arrivals",
-        "alt": "BBLUNT New Collection"
-      },
-      {
-        "id": 2,
-        "type": "IMAGE",
-        "mobileSrc": "https://bblunt.com/cdn/shop/files/mob_cta_freehf.jpg?v=1755509235&width=500",
-        "desktopSrc": "https://bblunt.com/cdn/shop/files/web_cta_freehf.jpg?v=1755509235&width=1400",
-        "indicatorHeading": "Bestsellers",
-        "indicatorSubHeading": "Explore more",
-        "href": "/pages/trimmers-for-men",
-        "alt": "BBLUNT Bestseller Products"
-      }
-    ]
+  "collections": {
+    "page_title": "Collections Page",
+    "heading": "Collections",
+    "description": "Welcome to the Collections page."
   }
 }

@@ -1,15 +1,43 @@
+"use client";
+
 import React from "react";
 import { FooterProps } from "./types";
-import { FooterV1 } from "./V1/FooterV1";
+import { FooterVariants } from "./variants";
 
-export const Footer: React.FC<FooterProps> = (props) => {
-  const { variant = "v1", ...restProps } = props;
+/**
+ * Footer Widget
+ *
+ * Renders the appropriate variant based on settings.
+ */
+export function Footer({
+  data,
+  settings,
+  className,
+  locale,
+}: FooterProps) {
+  const variant = settings?.variant || "v1";
+  const VariantComponent =
+    FooterVariants[variant as keyof typeof FooterVariants];
 
-  switch (variant) {
-    case "v1":
-    default:
-      return <FooterV1 {...restProps} />;
+  if (!VariantComponent) {
+    console.warn(`Footer variant "${variant}" not found, using default`);
+    const DefaultComponent = FooterVariants.default;
+    return (
+      <DefaultComponent
+        data={data}
+        settings={settings}
+        className={className}
+        locale={locale}
+      />
+    );
   }
-};
 
-export default Footer;
+  return (
+    <VariantComponent
+      data={data}
+      settings={settings}
+      className={className}
+      locale={locale}
+    />
+  );
+}

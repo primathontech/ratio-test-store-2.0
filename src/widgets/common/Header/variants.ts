@@ -1,10 +1,13 @@
+import React from "react";
+import { HeaderProps } from "./types";
 import { V1 } from "./V1";
-import { V2 } from "./V2";
 
-export const HeaderVariants = {
+/**
+ * Registry for all Header variants
+ */
+export const HeaderVariants: Record<string, React.FC<HeaderProps>> = {
   v1: V1,
-  v2: V2,
-  default: V1, // fallback
+  default: V1, // fallback variant
 };
 
 export type HeaderVariantType = keyof typeof HeaderVariants;

@@ -1,8 +1,0 @@
-import { V1 } from "./V1";
-
-export const ProductFaqSectionVariant = {
-  v1: V1,
-  default: V1, // fallback
-};
-
-export type ProductFaqSectionType = keyof typeof ProductFaqSectionVariant;
