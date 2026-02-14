@@ -191,5 +191,5 @@ export type { CartItem, CheckoutConfig, CheckoutEventHandlers } from "./ShopifyC
 ## Related Files
 
 - `@shopkit/cart` - Cart state management (Shopify adapter)
-- `shopkit-analytics` - Event publishing
+- `@shopkit/analytics` - Event publishing
 - `ShopifyCartSummary.tsx` - Uses this integration in cart drawer

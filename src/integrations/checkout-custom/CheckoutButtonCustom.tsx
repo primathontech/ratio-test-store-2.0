@@ -6,7 +6,7 @@
  */
 
 "use client";
-import { publishEvent, EventType } from "shopkit-analytics";
+import { publishEvent, EventType } from "@shopkit/analytics";
 import {
   convertCartItemsForCheckout,
   useCustomCheckout,

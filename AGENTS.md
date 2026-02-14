@@ -1277,7 +1277,7 @@ NEXT_PUBLIC_PIXEL_CAPI_URL=https://api.example.com/pixel
 />
 ```
 
-**Note:** Tracking context (experiment/affiliate data) is auto-generated internally using `shopkit-analytics`.
+**Note:** Tracking context (experiment/affiliate data) is auto-generated internally using `@shopkit/analytics`.
 
 ---
 

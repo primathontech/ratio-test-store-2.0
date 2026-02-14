@@ -11,7 +11,7 @@ import {
   dispatchCheckoutCompleteEvent,
   dispatchCheckoutStartEvent,
 } from "./events";
-import { publishEvent, EventType } from "shopkit-analytics";
+import { publishEvent, EventType } from "@shopkit/analytics";
 
 // Global window interface for GoKwik
 declare global {

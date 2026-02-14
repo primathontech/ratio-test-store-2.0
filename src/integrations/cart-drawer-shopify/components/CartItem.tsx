@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Box, Flex, Image } from "@/ui/atomic";
 import { formatPaiseToINR } from "@/utils";
-import { EventType, publishEvent } from "shopkit-analytics";
+import { EventType, publishEvent } from "@shopkit/analytics";
 import { useCartStore } from "@shopkit/cart";
 
 interface CartItemProps {

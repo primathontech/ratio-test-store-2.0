@@ -12,7 +12,7 @@ import {
   dispatchCheckoutCompleteEvent,
   dispatchCheckoutStartEvent,
 } from "./events";
-import { publishEvent, EventType } from "shopkit-analytics";
+import { publishEvent, EventType } from "@shopkit/analytics";
 import { getCommerceClient } from "@/config";
 import { getCheckoutConfig } from "./config";
 

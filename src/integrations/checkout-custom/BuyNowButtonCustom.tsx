@@ -3,7 +3,7 @@
 import dynamic from "next/dynamic";
 import React, { useState, useCallback } from "react";
 import { BuyNowButtonCustomProps } from "./types";
-import { publishEvent, EventType } from "shopkit-analytics";
+import { publishEvent, EventType } from "@shopkit/analytics";
 import { useCustomCheckout } from "./useCustomCheckout";
 import { getCartConfig } from "@shopkit/cart";
 
