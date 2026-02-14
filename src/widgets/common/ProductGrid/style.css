@@ -1,0 +1,131 @@
+.shine-link {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-link::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 150%;
+  width: 200%;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    var(--light_skew-color, rgba(255, 255, 255, 0.3)),
+    transparent
+  );
+  transform: skew(-20deg);
+}
+
+.shine-link:hover::before {
+  left: -150%;
+  transition: left 0.6s ease-out;
+}
+
+.badge-wrapper {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  z-index: 10;
+  height: 11px;
+
+  /* fallback color */
+  --badge-color: #ff5b6f;
+}
+
+.badge-text {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding-left: 2px;
+  padding-right: 4px;
+  background: var(--badge-color);
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+  z-index: 2;
+  letter-spacing: -0.24px;
+  font-size: 10px;
+  color: #fff;
+  font-weight: 500;
+  line-height: 1;
+  /* overflow-y: hidden; */
+}
+
+/* Bottom layer */
+.badge-text::before {
+  content: "";
+  position: absolute;
+  /* left: 4px;
+  top: 0;
+  bottom: 0; */
+  margin-left: 4px;
+  margin-bottom: -1px;
+  width: 100%;
+  border-bottom: 11px solid var(--badge-color);
+  border-right: 10px solid transparent;
+  z-index: -1;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+
+/* Top layer */
+.badge-text::after {
+  content: "";
+  position: absolute;
+  /* left: 4px;
+  top: 0;
+  bottom: 0; */
+  margin-left: 4px;
+  width: 100%;
+  border-top: 11px solid var(--badge-color);
+  border-right: 10px solid transparent;
+  z-index: -2;
+  border-top-left-radius: 2px;
+  border-bottom-left-radius: 2px;
+}
+
+/* ---------- RESPONSIVE ---------- */
+@media (min-width: 768px) {
+  .badge-wrapper {
+    top: 8px;
+    left: 8px;
+    height: 18px;
+  }
+
+  .badge-text {
+    height: 18px;
+    padding-left: 4px;
+    padding-right: 10px;
+    font-size: 14px;
+  }
+
+  .badge-text::before {
+    border-bottom: 18px solid var(--badge-color);
+    border-right: 10px solid transparent;
+    margin-left: 6px;
+  }
+
+  .badge-text::after {
+    border-top: 18px solid var(--badge-color);
+    border-right: 10px solid transparent;
+    margin-left: 6px;
+  }
+}
+
+/* Product Carousel Y-axis slide animation */
+@keyframes slideInY {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-slide-in-y {
+  animation: slideInY 0.4s linear forwards;
+}

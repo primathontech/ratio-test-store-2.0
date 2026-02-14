@@ -1,0 +1,16 @@
+{
+  "name": "Storefront",
+  "short_name": "Storefront",
+  "description": "Storefront - Shop top quality bodybuilding and gym supplements online in India at Storefront. Get the best prices on proteins, vitamins, and more crafted for your fitness goals!",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#ff6b35",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/avif"
+    }
+  ]
+}

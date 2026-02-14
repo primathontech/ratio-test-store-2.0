@@ -1,0 +1,150 @@
+{
+  "product_image_gallery": {
+    "name": "Product Image Gallery",
+    "settings": {
+      "aspect_ratio": {
+        "label": "Image ratio",
+        "options": {
+          "standard": "Standard (4:3)",
+          "classic": "Classic (3:2)",
+          "square": "Square (1:1)"
+        }
+      },
+      "show_arrows": {
+        "label": "Show navigation arrows"
+      },
+      "show_dots": {
+        "label": "Show navigation dots"
+      },
+      "auto_play": {
+        "label": "Auto-play slideshow"
+      }
+    }
+  },
+  "product_info": {
+    "name": "Product Details",
+    "settings": {
+      "show_rating": {
+        "label": "Show product rating"
+      },
+      "show_features": {
+        "label": "Show product features"
+      },
+      "show_net_content": {
+        "label": "Show net content"
+      },
+      "show_tabs": {
+        "label": "Show information tabs"
+      },
+      "default_active_tab": {
+        "label": "Default active tab"
+      },
+      "tabs": {
+        "label": "Information tabs",
+        "description": "Description",
+        "how_to_use": "How to Use",
+        "hero_ingredients": "Hero Ingredients",
+        "ingredients_list": "Ingredients List"
+      },
+      "features": {
+        "label": "Product features",
+        "gently_cleanses": "Gently Cleanses",
+        "frizz_free": "Makes Hair Frizz-Free & Straight",
+        "adds_shine": "Adds Spectacular Shine"
+      },
+      "currency_symbol": {
+        "label": "Currency symbol"
+      },
+      "price_text": {
+        "label": "Price additional text"
+      }
+    },
+    "product": {
+      "add_to_cart": "Add to Cart",
+      "added_to_cart": "Added to Cart",
+      "net_content": "Net content",
+      "inclusive_of_all_taxes": "Incl. of all taxes",
+      "reviews": "reviews",
+      "mrp": "MRP",
+      "usp": "USP",
+      "discount": "% off",
+      "select_size": "Select Size",
+      "reasons_to_love": "Reasons to Love",
+      "sold_out": "Sold out",
+      "out_of_stock": "Out of Stock",
+      "in_stock": "In Stock",
+      "limited_stock": "Limited Stock",
+      "price": "Price",
+      "compare_price": "Compare at",
+      "save": "Save {{ amount }}",
+      "description": "Description",
+      "details": "Product Details",
+      "shipping": "Shipping Information",
+      "returns": "Returns & Exchanges",
+      "customer_reviews": "Customer Reviews",
+      "select_variant": "Select {{ option }}",
+      "quantity": "Quantity",
+      "sku": "SKU",
+      "availability": "Availability",
+      "free_shipping": "Free Shipping",
+      "estimated_delivery": "Estimated Delivery"
+    }
+  },
+  "related_products": {
+    "name": "Related Products",
+    "settings": {
+      "heading": {
+        "label": "Heading",
+        "default": "You May Also Like"
+      },
+      "count": {
+        "label": "Product count"
+      },
+      "columns": {
+        "label": "Columns"
+      },
+      "card_style": {
+        "label": "Card style",
+        "options": {
+          "standard": "Standard",
+          "compact": "Compact",
+          "minimal": "Minimal"
+        }
+      },
+      "show_price": {
+        "label": "Show price"
+      },
+      "show_title": {
+        "label": "Show title"
+      },
+      "enable_hover_effects": {
+        "label": "Enable hover effects"
+      }
+    }
+  },
+  "add_to_cart_bar": {
+    "name": "Add to Cart Bar",
+    "settings": {
+      "currency_symbol": {
+        "label": "Currency symbol"
+      },
+      "add_to_cart_text": {
+        "label": "Add to cart text",
+        "default": "Add to cart"
+      },
+      "sold_out_text": {
+        "label": "Sold out text",
+        "default": "Sold out"
+      },
+      "show_quantity_selector": {
+        "label": "Show quantity selector"
+      },
+      "default_quantity": {
+        "label": "Default quantity"
+      },
+      "max_quantity": {
+        "label": "Maximum quantity"
+      }
+    }
+  }
+}
