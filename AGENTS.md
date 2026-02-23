@@ -1,4 +1,4 @@
-# Shopkit Packages - AI Agent Guide
+# Shopkit Packages — AI Agent Guide
 
 > A comprehensive guide for AI agents to understand and work with the @shopkit e-commerce package ecosystem.
 
@@ -356,11 +356,11 @@ const collection = await client.getCollection({ handle: "collection-slug" });
 const collections = await client.getCollections({ first: 10 });
 
 // Cart
-const cart = await client.getCart(cartId);
-const updatedCart = await client.addToCart(cartId, lines);
+const cart = await client.getCart({ id: cartId });
+const updatedCart = await client.addToCart({ id: cartId, items: lines });
 
 // Orders
-const orders = await client.getOrderHistory(customerId);
+const orders = await client.getOrderHistory({ customerAccessToken });
 ```
 
 **Response Pattern:**
