@@ -17,7 +17,8 @@ export const useCoupons = (): UseCouponsReturn => {
       setError(null);
 
       const client = getCommerceClient();
-      const response = await client.fetchRequest(DISCOUNT_API_URL, {
+      const response = await client.fetchRequest({
+        url: DISCOUNT_API_URL,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
