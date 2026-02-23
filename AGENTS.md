@@ -1,4 +1,4 @@
-# Shopkit Packages - AI Agent Guide
+# Shopkit Packages — AI Agent Guide
 
 > A comprehensive guide for AI agents to understand and work with the @shopkit e-commerce package ecosystem.
 
