@@ -158,12 +158,6 @@ export class ShopifyCheckoutService {
       total,
       currency: currencyCode,
     });
-
-    publishEvent({
-      type: EventType.STARTED_CHECKOUT_GK,
-      cartValue: total,
-      currency: currencyCode,
-    } as any);
   }
 
   /**
@@ -302,14 +296,6 @@ export class ShopifyCheckoutService {
       total: cartTotal,
       currency: "INR",
     });
-
-    // Publish order success events
-    publishEvent({
-      type: EventType.ORDER_COMPLETED,
-      orderId: order?.merchant_order_id || "",
-      amount: cartTotal,
-      currency: "INR",
-    } as any);
   }
 
   /**
