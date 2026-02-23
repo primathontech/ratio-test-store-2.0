@@ -13,7 +13,7 @@
         "@shopkit/app-shell": "^0.1.1",
         "@shopkit/asset-cache": "^1.0.0",
         "@shopkit/builder": "^0.1.2",
-        "@shopkit/cart": "^0.1.1",
+        "@shopkit/cart": "^0.1.2",
         "@shopkit/cli": "^0.2.0",
         "@shopkit/core": "^0.1.0",
         "@shopkit/data-layer": "^1.1.0",
@@ -509,7 +509,7 @@
 
     "@shopkit/builder": ["@shopkit/builder@0.1.2", "", { "dependencies": { "@shopkit/data-layer": "^1.1.0", "zustand": "^4.5.0" }, "peerDependencies": { "next": "^14.0.0", "react": "^18.0.0", "react-dom": "^18.0.0" } }, "sha512-PskaDJ6O1JuZKM1xoeFojl7I52sIykSrNkCQs2h41bDZ6rc4FLCLIYPW9qAvdHvviFUbV1H3XLC7z692rVt0BA=="],
 
-    "@shopkit/cart": ["@shopkit/cart@0.1.1", "", { "peerDependencies": { "react": "^18.0.0", "zustand": "^4.4.0 || ^5.0.0" } }, "sha512-+5SB+DsUhs6EVtJQ3dGeG3xgqy0BVs9AgKVnF8I8o8y2A5kUh12yPYlaZXbg/uE9fLB9o7C4cvXszA6HGqWngg=="],
+    "@shopkit/cart": ["@shopkit/cart@0.1.2", "", { "peerDependencies": { "react": "^18.0.0", "zustand": "^4.4.0 || ^5.0.0" } }, "sha512-EbZcyRLtNFqt6mMDTnzZFwNabIjNTUxr0y1gUdui14AWGwGT+Obkq6kBT5m395WrrM6L6HG9ehgWgKBhA4fFWw=="],
 
     "@shopkit/cli": ["@shopkit/cli@0.2.0", "", { "dependencies": { "picocolors": "^1.0.0" }, "bin": { "shopkit": "bin/shopkit.js" } }, "sha512-H5Ka+7j8U2iTp1StUFl2Uk8gE6ntu1jxy2/u4+YtFjCHZtt64gyLz4btEQYF9cVBH+xMSOyCUbBRQcL+J+AOfQ=="],
 
