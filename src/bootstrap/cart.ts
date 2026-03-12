@@ -21,6 +21,9 @@ import {
 } from "@shopkit/cart";
 import { createElement, useRef } from "react";
 import { getCommerceClient } from "@/config/commerce";
+import { eventBus } from "@shopkit/events";
+import { createCartEventHandler } from "@shopkit/events/emitters";
+import { createCartMapper } from "@shopkit/events/mappers";
 
 let _initialized = false;
 
@@ -32,18 +35,25 @@ let _initialized = false;
  * @param merchantName - The merchant identifier for cart storage
  */
 function setupCart(merchantName: string) {
-  if (_initialized) return;
+  if (_initialized) {
+    return;
+  }
   _initialized = true;
 
   // Use data-layer client for cart operations
   // This routes all cart API calls through the unified commerce abstraction
   const dataLayerClient = getCommerceClient();
 
+  // Wire cart events → analytics (AddToCart → Meta/GA4)
+  const cartMapper = createCartMapper("INR", 100);
+  const handleCartEvent = createCartEventHandler(eventBus, cartMapper);
+
   configureCart({
     merchantName,
     cartService: new DataLayerCartService(dataLayerClient),
     cartStorage: new DefaultCartStorage(merchantName),
     defaultCurrencyCode: "INR",
+    onCartEvent: handleCartEvent,
   });
 }
 
