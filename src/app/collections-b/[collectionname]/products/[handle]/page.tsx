@@ -210,17 +210,7 @@ export default async function CollectionProductPage({
 
     return (
       <>
-        <AppProductTracker
-          productData={{
-            id: product.id,
-            title: product.title,
-            price: parseFloat(
-              product.priceRange?.minVariantPrice?.amount || "0"
-            ),
-            currency:
-              product.priceRange?.minVariantPrice?.currencyCode || "INR",
-          }}
-        />
+        <AppProductTracker product={product} />
         {pageContent}
       </>
     );
