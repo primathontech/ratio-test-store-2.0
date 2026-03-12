@@ -5,7 +5,7 @@
  * It uses wrapper components to abstract away complexity:
  * - AppHead: Head scripts, prefetch, A/B testing
  * - AppShell: Provider nesting (theme, auth, cart, i18n)
- * - AppAnalytics: GA, PostHog, Facebook Pixel
+ * - Pixel SDKs: Meta, GA4, Google Ads (self-register with PixelRuntime)
  *
  * AI agents: Configure via environment variables.
  * Do NOT modify the wrapper components directly.
@@ -18,12 +18,14 @@ import { getTheme } from "@/bootstrap/theme";
 import { getMerchantName, getThemeName } from "@/utils";
 import { getMessages } from "next-intl/server";
 import dynamic from "next/dynamic";
+import Script from "next/script";
 import { Inter, Open_Sans } from "next/font/google";
 
-import { AppShell, AppHead, AppAnalytics } from "@shopkit/app-shell";
+import { AppShell, AppHead } from "@shopkit/app-shell";
 import { AppCartInitializer } from "@/bootstrap/cart";
 
 import "./globals.css";
+import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
 
 // =============================================================================
 // FONT CONFIGURATION
@@ -89,15 +91,33 @@ export default async function RootLayout({
 
       <body>
         {/* AppShell handles: providers, cart, auth, i18n, theme */}
-        <AppShell config={{ merchantName, locale, messages, theme }}>
+        <AppShell
+          config={{
+            merchantName,
+            locale,
+            messages,
+            theme,
+            eventConfig: {
+              pixelConfig: {
+                pixels: pixelConfig,
+              },
+              productIdentifier,
+            },
+          }}
+        >
           <KwikPassCustom />
           <AppCartInitializer merchantName={merchantName} />
           {children}
           <CustomCartDrawer locale={locale as "en"} />
         </AppShell>
 
-        {/* AppAnalytics handles: GA, PostHog, Facebook Pixel */}
-        <AppAnalytics />
+        {/* V2 Pixel SDKs — self-register with PixelRuntime */}
+        <Script src="/scripts/meta-pixel-sdk.js" strategy="afterInteractive" />
+        <Script src="/scripts/ga4-pixel-sdk.js" strategy="afterInteractive" />
+        <Script
+          src="/scripts/google-ads-pixel-sdk.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
