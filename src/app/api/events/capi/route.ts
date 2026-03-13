@@ -2,15 +2,18 @@
  * Meta CAPI Route — /api/events/capi
  *
  * Receives batched CAPI events from the Meta Pixel SDK (client-side),
- * enriches with server-side context (IP, User-Agent), and forwards
- * to Facebook's Conversions API.
+ * hashes PII with SHA-256 (Facebook requirement),
+ * enriches with server-side context (IP, User-Agent),
+ * and forwards to Facebook's Conversions API.
  *
  * Supports multi-pixel dispatch via FACEBOOK_MULTI_CAPI_ACCESS_TOKENS.
  * Format: "pixelId1:accessToken1,pixelId2:accessToken2"
  *
- * The SDK sends pre-formatted CAPI events — this route just adds
- * server-side fields and relays to Facebook.
+ * Raw PII arrives from the client SDK — this route normalizes and hashes it
+ * before sending to Facebook (email, phone, name, city, state, etc.).
  */
+
+import { createHash } from "crypto";
 
 const GRAPH_API_VERSION = "v21.0";
 
@@ -99,6 +102,103 @@ function getMultiPixelCAPIConfig(): {
   }
 
   return { pixels, error: null };
+}
+
+// ─── PII Hashing ────────────────────────────────────────
+
+/**
+ * SHA-256 hash a string (synchronous, Node.js crypto).
+ */
+function sha256(value: string): string {
+  return createHash("sha256").update(value).digest("hex");
+}
+
+/**
+ * Normalize and hash a PII value for Facebook CAPI.
+ * - Trims whitespace, lowercases
+ * - Phone: strips all non-digits
+ */
+function hashPII(value: string | undefined, field: string): string | undefined {
+  if (!value) {
+    return undefined;
+  }
+  let normalized = value.trim().toLowerCase();
+  if (field === "phone") {
+    normalized = normalized.replace(/\D/g, "");
+  }
+  if (!normalized) {
+    return undefined;
+  }
+  return sha256(normalized);
+}
+
+/**
+ * Transform raw user_data into Facebook CAPI format with hashed PII.
+ *
+ * Facebook field mapping:
+ * - em (email), ph (phone), fn (first_name), ln (last_name)
+ * - ct (city), st (state), zp (zip_code), country, db (date_of_birth)
+ * - ge (gender), external_id
+ * - fbp, fbc (not hashed — Meta identifiers)
+ * - client_ip_address, client_user_agent (not hashed — server context)
+ */
+function hashUserData(
+  raw: Record<string, string | undefined>
+): Record<string, string | undefined> {
+  const result: Record<string, string | undefined> = {};
+
+  // PII fields — normalized + SHA-256 hashed
+  if (raw.email) {
+    result.em = hashPII(raw.email, "email");
+  }
+  if (raw.phone) {
+    result.ph = hashPII(raw.phone, "phone");
+  }
+  if (raw.first_name) {
+    result.fn = hashPII(raw.first_name, "first_name");
+  }
+  if (raw.last_name) {
+    result.ln = hashPII(raw.last_name, "last_name");
+  }
+  if (raw.city) {
+    result.ct = hashPII(raw.city, "city");
+  }
+  if (raw.state) {
+    result.st = hashPII(raw.state, "state");
+  }
+  if (raw.zip_code) {
+    result.zp = hashPII(raw.zip_code, "zip_code");
+  }
+  if (raw.country) {
+    result.country = hashPII(raw.country, "country");
+  }
+  if (raw.date_of_birth) {
+    result.db = hashPII(raw.date_of_birth, "date_of_birth");
+  }
+  if (raw.gender) {
+    result.ge = hashPII(raw.gender, "gender");
+  }
+  if (raw.external_id) {
+    result.external_id = hashPII(raw.external_id, "external_id");
+  }
+
+  // Meta tracking identifiers — NOT hashed
+  if (raw.fbp) {
+    result.fbp = raw.fbp;
+  }
+  if (raw.fbc) {
+    result.fbc = raw.fbc;
+  }
+
+  // Server-side context — NOT hashed (added later in enrichment)
+  if (raw.client_ip_address) {
+    result.client_ip_address = raw.client_ip_address;
+  }
+  if (raw.client_user_agent) {
+    result.client_user_agent = raw.client_user_agent;
+  }
+
+  return result;
 }
 
 // ─── Helpers ────────────────────────────────────────────
@@ -208,21 +308,21 @@ export async function POST(request: Request) {
     }
     console.info(`[${requestId}] Step 2: ${pixels.length} pixel(s) configured`);
 
-    // Step 3: Enrich events with server-side context
+    // Step 3: Hash PII + enrich with server-side context (IP, User-Agent)
     const clientIP = getClientIP(request);
     const userAgent = request.headers.get("user-agent") ?? undefined;
 
     const enrichedEvents = body.events.map((event) => ({
       ...event,
       user_data: {
-        ...event.user_data,
+        ...hashUserData(event.user_data),
         client_ip_address: clientIP,
         client_user_agent: userAgent,
       },
     }));
 
     console.info(
-      `[${requestId}] Step 3: Enriched with IP=${clientIP ?? "unknown"}`
+      `[${requestId}] Step 3: Hashed PII + enriched with IP=${clientIP ?? "unknown"}, UA added`
     );
 
     // Step 4: Dispatch to all pixels in parallel

@@ -72,51 +72,120 @@
   var capiFlushTimer = null;
   var capiEndpoint = null; // set during register() from config
 
+  // ─── SHA-256 Hashing (Web Crypto API) ──────────────────────────────────────
+
+  /**
+   * SHA-256 hash a string (lowercase, trimmed). Returns hex digest.
+   * Uses Web Crypto API (async, available in all modern browsers).
+   */
+  function sha256(value) {
+    var normalized = value.toLowerCase().trim();
+    var encoder = new TextEncoder();
+    var data = encoder.encode(normalized);
+    return crypto.subtle.digest("SHA-256", data).then(function (buffer) {
+      var hashArray = Array.from(new Uint8Array(buffer));
+      return hashArray
+        .map(function (b) {
+          return b.toString(16).padStart(2, "0");
+        })
+        .join("");
+    });
+  }
+
   /**
    * Map SDKEvent.metadata user_data/cookies → Facebook CAPI user_data fields.
-   * PII arrives pre-hashed (SHA-256) from the UserEnricher middleware.
+   * PII fields are SHA-256 hashed before being sent to CAPI route.
+   * Pass-through fields (zp, country, external_id, fbp, fbc) are sent as-is.
    */
   function mapUserDataForCAPI(metadata) {
     var ud = (metadata && metadata.user_data) || {};
     var cookies = (metadata && metadata.cookies) || {};
     var result = {};
+    var hashPromises = [];
 
-    // Pre-hashed PII
-    if (ud.email_hash) {
-      result.em = ud.email_hash;
+    // PII fields — SHA-256 hash before sending
+    if (ud.email) {
+      hashPromises.push(
+        sha256(ud.email).then(function (h) {
+          result.em = h;
+        })
+      );
     }
-    if (ud.phone_hash) {
-      result.ph = ud.phone_hash;
+    if (ud.phone) {
+      // Digits only for phone
+      hashPromises.push(
+        sha256(ud.phone.replace(/\D/g, "")).then(function (h) {
+          result.ph = h;
+        })
+      );
     }
-    if (ud.first_name_hash) {
-      result.fn = ud.first_name_hash;
+    if (ud.first_name) {
+      hashPromises.push(
+        sha256(ud.first_name).then(function (h) {
+          result.fn = h;
+        })
+      );
     }
-    if (ud.last_name_hash) {
-      result.ln = ud.last_name_hash;
+    if (ud.last_name) {
+      hashPromises.push(
+        sha256(ud.last_name).then(function (h) {
+          result.ln = h;
+        })
+      );
     }
-    if (ud.city_hash) {
-      result.ct = ud.city_hash;
+    if (ud.city) {
+      hashPromises.push(
+        sha256(ud.city).then(function (h) {
+          result.ct = h;
+        })
+      );
     }
-    if (ud.state_hash) {
-      result.st = ud.state_hash;
+    if (ud.state) {
+      hashPromises.push(
+        sha256(ud.state).then(function (h) {
+          result.st = h;
+        })
+      );
     }
+    if (ud.date_of_birth) {
+      hashPromises.push(
+        sha256(ud.date_of_birth).then(function (h) {
+          result.db = h;
+        })
+      );
+    }
+    if (ud.gender) {
+      hashPromises.push(
+        sha256(ud.gender).then(function (h) {
+          result.ge = h;
+        })
+      );
+    }
+
+    // User data fields — also hashed per Facebook CAPI spec
     if (ud.zip_code) {
-      result.zp = ud.zip_code;
+      hashPromises.push(
+        sha256(ud.zip_code).then(function (h) {
+          result.zp = h;
+        })
+      );
     }
     if (ud.country) {
-      result.country = ud.country;
-    }
-    if (ud.date_of_birth_hash) {
-      result.db = ud.date_of_birth_hash;
-    }
-    if (ud.gender_hash) {
-      result.ge = ud.gender_hash;
+      hashPromises.push(
+        sha256(ud.country).then(function (h) {
+          result.country = h;
+        })
+      );
     }
     if (ud.external_id) {
-      result.external_id = ud.external_id;
+      hashPromises.push(
+        sha256(ud.external_id).then(function (h) {
+          result.external_id = h;
+        })
+      );
     }
 
-    // Tracking cookies (NOT hashed)
+    // Tracking cookies
     if (cookies._fbp) {
       result.fbp = cookies._fbp;
     }
@@ -124,25 +193,31 @@
       result.fbc = cookies._fbc;
     }
 
-    return result;
+    // Wait for all hashes to complete, then return result
+    return Promise.all(hashPromises).then(function () {
+      return result;
+    });
   }
 
   /**
    * Build a CAPI event from an SDKEvent.
+   * Returns a Promise because user_data hashing is async (Web Crypto).
    */
   function buildCAPIEvent(eventName, event) {
     var metadata = event.metadata || {};
     var page = metadata.page || {};
 
-    return {
-      event_name: eventName,
-      event_id: metadata.event_id,
-      event_time: Math.floor((event.timestamp || Date.now()) / 1000),
-      event_source_url: page.url,
-      action_source: "website",
-      user_data: mapUserDataForCAPI(metadata),
-      custom_data: event.properties || {},
-    };
+    return mapUserDataForCAPI(metadata).then(function (userData) {
+      return {
+        event_name: eventName,
+        event_id: metadata.event_id,
+        event_time: Math.floor((event.timestamp || Date.now()) / 1000),
+        event_source_url: page.url,
+        action_source: "website",
+        user_data: userData,
+        custom_data: event.properties || {},
+      };
+    });
   }
 
   /**
@@ -261,7 +336,8 @@
       capiQueue.shift();
     }
 
-    capiQueue.push(buildCAPIEvent(eventName, event));
+    var capiEvent = buildCAPIEvent(eventName, event);
+    capiQueue.push(capiEvent);
     log(
       "[" +
         eventId +
