@@ -316,7 +316,6 @@
 
   /**
    * Queue an event for CAPI dispatch.
-   * Async because PII hashing uses Web Crypto API.
    */
   function queueForCAPI(eventName, event) {
     if (!capiEndpoint) {
@@ -337,34 +336,33 @@
       capiQueue.shift();
     }
 
-    buildCAPIEvent(eventName, event).then(function (capiEvent) {
-      capiQueue.push(capiEvent);
+    var capiEvent = buildCAPIEvent(eventName, event);
+    capiQueue.push(capiEvent);
+    log(
+      "[" +
+        eventId +
+        "] [" +
+        eventName +
+        "] CAPI: queued (batch size: " +
+        capiQueue.length +
+        ")"
+    );
+
+    // Immediate flush for high-value events
+    if (HIGH_VALUE_EVENTS[eventName]) {
       log(
         "[" +
           eventId +
           "] [" +
           eventName +
-          "] CAPI: queued (batch size: " +
-          capiQueue.length +
-          ")"
+          "] CAPI: high-value event, flushing immediately"
       );
-
-      // Immediate flush for high-value events
-      if (HIGH_VALUE_EVENTS[eventName]) {
-        log(
-          "[" +
-            eventId +
-            "] [" +
-            eventName +
-            "] CAPI: high-value event, flushing immediately"
-        );
-        flushCAPI();
-      } else if (capiQueue.length >= MAX_BATCH_SIZE) {
-        flushCAPI();
-      } else {
-        scheduleCAPIFlush();
-      }
-    });
+      flushCAPI();
+    } else if (capiQueue.length >= MAX_BATCH_SIZE) {
+      flushCAPI();
+    } else {
+      scheduleCAPIFlush();
+    }
   }
 
   // Page lifecycle listeners for CAPI flush
