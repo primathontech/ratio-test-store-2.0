@@ -2,14 +2,13 @@
  * Meta CAPI Route — /api/events/capi
  *
  * Receives batched CAPI events from the Meta Pixel SDK (client-side),
- * enriches with server-side context (IP, User-Agent), and forwards
- * to Facebook's Conversions API.
+ * enriches with server-side context (IP, User-Agent),
+ * and forwards to Facebook's Conversions API.
  *
  * Supports multi-pixel dispatch via FACEBOOK_MULTI_CAPI_ACCESS_TOKENS.
  * Format: "pixelId1:accessToken1,pixelId2:accessToken2"
  *
- * The SDK sends pre-formatted CAPI events — this route just adds
- * server-side fields and relays to Facebook.
+ * PII hashing is done client-side in the Meta Pixel SDK before events are sent here.
  */
 
 const GRAPH_API_VERSION = "v21.0";
@@ -208,7 +207,8 @@ export async function POST(request: Request) {
     }
     console.info(`[${requestId}] Step 2: ${pixels.length} pixel(s) configured`);
 
-    // Step 3: Enrich events with server-side context
+    // Step 3: Enrich with server-side context (IP, User-Agent)
+    // PII is already hashed client-side by the Meta Pixel SDK
     const clientIP = getClientIP(request);
     const userAgent = request.headers.get("user-agent") ?? undefined;
 
@@ -222,7 +222,7 @@ export async function POST(request: Request) {
     }));
 
     console.info(
-      `[${requestId}] Step 3: Enriched with IP=${clientIP ?? "unknown"}`
+      `[${requestId}] Step 3: Enriched with IP=${clientIP ?? "unknown"}, UA added`
     );
 
     // Step 4: Dispatch to all pixels in parallel
