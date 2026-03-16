@@ -1,5 +1,13 @@
 # storefront-starter-app
 
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @shopkit/events@0.5.0
+  - @shopkit/app-shell@1.0.0
+
 ## 0.1.4
 
 ### Patch Changes
