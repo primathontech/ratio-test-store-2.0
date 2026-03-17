@@ -28,9 +28,9 @@ function validateKwikPassEnv(): void {
   }
 
   // Warn about missing optional but recommended variables
-  if (!process.env.NEXT_PUBLIC_FB_PIXEL_ID) {
+  if (!process.env.NEXT_PUBLIC_MULTI_PIXEL_IDS) {
     console.warn(
-      "NEXT_PUBLIC_FB_PIXEL_ID is not set. Facebook conversion tracking will be disabled."
+      "NEXT_PUBLIC_MULTI_PIXEL_IDS is not set. Facebook conversion tracking will be disabled."
     );
   }
 }
@@ -47,7 +47,7 @@ export function getKwikPassConfig() {
     environment: process.env.NEXT_PUBLIC_GOKWIK_ENVIRONMENT,
     type: process.env.NEXT_PUBLIC_GOKWIK_TYPE!,
     scriptUrl: process.env.NEXT_PUBLIC_GOKWIK_SCRIPT_URL!,
-    fbPixelId: process.env.NEXT_PUBLIC_FB_PIXEL_ID,
+    fbPixelId: process.env.NEXT_PUBLIC_MULTI_PIXEL_IDS,
     debug: process.env.NEXT_PUBLIC_GOKWIK_DEBUG || false,
   };
 }

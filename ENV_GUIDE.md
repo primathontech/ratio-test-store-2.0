@@ -232,17 +232,43 @@ NEXT_PUBLIC_VIDEO_APP_SDK_URL="https://cdn.example.com/video-sdk.js"
 
 ### Analytics & Tracking
 
-| Variable                        | Required | Description           |
-| ------------------------------- | -------- | --------------------- |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional | Google Analytics 4 ID |
-| `NEXT_PUBLIC_GTM_ID`            | Optional | Google Tag Manager ID |
-| `NEXT_PUBLIC_FB_PIXEL_ID`       | Optional | Facebook Pixel ID     |
+| Variable                        | Required | Description                        |
+| ------------------------------- | -------- | ---------------------------------- |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional | Google Analytics 4 ID              |
+| `NEXT_PUBLIC_GTM_ID`            | Optional | Google Tag Manager ID              |
+| `NEXT_PUBLIC_MULTI_PIXEL_IDS`   | Optional | Comma-separated Facebook Pixel IDs |
 
 ```env
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
-NEXT_PUBLIC_FB_PIXEL_ID=123456789012345
+NEXT_PUBLIC_MULTI_PIXEL_IDS=1582841486258190,856034283724150
 ```
+
+### Facebook Conversions API (CAPI)
+
+Server-side event dispatch to Facebook's Conversions API. Supports multi-pixel configurations.
+
+| Variable                            | Required       | Description                                                               |
+| ----------------------------------- | -------------- | ------------------------------------------------------------------------- |
+| `FACEBOOK_MULTI_CAPI_ACCESS_TOKENS` | Yes (for CAPI) | Multi-pixel config. Format: `pixelId1:accessToken1,pixelId2:accessToken2` |
+| `FACEBOOK_CAPI_BASE_URL`            | Optional       | Override Graph API base URL (default: `https://graph.facebook.com/v21.0`) |
+
+```env
+# Single pixel
+FACEBOOK_MULTI_CAPI_ACCESS_TOKENS="123456789012345:EAAxxxxxxxx"
+
+# Multiple pixels
+FACEBOOK_MULTI_CAPI_ACCESS_TOKENS="123456789012345:EAAxxxxxxxx,987654321098765:EAAyyyyyyyy"
+
+# Optional: override Graph API URL (for testing/proxying)
+# FACEBOOK_CAPI_BASE_URL="https://graph.facebook.com/v21.0"
+```
+
+**How to get your CAPI access token:**
+
+1. Go to **Facebook Events Manager** → **Settings** → **Conversions API**
+2. Click **Generate access token**
+3. Copy the token and your Pixel ID
 
 ---
 
@@ -359,7 +385,7 @@ NEXT_PUBLIC_GOKWIK_ENABLED=true
 # ANALYTICS
 # =============================================================================
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_FB_PIXEL_ID=123456789012345
+NEXT_PUBLIC_MULTI_PIXEL_IDS=1582841486258190,856034283724150
 ```
 
 ---

@@ -103,7 +103,7 @@ SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
 SHOPIFY_MULTIPASS_SECRET=your-multipass-secret
 
 # Optional
-NEXT_PUBLIC_FB_PIXEL_ID=your-fb-pixel-id
+NEXT_PUBLIC_MULTI_PIXEL_IDS=your-fb-pixel-id
 ```
 
 ## Exports

@@ -1,5 +1,18 @@
 # storefront-starter-app
 
+## 0.1.6
+
+### Patch Changes
+
+- CAPI route rewrite with structured logging and multi-pixel support
+  - **Structured logging** — all lines use `[CAPI:<requestId>]` prefix with step tags (`Step 1:RECEIVE` through `Step 6:RESULT`) for easy grep-based debugging
+  - **Payload logging** — raw payload logged at Step 1, enriched/hashed payload at Step 4 for end-to-end debugging
+  - **Multi-pixel dispatch** — supports `FACEBOOK_MULTI_CAPI_ACCESS_TOKENS` env var for dispatching to multiple Facebook pixels in parallel
+  - **Uses `@shopkit/events/meta`** — PII hashing via shared `MetaParamsBuilder` instead of inline crypto
+  - **EMQ validation** — dev-mode warnings for missing email/phone (reduces Event Match Quality)
+  - Updated dependencies
+    - @shopkit/events@0.6.0
+
 ## 0.1.5
 
 ### Patch Changes
