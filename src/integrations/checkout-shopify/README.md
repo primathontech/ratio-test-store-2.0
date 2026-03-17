@@ -118,7 +118,7 @@ SHOPIFY_STOREFRONT_ACCESS_TOKEN=your-token
 
 # Optional
 NEXT_PUBLIC_GOKWIK_STORE_ID=your-store-id
-NEXT_PUBLIC_FB_PIXEL_ID=your-fb-pixel-id
+NEXT_PUBLIC_MULTI_PIXEL_IDS=your-fb-pixel-id
 ```
 
 ## Component Props
