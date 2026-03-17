@@ -34,9 +34,9 @@ function validateCheckoutEnv(): void {
     );
   }
 
-  if (!process.env.NEXT_PUBLIC_FB_PIXEL_ID) {
+  if (!process.env.NEXT_PUBLIC_MULTI_PIXEL_IDS) {
     console.warn(
-      "NEXT_PUBLIC_FB_PIXEL_ID is not set. Facebook conversion tracking will be disabled."
+      "NEXT_PUBLIC_MULTI_PIXEL_IDS is not set. Facebook conversion tracking will be disabled."
     );
   }
 }
@@ -54,7 +54,7 @@ export function getCheckoutConfig() {
     type: process.env.NEXT_PUBLIC_GOKWIK_TYPE!,
     scriptUrl: process.env.NEXT_PUBLIC_GOKWIK_SCRIPT_URL!,
     storeId: process.env.NEXT_PUBLIC_STORE_ID,
-    fbPixelId: process.env.NEXT_PUBLIC_FB_PIXEL_ID,
+    fbPixelId: process.env.NEXT_PUBLIC_MULTI_PIXEL_IDS,
     debug: process.env.NEXT_PUBLIC_GOKWIK_DEBUG || false,
     message1: process.env.NEXT_PUBLIC_GOKWIK_BANNER_MESSAGE_1,
     message2: process.env.NEXT_PUBLIC_GOKWIK_BANNER_MESSAGE_2,

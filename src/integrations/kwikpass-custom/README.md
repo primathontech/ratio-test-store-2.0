@@ -95,7 +95,7 @@ NEXT_PUBLIC_KWIKPASS_ENV=production  # or 'sandbox'
 NEXT_PUBLIC_KWIKPASS_SCRIPT_URL=https://cdn.gokwik.co
 
 # Optional
-NEXT_PUBLIC_FB_PIXEL_ID=your-fb-pixel-id
+NEXT_PUBLIC_MULTI_PIXEL_IDS=your-fb-pixel-id
 ```
 
 ## Exports

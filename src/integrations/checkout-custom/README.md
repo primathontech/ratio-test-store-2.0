@@ -114,7 +114,7 @@ NEXT_PUBLIC_GOKWIK_TYPE=your-gokwik-type
 
 # Optional
 NEXT_PUBLIC_GOKWIK_STORE_ID=your-store-id
-NEXT_PUBLIC_FB_PIXEL_ID=your-fb-pixel-id
+NEXT_PUBLIC_MULTI_PIXEL_IDS=your-fb-pixel-id
 NEXT_PUBLIC_GOKWIK_BANNER_MESSAGE_1=Free shipping on orders above ₹499
 NEXT_PUBLIC_GOKWIK_BANNER_MESSAGE_2=Easy returns within 7 days
 
