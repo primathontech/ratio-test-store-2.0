@@ -1,5 +1,15 @@
 # storefront-starter-app
 
+## 0.1.7
+
+### Patch Changes
+
+- CAPI endpoint security — HMAC signature authentication
+  - **HMAC signing** — Meta Pixel SDK signs every CAPI request with HMAC-SHA256 using a shared secret (`NEXT_PUBLIC_CAPI_HMAC_SECRET`)
+  - **Server verification** — CAPI route verifies signature at Step 0:AUTH before processing events, returns 401 on failure
+  - **Time-window tokens** — 5-minute token windows with lazy refresh, compatible with `sendBeacon` (no async at flush time)
+  - **Backward compatible** — if `NEXT_PUBLIC_CAPI_HMAC_SECRET` is not set, all requests pass through
+
 ## 0.1.6
 
 ### Patch Changes
