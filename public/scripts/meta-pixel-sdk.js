@@ -9,7 +9,7 @@
 // Event names ARE Facebook event names (PascalCase) — no mapping needed.
 //
 // Config key: 'meta-pixel'
-// Config shape: { pixelId: string, capiEndpoint?: string }
+// Config shape: { pixelId: string, capiEndpoint?: string, capiSecret?: string }
 //
 // DEDUPLICATION: Every fbq('track') call passes { eventID: event_id } as the
 // 4th argument. The same event_id is sent server-side via CAPI, enabling
@@ -18,6 +18,10 @@
 // CAPI: If config.capiEndpoint is set, the SDK batches events and POSTs them
 // to the server for CAPI dispatch. Flush triggers: 5s timer, batch of 10,
 // page hidden/unload, or high-value events (Purchase, InitiateCheckout).
+//
+// SECURITY: If config.capiSecret is set, every CAPI request is signed with
+// HMAC-SHA256. A time-window token is pre-computed and cached so that
+// sendBeacon (synchronous) can include it without awaiting crypto.
 // ─────────────────────────────────────────────────────────────────────────────
 
 (function () {
@@ -72,51 +76,124 @@
   var capiFlushTimer = null;
   var capiEndpoint = null; // set during register() from config
 
+  // ─── CAPI HMAC Auth ──────────────────────────────────────────────────────
+  // Time-window HMAC: token = HMAC-SHA256(secret, timeWindow)
+  // timeWindow = floor(Date.now() / 300000) — changes every 5 minutes.
+  // Token is pre-computed and cached; flushCAPI uses it synchronously.
+  var capiHmacKey = null; // CryptoKey (from crypto.subtle.importKey)
+  var capiToken = null; // hex string — current HMAC signature
+  var capiTokenTs = 0; // current time window the token was computed for
+
   /**
-   * Map SDKEvent.metadata user_data/cookies → Facebook CAPI user_data fields.
-   * PII arrives pre-hashed (SHA-256) from the UserEnricher middleware.
+   * Import the HMAC secret key (one-time, async).
+   * Called during register() if config.capiSecret is provided.
+   */
+  function initCapiAuth(secret) {
+    if (
+      typeof crypto === "undefined" ||
+      !crypto.subtle ||
+      !crypto.subtle.importKey
+    ) {
+      log("CAPI Auth: crypto.subtle unavailable — requests will be unsigned");
+      return;
+    }
+
+    var enc = new TextEncoder();
+    crypto.subtle
+      .importKey(
+        "raw",
+        enc.encode(secret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"]
+      )
+      .then(function (key) {
+        capiHmacKey = key;
+        log("CAPI Auth: HMAC key imported");
+        return refreshCapiToken();
+      })
+      .catch(function (err) {
+        log("CAPI Auth: key import failed:", err);
+      });
+  }
+
+  /**
+   * Refresh the cached HMAC token if the time window has changed.
+   * Returns a Promise (resolved immediately if token is still valid).
+   */
+  function refreshCapiToken() {
+    if (!capiHmacKey) {
+      return Promise.resolve();
+    }
+
+    var ts = Math.floor(Date.now() / 300000); // 5-minute window
+    if (ts === capiTokenTs && capiToken) {
+      return Promise.resolve();
+    }
+
+    var enc = new TextEncoder();
+    return crypto.subtle
+      .sign("HMAC", capiHmacKey, enc.encode(String(ts)))
+      .then(function (sigBuf) {
+        var bytes = new Uint8Array(sigBuf);
+        var hex = "";
+        for (var i = 0; i < bytes.length; i++) {
+          hex += ("0" + bytes[i].toString(16)).slice(-2);
+        }
+        capiToken = hex;
+        capiTokenTs = ts;
+      })
+      .catch(function (err) {
+        log("CAPI Auth: sign failed:", err);
+      });
+  }
+
+  /**
+   * Map SDKEvent.metadata user_data/cookies → CAPI user_data fields.
+   * Raw PII is sent to the CAPI route — the server handles
+   * normalization, SHA-256 hashing, and field mapping (email→em, etc.).
    */
   function mapUserDataForCAPI(metadata) {
     var ud = (metadata && metadata.user_data) || {};
     var cookies = (metadata && metadata.cookies) || {};
     var result = {};
 
-    // Pre-hashed PII
-    if (ud.email_hash) {
-      result.em = ud.email_hash;
+    // Raw user data — server-side Facebook Business SDK handles hashing
+    if (ud.email) {
+      result.email = ud.email;
     }
-    if (ud.phone_hash) {
-      result.ph = ud.phone_hash;
+    if (ud.phone) {
+      result.phone = ud.phone;
     }
-    if (ud.first_name_hash) {
-      result.fn = ud.first_name_hash;
+    if (ud.first_name) {
+      result.first_name = ud.first_name;
     }
-    if (ud.last_name_hash) {
-      result.ln = ud.last_name_hash;
+    if (ud.last_name) {
+      result.last_name = ud.last_name;
     }
-    if (ud.city_hash) {
-      result.ct = ud.city_hash;
+    if (ud.city) {
+      result.city = ud.city;
     }
-    if (ud.state_hash) {
-      result.st = ud.state_hash;
+    if (ud.state) {
+      result.state = ud.state;
     }
     if (ud.zip_code) {
-      result.zp = ud.zip_code;
+      result.zip_code = ud.zip_code;
     }
     if (ud.country) {
       result.country = ud.country;
     }
-    if (ud.date_of_birth_hash) {
-      result.db = ud.date_of_birth_hash;
+    if (ud.date_of_birth) {
+      result.date_of_birth = ud.date_of_birth;
     }
-    if (ud.gender_hash) {
-      result.ge = ud.gender_hash;
+    if (ud.gender) {
+      result.gender = ud.gender;
     }
     if (ud.external_id) {
       result.external_id = ud.external_id;
     }
 
-    // Tracking cookies (NOT hashed)
+    // Tracking cookies (not hashed — Meta's own identifiers)
     if (cookies._fbp) {
       result.fbp = cookies._fbp;
     }
@@ -174,7 +251,13 @@
 
     var payload;
     try {
-      payload = JSON.stringify({ events: batch });
+      var body = { events: batch };
+      // Attach HMAC signature if available (pre-computed, synchronous)
+      if (capiToken && capiTokenTs) {
+        body._ts = capiTokenTs;
+        body._sig = capiToken;
+      }
+      payload = JSON.stringify(body);
     } catch (e) {
       log(
         "CAPI: JSON serialization failed:",
@@ -247,6 +330,9 @@
       return;
     }
 
+    // Lazily refresh HMAC token (async, but completes before next flush)
+    refreshCapiToken();
+
     var eventId = eid(event);
 
     // Drop oldest if queue full
@@ -261,7 +347,8 @@
       capiQueue.shift();
     }
 
-    capiQueue.push(buildCAPIEvent(eventName, event));
+    var capiEvent = buildCAPIEvent(eventName, event);
+    capiQueue.push(capiEvent);
     log(
       "[" +
         eventId +
@@ -340,6 +427,14 @@
       if (config.capiEndpoint) {
         capiEndpoint = config.capiEndpoint;
         log("CAPI enabled — endpoint:", capiEndpoint);
+
+        // Initialize HMAC auth if secret provided
+        if (config.capiSecret) {
+          initCapiAuth(config.capiSecret);
+          log("CAPI Auth: HMAC signing enabled");
+        } else {
+          log("CAPI Auth: no capiSecret — requests will be unsigned");
+        }
       } else {
         log("CAPI disabled — no capiEndpoint in config");
       }

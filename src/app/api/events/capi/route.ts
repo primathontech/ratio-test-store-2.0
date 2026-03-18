@@ -2,47 +2,102 @@
  * Meta CAPI Route — /api/events/capi
  *
  * Receives batched CAPI events from the Meta Pixel SDK (client-side),
- * enriches with server-side context (IP, User-Agent), and forwards
- * to Facebook's Conversions API.
+ * uses MetaParamsBuilder to hash PII and enrich with server context,
+ * and forwards to Facebook's Conversions API.
  *
  * Supports multi-pixel dispatch via FACEBOOK_MULTI_CAPI_ACCESS_TOKENS.
  * Format: "pixelId1:accessToken1,pixelId2:accessToken2"
  *
- * The SDK sends pre-formatted CAPI events — this route just adds
- * server-side fields and relays to Facebook.
+ * PII hashing uses Facebook's official capi-param-builder-nodejs library
+ * via @shopkit/events/meta.
+ *
+ * Logging format — all lines use `[CAPI:<requestId>]` prefix for easy grep:
+ *   grep "CAPI:" to see all CAPI logs
+ *   grep "CAPI:.*FAIL" to see only failures
+ *   grep "CAPI:.*EMQ" to see EMQ warnings
  */
 
-const GRAPH_API_VERSION = "v21.0";
+import { createHmac } from "crypto";
+import {
+  MetaParamsBuilder,
+  GRAPH_API_VERSION,
+  validateRawCAPIEvent,
+  CAPIBatchPayload,
+  FacebookPixelConfig,
+  PixelDispatchResult,
+  MetaCAPIEvent,
+} from "@shopkit/events/meta";
 
-// ─── Types ──────────────────────────────────────────────
+// ─── Logging ────────────────────────────────────────────
 
-interface CAPIEvent {
-  event_name: string;
-  event_id: string;
-  event_time: number;
-  event_source_url?: string;
-  action_source: string;
-  user_data: Record<string, string | undefined>;
-  custom_data: Record<string, unknown>;
+const PREFIX = "CAPI";
+
+function log(
+  requestId: string,
+  level: "info" | "warn" | "error",
+  step: string,
+  message: string,
+  opts?: { events?: string; meta?: Record<string, unknown> }
+) {
+  const tag = `[${PREFIX}:${requestId}]`;
+  const eventsTag = opts?.events ? ` [${opts.events}]` : "";
+  const line = `${tag} [${step}]${eventsTag} ${message}`;
+  if (opts?.meta) {
+    console[level](line, JSON.stringify(opts.meta));
+  } else {
+    console[level](line);
+  }
 }
 
-interface IngestPayload {
-  events: CAPIEvent[];
-}
+// ─── HMAC Auth ──────────────────────────────────────────
 
-interface FacebookCAPIConfig {
-  pixelId: string;
-  accessToken: string;
-  baseUrl: string;
-}
+const CAPI_HMAC_SECRET = process.env.NEXT_PUBLIC_CAPI_HMAC_SECRET;
+const TIME_WINDOW_MS = 300000; // 5 minutes — must match client SDK
 
-interface PixelResult {
-  pixelId: string;
-  success: boolean;
-  error?: string;
-  events_received?: number;
-  messages?: unknown;
-  durationMs?: number;
+/**
+ * Verify the HMAC signature on an incoming CAPI request.
+ * Returns null if valid (or auth disabled), or an error string if invalid.
+ */
+function verifyCapiSignature(
+  body: { _ts?: number; _sig?: string },
+  requestId: string
+): string | null {
+  // If no secret configured, skip auth (backward compatible)
+  if (!CAPI_HMAC_SECRET) {
+    return null;
+  }
+
+  const { _ts, _sig } = body;
+
+  if (!_ts || !_sig) {
+    log(requestId, "warn", "Step 0:AUTH", "FAIL missing _ts or _sig");
+    return "Missing authentication signature";
+  }
+
+  // Check time window: accept current and previous window (10-min tolerance)
+  const currentWindow = Math.floor(Date.now() / TIME_WINDOW_MS);
+  if (_ts !== currentWindow && _ts !== currentWindow - 1) {
+    log(
+      requestId,
+      "warn",
+      "Step 0:AUTH",
+      `FAIL expired token _ts=${_ts} current=${currentWindow}`
+    );
+    return "Expired authentication token";
+  }
+
+  // Verify HMAC
+  const expectedSig = createHmac("sha256", CAPI_HMAC_SECRET)
+    .update(String(_ts))
+    .digest("hex");
+
+  if (_sig !== expectedSig) {
+    log(requestId, "warn", "Step 0:AUTH", "FAIL invalid signature");
+    return "Invalid authentication signature";
+  }
+
+  log(requestId, "info", "Step 0:AUTH", "OK");
+  return null;
 }
 
 // ─── Config ─────────────────────────────────────────────
@@ -51,8 +106,8 @@ interface PixelResult {
  * Parse multi-pixel CAPI configuration from environment variables.
  * Format: "pixelId1:accessToken1,pixelId2:accessToken2"
  */
-function getMultiPixelCAPIConfig(): {
-  pixels: FacebookCAPIConfig[];
+function getMultiPixelCAPIConfig(requestId: string): {
+  pixels: FacebookPixelConfig[];
   error: string | null;
 } {
   const baseUrl =
@@ -69,7 +124,7 @@ function getMultiPixelCAPIConfig(): {
     };
   }
 
-  const pixels: FacebookCAPIConfig[] = [];
+  const pixels: FacebookPixelConfig[] = [];
 
   for (const entry of multiAccessTokens.split(",")) {
     const [pixelId, accessToken] = entry.split(":");
@@ -77,8 +132,11 @@ function getMultiPixelCAPIConfig(): {
     const trimmedAccessToken = accessToken?.trim();
 
     if (!trimmedPixelId || !trimmedAccessToken) {
-      console.error(
-        `[CAPI] Invalid token format for entry: "${entry.trim()}". Expected: "pixelId:accessToken"`
+      log(
+        requestId,
+        "error",
+        "Step 2:CONFIG",
+        `FAIL invalid token format: "${entry.trim()}". Expected "pixelId:accessToken"`
       );
       continue;
     }
@@ -119,10 +177,11 @@ function getClientIP(request: Request): string | undefined {
  * Send a batch of events to a single Facebook CAPI pixel.
  */
 async function sendToPixel(
-  config: FacebookCAPIConfig,
-  events: CAPIEvent[],
-  requestId: string
-): Promise<PixelResult> {
+  config: FacebookPixelConfig,
+  events: MetaCAPIEvent[],
+  requestId: string,
+  eventNames: string
+): Promise<PixelDispatchResult> {
   const url = `${config.baseUrl}/${config.pixelId}/events?access_token=${config.accessToken}`;
   const startTime = Date.now();
 
@@ -137,9 +196,12 @@ async function sendToPixel(
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      console.error(
-        `[${requestId}] CAPI FAILED: Pixel ${config.pixelId} — status ${response.status} — ${durationMs}ms`,
-        JSON.stringify(errorData)
+      log(
+        requestId,
+        "error",
+        "Step 5:DISPATCH",
+        `FAIL pixel=${config.pixelId} status=${response.status} duration=${durationMs}ms`,
+        { events: eventNames, meta: errorData as Record<string, unknown> }
       );
       return {
         pixelId: config.pixelId,
@@ -150,8 +212,12 @@ async function sendToPixel(
     }
 
     const result = await response.json().catch(() => ({}));
-    console.info(
-      `[${requestId}] CAPI SUCCESS: Pixel ${config.pixelId} — events_received: ${result.events_received} — ${durationMs}ms`
+    log(
+      requestId,
+      "info",
+      "Step 5:DISPATCH",
+      `OK pixel=${config.pixelId} events_received=${result.events_received} duration=${durationMs}ms`,
+      { events: eventNames }
     );
     return {
       pixelId: config.pixelId,
@@ -163,8 +229,12 @@ async function sendToPixel(
   } catch (error) {
     const durationMs = Date.now() - startTime;
     const message = error instanceof Error ? error.message : String(error);
-    console.error(
-      `[${requestId}] CAPI FAILED: Pixel ${config.pixelId} — network error — ${durationMs}ms — ${message}`
+    log(
+      requestId,
+      "error",
+      "Step 5:DISPATCH",
+      `FAIL pixel=${config.pixelId} network_error duration=${durationMs}ms error="${message}"`,
+      { events: eventNames }
     );
     return {
       pixelId: config.pixelId,
@@ -178,62 +248,122 @@ async function sendToPixel(
 // ─── Route Handler ──────────────────────────────────────
 
 export async function POST(request: Request) {
-  const requestId = `capi_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  const requestId = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+  let ev = ""; // event names tag — set after parsing
 
   try {
+    // Step 0: Parse body and verify HMAC signature
+    const body = (await request.json()) as CAPIBatchPayload & {
+      _ts?: number;
+      _sig?: string;
+    };
+
+    const authError = verifyCapiSignature(body, requestId);
+    if (authError) {
+      return Response.json({ error: authError }, { status: 401 });
+    }
+
     // Step 1: Parse batch payload
-    const body = (await request.json()) as IngestPayload;
     const eventCount = body.events?.length ?? 0;
     const eventNames = Array.from(
       new Set((body.events ?? []).map((e) => e.event_name))
-    ).join(", ");
+    ).join(",");
 
-    console.info(
-      `[${requestId}] Step 1: Received ${eventCount} events [${eventNames}]`
-    );
+    ev = eventNames;
+
+    log(requestId, "info", "Step 1:RECEIVE", `events=${eventCount}`, {
+      events: ev,
+      meta: { payload: body.events },
+    });
 
     if (!body.events || eventCount === 0) {
-      console.warn(`[${requestId}] Step 1 FAILED: No events in payload`);
+      log(
+        requestId,
+        "warn",
+        "Step 1:RECEIVE",
+        "FAIL empty payload — no events",
+        ev ? { events: ev } : undefined
+      );
       return Response.json({ error: "No events in payload" }, { status: 400 });
     }
 
     // Step 2: Validate multi-pixel config
-    const { pixels, error: configError } = getMultiPixelCAPIConfig();
+    const { pixels, error: configError } = getMultiPixelCAPIConfig(requestId);
     if (pixels.length === 0) {
-      console.error(`[${requestId}] Step 2 FAILED: ${configError}`);
+      log(requestId, "error", "Step 2:CONFIG", `FAIL ${configError}`, {
+        events: ev,
+      });
       return Response.json(
         { error: "CAPI configuration error", details: configError },
         { status: 500 }
       );
     }
-    console.info(`[${requestId}] Step 2: ${pixels.length} pixel(s) configured`);
 
-    // Step 3: Enrich events with server-side context
+    const pixelIds = pixels.map((p) => p.pixelId).join(",");
+    log(
+      requestId,
+      "info",
+      "Step 2:CONFIG",
+      `pixels=${pixels.length} ids=[${pixelIds}]`,
+      { events: ev }
+    );
+
+    // Step 3: Validate events and log EMQ warnings (dev only)
+    if (process.env.NODE_ENV === "development") {
+      for (const event of body.events) {
+        const result = validateRawCAPIEvent(event);
+        if (!result.valid) {
+          log(
+            requestId,
+            "warn",
+            "Step 3:VALIDATE",
+            `FAIL event_id=${event.event_id} errors: ${result.errors.join("; ")}`,
+            { events: event.event_name }
+          );
+        }
+        if (result.warnings.length > 0) {
+          log(
+            requestId,
+            "warn",
+            "Step 3:EMQ",
+            `warnings: ${result.warnings.join("; ")}`,
+            { events: event.event_name }
+          );
+        }
+      }
+    }
+
+    // Step 4: Hash PII + enrich with server-side context
     const clientIP = getClientIP(request);
     const userAgent = request.headers.get("user-agent") ?? undefined;
 
-    const enrichedEvents = body.events.map((event) => ({
-      ...event,
-      user_data: {
-        ...event.user_data,
-        client_ip_address: clientIP,
-        client_user_agent: userAgent,
-      },
-    }));
+    const enrichedEvents = MetaParamsBuilder.buildBatch(body.events, {
+      clientIp: clientIP,
+      userAgent,
+    });
 
-    console.info(
-      `[${requestId}] Step 3: Enriched with IP=${clientIP ?? "unknown"}`
+    log(
+      requestId,
+      "info",
+      "Step 4:ENRICH",
+      `hashed_pii=true ip=${clientIP ?? "unknown"} ua=${userAgent ? "present" : "missing"}`,
+      {
+        events: ev,
+        meta: {
+          payload: enrichedEvents as unknown as Record<string, unknown>[],
+        },
+      }
     );
 
-    // Step 4: Dispatch to all pixels in parallel
+    // Step 5: Dispatch to all pixels in parallel
     const results = await Promise.allSettled(
       pixels.map((pixelConfig) =>
-        sendToPixel(pixelConfig, enrichedEvents, requestId)
+        sendToPixel(pixelConfig, enrichedEvents, requestId, ev)
       )
     );
 
-    // Step 5: Aggregate results
-    const pixelResults: PixelResult[] = results.map((result, i) => {
+    // Step 6: Aggregate results
+    const pixelResults: PixelDispatchResult[] = results.map((result, i) => {
       if (result.status === "fulfilled") {
         return result.value;
       }
@@ -246,10 +376,22 @@ export async function POST(request: Request) {
 
     const successCount = pixelResults.filter((r) => r.success).length;
     const failCount = pixelResults.length - successCount;
+    const totalReceived = pixelResults.reduce(
+      (sum, r) => sum + (r.events_received ?? 0),
+      0
+    );
 
     if (successCount === 0) {
-      console.error(
-        `[${requestId}] Step 5 FAILED: All ${pixels.length} pixel(s) failed`
+      const failReasons = pixelResults
+        .filter((r) => !r.success)
+        .map((r) => `${r.pixelId}:${r.error}`)
+        .join(" | ");
+      log(
+        requestId,
+        "error",
+        "Step 6:RESULT",
+        `FAIL all_pixels_failed total=${pixels.length} reasons=[${failReasons}]`,
+        { events: ev }
       );
       return Response.json(
         {
@@ -260,8 +402,12 @@ export async function POST(request: Request) {
       );
     }
 
-    console.info(
-      `[${requestId}] Step 5 DONE: ${successCount}/${pixels.length} pixel(s) succeeded${failCount > 0 ? `, ${failCount} failed` : ""}`
+    log(
+      requestId,
+      failCount > 0 ? "warn" : "info",
+      "Step 6:RESULT",
+      `OK events_sent=${eventCount} events_received=${totalReceived} pixels_ok=${successCount}/${pixels.length}${failCount > 0 ? ` pixels_failed=${failCount}` : ""}`,
+      { events: ev }
     );
 
     return Response.json({
@@ -276,7 +422,13 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-    console.error(`[${requestId}] CRITICAL ERROR: ${message}`);
+    log(
+      requestId,
+      "error",
+      "Step 0:FATAL",
+      `FAIL unhandled error="${message}"`,
+      ev ? { events: ev } : undefined
+    );
     return Response.json(
       { error: "Failed to process events", requestId },
       { status: 500 }
