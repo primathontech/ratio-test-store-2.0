@@ -16,6 +16,7 @@ export const pixelConfig: PixelConfigMap = {
     ? {
         pixelId: process.env.NEXT_PUBLIC_MULTI_PIXEL_IDS,
         capiEndpoint: "/api/events/capi",
+        capiSecret: process.env.NEXT_PUBLIC_CAPI_HMAC_SECRET || undefined,
       }
     : null,
 

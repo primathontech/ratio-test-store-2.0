@@ -9,7 +9,7 @@
 // Event names ARE Facebook event names (PascalCase) — no mapping needed.
 //
 // Config key: 'meta-pixel'
-// Config shape: { pixelId: string, capiEndpoint?: string }
+// Config shape: { pixelId: string, capiEndpoint?: string, capiSecret?: string }
 //
 // DEDUPLICATION: Every fbq('track') call passes { eventID: event_id } as the
 // 4th argument. The same event_id is sent server-side via CAPI, enabling
@@ -18,6 +18,10 @@
 // CAPI: If config.capiEndpoint is set, the SDK batches events and POSTs them
 // to the server for CAPI dispatch. Flush triggers: 5s timer, batch of 10,
 // page hidden/unload, or high-value events (Purchase, InitiateCheckout).
+//
+// SECURITY: If config.capiSecret is set, every CAPI request is signed with
+// HMAC-SHA256. A time-window token is pre-computed and cached so that
+// sendBeacon (synchronous) can include it without awaiting crypto.
 // ─────────────────────────────────────────────────────────────────────────────
 
 (function () {
@@ -71,6 +75,78 @@
   var capiQueue = [];
   var capiFlushTimer = null;
   var capiEndpoint = null; // set during register() from config
+
+  // ─── CAPI HMAC Auth ──────────────────────────────────────────────────────
+  // Time-window HMAC: token = HMAC-SHA256(secret, timeWindow)
+  // timeWindow = floor(Date.now() / 300000) — changes every 5 minutes.
+  // Token is pre-computed and cached; flushCAPI uses it synchronously.
+  var capiHmacKey = null; // CryptoKey (from crypto.subtle.importKey)
+  var capiToken = null; // hex string — current HMAC signature
+  var capiTokenTs = 0; // current time window the token was computed for
+
+  /**
+   * Import the HMAC secret key (one-time, async).
+   * Called during register() if config.capiSecret is provided.
+   */
+  function initCapiAuth(secret) {
+    if (
+      typeof crypto === "undefined" ||
+      !crypto.subtle ||
+      !crypto.subtle.importKey
+    ) {
+      log("CAPI Auth: crypto.subtle unavailable — requests will be unsigned");
+      return;
+    }
+
+    var enc = new TextEncoder();
+    crypto.subtle
+      .importKey(
+        "raw",
+        enc.encode(secret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"]
+      )
+      .then(function (key) {
+        capiHmacKey = key;
+        log("CAPI Auth: HMAC key imported");
+        return refreshCapiToken();
+      })
+      .catch(function (err) {
+        log("CAPI Auth: key import failed:", err);
+      });
+  }
+
+  /**
+   * Refresh the cached HMAC token if the time window has changed.
+   * Returns a Promise (resolved immediately if token is still valid).
+   */
+  function refreshCapiToken() {
+    if (!capiHmacKey) {
+      return Promise.resolve();
+    }
+
+    var ts = Math.floor(Date.now() / 300000); // 5-minute window
+    if (ts === capiTokenTs && capiToken) {
+      return Promise.resolve();
+    }
+
+    var enc = new TextEncoder();
+    return crypto.subtle
+      .sign("HMAC", capiHmacKey, enc.encode(String(ts)))
+      .then(function (sigBuf) {
+        var bytes = new Uint8Array(sigBuf);
+        var hex = "";
+        for (var i = 0; i < bytes.length; i++) {
+          hex += ("0" + bytes[i].toString(16)).slice(-2);
+        }
+        capiToken = hex;
+        capiTokenTs = ts;
+      })
+      .catch(function (err) {
+        log("CAPI Auth: sign failed:", err);
+      });
+  }
 
   /**
    * Map SDKEvent.metadata user_data/cookies → CAPI user_data fields.
@@ -175,7 +251,13 @@
 
     var payload;
     try {
-      payload = JSON.stringify({ events: batch });
+      var body = { events: batch };
+      // Attach HMAC signature if available (pre-computed, synchronous)
+      if (capiToken && capiTokenTs) {
+        body._ts = capiTokenTs;
+        body._sig = capiToken;
+      }
+      payload = JSON.stringify(body);
     } catch (e) {
       log(
         "CAPI: JSON serialization failed:",
@@ -247,6 +329,9 @@
     if (!capiEndpoint) {
       return;
     }
+
+    // Lazily refresh HMAC token (async, but completes before next flush)
+    refreshCapiToken();
 
     var eventId = eid(event);
 
@@ -342,6 +427,14 @@
       if (config.capiEndpoint) {
         capiEndpoint = config.capiEndpoint;
         log("CAPI enabled — endpoint:", capiEndpoint);
+
+        // Initialize HMAC auth if secret provided
+        if (config.capiSecret) {
+          initCapiAuth(config.capiSecret);
+          log("CAPI Auth: HMAC signing enabled");
+        } else {
+          log("CAPI Auth: no capiSecret — requests will be unsigned");
+        }
       } else {
         log("CAPI disabled — no capiEndpoint in config");
       }
