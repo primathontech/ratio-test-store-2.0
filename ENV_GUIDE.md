@@ -248,10 +248,11 @@ NEXT_PUBLIC_MULTI_PIXEL_IDS=1582841486258190,856034283724150
 
 Server-side event dispatch to Facebook's Conversions API. Supports multi-pixel configurations.
 
-| Variable                            | Required       | Description                                                               |
-| ----------------------------------- | -------------- | ------------------------------------------------------------------------- |
-| `FACEBOOK_MULTI_CAPI_ACCESS_TOKENS` | Yes (for CAPI) | Multi-pixel config. Format: `pixelId1:accessToken1,pixelId2:accessToken2` |
-| `FACEBOOK_CAPI_BASE_URL`            | Optional       | Override Graph API base URL (default: `https://graph.facebook.com/v21.0`) |
+| Variable                            | Required       | Description                                                                   |
+| ----------------------------------- | -------------- | ----------------------------------------------------------------------------- |
+| `FACEBOOK_MULTI_CAPI_ACCESS_TOKENS` | Yes (for CAPI) | Multi-pixel config. Format: `pixelId1:accessToken1,pixelId2:accessToken2`     |
+| `FACEBOOK_CAPI_BASE_URL`            | Optional       | Override Graph API base URL (default: `https://graph.facebook.com/v21.0`)     |
+| `NEXT_PUBLIC_CAPI_HMAC_SECRET`      | Recommended    | HMAC secret for signing CAPI requests. Prevents unauthorized event injection. |
 
 ```env
 # Single pixel
@@ -262,7 +263,12 @@ FACEBOOK_MULTI_CAPI_ACCESS_TOKENS="123456789012345:EAAxxxxxxxx,987654321098765:E
 
 # Optional: override Graph API URL (for testing/proxying)
 # FACEBOOK_CAPI_BASE_URL="https://graph.facebook.com/v21.0"
+
+# HMAC secret for CAPI endpoint security (generate a random string)
+NEXT_PUBLIC_CAPI_HMAC_SECRET="your-random-secret-here"
 ```
+
+**CAPI endpoint security:** When `NEXT_PUBLIC_CAPI_HMAC_SECRET` is set, the Meta Pixel SDK signs each request with HMAC-SHA256 and the CAPI route verifies the signature. This prevents unauthorized parties from sending fake events. Generate a random secret (e.g., `openssl rand -hex 32`). If not set, the endpoint accepts all requests (backward compatible).
 
 **How to get your CAPI access token:**
 

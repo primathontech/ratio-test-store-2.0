@@ -17,6 +17,7 @@
  *   grep "CAPI:.*EMQ" to see EMQ warnings
  */
 
+import { createHmac } from "crypto";
 import {
   MetaParamsBuilder,
   GRAPH_API_VERSION,
@@ -46,6 +47,57 @@ function log(
   } else {
     console[level](line);
   }
+}
+
+// ─── HMAC Auth ──────────────────────────────────────────
+
+const CAPI_HMAC_SECRET = process.env.NEXT_PUBLIC_CAPI_HMAC_SECRET;
+const TIME_WINDOW_MS = 300000; // 5 minutes — must match client SDK
+
+/**
+ * Verify the HMAC signature on an incoming CAPI request.
+ * Returns null if valid (or auth disabled), or an error string if invalid.
+ */
+function verifyCapiSignature(
+  body: { _ts?: number; _sig?: string },
+  requestId: string
+): string | null {
+  // If no secret configured, skip auth (backward compatible)
+  if (!CAPI_HMAC_SECRET) {
+    return null;
+  }
+
+  const { _ts, _sig } = body;
+
+  if (!_ts || !_sig) {
+    log(requestId, "warn", "Step 0:AUTH", "FAIL missing _ts or _sig");
+    return "Missing authentication signature";
+  }
+
+  // Check time window: accept current and previous window (10-min tolerance)
+  const currentWindow = Math.floor(Date.now() / TIME_WINDOW_MS);
+  if (_ts !== currentWindow && _ts !== currentWindow - 1) {
+    log(
+      requestId,
+      "warn",
+      "Step 0:AUTH",
+      `FAIL expired token _ts=${_ts} current=${currentWindow}`
+    );
+    return "Expired authentication token";
+  }
+
+  // Verify HMAC
+  const expectedSig = createHmac("sha256", CAPI_HMAC_SECRET)
+    .update(String(_ts))
+    .digest("hex");
+
+  if (_sig !== expectedSig) {
+    log(requestId, "warn", "Step 0:AUTH", "FAIL invalid signature");
+    return "Invalid authentication signature";
+  }
+
+  log(requestId, "info", "Step 0:AUTH", "OK");
+  return null;
 }
 
 // ─── Config ─────────────────────────────────────────────
@@ -200,8 +252,18 @@ export async function POST(request: Request) {
   let ev = ""; // event names tag — set after parsing
 
   try {
+    // Step 0: Parse body and verify HMAC signature
+    const body = (await request.json()) as CAPIBatchPayload & {
+      _ts?: number;
+      _sig?: string;
+    };
+
+    const authError = verifyCapiSignature(body, requestId);
+    if (authError) {
+      return Response.json({ error: authError }, { status: 401 });
+    }
+
     // Step 1: Parse batch payload
-    const body = (await request.json()) as CAPIBatchPayload;
     const eventCount = body.events?.length ?? 0;
     const eventNames = Array.from(
       new Set((body.events ?? []).map((e) => e.event_name))
