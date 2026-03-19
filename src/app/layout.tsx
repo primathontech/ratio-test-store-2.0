@@ -63,6 +63,14 @@ const CustomCartDrawer = dynamic(
   { ssr: false }
 );
 
+const KwikCartCustom = dynamic(
+  () =>
+    import("@/integrations/kwikcart-custom").then((mod) => ({
+      default: mod.KwikCartCustom,
+    })),
+  { ssr: false }
+);
+
 // =============================================================================
 // ROOT LAYOUT
 // =============================================================================
@@ -78,6 +86,9 @@ export default async function RootLayout({
   const locale = getStaticLocale();
   const messages = await getMessages();
   const theme = await getTheme(themeName);
+
+  const hasKwikcartDisabled =
+    process.env.NEXT_PUBLIC_KWIKCART_DISABLE === "true";
 
   return (
     <html lang={locale} className={`${inter.variable} ${openSans.variable}`}>
@@ -108,7 +119,11 @@ export default async function RootLayout({
           <KwikPassCustom />
           <AppCartInitializer merchantName={merchantName} />
           {children}
-          <CustomCartDrawer locale={locale as "en"} />
+          {hasKwikcartDisabled ? (
+            <CustomCartDrawer locale={locale as "en"} />
+          ) : (
+            <KwikCartCustom />
+          )}
         </AppShell>
 
         {/* V2 Pixel SDKs — self-register with PixelRuntime */}
