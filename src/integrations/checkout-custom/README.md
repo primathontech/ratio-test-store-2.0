@@ -323,7 +323,7 @@ The integration dispatches these events:
 ## Related Files
 
 - `@shopkit/cart` - Cart state management
-- `@shopkit/analytics` - Event publishing
+- `@shopkit/events` - Event tracking (auto-emitters handle checkout events)
 - `CustomCartSummary.tsx` - Uses this integration in cart drawer
 - `/orders` page - Order confirmation page (redirected after checkout)
 - `ThankYou` widget - Displays order details on confirmation page

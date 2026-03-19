@@ -6,7 +6,6 @@
  */
 
 "use client";
-import { publishEvent, EventType } from "@shopkit/analytics";
 import {
   convertCartItemsForCheckout,
   useCustomCheckout,
@@ -80,34 +79,6 @@ export function CheckoutButtonCustom({
       return;
     }
 
-    // Send checkout started event
-    publishEvent({
-      type: EventType.INITIATE_CHECKOUT,
-      cartValue: cartTotal,
-      currency: currencyCode,
-      itemCount: items.length,
-      items: items.map((item) => ({
-        productId: item.productId || item.id,
-        productName: item.title,
-        price: typeof item.price === "number" ? item.price : item.price.amount,
-        quantity: item.quantity,
-      })),
-    });
-
-    // Send checkout payment event
-    publishEvent({
-      type: EventType.ADD_PAYMENT_INFO,
-      cartValue: cartTotal,
-      currency: currencyCode,
-      itemCount: items.length,
-      paymentType: "checkout",
-      items: items.map((item) => ({
-        productId: item.productId || item.id,
-        productName: item.title,
-        price: typeof item.price === "number" ? item.price : item.price.amount,
-        quantity: item.quantity,
-      })),
-    });
     // Call checkout start callback
     onCheckoutStart?.();
 
