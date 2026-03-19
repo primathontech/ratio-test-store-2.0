@@ -3,7 +3,6 @@
 import dynamic from "next/dynamic";
 import React, { useState, useCallback } from "react";
 import { BuyNowButtonShopifyProps } from "./types";
-import { publishEvent, EventType } from "@shopkit/analytics";
 import { useShopifyCheckout } from "./useShopifyCheckout";
 import { getCartConfig } from "@shopkit/cart";
 
@@ -80,41 +79,6 @@ export function BuyNowButtonShopify({
       onCheckoutError?.(error);
       return;
     }
-
-    // Send checkout started event
-    publishEvent({
-      type: EventType.INITIATE_CHECKOUT,
-      cartValue: price.amount * quantity,
-      currency: price.currencyCode,
-      itemCount: 1,
-      items: [
-        {
-          productId: productId,
-          productName: title,
-          price: price.amount,
-          quantity: quantity,
-          variant: variantId,
-        },
-      ],
-    });
-
-    // Send add payment info event
-    publishEvent({
-      type: EventType.ADD_PAYMENT_INFO,
-      cartValue: price.amount * quantity,
-      currency: price.currencyCode,
-      itemCount: 1,
-      paymentType: "gokwik",
-      items: [
-        {
-          productId: productId,
-          productName: title,
-          price: price.amount,
-          quantity: quantity,
-          variant: variantId,
-        },
-      ],
-    });
 
     try {
       onCheckoutStart?.();

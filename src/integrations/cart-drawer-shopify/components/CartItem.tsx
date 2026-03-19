@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Box, Flex, Image } from "@/ui/atomic";
 import { formatPaiseToINR } from "@/utils";
-import { EventType, publishEvent } from "@shopkit/analytics";
 import { useCartStore } from "@shopkit/cart";
 
 interface CartItemProps {
@@ -183,14 +182,6 @@ export const CartItem: React.FC<CartItemProps> = ({
   // Handler for increment button click with max quantity check
   const handleIncrementClick = async () => {
     if (item.quantity < MAX_QUANTITY) {
-      publishEvent({
-        type: EventType.ADD_TO_CART,
-        productId: item?.id,
-        productName: item?.title,
-        price: (Number(item?.price) || 0) / 100,
-        currency: "INR",
-        quantity: 1,
-      });
       await onQuantityIncrement(item.id);
     }
   };

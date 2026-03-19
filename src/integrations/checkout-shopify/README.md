@@ -205,5 +205,5 @@ export type {
 ## Related Files
 
 - `@shopkit/cart` - Cart state management (Shopify adapter)
-- `@shopkit/analytics` - Event publishing
+- `@shopkit/events` - Event tracking (auto-emitters handle checkout events)
 - `ShopifyCartSummary.tsx` - Uses this integration in cart drawer
