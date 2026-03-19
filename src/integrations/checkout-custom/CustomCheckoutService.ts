@@ -11,7 +11,6 @@ import {
   dispatchCheckoutCompleteEvent,
   dispatchCheckoutStartEvent,
 } from "./events";
-import { publishEvent, EventType } from "@shopkit/analytics";
 import { getCommerceClient } from "@/config";
 import { getCheckoutConfig } from "./config";
 
@@ -424,28 +423,7 @@ export class CustomCheckoutService {
     console.log("orderSuccess triggeredCheckoutCompleteEvent", order);
 
     // Get current cart data from stored context
-    const cartItems = this.currentCartItems || [];
     const cartTotal = this.currentCartTotal || 0;
-
-    const eventPayload = {
-      type: EventType.PURCHASE,
-      orderId: order?.merchant_order_id || "",
-      cartValue: cartTotal,
-      currency: "INR",
-      itemCount: cartItems.length,
-      timestamp: Date.now(),
-      items: cartItems.map((item: any) => ({
-        productId: item.productId || item.id || "",
-        productName: item.title || "",
-        price:
-          typeof item.price === "number" ? item.price : item.price?.amount || 0,
-        quantity: item.quantity || 1,
-        variant: item.variantId || "",
-      })),
-    };
-
-    // Publish the checkout completed event
-    publishEvent(eventPayload as any);
 
     // Dispatch checkout complete event for GoKwik analytics
     dispatchCheckoutCompleteEvent({
