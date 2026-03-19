@@ -1,5 +1,15 @@
 # storefront-starter-app
 
+## 0.1.8
+
+### Patch Changes
+
+- Add **KwikCart** side cart integration (`integrations/kwikcart-custom/`)
+  - Replaces default `CustomCartDrawer` when `NEXT_PUBLIC_KWIKCART_DISABLE` is `false` (default)
+  - New env vars: `NEXT_PUBLIC_KWIKCART_SCRIPT_URL`, `NEXT_PUBLIC_KWIKCART_CURRENCY`, `NEXT_PUBLIC_KWIKCART_CURRENCY_FORMAT`
+  - `KwikCartEmitter` captures `AddToCart` events from side cart quantity increments
+- Remove duplicate `@shopkit/analytics` `publishEvent()` calls from 8 integration files — `@shopkit/events` emitters already fire the same events
+
 ## 0.1.7
 
 ### Patch Changes
