@@ -1031,13 +1031,14 @@ import {
 ```typescript
 // In ProductCard or ProductInfo widget
 import { useCart } from "@shopkit/cart";
-import { publishEvent, EventType } from "@shopkit/analytics";
+// NOTE: Analytics events (AddToCart, Purchase, etc.) are handled
+// automatically by @shopkit/events emitters — no manual publishEvent needed.
 
 function AddToCartButton({ product, variant }) {
   const { addToCart, isLoading } = useCart();
 
   const handleAddToCart = async () => {
-    // 1. Add to cart state
+    // 1. Add to cart state (cart-emitter auto-fires AddToCart event)
     await addToCart({
       variantId: variant.id,
       quantity: 1,
@@ -1050,17 +1051,7 @@ function AddToCartButton({ product, variant }) {
       },
     });
 
-    // 2. Track analytics event
-    publishEvent({
-      type: EventType.ADD_TO_CART,
-      productId: product.id,
-      productName: product.title,
-      price: parseFloat(variant.price.amount),
-      currency: variant.price.currencyCode,
-      quantity: 1,
-    });
-
-    // 3. Optionally open cart drawer
+    // 2. Optionally open cart drawer
     useCartStore.getState().openCart();
   };
 
@@ -1272,16 +1263,16 @@ function CartSummary() {
 
 ### 6. Key Files Reference
 
-| Purpose                | File Location                                |
-| ---------------------- | -------------------------------------------- |
-| Commerce client config | `@/config/commerce/index.ts`                 |
-| Cart bootstrap         | `@/bootstrap/cart.ts`                        |
-| Cart drawer (Custom)   | `@/integrations/cart-drawer-custom/`         |
-| Cart drawer (Shopify)  | `@/integrations/cart-drawer-shopify/`        |
-| Checkout (Custom)      | `@/integrations/checkout-custom/`            |
-| Checkout (Shopify)     | `@/integrations/checkout-shopify/`           |
-| Add to cart in widget  | Use `useCart` from `@shopkit/cart`           |
-| Analytics events       | Use `publishEvent` from `@shopkit/analytics` |
+| Purpose                | File Location                                                                |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| Commerce client config | `@/config/commerce/index.ts`                                                 |
+| Cart bootstrap         | `@/bootstrap/cart.ts`                                                        |
+| Cart drawer (Custom)   | `@/integrations/cart-drawer-custom/`                                         |
+| Cart drawer (Shopify)  | `@/integrations/cart-drawer-shopify/`                                        |
+| Checkout (Custom)      | `@/integrations/checkout-custom/`                                            |
+| Checkout (Shopify)     | `@/integrations/checkout-shopify/`                                           |
+| Add to cart in widget  | Use `useCart` from `@shopkit/cart`                                           |
+| Analytics events       | Auto-handled by `@shopkit/events` emitters (see `packages/events/EVENTS.md`) |
 
 ### 7. Common Patterns
 
