@@ -151,6 +151,27 @@ NEXT_PUBLIC_GOKWIK_ENABLED=true
 | Sandbox     | `https://sandbox.pdp.gokwik.co` |
 | Production  | `https://pdp.gokwik.co`         |
 
+### KwikCart (Side Cart)
+
+GoKwik's KwikCart replaces the default custom cart drawer with a hosted side cart.
+
+| Variable                               | Required           | Description                                                   |
+| -------------------------------------- | ------------------ | ------------------------------------------------------------- |
+| `NEXT_PUBLIC_KWIKCART_DISABLE`         | Optional           | Set to `true` to disable KwikCart and use default cart drawer |
+| `NEXT_PUBLIC_KWIKCART_SCRIPT_URL`      | Yes (for KwikCart) | KwikCart SDK script URL                                       |
+| `NEXT_PUBLIC_KWIKCART_CURRENCY`        | Optional           | Currency code (default: `INR`)                                |
+| `NEXT_PUBLIC_KWIKCART_CURRENCY_FORMAT` | Optional           | Locale for currency formatting (default: `en-IN`)             |
+
+```env
+# KwikCart — Side Cart
+NEXT_PUBLIC_KWIKCART_DISABLE=false                                              # true = use default cart drawer
+NEXT_PUBLIC_KWIKCART_SCRIPT_URL="https://qa.kwikcart.gokwik.co/kwikcart/side-cart.js"
+NEXT_PUBLIC_KWIKCART_CURRENCY="INR"
+NEXT_PUBLIC_KWIKCART_CURRENCY_FORMAT="en-IN"
+```
+
+**Behavior**: When `NEXT_PUBLIC_KWIKCART_DISABLE` is `false` (or unset), KwikCart replaces the default `CustomCartDrawer`. Set to `true` to fall back to the built-in cart drawer.
+
 ---
 
 ## Custom Backend API Endpoints
