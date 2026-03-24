@@ -60,6 +60,8 @@ export interface CheckoutEventHandlers {
   onAddressSelected?: (data: any) => void;
   onPaymentMethodSelected?: (data: any) => void;
   onError?: (error: Error) => void;
+  /** Client-side navigation (e.g., router.push). Required to avoid full page reloads that kill analytics. */
+  navigate?: (path: string) => void;
 }
 
 export interface CheckoutConfig {
@@ -321,7 +323,7 @@ export class CustomCheckoutService {
             finalRedirectPath += `&customerId=${customerId}`;
           }
 
-          window.location.href = finalRedirectPath;
+          this.currentEventHandlers.navigate!(finalRedirectPath);
         }, 2000);
       }
     );
