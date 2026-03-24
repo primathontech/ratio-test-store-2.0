@@ -253,16 +253,19 @@ NEXT_PUBLIC_VIDEO_APP_SDK_URL="https://cdn.example.com/video-sdk.js"
 
 ### Analytics & Tracking
 
-| Variable                        | Required | Description                        |
-| ------------------------------- | -------- | ---------------------------------- |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional | Google Analytics 4 ID              |
-| `NEXT_PUBLIC_GTM_ID`            | Optional | Google Tag Manager ID              |
-| `NEXT_PUBLIC_MULTI_PIXEL_IDS`   | Optional | Comma-separated Facebook Pixel IDs |
+| Variable                        | Required | Description                                               |
+| ------------------------------- | -------- | --------------------------------------------------------- |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional | Google Analytics 4 ID                                     |
+| `NEXT_PUBLIC_GTM_ID`            | Optional | Google Tag Manager ID                                     |
+| `NEXT_PUBLIC_MULTI_PIXEL_IDS`   | Optional | Comma-separated Facebook Pixel IDs                        |
+| `NEXT_PUBLIC_EVENT_DEBUG`       | Optional | Enable event debug logging in production (`true`/`false`) |
 
 ```env
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
 NEXT_PUBLIC_MULTI_PIXEL_IDS=1582841486258190,856034283724150
+# Event debug logging (also available via browser console: window.__shopkit_debug = true)
+# NEXT_PUBLIC_EVENT_DEBUG=true
 ```
 
 ### Facebook Conversions API (CAPI)
