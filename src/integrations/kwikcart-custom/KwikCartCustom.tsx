@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import Script from "next/script";
 import { getKwikCartConfig } from "./config";
 import KwikCartCheckoutScript from "./KwikCartCheckoutScript";
 import { useCartStore } from "@shopkit/cart";
@@ -51,23 +50,23 @@ export function KwikCartCustom() {
     };
   }, [startCheckout]);
 
-  return (
-    <>
-      <Script id="kwikcart-globals" strategy="afterInteractive">
-        {`
-          window.gk_cart_currency = "${config.currency}";
-          window.gk_currency_format = "${config.currencyFormat}";
-        `}
-      </Script>
-      <Script
-        src={config.scriptUrl}
-        strategy="afterInteractive"
-        id="kwikcart-side-cart"
-        onLoad={() => {
-          (window as any).kwikCartActive = true;
-        }}
-      />
-      <KwikCartCheckoutScript />
-    </>
-  );
+  // Inject scripts via DOM so they re-execute on every mount
+  useEffect(() => {
+    (window as any).gk_cart_currency = config.currency;
+    (window as any).gk_currency_format = config.currencyFormat;
+
+    const script = document.createElement("script");
+    script.id = "kwikcart-side-cart";
+    script.src = config.scriptUrl;
+    script.onload = () => {
+      (window as any).kwikCartActive = true;
+    };
+    document.body.appendChild(script);
+
+    return () => {
+      script.remove();
+    };
+  }, [config]);
+
+  return <KwikCartCheckoutScript />;
 }
