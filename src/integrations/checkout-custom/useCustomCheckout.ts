@@ -148,6 +148,7 @@ export function useCustomCheckout(
       currentConfigRef.current = config as CheckoutConfig;
 
       const eventHandlers: CheckoutEventHandlers = {
+        navigate: (path: string) => router.push(path),
         onOrderComplete: (order: any) => {
           console.info("Order completed:", order);
 
