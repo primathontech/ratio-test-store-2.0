@@ -6,3 +6,4 @@
 export { KwikCartCustom } from "./KwikCartCustom";
 export { getKwikCartConfig } from "./config";
 export { default as KwikCartCheckoutScript } from "./KwikCartCheckoutScript";
+export { KwikCartRemounter } from "./KwikCartRemounter";
