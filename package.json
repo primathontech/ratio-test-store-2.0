@@ -53,7 +53,7 @@
     "@shopify/hydrogen-react": "^2025.5.0",
     "@shopify/storefront-api-client": "^1.0.8",
     "@shopkit/events": "^0.8.2",
-    "@shopkit/app-shell": "^1.0.0",
+    "@shopkit/app-shell": "^1.0.1",
     "@shopkit/asset-cache": "^1.0.0",
     "@shopkit/builder": "^0.1.2",
     "@shopkit/cart": "^0.1.3",
