@@ -5,7 +5,7 @@ import type {
   PageConfig,
   RouteContext,
 } from "@shopkit/builder";
-import { getTemplateId } from "@/editor-bridge/template-id";
+import { getTemplateId } from "@/editor-integration/template-id";
 
 /**
  * Template cache to avoid repeated dynamic imports for filesystem templates
