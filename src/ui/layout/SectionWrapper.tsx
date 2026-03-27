@@ -56,15 +56,38 @@ export const SectionWrapper: React.FC<SectionWrapperProps> = ({
     return () => window.removeEventListener("resize", updateBreakpoint);
   }, [overrideBreakpoint]);
 
+  const responsive = section.settings.responsive;
+
+  // In editor mode, use JS-based visibility since the viewport is simulated.
+  if (overrideBreakpoint) {
+    const bpConfig = responsive?.[overrideBreakpoint] || null;
+    const isVisible =
+      bpConfig && typeof bpConfig.visible === "boolean"
+        ? bpConfig.visible
+        : true;
+    if (!isVisible) {
+      return null;
+    }
+  }
+
+  // Build CSS visibility classes — applied at the element level so the browser
+  // hides sections via media queries before any JS runs (no flash).
+  const visibilityClasses = [
+    responsive?.mobile?.visible === false ? "hidden-mobile" : null,
+    responsive?.tablet?.visible === false ? "hidden-tablet" : null,
+    responsive?.desktop?.visible === false ? "hidden-desktop" : null,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   // Default padding values
   const defaultPadding = { top: 0, right: 0, bottom: 0, left: 0 };
 
-  // Get responsive spacing for current breakpoint or fallback to base spacing
-  const responsiveSpacing = section.settings.responsive?.[
-    currentBreakpoint
-  ] || {
-    padding: section.settings.padding || defaultPadding,
-    margin: section.settings.margin,
+  const breakpointConfig = responsive?.[currentBreakpoint] || null;
+  const responsiveSpacing = {
+    padding:
+      breakpointConfig?.padding || section.settings.padding || defaultPadding,
+    margin: breakpointConfig?.margin || section.settings.margin,
   };
 
   // Ensure padding is defined
@@ -96,7 +119,11 @@ export const SectionWrapper: React.FC<SectionWrapperProps> = ({
   };
 
   return (
-    <section style={sectionStyle} data-breakpoint={currentBreakpoint}>
+    <section
+      className={visibilityClasses || undefined}
+      style={sectionStyle}
+      data-breakpoint={currentBreakpoint}
+    >
       {children}
     </section>
   );
