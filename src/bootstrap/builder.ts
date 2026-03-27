@@ -46,11 +46,7 @@ import {
   getPageBuilder as getPageBuilderCore,
   createSectionRendererFromComponent,
   type PageBuilder,
-  type IThemeLoader,
   type ITemplateLoader,
-  type Theme,
-  type ThemeRole,
-  type VariantRegistryResult,
   type FileSystemPresetOptions,
 } from "@shopkit/builder";
 
@@ -58,6 +54,11 @@ import {
 import { WIDGET_MANIFEST } from "@/widgets/.generated/manifest";
 import { getCommerceClient } from "@/config/commerce";
 import { SectionWrapper } from "@/ui/layout/SectionWrapper";
+import {
+  merchantTemplateLoader,
+  FileSystemThemeLoader,
+  TemplateResolver,
+} from "@/assembly/loaders";
 
 // =============================================================================
 // COMMERCE CLIENT
@@ -78,119 +79,43 @@ function getBuilderCommerceClient() {
 }
 
 // =============================================================================
-// THEME LOADER IMPLEMENTATION
+// TEMPLATE LOADER (API-first via shared TemplateResolver)
 // =============================================================================
 
 /**
- * Loads merchant themes from the file system using dynamic imports.
- * Expected file structure: @/themes/{merchantName}/theme.json
- *
+ * Shared resolver: API-first when NEXT_PUBLIC_ENABLE_EDITOR_CHANGES is set,
+ * filesystem fallback always. Same resolver used by the editor API route.
  * @internal
  */
-const themeLoader: IThemeLoader = {
-  async loadTheme(merchantName: string): Promise<Theme> {
-    const themePath = `@/themes/${merchantName}/theme.json`;
-
-    try {
-      const module = await import(`@/themes/${merchantName}/theme.json`);
-      const data = module.default;
-
-      if (!data || typeof data !== "object") {
-        throw new Error(`Theme file is empty or invalid`);
-      }
-
-      if (!data.id || !data.name) {
-        throw new Error(`Theme missing required fields: id, name`);
-      }
-
-      return {
-        id: data.id,
-        name: data.name,
-        role: (data.role || "live") as ThemeRole,
-        config: data.config || {},
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.error(`[ThemeLoader] Failed to load theme`, {
-        merchantName,
-        attemptedPath: themePath,
-        error: errorMessage,
-      });
-      throw new Error(
-        `Theme not found for merchant "${merchantName}". ` +
-          `Ensure ${themePath} exists and exports valid theme data. ` +
-          `Original error: ${errorMessage}`
-      );
-    }
-  },
-};
-
-// =============================================================================
-// TEMPLATE LOADER IMPLEMENTATION
-// =============================================================================
+const merchantTemplateResolver = new TemplateResolver(merchantTemplateLoader);
 
 /**
- * Loads page templates from the file system using dynamic imports.
- * Expected file structure: @/themes/{merchantName}/templates/{templateName}/{variant}
- * Each template file must export a `template` object.
+ * Thin ITemplateLoader adapter that bridges TemplateResolver.resolveTemplate
+ * (which takes a full routeContext) to the ITemplateLoader.loadTemplate interface
+ * expected by getPageBuilderCore.
+ *
+ * fetchAPITemplate is hardcoded true because every template in theme-structure.json
+ * has fetchAPITemplate: true. The actual gate is NEXT_PUBLIC_ENABLE_EDITOR_CHANGES.
  *
  * @internal
  */
 const templateLoader: ITemplateLoader = {
-  async loadTemplate(
-    merchantName: string,
-    templateName: string,
-    variant: string
-  ) {
-    const templatePath = `@/themes/${merchantName}/templates/${templateName}/${variant}`;
-
-    try {
-      const module = await import(
-        `@/themes/${merchantName}/templates/${templateName}/${variant}`
-      );
-
-      if (!module?.template) {
-        throw new Error(
-          `Template file must export a 'template' object. ` +
-            `Found exports: ${Object.keys(module).join(", ") || "none"}`
-        );
-      }
-
-      return module.template;
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : String(error);
-      console.error(`[TemplateLoader] Failed to load template`, {
-        merchantName,
+  loadTemplate: (merchantName, templateName, variant) =>
+    merchantTemplateResolver.resolveTemplate({
+      merchantName,
+      routeContext: {
         templateName,
-        variant,
-        attemptedPath: templatePath,
-        error: errorMessage,
-      });
-      throw new Error(
-        `Template not found: "${templateName}" (variant: "${variant}") ` +
-          `for merchant "${merchantName}". ` +
-          `Ensure ${templatePath}.ts exists and exports { template }. ` +
-          `Original error: ${errorMessage}`
-      );
-    }
-  },
-
-  async loadVariantRegistry(
-    merchantName: string
-  ): Promise<VariantRegistryResult | null> {
-    try {
-      return await import(
-        `@/themes/${merchantName}/templates/variant-registry`
-      );
-    } catch {
-      // Variant registry is optional - return null if not found
-      return null;
-    }
-  },
+        path: "",
+        params: {},
+        query: {},
+        fetchAPITemplate: true,
+      },
+      variant,
+    }),
+  loadVariantRegistry: (merchantName) =>
+    merchantTemplateLoader.loadVariantRegistry
+      ? merchantTemplateLoader.loadVariantRegistry(merchantName)
+      : Promise.resolve(null),
 };
 
 // =============================================================================
@@ -214,7 +139,7 @@ const sectionRenderer = createSectionRendererFromComponent(SectionWrapper);
 const pageBuilderOptions: FileSystemPresetOptions = {
   widgets: WIDGET_MANIFEST,
   commerceClient: getBuilderCommerceClient(),
-  themeLoader,
+  themeLoader: new FileSystemThemeLoader(),
   templateLoader,
   sectionRenderer,
   defaultLocale: "en",
@@ -243,6 +168,7 @@ let pageBuilderInstance: PageBuilder | null = null;
  *     templateName: "home",
  *     path: "/",
  *     params: {},
+ *     query: {},
  *   },
  * });
  * ```
