@@ -60,7 +60,7 @@ import { getCommerceClient } from "@/config/commerce";
 import { SectionWrapper } from "@/ui/layout/SectionWrapper";
 
 // Editor integration — only wired in when NEXT_PUBLIC_ENABLE_EDITOR_CHANGES is set
-import { editorTemplateLoader } from "@/editor-bridge/template-load-pipeline";
+import { editorTemplateLoader } from "@/editor-integration/template-load-pipeline";
 
 // =============================================================================
 // COMMERCE CLIENT
