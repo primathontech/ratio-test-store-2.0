@@ -1,4 +1,4 @@
-import customHtml from "@/assembly/sections/common/custom-html";
+import customHtml from "@/editor-bridge/sections/common/custom-html";
 
 const commonSections = {
   "custom-html": customHtml,

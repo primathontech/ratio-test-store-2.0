@@ -51,22 +51,27 @@ export function useResponsive() {
     }
   }, []);
 
+  // Editor path: toolbar breakpoint drives state inside the preview iframe.
   useEffect(() => {
-    // Inside the editor preview iframe, use the toolbar-selected breakpoint
-    // instead of measuring the outer window size.
-    if (previewBreakpoint) {
-      const mobile = previewBreakpoint === "mobile";
-      const tablet = previewBreakpoint === "tablet";
-      setBreakpoint(previewBreakpoint);
-      setIsMobile(mobile);
-      setIsTablet(tablet);
-      setIsDesktop(previewBreakpoint === "desktop");
-      setIsMobileTab(mobile || tablet);
+    if (!previewBreakpoint) {
       return;
     }
+    const mobile = previewBreakpoint === "mobile";
+    const tablet = previewBreakpoint === "tablet";
+    setBreakpoint(previewBreakpoint);
+    setIsMobile(mobile);
+    setIsTablet(tablet);
+    setIsDesktop(previewBreakpoint === "desktop");
+    setIsMobileTab(mobile || tablet);
+  }, [previewBreakpoint]);
 
+  // Core path: measure window width and listen for resize events.
+  // Skipped when the editor is controlling the breakpoint.
+  useEffect(() => {
+    if (previewBreakpoint) {
+      return;
+    }
     updateBreakpoint();
-
     if (typeof window !== "undefined") {
       window.addEventListener("resize", updateBreakpoint);
       return () => window.removeEventListener("resize", updateBreakpoint);

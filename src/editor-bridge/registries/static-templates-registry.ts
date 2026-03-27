@@ -1,4 +1,4 @@
-import { THEMES } from "@/assembly/theme-constants";
+import { THEMES } from "@/editor-bridge/theme-constants";
 import { lazy } from "react";
 
 /**
@@ -13,10 +13,10 @@ import { lazy } from "react";
 export const STATIC_TEMPLATES_REGISTRY = {
   [THEMES.DAWN.id]: {
     [THEMES.DAWN.static_templates.ABOUT_US]: lazy(
-      () => import("@/static-templates/about-us")
+      () => import("@/editor-bridge/static-templates/about-us")
     ),
     // Add more static templates here, e.g.:
-    // [THEMES.DAWN.static_templates.PRIVACY_POLICY]: lazy(() => import("@/static-templates/privacy-policy")),
+    // [THEMES.DAWN.static_templates.PRIVACY_POLICY]: lazy(() => import("@/editor-bridge/static-templates/privacy-policy")),
   },
 } as const;
 

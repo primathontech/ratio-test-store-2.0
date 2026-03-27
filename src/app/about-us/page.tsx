@@ -3,7 +3,7 @@ import { getStaticLocale } from "@shopkit/i18n/server";
 import { TranslationProvider } from "@shopkit/i18n/client";
 import type { Locale } from "@shopkit/i18n";
 import { getRouteTranslations, getThemeName } from "@/utils";
-import AboutUsTemplate from "@/static-templates/about-us";
+import AboutUsTemplate from "@/editor-bridge/static-templates/about-us";
 
 export default async function AboutUsPage() {
   const locale = getStaticLocale();
