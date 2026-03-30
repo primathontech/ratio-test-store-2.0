@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { usePreviewBreakpoint } from "@/hooks/previewBreakpointContext";
 
 export type Breakpoint = "mobile" | "tablet" | "desktop";
 
@@ -12,9 +13,13 @@ const BREAKPOINTS = {
 } as const;
 
 /**
- * Hook to detect current breakpoint and provide responsive utilities
+ * Hook to detect current breakpoint and provide responsive utilities.
+ * When rendered inside the editor preview iframe, reads the breakpoint
+ * from PreviewBreakpointContext instead of measuring window.innerWidth.
  */
 export function useResponsive() {
+  const previewBreakpoint = usePreviewBreakpoint();
+
   const [breakpoint, setBreakpoint] = useState<Breakpoint>("desktop");
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
@@ -46,14 +51,32 @@ export function useResponsive() {
     }
   }, []);
 
+  // Editor path: toolbar breakpoint drives state inside the preview iframe.
   useEffect(() => {
-    updateBreakpoint();
+    if (!previewBreakpoint) {
+      return;
+    }
+    const mobile = previewBreakpoint === "mobile";
+    const tablet = previewBreakpoint === "tablet";
+    setBreakpoint(previewBreakpoint);
+    setIsMobile(mobile);
+    setIsTablet(tablet);
+    setIsDesktop(previewBreakpoint === "desktop");
+    setIsMobileTab(mobile || tablet);
+  }, [previewBreakpoint]);
 
+  // Core path: measure window width and listen for resize events.
+  // Skipped when the editor is controlling the breakpoint.
+  useEffect(() => {
+    if (previewBreakpoint) {
+      return;
+    }
+    updateBreakpoint();
     if (typeof window !== "undefined") {
       window.addEventListener("resize", updateBreakpoint);
       return () => window.removeEventListener("resize", updateBreakpoint);
     }
-  }, [updateBreakpoint]);
+  }, [previewBreakpoint, updateBreakpoint]);
 
   return {
     breakpoint,

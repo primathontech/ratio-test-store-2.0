@@ -59,6 +59,9 @@ import { WIDGET_MANIFEST } from "@/widgets/.generated/manifest";
 import { getCommerceClient } from "@/config/commerce";
 import { SectionWrapper } from "@/ui/layout/SectionWrapper";
 
+// Editor integration — only wired in when NEXT_PUBLIC_ENABLE_EDITOR_CHANGES is set
+import { editorTemplateLoader } from "@/editor-integration/template-load-pipeline";
+
 // =============================================================================
 // COMMERCE CLIENT
 // =============================================================================
@@ -209,13 +212,20 @@ const sectionRenderer = createSectionRendererFromComponent(SectionWrapper);
 
 /**
  * Configuration options for this application's page builder.
+ *
+ * Single fork point: when NEXT_PUBLIC_ENABLE_EDITOR_CHANGES is set,
+ * the editor-aware templateLoader replaces the core filesystem loader.
+ * All other options remain unchanged.
+ *
  * @internal
  */
 const pageBuilderOptions: FileSystemPresetOptions = {
   widgets: WIDGET_MANIFEST,
   commerceClient: getBuilderCommerceClient(),
   themeLoader,
-  templateLoader,
+  templateLoader: process.env.NEXT_PUBLIC_ENABLE_EDITOR_CHANGES
+    ? editorTemplateLoader
+    : templateLoader,
   sectionRenderer,
   defaultLocale: "en",
 };
@@ -243,6 +253,7 @@ let pageBuilderInstance: PageBuilder | null = null;
  *     templateName: "home",
  *     path: "/",
  *     params: {},
+ *     query: {},
  *   },
  * });
  * ```
