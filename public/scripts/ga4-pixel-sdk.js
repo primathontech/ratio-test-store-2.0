@@ -17,17 +17,20 @@
 
   // ─── Logger ────────────────────────────────────────────────────────────────
   var PREFIX = "[GA4SDK]";
+  var STYLE = "color: #4285F4; font-weight: bold;";
 
-  function log() {
-    var args = [PREFIX].concat(Array.prototype.slice.call(arguments));
+  function log(category) {
+    var args = ["%c" + PREFIX + " [" + category + "]", STYLE].concat(
+      Array.prototype.slice.call(arguments, 1)
+    );
     console.log.apply(console, args);
   }
 
-  log("Initializing ga4-pixel-sdk.js");
+  log("Init", "Initializing ga4-pixel-sdk.js");
 
   // ─── Helpers ───────────────────────────────────────────────────────────────
-  function eid(event) {
-    return (event && event.metadata && event.metadata.event_id) || "no-id";
+  function logEvent(eventName, ga4Name, event) {
+    log("Event", eventName + " → " + ga4Name, event);
   }
 
   function safeHandler(eventName, fn) {
@@ -35,7 +38,7 @@
       try {
         fn(event);
       } catch (err) {
-        log("[" + eid(event) + "] [" + eventName + "] Error:", err);
+        log("Error", eventName, err);
       }
     };
   }
@@ -44,7 +47,11 @@
   var registration = {
     name: "ga4",
     register: function (analytics, config) {
-      log("register() called with measurementId:", config.measurementId);
+      log(
+        "Init",
+        "register() called with measurementId:",
+        config.measurementId
+      );
 
       // Load gtag.js if not already loaded (Google Ads SDK may have loaded it)
       window.dataLayer = window.dataLayer || [];
@@ -58,13 +65,13 @@
           window.dataLayer.push(arguments);
         };
         window.gtag("js", new Date());
-        log("gtag.js script injected");
+        log("Init", "gtag.js script injected");
       } else {
-        log("Reusing existing gtag");
+        log("Init", "Reusing existing gtag");
       }
       var gtag = window.gtag;
       gtag("config", config.measurementId, { send_page_view: false });
-      log("gtag configured with measurementId:", config.measurementId);
+      log("Init", "gtag configured with measurementId:", config.measurementId);
 
       // ─── Helper: map contents[] → GA4 items[] ──────────────────────────
       function mapItems(contents, fallbackName) {
@@ -85,7 +92,7 @@
         "PageView",
         safeHandler("PageView", function (event) {
           var pg = event.page || {};
-          log("[" + eid(event) + "] [PageView] → page_view");
+          logEvent("PageView", "page_view", event);
           gtag("event", "page_view", {
             page_title: pg.title || document.title,
             page_location: pg.url || window.location.href,
@@ -98,10 +105,7 @@
         "ViewContent",
         safeHandler("ViewContent", function (event) {
           var p = event.properties;
-          log(
-            "[" + eid(event) + "] [ViewContent] → view_item",
-            JSON.stringify({ content_ids: p.content_ids, value: p.value })
-          );
+          logEvent("ViewContent", "view_item", event);
           gtag("event", "view_item", {
             items: [
               {
@@ -121,10 +125,7 @@
         "AddToCart",
         safeHandler("AddToCart", function (event) {
           var p = event.properties;
-          log(
-            "[" + eid(event) + "] [AddToCart] → add_to_cart",
-            JSON.stringify({ value: p.value, currency: p.currency })
-          );
+          logEvent("AddToCart", "add_to_cart", event);
           gtag("event", "add_to_cart", {
             items: mapItems(p.contents, p.content_name),
             currency: p.currency || "INR",
@@ -137,10 +138,7 @@
         "InitiateCheckout",
         safeHandler("InitiateCheckout", function (event) {
           var p = event.properties;
-          log(
-            "[" + eid(event) + "] [InitiateCheckout] → begin_checkout",
-            JSON.stringify({ value: p.value, currency: p.currency })
-          );
+          logEvent("InitiateCheckout", "begin_checkout", event);
           gtag("event", "begin_checkout", {
             items: mapItems(p.contents),
             currency: p.currency || "INR",
@@ -154,10 +152,7 @@
         "AddShippingInfo",
         safeHandler("AddShippingInfo", function (event) {
           var p = event.properties;
-          log(
-            "[" + eid(event) + "] [AddShippingInfo] → add_shipping_info",
-            JSON.stringify({ method: p.shipping_method, value: p.value })
-          );
+          logEvent("AddShippingInfo", "add_shipping_info", event);
           gtag("event", "add_shipping_info", {
             shipping_tier: p.shipping_method,
             currency: p.currency || "INR",
@@ -171,10 +166,7 @@
         "AddPaymentInfo",
         safeHandler("AddPaymentInfo", function (event) {
           var p = event.properties;
-          log(
-            "[" + eid(event) + "] [AddPaymentInfo] → add_payment_info",
-            JSON.stringify({ method: p.payment_method, value: p.value })
-          );
+          logEvent("AddPaymentInfo", "add_payment_info", event);
           gtag("event", "add_payment_info", {
             payment_type: p.payment_method,
             currency: p.currency || "INR",
@@ -187,14 +179,7 @@
         "Purchase",
         safeHandler("Purchase", function (event) {
           var p = event.properties;
-          log(
-            "[" + eid(event) + "] [Purchase] → purchase",
-            JSON.stringify({
-              order_id: p.order_id,
-              value: p.value,
-              currency: p.currency,
-            })
-          );
+          logEvent("Purchase", "purchase", event);
           gtag("event", "purchase", {
             transaction_id: p.order_id,
             value: p.value,
@@ -210,10 +195,7 @@
       analytics.subscribe(
         "Search",
         safeHandler("Search", function (event) {
-          log(
-            "[" + eid(event) + "] [Search] → search",
-            JSON.stringify({ term: event.properties.search_string })
-          );
+          logEvent("Search", "search", event);
           gtag("event", "search", {
             search_term: event.properties.search_string,
           });
@@ -224,10 +206,7 @@
         "AddToWishlist",
         safeHandler("AddToWishlist", function (event) {
           var p = event.properties;
-          log(
-            "[" + eid(event) + "] [AddToWishlist] → add_to_wishlist",
-            JSON.stringify({ content_ids: p.content_ids, value: p.value })
-          );
+          logEvent("AddToWishlist", "add_to_wishlist", event);
           gtag("event", "add_to_wishlist", {
             items: [
               {
@@ -246,10 +225,7 @@
         "Lead",
         safeHandler("Lead", function (event) {
           var p = event.properties || {};
-          log(
-            "[" + eid(event) + "] [Lead] → generate_lead",
-            JSON.stringify({ value: p.value })
-          );
+          logEvent("Lead", "generate_lead", event);
           gtag("event", "generate_lead", {
             value: p.value,
             currency: p.currency || "INR",
@@ -261,10 +237,7 @@
         "CompleteRegistration",
         safeHandler("CompleteRegistration", function (event) {
           var p = event.properties || {};
-          log(
-            "[" + eid(event) + "] [CompleteRegistration] → sign_up",
-            JSON.stringify({ method: p.method })
-          );
+          logEvent("CompleteRegistration", "sign_up", event);
           gtag("event", "sign_up", {
             method: p.method,
           });
@@ -274,7 +247,7 @@
       analytics.subscribe(
         "Contact",
         safeHandler("Contact", function (event) {
-          log("[" + eid(event) + "] [Contact] → contact");
+          logEvent("Contact", "contact", event);
           gtag("event", "contact", {});
         })
       );
@@ -282,21 +255,24 @@
       analytics.subscribe(
         "Subscribe",
         safeHandler("Subscribe", function (event) {
-          log("[" + eid(event) + "] [Subscribe] → subscribe");
+          logEvent("Subscribe", "subscribe", event);
           gtag("event", "subscribe", {});
         })
       );
 
-      log("All 13 event subscriptions registered");
+      log("Init", "All 13 event subscriptions registered");
     },
   };
 
   // Register immediately if runtime is ready, otherwise queue for later
   if (window.__OPEN_STORE_PIXEL_RUNTIME__) {
-    log("Runtime found — registering immediately");
+    log("Init", "Runtime found — registering immediately");
     window.__OPEN_STORE_PIXEL_RUNTIME__.register(registration);
   } else {
-    log("Runtime not ready — pushing to __OPEN_STORE_PIXEL_PENDING__ queue");
+    log(
+      "Init",
+      "Runtime not ready — pushing to __OPEN_STORE_PIXEL_PENDING__ queue"
+    );
     window.__OPEN_STORE_PIXEL_PENDING__ =
       window.__OPEN_STORE_PIXEL_PENDING__ || [];
     window.__OPEN_STORE_PIXEL_PENDING__.push(registration);
