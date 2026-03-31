@@ -29,18 +29,21 @@
 
   // ─── Logger ────────────────────────────────────────────────────────────────
   var PREFIX = "[MetaPixelSDK]";
+  var STYLE = "color: #1877F2; font-weight: bold;";
 
-  function log() {
-    var args = [PREFIX].concat(Array.prototype.slice.call(arguments));
+  function log(category) {
+    var args = ["%c" + PREFIX + " [" + category + "]", STYLE].concat(
+      Array.prototype.slice.call(arguments, 1)
+    );
     console.log.apply(console, args);
   }
 
-  log("Initializing meta-pixel-sdk.js");
+  log("Init", "Initializing meta-pixel-sdk.js");
 
   // Step 1: Load Meta's fbq library
   !(function (f, b, e, v, n, t, s) {
     if (f.fbq) {
-      log("fbq already loaded, skipping script injection");
+      log("Init", "fbq already loaded, skipping script injection");
       return;
     }
     n = f.fbq = function () {
@@ -58,7 +61,7 @@
     t.src = v;
     s = b.getElementsByTagName(e)[0];
     s.parentNode.insertBefore(t, s);
-    log("fbevents.js script injected");
+    log("Init", "fbevents.js script injected");
   })(
     window,
     document,
@@ -94,7 +97,7 @@
       !crypto.subtle ||
       !crypto.subtle.importKey
     ) {
-      log("CAPI Auth: crypto.subtle unavailable — requests will be unsigned");
+      log("Auth", "crypto.subtle unavailable — requests will be unsigned");
       return;
     }
 
@@ -109,11 +112,11 @@
       )
       .then(function (key) {
         capiHmacKey = key;
-        log("CAPI Auth: HMAC key imported");
+        log("Auth", "HMAC key imported");
         return refreshCapiToken();
       })
       .catch(function (err) {
-        log("CAPI Auth: key import failed:", err);
+        log("Auth", "key import failed:", err);
       });
   }
 
@@ -144,7 +147,7 @@
         capiTokenTs = ts;
       })
       .catch(function (err) {
-        log("CAPI Auth: sign failed:", err);
+        log("Auth", "sign failed:", err);
       });
   }
 
@@ -244,10 +247,10 @@
     var eventNames = batch.map(function (e) {
       return e.event_name;
     });
-    log(
-      "CAPI: flushing " + batch.length + " events",
-      JSON.stringify({ event_ids: eventIds, event_names: eventNames })
-    );
+    log("CAPI", "flushing " + batch.length + " events", {
+      event_ids: eventIds,
+      event_names: eventNames,
+    });
 
     var payload;
     try {
@@ -259,11 +262,7 @@
       }
       payload = JSON.stringify(body);
     } catch (e) {
-      log(
-        "CAPI: JSON serialization failed:",
-        e,
-        JSON.stringify({ event_ids: eventIds })
-      );
+      log("CAPI", "JSON serialization failed:", e);
       return;
     }
 
@@ -272,15 +271,11 @@
       var blob = new Blob([payload], { type: "application/json" });
       var sent = navigator.sendBeacon(capiEndpoint, blob);
       if (sent) {
-        log(
-          "CAPI: sendBeacon succeeded",
-          JSON.stringify({ event_ids: eventIds })
-        );
+        log("CAPI", "sendBeacon succeeded", { event_ids: eventIds });
       } else {
-        log(
-          "CAPI: sendBeacon failed, falling back to fetch",
-          JSON.stringify({ event_ids: eventIds })
-        );
+        log("CAPI", "sendBeacon failed, falling back to fetch", {
+          event_ids: eventIds,
+        });
         fetchFallbackCAPI(payload, eventIds);
       }
     } else {
@@ -299,17 +294,10 @@
       keepalive: true,
     })
       .then(function (res) {
-        log(
-          "CAPI: fetch " + res.status,
-          JSON.stringify({ event_ids: eventIds })
-        );
+        log("CAPI", "fetch " + res.status, { event_ids: eventIds });
       })
       .catch(function (err) {
-        log(
-          "CAPI: fetch failed:",
-          err,
-          JSON.stringify({ event_ids: eventIds })
-        );
+        log("CAPI", "fetch failed:", err);
       });
   }
 
@@ -333,41 +321,19 @@
     // Lazily refresh HMAC token (async, but completes before next flush)
     refreshCapiToken();
 
-    var eventId = eid(event);
-
     // Drop oldest if queue full
     if (capiQueue.length >= MAX_QUEUE_SIZE) {
-      log(
-        "[" +
-          eventId +
-          "] [" +
-          eventName +
-          "] CAPI: queue full, dropping oldest"
-      );
+      log("CAPI", "queue full, dropping oldest —", eventName);
       capiQueue.shift();
     }
 
     var capiEvent = buildCAPIEvent(eventName, event);
     capiQueue.push(capiEvent);
-    log(
-      "[" +
-        eventId +
-        "] [" +
-        eventName +
-        "] CAPI: queued (batch size: " +
-        capiQueue.length +
-        ")"
-    );
+    log("CAPI", "queued", eventName, "(batch size: " + capiQueue.length + ")");
 
     // Immediate flush for high-value events
     if (HIGH_VALUE_EVENTS[eventName]) {
-      log(
-        "[" +
-          eventId +
-          "] [" +
-          eventName +
-          "] CAPI: high-value event, flushing immediately"
-      );
+      log("CAPI", "high-value event, flushing immediately —", eventName);
       flushCAPI();
     } else if (capiQueue.length >= MAX_BATCH_SIZE) {
       flushCAPI();
@@ -389,10 +355,6 @@
   }
 
   // ─── Helpers ──────────────────────────────────────────────────────────────
-
-  function eid(event) {
-    return (event && event.metadata && event.metadata.event_id) || "no-id";
-  }
 
   // Helper: extract eventID options object from event metadata
   function getEventOptions(event) {
@@ -417,149 +379,118 @@
   var registration = {
     name: "meta-pixel",
     register: function (analytics, config) {
-      log("register() called with pixelId:", config.pixelId);
+      log("Init", "register() called with pixelId:", config.pixelId);
 
       // Initialize Meta Pixel with merchant's pixel ID
       fbq("init", config.pixelId);
-      log("fbq('init', '" + config.pixelId + "') — pixel initialized");
+      log("Init", "fbq('init', '" + config.pixelId + "') — pixel initialized");
 
       // Initialize CAPI if endpoint configured
       if (config.capiEndpoint) {
         capiEndpoint = config.capiEndpoint;
-        log("CAPI enabled — endpoint:", capiEndpoint);
+        log("Init", "CAPI enabled — endpoint:", capiEndpoint);
 
         // Initialize HMAC auth if secret provided
         if (config.capiSecret) {
           initCapiAuth(config.capiSecret);
-          log("CAPI Auth: HMAC signing enabled");
+          log("Auth", "HMAC signing enabled");
         } else {
-          log("CAPI Auth: no capiSecret — requests will be unsigned");
+          log("Auth", "no capiSecret — requests will be unsigned");
         }
       } else {
-        log("CAPI disabled — no capiEndpoint in config");
+        log("Init", "CAPI disabled — no capiEndpoint in config");
       }
 
       // ─── Event Subscriptions ──────────────────────────────────────────
       // Payloads ARE Meta-format — zero mapping needed.
       // Each subscription fires both client pixel (fbq) and CAPI queue.
 
+      // ─── Helper: structured SDK log ─────────────────────────────────
+      function logEvent(eventName, event) {
+        log("Event", eventName, event);
+      }
+
       analytics.subscribe("PageView", function (event) {
-        log("[" + eid(event) + "] [PageView] → fbq('track', 'PageView')");
+        logEvent("PageView", event);
         trackEvent("PageView", event, {});
       });
 
       analytics.subscribe("ViewContent", function (event) {
-        log(
-          "[" + eid(event) + "] [ViewContent]",
-          JSON.stringify({
-            content_ids: event.properties.content_ids,
-            value: event.properties.value,
-          })
-        );
+        logEvent("ViewContent", event);
         trackEvent("ViewContent", event);
       });
 
       analytics.subscribe("AddToCart", function (event) {
-        log(
-          "[" + eid(event) + "] [AddToCart]",
-          JSON.stringify({
-            content_ids: event.properties.content_ids,
-            value: event.properties.value,
-          })
-        );
+        logEvent("AddToCart", event);
         trackEvent("AddToCart", event);
       });
 
       analytics.subscribe("InitiateCheckout", function (event) {
-        log(
-          "[" + eid(event) + "] [InitiateCheckout]",
-          JSON.stringify({ value: event.properties.value })
-        );
+        logEvent("InitiateCheckout", event);
         trackEvent("InitiateCheckout", event);
       });
 
       analytics.subscribe("AddShippingInfo", function (event) {
-        log(
-          "[" + eid(event) + "] [AddShippingInfo]",
-          JSON.stringify({
-            method: event.properties.shipping_method,
-            value: event.properties.value,
-          })
-        );
+        logEvent("AddShippingInfo", event);
         trackEvent("AddShippingInfo", event);
       });
 
       analytics.subscribe("AddPaymentInfo", function (event) {
-        log(
-          "[" + eid(event) + "] [AddPaymentInfo]",
-          JSON.stringify({
-            method: event.properties.payment_method,
-            value: event.properties.value,
-          })
-        );
+        logEvent("AddPaymentInfo", event);
         trackEvent("AddPaymentInfo", event);
       });
 
       analytics.subscribe("Purchase", function (event) {
-        log(
-          "[" + eid(event) + "] [Purchase]",
-          JSON.stringify({
-            order_id: event.properties.order_id,
-            value: event.properties.value,
-          })
-        );
+        logEvent("Purchase", event);
         trackEvent("Purchase", event);
       });
 
       analytics.subscribe("Search", function (event) {
-        log(
-          "[" + eid(event) + "] [Search]",
-          JSON.stringify({ term: event.properties.search_string })
-        );
+        logEvent("Search", event);
         trackEvent("Search", event);
       });
 
       analytics.subscribe("AddToWishlist", function (event) {
-        log(
-          "[" + eid(event) + "] [AddToWishlist]",
-          JSON.stringify({
-            content_ids: event.properties.content_ids,
-            value: event.properties.value,
-          })
-        );
+        logEvent("AddToWishlist", event);
         trackEvent("AddToWishlist", event);
       });
 
       analytics.subscribe("Lead", function (event) {
-        log("[" + eid(event) + "] [Lead]");
+        logEvent("Lead", event);
         trackEvent("Lead", event, {});
       });
 
       analytics.subscribe("CompleteRegistration", function (event) {
-        log("[" + eid(event) + "] [CompleteRegistration]");
+        logEvent("CompleteRegistration", event);
         trackEvent("CompleteRegistration", event, {});
       });
 
       analytics.subscribe("Contact", function (event) {
-        log("[" + eid(event) + "] [Contact]");
+        logEvent("Contact", event);
         trackEvent("Contact", event, {});
       });
 
       analytics.subscribe("Subscribe", function (event) {
-        log("[" + eid(event) + "] [Subscribe]");
+        logEvent("Subscribe", event);
         trackEvent("Subscribe", event, {});
       });
 
-      log("All 13 event subscriptions registered (client pixel + CAPI)");
+      log(
+        "Init",
+        "All 13 event subscriptions registered (client pixel + CAPI)"
+      );
     },
   };
 
   // Step 3: Register immediately if runtime is ready, otherwise queue
   if (window.__OPEN_STORE_PIXEL_RUNTIME__) {
-    log("Runtime found — registering immediately");
+    log("Init", "Runtime found — registering immediately");
     window.__OPEN_STORE_PIXEL_RUNTIME__.register(registration);
   } else {
-    log("Runtime not ready — pushing to __OPEN_STORE_PIXEL_PENDING__ queue");
+    log(
+      "Init",
+      "Runtime not ready — pushing to __OPEN_STORE_PIXEL_PENDING__ queue"
+    );
     window.__OPEN_STORE_PIXEL_PENDING__ =
       window.__OPEN_STORE_PIXEL_PENDING__ || [];
     window.__OPEN_STORE_PIXEL_PENDING__.push(registration);
