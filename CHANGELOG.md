@@ -1,5 +1,17 @@
 # storefront-starter-app
 
+## 0.1.9
+
+### Enhancements
+
+- **Experiment tracking** — A/B test cookies automatically captured on every event via `@shopkit/events@0.9.0` experiment middleware. SDKs receive experiment data in `metadata.experiment`.
+- **SDK logging overhaul** (meta-pixel-sdk.js, ga4-pixel-sdk.js):
+  - Consistent category format: `[SDK] [Category] message` — categories: `Init`, `Event`, `CAPI`, `Auth`
+  - Colored output for quick scanning
+  - Full event object logged (expandable in console) — replaces cherry-picked field logging
+  - Removed `JSON.stringify` and unused `eid()` helper
+- Bump `@shopkit/events` to `^0.9.0`
+
 ## 0.1.8
 
 ### Patch Changes
