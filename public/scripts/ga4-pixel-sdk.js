@@ -70,7 +70,7 @@
         log("Init", "Reusing existing gtag");
       }
       var gtag = window.gtag;
-      gtag("config", config.measurementId, { send_page_view: false });
+      gtag("config", config.measurementId, { send_page_view: true });
       log("Init", "gtag configured with measurementId:", config.measurementId);
 
       // ─── Helper: map contents[] → GA4 items[] ──────────────────────────
@@ -88,18 +88,19 @@
       // ─── Event Subscriptions ──────────────────────────────────────────
       // System emits PascalCase names. GA4 SDK maps to GA4 snake_case internally.
 
-      analytics.subscribe(
-        "PageView",
-        safeHandler("PageView", function (event) {
-          var pg = event.page || {};
-          logEvent("PageView", "page_view", event);
-          gtag("event", "page_view", {
-            page_title: pg.title || document.title,
-            page_location: pg.url || window.location.href,
-            page_path: pg.path || window.location.pathname,
-          });
-        })
-      );
+      // Lets not track page_view manually
+      // analytics.subscribe(
+      //   "PageView",
+      //   safeHandler("PageView", function (event) {
+      //     var pg = event.page || {};
+      //     logEvent("PageView", "page_view", event);
+      //     gtag("event", "page_view", {
+      //       page_title: pg.title || document.title,
+      //       page_location: pg.url || window.location.href,
+      //       page_path: pg.path || window.location.pathname,
+      //     });
+      //   })
+      // );
 
       analytics.subscribe(
         "ViewContent",
