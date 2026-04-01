@@ -15,7 +15,7 @@ export interface FooterSettings {
  * Footer widget data
  */
 export interface FooterData {
-  // Define the data structure your widget receives from dataSources
+  // Static content — data is hardcoded in the V1 component
 }
 
 /**

@@ -1,21 +1,55 @@
 import { WidgetProps } from "@/widgets/types";
 
 /**
+ * A single navigation link inside a dropdown menu
+ */
+export interface NavDropdownItem {
+  label: string;
+  href: string;
+}
+
+/**
+ * A group of dropdown items (e.g., "Product Type", "Shop By Concern")
+ */
+export interface NavDropdownGroup {
+  heading?: string;
+  items: NavDropdownItem[];
+}
+
+/**
+ * Top-level navigation item
+ */
+export interface NavItem {
+  label: string;
+  href: string;
+  dropdown?: NavDropdownGroup[];
+}
+
+/**
  * Header widget settings
  */
 export interface HeaderSettings {
-  /**
-   * Widget variant
-   * @default 'v1'
-   */
+  /** Widget variant */
   variant?: string;
+  /** Logo image URL */
+  logoSrc?: string;
+  /** Logo alt text */
+  logoAlt?: string;
+  /** Navigation items */
+  navigation?: NavItem[];
+  /** Search placeholder text */
+  searchPlaceholder?: string;
+  /** Cart link href */
+  cartHref?: string;
+  /** Account link href */
+  accountHref?: string;
 }
 
 /**
  * Header widget data
  */
 export interface HeaderData {
-  // Define the data structure your widget receives from dataSources
+  cartCount?: number;
 }
 
 /**

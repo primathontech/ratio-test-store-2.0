@@ -492,3 +492,35 @@
     display: none;
   }
 }
+/* === PeopleAlsoBought Carousel === */
+.pab-slider-viewport {
+  --pab-cards: 1.5;
+  --pab-gap: 16px;
+  --pab-pad: 16px;
+}
+@media (min-width: 768px) {
+  .pab-slider-viewport {
+    --pab-cards: 2.3;
+  }
+}
+@media (min-width: 1024px) {
+  .pab-slider-viewport {
+    --pab-cards: 3;
+    --pab-pad: 72px;
+  }
+}
+@media (min-width: 1440px) {
+  .pab-slider-viewport {
+    --pab-cards: 5;
+  }
+}
+.pab-slide {
+  width: calc(
+    (100% - var(--pab-pad) * 2 - (var(--pab-cards) - 1) * var(--pab-gap)) /
+      var(--pab-cards)
+  );
+  min-width: calc(
+    (100% - var(--pab-pad) * 2 - (var(--pab-cards) - 1) * var(--pab-gap)) /
+      var(--pab-cards)
+  );
+}
