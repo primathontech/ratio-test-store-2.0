@@ -524,3 +524,125 @@
       var(--pab-cards)
   );
 }
+
+/* === CollectionGrid Section === */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* === ShineAcademyBanner Section === */
+.sab-animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+.sab-animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === Testimonials Section === */
+.testimonials-animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+.testimonials-animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === AdditionalInfoAccordion SEO Prose === */
+.additional-info-prose {
+  font-family: Gotham, sans-serif;
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+  color: #1d1d1d;
+}
+.additional-info-prose h1 {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+.additional-info-prose h2 {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  margin: 20px 0 10px;
+}
+.additional-info-prose h3 {
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 700;
+  margin: 16px 0 8px;
+}
+.additional-info-prose p {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+  margin: 0 0 10px;
+}
+.additional-info-prose ol,
+.additional-info-prose ul {
+  list-style: revert;
+  margin: 0 0 10px;
+  padding-left: 24px;
+}
+.additional-info-prose li {
+  list-style: revert;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 22px;
+}
+.additional-info-prose a {
+  color: #1d1d1d;
+  text-decoration: underline;
+}
+.additional-info-prose strong {
+  font-weight: 700;
+}
+@media (min-width: 768px) {
+  .additional-info-prose h1 {
+    font-size: 28px;
+    line-height: 34px;
+  }
+  .additional-info-prose h2 {
+    font-size: 22px;
+    line-height: 28px;
+  }
+  .additional-info-prose h3 {
+    font-size: 18px;
+    line-height: 24px;
+  }
+}
+
+/* Testimonials carousel slide widths — responsive */
+.testimonials-slide {
+  /* Mobile: 1 card visible with peek */
+  width: calc(100% - 40px);
+  min-width: calc(100% - 40px);
+}
+@media (min-width: 768px) {
+  .testimonials-slide {
+    /* Tablet: 2 cards visible */
+    width: calc((100% - 22px) / 2);
+    min-width: calc((100% - 22px) / 2);
+  }
+}
+@media (min-width: 1024px) {
+  .testimonials-slide {
+    /* Desktop: 3 cards visible */
+    width: calc((100% - 44px) / 3);
+    min-width: calc((100% - 44px) / 3);
+  }
+}

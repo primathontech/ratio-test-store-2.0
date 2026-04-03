@@ -11,6 +11,19 @@ export interface InfoBlock {
 }
 
 /**
+ * A single content block for the SEO prose accordion (V2).
+ * Supports headings, paragraphs, and ordered/unordered lists.
+ */
+export interface ProseBlock {
+  /** Block type */
+  type: "h1" | "h2" | "h3" | "p" | "ol" | "ul";
+  /** Text content (for h1/h2/h3/p). May include inline markup via segments. */
+  text?: string;
+  /** List items (for ol/ul). Each item is a string. */
+  items?: string[];
+}
+
+/**
  * AdditionalInformation widget settings
  */
 export interface AdditionalInformationSettings {
@@ -18,10 +31,12 @@ export interface AdditionalInformationSettings {
   variant?: string;
   /** Section heading text */
   title?: string;
-  /** Info blocks to display in the expanded grid */
+  /** Info blocks to display in the expanded grid (V1) */
   items?: InfoBlock[];
   /** Whether the accordion starts expanded */
   defaultExpanded?: boolean;
+  /** Structured prose content blocks for SEO accordion (V2) */
+  proseBlocks?: ProseBlock[];
 }
 
 /**
