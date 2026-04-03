@@ -1,0 +1,67 @@
+# Dependencies
+node_modules
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing / coverage
+coverage
+.nyc_output
+*.lcov
+
+# Next.js build output (built inside Docker)
+.next/
+out/
+build
+
+# Env files (DO NOT bake secrets)
+.env.*
+!.env
+!.env.production
+!.env.local
+
+# OS / misc
+.DS_Store
+*.pem
+
+# IDE
+.vscode
+.idea
+.vscode-test
+
+# Git
+.git
+.gitignore
+README.md
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Cache
+.npm
+.eslintcache
+.cache
+.parcel-cache
+.rpt2_cache/
+.rts2_cache_cjs/
+.rts2_cache_es/
+.rts2_cache_umd/
+
+# Temp
+tmp/
+temp/
+pids
+*.pid
+*.pid.lock
+*.seed
+
+# Yarn
+.yarn-integrity
+*.tgz
+
+# jspm
+jspm_packages/
