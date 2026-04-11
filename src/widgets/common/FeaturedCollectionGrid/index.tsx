@@ -1,33 +1,31 @@
-"use client";
-
 import React from "react";
-import { ProductCategoryGridVariants } from "./variants";
-import { ProductCategoryGridProps } from "./types";
+import { FeaturedCollectionGridVariants } from "./variants";
+import { FeaturedCollectionGridProps } from "./types";
 
 /**
- * ProductCategoryGrid Widget
+ * FeaturedCollectionGrid Widget
  *
  * Reusable product grid with a category title banner and 4-column (desktop)
- * / 2-column (mobile) product card grid. Used across 12 category sections
- * on the Shine Squad Weekly Offer page.
+ * / 2-column (mobile) product card grid. Fetches live data via
+ * DATA_SOURCE_TYPES.COLLECTION.
  */
-export function ProductCategoryGrid({
+export function FeaturedCollectionGrid({
   data,
   settings,
   className,
   locale,
-}: ProductCategoryGridProps) {
+}: FeaturedCollectionGridProps) {
   const variant = settings?.variant || "v1";
   const VariantComponent =
-    ProductCategoryGridVariants[
-      variant as keyof typeof ProductCategoryGridVariants
+    FeaturedCollectionGridVariants[
+      variant as keyof typeof FeaturedCollectionGridVariants
     ];
 
   if (!VariantComponent) {
     console.warn(
-      `ProductCategoryGrid variant "${variant}" not found, using default`
+      `FeaturedCollectionGrid variant "${variant}" not found, using default`
     );
-    const DefaultComponent = ProductCategoryGridVariants.default;
+    const DefaultComponent = FeaturedCollectionGridVariants.default;
     return (
       <DefaultComponent
         data={data}
