@@ -2,7 +2,8 @@
 
 import React, { memo, useState } from "react";
 import Image from "next/image";
-import { ProductCardProduct } from "./types";
+import { ProductCardTheme } from "./types";
+import type { ProductCardProps } from "./types";
 
 /* ------------------------------------------------------------------ */
 /*  SVG Icons                                                          */
@@ -52,9 +53,11 @@ const StarIcon = ({ filled }: { filled: boolean }) => (
 const StarRating = ({
   rating,
   reviewCount,
+  textColor,
 }: {
   rating: number;
   reviewCount: number;
+  textColor: string;
 }) => {
   if (reviewCount === 0) {
     return null;
@@ -72,13 +75,13 @@ const StarRating = ({
       </span>
       <span
         className="text-[12px] leading-[16px]"
-        style={{ color: "#1d1d1d", fontFamily: "Gotham, sans-serif" }}
+        style={{ color: textColor, fontFamily: "Gotham, sans-serif" }}
       >
         {rating.toFixed(1)}
       </span>
       <span
         className="text-[12px] leading-[16px]"
-        style={{ color: "#1d1d1d", fontFamily: "Gotham, sans-serif" }}
+        style={{ color: textColor, fontFamily: "Gotham, sans-serif" }}
       >
         | {reviewCount}
       </span>
@@ -108,20 +111,65 @@ function badgeColor(variant?: string): string {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Theme tokens                                                       */
+/* ------------------------------------------------------------------ */
+
+const LIGHT_THEME = {
+  cardBg: "#ffffff",
+  cardBorder: "1px solid rgba(29,29,29,0.12)",
+  textPrimary: "#1d1d1d",
+  textSecondary: "#666666",
+  textMuted: "#999999",
+  chipBg: "#ffffff",
+  chipBorder: "1px solid #333333",
+  chipColor: "#333333",
+  weightBg: "rgba(255,255,255,0.9)",
+  weightColor: "#333333",
+  buttonBg: "#000000",
+  buttonColor: "#ffffff",
+  buttonHoverBg: "rgb(56,56,56)",
+  discountColor: "rgb(0, 160, 0)",
+  imageRadius: "0px",
+  buttonRadius: "0px",
+};
+
+const DARK_THEME = {
+  cardBg: "transparent",
+  cardBorder: "none",
+  textPrimary: "#ffffff",
+  textSecondary: "rgba(255,255,255,0.7)",
+  textMuted: "rgba(255,255,255,0.5)",
+  chipBg: "rgb(29, 29, 29)",
+  chipBorder: "none",
+  chipColor: "#ffffff",
+  weightBg: "rgba(0,0,0,0.5)",
+  weightColor: "#ffffff",
+  buttonBg: "#ffffff",
+  buttonColor: "rgb(29, 29, 29)",
+  buttonHoverBg: "rgb(230,230,230)",
+  discountColor: "rgb(0, 200, 0)",
+  imageRadius: "10px",
+  buttonRadius: "4px",
+};
+
+/* ------------------------------------------------------------------ */
 /*  Product Card                                                       */
 /* ------------------------------------------------------------------ */
 
 export const ProductCard = memo(function ProductCard({
   product,
-}: {
-  product: ProductCardProduct;
-}) {
+  theme = ProductCardTheme.LIGHT,
+}: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const t = theme === ProductCardTheme.DARK ? DARK_THEME : LIGHT_THEME;
 
   return (
     <div
-      className="flex flex-col h-full border border-[rgba(29,29,29,0.12)]"
-      style={{ backgroundColor: "#ffffff" }}
+      className="flex flex-col h-full"
+      style={{
+        backgroundColor: t.cardBg,
+        border: t.cardBorder,
+      }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -129,7 +177,7 @@ export const ProductCard = memo(function ProductCard({
       <a
         href={product.href}
         className="relative block overflow-hidden"
-        style={{ aspectRatio: "1/1" }}
+        style={{ aspectRatio: "1/1", borderRadius: t.imageRadius }}
       >
         {/* Promo badge */}
         {product.badge && (
@@ -152,8 +200,8 @@ export const ProductCard = memo(function ProductCard({
           <div
             className="absolute bottom-[4px] right-[4px] z-[2] px-[6px] py-[2px] text-[11px]"
             style={{
-              backgroundColor: "rgba(255,255,255,0.9)",
-              color: "#333333",
+              backgroundColor: t.weightBg,
+              color: t.weightColor,
               borderRadius: "4px",
               fontFamily: "Gotham, sans-serif",
               fontWeight: 400,
@@ -174,6 +222,7 @@ export const ProductCard = memo(function ProductCard({
           style={{
             opacity: isHovered && product.hoverImage ? 0 : 1,
             transition: "opacity 0.5s",
+            borderRadius: t.imageRadius,
           }}
         />
 
@@ -191,6 +240,7 @@ export const ProductCard = memo(function ProductCard({
               transform: isHovered ? "scale(1.045)" : "scale(1)",
               transition:
                 "opacity 0.5s, transform 2s cubic-bezier(0, 0, 0.44, 1.18)",
+              borderRadius: t.imageRadius,
             }}
           />
         )}
@@ -204,9 +254,9 @@ export const ProductCard = memo(function ProductCard({
             <span
               className="inline-flex text-[11px] px-[10px] py-[4px]"
               style={{
-                color: "#333333",
-                backgroundColor: "#ffffff",
-                border: "1px solid #333333",
+                color: t.chipColor,
+                backgroundColor: t.chipBg,
+                border: t.chipBorder,
                 borderRadius: "4px",
                 fontFamily: "Gotham, sans-serif",
                 fontWeight: 400,
@@ -220,9 +270,9 @@ export const ProductCard = memo(function ProductCard({
         {/* Title */}
         <a
           href={product.href}
-          className="text-[14px] leading-[20px] no-underline line-clamp-2 mb-[4px] hover:text-[rgb(0,137,221)]"
+          className="text-[14px] leading-[20px] no-underline line-clamp-2 mb-[4px]"
           style={{
-            color: "#1d1d1d",
+            color: t.textPrimary,
             fontFamily: "Gotham, sans-serif",
             fontWeight: 400,
             transition: "color 0.25s",
@@ -236,7 +286,7 @@ export const ProductCard = memo(function ProductCard({
           <p
             className="text-[12px] leading-[16px] line-clamp-2 mb-[4px]"
             style={{
-              color: "#666666",
+              color: t.textSecondary,
               fontFamily: "Gotham, sans-serif",
               fontWeight: 400,
             }}
@@ -250,6 +300,7 @@ export const ProductCard = memo(function ProductCard({
           <StarRating
             rating={product.rating}
             reviewCount={product.reviewCount}
+            textColor={t.textPrimary}
           />
         </div>
 
@@ -258,7 +309,7 @@ export const ProductCard = memo(function ProductCard({
           <span
             className="text-[14px]"
             style={{
-              color: "#1d1d1d",
+              color: t.textPrimary,
               fontFamily: "Gotham, sans-serif",
               fontWeight: 700,
             }}
@@ -271,7 +322,7 @@ export const ProductCard = memo(function ProductCard({
                 <span
                   className="text-[12px] line-through"
                   style={{
-                    color: "#999999",
+                    color: t.textMuted,
                     fontFamily: "Gotham, sans-serif",
                     fontWeight: 400,
                   }}
@@ -282,7 +333,7 @@ export const ProductCard = memo(function ProductCard({
                   <span
                     className="text-[12px]"
                     style={{
-                      color: "rgb(0, 160, 0)",
+                      color: t.discountColor,
                       fontFamily: "Gotham, sans-serif",
                       fontWeight: 600,
                     }}
@@ -297,12 +348,12 @@ export const ProductCard = memo(function ProductCard({
         {/* Add to cart button */}
         <button
           type="button"
-          className="flex items-center justify-center gap-[8px] w-full mt-[12px] text-[14px] cursor-pointer hover:bg-[rgb(56,56,56)]"
+          className="flex items-center justify-center gap-[8px] w-full mt-[12px] text-[14px] cursor-pointer"
           style={{
-            backgroundColor: "#000000",
-            color: "#ffffff",
+            backgroundColor: t.buttonBg,
+            color: t.buttonColor,
             height: "42px",
-            borderRadius: "0px",
+            borderRadius: t.buttonRadius,
             border: "none",
             fontFamily: "Gotham, sans-serif",
             fontWeight: 400,
@@ -318,4 +369,8 @@ export const ProductCard = memo(function ProductCard({
   );
 });
 
-export { type ProductCardProduct } from "./types";
+export {
+  type ProductCardProduct,
+  type ProductCardProps,
+  ProductCardTheme,
+} from "./types";

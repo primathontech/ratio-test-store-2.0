@@ -36,3 +36,16 @@ export interface ProductCardProduct {
   /** Short description text */
   description?: string;
 }
+
+/** Card color theme */
+export enum ProductCardTheme {
+  LIGHT = "light",
+  DARK = "dark",
+}
+
+/** Props for the ProductCard component */
+export interface ProductCardProps {
+  product: ProductCardProduct;
+  /** Card color theme — defaults to LIGHT */
+  theme?: ProductCardTheme;
+}

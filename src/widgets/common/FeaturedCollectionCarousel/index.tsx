@@ -1,34 +1,36 @@
 "use client";
 
 import React from "react";
-import { ProductCarouselVariants } from "./variants";
-import { ProductCarouselProps } from "./types";
+import { FeaturedCollectionCarouselVariants } from "./variants";
+import { FeaturedCollectionCarouselProps } from "./types";
 
 /**
- * ProductCarousel Widget
+ * FeaturedCollectionCarousel Widget
  *
  * Reusable featured-collection product carousel section.
  * White background with centered heading ("For <bold>X</bold>"),
  * horizontal product card carousel with prev/next arrow navigation,
  * and "View all N products" link at the bottom.
  *
- * Used by 11 different sections on the BBlunt homepage.
+ * Fetches live data via DATA_SOURCE_TYPES.COLLECTION.
  */
-export function ProductCarousel({
+export function FeaturedCollectionCarousel({
   data,
   settings,
   className,
   locale,
-}: ProductCarouselProps) {
+}: FeaturedCollectionCarouselProps) {
   const variant = settings?.variant || "v1";
   const VariantComponent =
-    ProductCarouselVariants[variant as keyof typeof ProductCarouselVariants];
+    FeaturedCollectionCarouselVariants[
+      variant as keyof typeof FeaturedCollectionCarouselVariants
+    ];
 
   if (!VariantComponent) {
     console.warn(
-      `ProductCarousel variant "${variant}" not found, using default`
+      `FeaturedCollectionCarousel variant "${variant}" not found, using default`
     );
-    const DefaultComponent = ProductCarouselVariants.default;
+    const DefaultComponent = FeaturedCollectionCarouselVariants.default;
     return (
       <DefaultComponent
         data={data}

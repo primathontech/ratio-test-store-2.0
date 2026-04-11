@@ -6,7 +6,7 @@ import type {
   FeaturedCollectionGridProduct,
   ApiProduct,
 } from "../types";
-import { ProductCard } from "@/ui/components/ProductCard";
+import { ProductCard } from "@/ui/components/index";
 
 /* ------------------------------------------------------------------ */
 /*  Transform: API product → ProductCardProduct                        */
