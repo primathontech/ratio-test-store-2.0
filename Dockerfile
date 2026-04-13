@@ -2,9 +2,19 @@
 FROM oven/bun:1 AS base
 WORKDIR /app
 
+# Resolve editor submodule (handles uninitialized submodule in CI)
+FROM base AS editor
+RUN apt-get update && apt-get install -y --no-install-recommends git ca-certificates && rm -rf /var/lib/apt/lists/*
+COPY .gitmodules ./
+COPY scripts/resolve-submodules.sh ./scripts/
+RUN --mount=type=bind,source=.git,target=/tmp/.git \
+    chmod +x scripts/resolve-submodules.sh && \
+    sh scripts/resolve-submodules.sh
+
 # Dependencies
 FROM base AS deps
 COPY package.json bun.lock ./
+COPY --from=editor /app/src/app/editor/package.json src/app/editor/
 RUN bun install --frozen-lockfile
 
 # Build
@@ -12,6 +22,7 @@ FROM base AS builder
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
+COPY --from=editor /app/src/app/editor/ src/app/editor/
 
 # Build application with environment variables for proper SSG
 # Supports two modes:
@@ -22,10 +33,10 @@ RUN --mount=type=secret,id=env \
   sh -c 'if [ -f /run/secrets/env ]; then \
   echo "Using environment from Docker secret"; \
   cp /run/secrets/env .env && \
-  DOCKER_BUILD=true bun run build:skip-lint; \
+  DOCKER_BUILD=true bun run generate && bun run build:skip-lint; \
   else \
   echo "Using .env.local from build context"; \
-  DOCKER_BUILD=true bun run build:skip-lint; \
+  DOCKER_BUILD=true bun run generate && bun run build:skip-lint; \
   fi'
 
 # Runner
