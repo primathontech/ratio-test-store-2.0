@@ -1,4 +1,5 @@
 import { WidgetProps } from "@/widgets/types";
+import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 
 /**
  * A single breadcrumb link item
@@ -21,10 +22,11 @@ export interface BreadcrumbSettings {
 }
 
 /**
- * Breadcrumb widget data (static section, no API data needed)
+ * Breadcrumb widget data — IResponse from DATA_SOURCE_TYPES.PRODUCT
  */
 export interface BreadcrumbData {
-  // Static content section -- no dynamic data
+  success?: boolean;
+  data?: ApiProduct | null;
 }
 
 /**

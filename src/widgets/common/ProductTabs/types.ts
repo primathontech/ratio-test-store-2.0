@@ -1,4 +1,8 @@
 import { WidgetProps } from "@/widgets/types";
+import {
+  ProductTabType,
+  type ApiProduct,
+} from "@/widgets/common/ProductDetail/types";
 
 /**
  * A single step item (used in "How to Use")
@@ -32,7 +36,7 @@ export interface ProductTab {
   /** Tab title displayed in the summary row */
   title: string;
   /** Type of content rendering */
-  type: "html" | "steps" | "ingredients" | "list" | "ingredientsList";
+  type: ProductTabType | `${ProductTabType}`;
   /** HTML content (for "html" type) */
   contentHTML?: string;
   /** Step-by-step items (for "steps" type) */
@@ -56,10 +60,11 @@ export interface ProductTabsSettings {
 }
 
 /**
- * ProductTabs widget data (static section, no API data needed)
+ * ProductTabs widget data — IResponse from DATA_SOURCE_TYPES.PRODUCT
  */
 export interface ProductTabsData {
-  // Static content section — no dynamic data
+  success?: boolean;
+  data?: ApiProduct | null;
 }
 
 /**

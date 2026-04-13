@@ -1,4 +1,5 @@
 import { WidgetProps } from "@/widgets/types";
+import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 
 /**
  * StickyAddToCart widget settings
@@ -25,10 +26,11 @@ export interface StickyAddToCartSettings {
 }
 
 /**
- * StickyAddToCart widget data (static section, no API data needed)
+ * StickyAddToCart widget data — IResponse from DATA_SOURCE_TYPES.PRODUCT
  */
 export interface StickyAddToCartData {
-  // Static content section -- no dynamic data
+  success?: boolean;
+  data?: ApiProduct | null;
 }
 
 /**

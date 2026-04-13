@@ -1,7 +1,8 @@
 "use client";
 
 import React, { memo, useState, useCallback } from "react";
-import { AdditionalInformationProps } from "../types";
+import { AdditionalInformationProps, InfoBlock } from "../types";
+import { ProductMetadataKey } from "@/widgets/common/ProductDetail/types";
 
 /* ------------------------------------------------------------------ */
 /*  Inline SVG -- Chevron icon (upward arrow, rotates on open)         */
@@ -30,19 +31,69 @@ const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
 /*  V1 -- AdditionalInformation (Collapsible accordion with info grid) */
 /* ------------------------------------------------------------------ */
 
+/** Build info blocks from API product metadata */
+function buildInfoFromApi(metadata: Record<string, unknown>): InfoBlock[] {
+  const blocks: InfoBlock[] = [];
+  const m = metadata as Record<string, { value?: unknown }>;
+
+  if (m[ProductMetadataKey.MANUFACTURER]?.value) {
+    blocks.push({
+      label: "MANUFACTURER",
+      value: String(m[ProductMetadataKey.MANUFACTURER]!.value).trim(),
+    });
+  }
+  if (m[ProductMetadataKey.LICENSE_NUMBER]?.value) {
+    blocks.push({
+      label: "LICENSE NUMBER",
+      value: String(m[ProductMetadataKey.LICENSE_NUMBER]!.value),
+    });
+  }
+  if (m[ProductMetadataKey.BEST_BEFORE]?.value) {
+    blocks.push({
+      label: "BEST BEFORE",
+      value: String(m[ProductMetadataKey.BEST_BEFORE]!.value),
+    });
+  }
+  if (m[ProductMetadataKey.DIMENSIONS]?.value) {
+    blocks.push({
+      label: "DIMENSIONS",
+      value: String(m[ProductMetadataKey.DIMENSIONS]!.value),
+    });
+  }
+  if (m[ProductMetadataKey.GENERIC_NAME]?.value) {
+    blocks.push({
+      label: "GENERIC NAME",
+      value: String(m[ProductMetadataKey.GENERIC_NAME]!.value),
+    });
+  }
+  return blocks;
+}
+
 export const V1 = memo(function V1({
+  data,
   settings,
   className,
 }: AdditionalInformationProps) {
+  const product = data?.success ? data.data : null;
+
   const title = settings?.title || "Additional Information";
-  const items = settings?.items || [];
   const defaultExpanded = settings?.defaultExpanded ?? false;
+
+  // Build items from API metadata or fall back to settings
+  const items: InfoBlock[] = product?.metadata
+    ? buildInfoFromApi(product.metadata)
+    : settings?.items || [];
 
   const [isOpen, setIsOpen] = useState(defaultExpanded);
 
   const handleToggle = useCallback(() => {
     setIsOpen((prev) => !prev);
   }, []);
+
+  // Hide widget when no info blocks are available
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <section className={["bg-[#ffffff]", className || ""].join(" ")}>

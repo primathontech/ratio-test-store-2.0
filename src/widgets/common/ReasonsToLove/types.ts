@@ -1,4 +1,5 @@
 import { WidgetProps } from "@/widgets/types";
+import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 
 /**
  * ReasonsToLove widget settings
@@ -24,10 +25,11 @@ export interface ReasonsToLoveSettings {
 }
 
 /**
- * ReasonsToLove widget data (static section, no API data needed)
+ * ReasonsToLove widget data — IResponse from DATA_SOURCE_TYPES.PRODUCT
  */
 export interface ReasonsToLoveData {
-  // Static content section — no dynamic data
+  success?: boolean;
+  data?: ApiProduct | null;
 }
 
 /**

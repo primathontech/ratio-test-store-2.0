@@ -1,13 +1,23 @@
 import type { PageConfig } from "@shopkit/builder";
 import { WIDGET_TYPES } from "@/widgets/.generated/types";
-import { SECTION_TYPES, SECTION_LAYOUT_OPTIONS } from "@shopkit/builder";
+import {
+  SECTION_TYPES,
+  SECTION_LAYOUT_OPTIONS,
+  DATA_SOURCE_TYPES,
+} from "@shopkit/builder";
 
 /**
  * Products Page Template for dawn
  */
 export const template: PageConfig = {
   id: "dawn-products",
-  dataSources: {},
+  dataSources: {
+    productData: {
+      type: DATA_SOURCE_TYPES.PRODUCT,
+      params: {},
+      required: true,
+    },
+  },
   sections: [
     // Announcement Bar Section
     {
@@ -98,6 +108,7 @@ export const template: PageConfig = {
           id: "dawn-product-detail",
           name: "Product Detail",
           type: WIDGET_TYPES.ProductDetail,
+          dataSourceKey: "productData",
           settings: {
             variant: "v1",
           },
@@ -123,13 +134,9 @@ export const template: PageConfig = {
           id: "dawn-reasons-to-love",
           name: "Reasons to Love",
           type: WIDGET_TYPES.ReasonsToLove,
+          dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            heading: "Reasons to Love",
-            imageSrc: "/ReasonsToLove/images/reasons-to-love.webp",
-            imageAlt: "Reasons to love",
-            imageWidth: 970,
-            imageHeight: 4800,
           },
         },
       ],
@@ -153,76 +160,9 @@ export const template: PageConfig = {
           id: "dawn-product-tabs",
           name: "Product Tabs",
           type: WIDGET_TYPES.ProductTabs,
+          dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            tabs: [
-              {
-                title: "Description",
-                type: "html",
-                contentHTML:
-                  "<p><em>Hair colour that wrecks your strands? Sorry, not sorry, it\u2019s out of the dye-logue.</em></p>\n<p>So, if you\u2019ve ever hesitated before hitting a YES on that colour change, this one\u2019s for you. <strong>BBlunt Salon Secret High Shine Conditioning Hair Colour</strong> - in <strong>Mahogany Reddish Brown</strong>, now upgraded with <em>smarter science</em>, <em>more intense payoff</em>, and a <strong>bold new design</strong>. It shuts down the damage drama with a game-changing formula that lets you go <strong>bold</strong> without holding back.<br>Co-created by salon experts for Indian hair, it delivers <strong>100% grey coverage</strong> with rich, lasting pigment.</p>\n<p>This salon-grade hair colour is powered by <strong>MaliPeptide BondTech\u2122</strong> that\u2019s packed in the <strong>Bond Repair Serum Concentrate</strong>. It\u2019s a breakthrough technology that strengthens hair bonds from within, minimising breakage as you colour. And that\u2019s not all! Each box comes with a <strong>Shine Tonic Hair Mask</strong> that locks in moisture and adds a high-shine finish that looks and feels like you just stepped out of the salon.</p>\n<p>No ammonia. No fading fast. No compromising on strength. Just a rich, vibrant colour that lasts up to <strong>32 washes</strong>! Because with BBlunt, when you <strong>Colour Outside</strong>, you <strong>Care Inside</strong>.</p>\n<p><em>Disclaimer: Depends on the natural colour of the hair &amp; extent of greys.</em></p>",
-              },
-              {
-                title: "How to Use",
-                type: "steps",
-                steps: [
-                  {
-                    label: "Mix",
-                    text: "Blend Colourant + Developer + Bond Repair Serum Concentrate infused with MaliPeptide BondTech\u2122 until smooth",
-                  },
-                  {
-                    label: "Apply",
-                    text: "Evenly apply on dry hair & leave for 30 minutes",
-                  },
-                  {
-                    label: "Rinse",
-                    text: "Wash thoroughly with running water",
-                  },
-                  {
-                    label: "Condition",
-                    text: "Apply the hair mask infused with Shine Tonic, rinse after 5 minutes & style",
-                  },
-                ],
-              },
-              {
-                title: "Power Ingredients",
-                type: "ingredients",
-                ingredients: [
-                  {
-                    image: "/ProductTabs/images/malipeptide-bondtech.png",
-                    label: "Malipeptide Bondtech (Malic Acid + Nano-Peptides)",
-                    text: "Reduces post-colour hair breakage",
-                  },
-                  {
-                    image: "/ProductTabs/images/shine-tonic.jpg",
-                    label: "Shine Tonic",
-                    text: "Gives hair a high-shine finish",
-                  },
-                ],
-              },
-              {
-                title: "Suitable For",
-                type: "list",
-                items: [
-                  "Anyone looking for an Ammonia-free High Shine Hair Colour that doesn\u2019t cause hair breakage while deeply conditions the hair & adds shine.",
-                  "It is formulated to suit all Indian hair types, textures & length.",
-                ],
-              },
-              {
-                title: "Ingredients List",
-                type: "ingredientsList",
-                ingredientListings: [
-                  {
-                    label: "Mahogany Reddish Brown",
-                    text: "Paraffinum Liquidum, Aqua, Monoethanolamine, Steareth-21, Steareth-2, Cetearyl Alcohol (and) Ceteareth-20, Trideceth-2 Carboxamide MEA, Fragrance, Polyquaternium-22, Xanthan Gum, Cetearyl Alcohol (and) Dicetyl Phosphate (and) Ceteth-10 Phosphate, p-Aminophenol, 2-Methylresorcinol, 3 Methyl 4 Amino Phenol, Ascorbic Acid, Sodium Sulphite, Phenyl Methyl Pyrazolone, p-Phenylenediamine, Resorcinol, m-Aminophenol, Disodium EDTA, HEDP di-sodium salt, N,N-Bis(2-hydroxyethyl)-p-phenylenediamine Sulphate, 2-(2,4-Diaminophenoxy)Ethanol Dihydrochloride, Sodium Metabisulfite.",
-                  },
-                  {
-                    label: "Developer",
-                    text: "Aqua, Paraffinum Liquidum, Hydrogen Peroxide, Emulsifying Wax, Glyceryl Stearate (and) PEG-100 Stearate, Sodium Lauryl Ether Sulphate, Polyquaternium-39, Tetra Sodium Pyrophosphate, Disodium EDTA, Sodium Salicylate, Sodium Stannate.",
-                  },
-                ],
-              },
-            ],
           },
         },
       ],
@@ -246,48 +186,11 @@ export const template: PageConfig = {
           id: "dawn-product-faq",
           name: "Product FAQ",
           type: WIDGET_TYPES.ProductFAQ,
+          dataSourceKey: "productData",
           settings: {
             variant: "v1",
             title: "Product FAQs",
             defaultExpanded: true,
-            items: [
-              {
-                question:
-                  "What makes BBLUNT Hair Colour different from regular hair colours?",
-                answer:
-                  "BBLUNT\u2019s Salon Secret High Shine Conditioning Hair Colour is co-created with salon experts and powered with MaliPeptide BondTech\u2122 for intense colour with less breakage. It also includes a Shine Tonic that delivers salon-like shiny colour right at home.",
-              },
-              {
-                question: "What is MaliPeptide BondTech\u2122?",
-                answer:
-                  "It\u2019s a breakthrough technology that strengthens hair bonds from within, minimising breakage as you colour, as well as post-colour hair breakage.",
-              },
-              {
-                question: "How long does the colour last?",
-                answer:
-                  "The colour is long-lasting and vibrant for up to 32 washes, depending on your hair type and maintenance routine.",
-              },
-              {
-                question: "Can I use this colour at home without help?",
-                answer:
-                  "Totally. It\u2019s designed for easy DIY application with salon-like results. Just follow the instructions inside the kit.",
-              },
-              {
-                question: "Is this suitable for all hair types?",
-                answer:
-                  "Yes, it\u2019s suitable for straight, wavy, curly, or coily hair across all textures and lengths.",
-              },
-              {
-                question: "How many boxes of hair colour do I need?",
-                answer:
-                  "If your hair is shoulder-length or shorter, 1 box should be enough. For longer or thicker hair, we recommend 2 boxes for full, even coverage.",
-              },
-              {
-                question: "What type of hair dye is this?",
-                answer:
-                  "This is a permanent hair dye that provides long-lasting, intense shine hair colour.",
-              },
-            ],
           },
         },
       ],
@@ -311,121 +214,10 @@ export const template: PageConfig = {
           id: "dawn-customer-reviews",
           name: "Customer Reviews",
           type: WIDGET_TYPES.CustomerReviews,
+          dataSourceKey: "productData",
           settings: {
             variant: "v1",
             title: "Customer Reviews",
-            averageRating: 5.0,
-            totalReviews: 11,
-            perPage: 5,
-            defaultSort: "most-recent",
-            sortOptions: [
-              { label: "Most Recent", value: "most-recent" },
-              { label: "Highest Rating", value: "highest-rating" },
-              { label: "Lowest Rating", value: "lowest-rating" },
-              { label: "Pictures First", value: "pictures-first" },
-              { label: "Most Helpful", value: "most-helpful" },
-            ],
-            reviews: [
-              {
-                id: "r1",
-                rating: 5,
-                title: "Great",
-                body: "Great",
-                author: "Anonymous",
-                verifiedBuyer: true,
-                date: "03/26/2026",
-              },
-              {
-                id: "r2",
-                rating: 5,
-                title: "Loved it",
-                body: "Its amazing",
-                author: "Sandhya Tomar",
-                verifiedBuyer: true,
-                date: "03/20/2026",
-              },
-              {
-                id: "r3",
-                rating: 5,
-                title: "Awesome",
-                body: "Awesome",
-                author: "mita mita",
-                verifiedBuyer: true,
-                date: "03/20/2026",
-              },
-              {
-                id: "r4",
-                rating: 5,
-                title: "Nice",
-                body: "Nice Product",
-                author: "Arun Abhinav",
-                verifiedBuyer: true,
-                date: "03/13/2026",
-              },
-              {
-                id: "r5",
-                rating: 5,
-                title: "Amazing",
-                body: "Amazing",
-                author: "Darji Pooja kamlesh bhai",
-                verifiedBuyer: true,
-                date: "03/06/2026",
-              },
-              {
-                id: "r6",
-                rating: 5,
-                title: "Good product",
-                body: "Good quality hair colour",
-                author: "Priya Sharma",
-                verifiedBuyer: true,
-                date: "02/28/2026",
-              },
-              {
-                id: "r7",
-                rating: 5,
-                title: "Best hair colour",
-                body: "Love the colour and shine",
-                author: "Neha Gupta",
-                verifiedBuyer: true,
-                date: "02/20/2026",
-              },
-              {
-                id: "r8",
-                rating: 5,
-                title: "Excellent",
-                body: "Very easy to apply",
-                author: "Ritu Singh",
-                verifiedBuyer: true,
-                date: "02/15/2026",
-              },
-              {
-                id: "r9",
-                rating: 5,
-                title: "Superb",
-                body: "Great coverage",
-                author: "Kavita Patel",
-                verifiedBuyer: true,
-                date: "02/10/2026",
-              },
-              {
-                id: "r10",
-                rating: 5,
-                title: "Wonderful",
-                body: "Highly recommend",
-                author: "Meena Rao",
-                verifiedBuyer: true,
-                date: "02/05/2026",
-              },
-              {
-                id: "r11",
-                rating: 5,
-                title: "Perfect",
-                body: "No ammonia smell at all",
-                author: "Sunita Verma",
-                verifiedBuyer: true,
-                date: "01/30/2026",
-              },
-            ],
           },
         },
       ],
@@ -656,31 +448,11 @@ export const template: PageConfig = {
           id: "dawn-additional-information",
           name: "Additional Information",
           type: WIDGET_TYPES.AdditionalInformation,
+          dataSourceKey: "productData",
           settings: {
             variant: "v1",
             title: "Additional Information",
             defaultExpanded: false,
-            items: [
-              {
-                label: "MANUFACTURER",
-                value:
-                  "N.G. Electro Products Private Ltd, Unit III, H.B. No. 193, Village Dharampur, Tehsil Baddi, Distt. Solan, (H.P.), 173205",
-              },
-              {
-                label: "MARKETED BY",
-                value:
-                  "Honasa Consumer Limited, 10th and 11th Floor, Capital Cyberscape, Sector 59, Gurugram, Haryana, 122101",
-              },
-              {
-                label: "COUNTRY OF ORIGIN",
-                value: "India",
-              },
-              {
-                label: "Customer Care Details",
-                value:
-                  "Supratim Sarkar - nodal@honasa.in\n+91 7303086765 (refer to marketed by address)",
-              },
-            ],
           },
         },
       ],
@@ -704,15 +476,9 @@ export const template: PageConfig = {
           id: "dawn-breadcrumb",
           name: "Breadcrumb",
           type: WIDGET_TYPES.Breadcrumb,
+          dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            items: [
-              { text: "Home", href: "/" },
-              { text: "Salon secret", href: "/collections/salon-secret" },
-              {
-                text: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-              },
-            ],
           },
         },
       ],
@@ -759,16 +525,9 @@ export const template: PageConfig = {
           id: "dawn-sticky-add-to-cart",
           name: "Sticky Add To Cart",
           type: WIDGET_TYPES.StickyAddToCart,
+          dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            productTitle:
-              "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-            productImage: "/StickyAddToCart/images/product-thumb.jpg",
-            productImageAlt:
-              "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-            mrpLabel: "M.R.P.",
-            price: "\u20B9399",
-            taxNote: "Incl. of all taxes",
             buttonText: "Add to cart",
             cartHref: "/cart",
           },

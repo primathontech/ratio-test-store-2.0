@@ -2,6 +2,7 @@
 
 import React, { memo, useState, useCallback } from "react";
 import { ProductFAQProps, FAQItem } from "../types";
+import { ProductMetadataKey } from "@/widgets/common/ProductDetail/types";
 
 /* ------------------------------------------------------------------ */
 /*  Inline SVG -- Chevron icon for outer accordion header              */
@@ -123,10 +124,25 @@ const FAQAccordionItem = ({
 /*  V1 -- ProductFAQ (Outer accordion + inner FAQ list)                */
 /* ------------------------------------------------------------------ */
 
-export const V1 = memo(function V1({ settings, className }: ProductFAQProps) {
+export const V1 = memo(function V1({
+  data,
+  settings,
+  className,
+}: ProductFAQProps) {
+  const product = data?.success ? data.data : null;
+
   const title = settings?.title || "Product FAQs";
-  const items = settings?.items || [];
   const defaultExpanded = settings?.defaultExpanded ?? true;
+
+  // Build FAQ items from API or fall back to settings
+  const apiFaq = product?.metadata?.[ProductMetadataKey.PRODUCT_FAQ]?.value;
+  const items: FAQItem[] =
+    Array.isArray(apiFaq) && apiFaq.length > 0
+      ? apiFaq.map((faq) => ({
+          question: faq.fields?.title?.value?.[0] || "",
+          answer: faq.fields?.description?.value || "",
+        }))
+      : settings?.items || [];
 
   const [sectionOpen, setSectionOpen] = useState(defaultExpanded);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
@@ -138,6 +154,11 @@ export const V1 = memo(function V1({ settings, className }: ProductFAQProps) {
   const handleToggleItem = useCallback((index: number) => {
     setOpenIndex((prev) => (prev === index ? null : index));
   }, []);
+
+  // Hide widget when no FAQ items are available
+  if (items.length === 0) {
+    return null;
+  }
 
   return (
     <section className={["bg-[#f4f6f8]", className || ""].join(" ")}>

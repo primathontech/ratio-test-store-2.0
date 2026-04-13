@@ -1,4 +1,5 @@
 import { WidgetProps } from "@/widgets/types";
+import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 
 /**
  * A single FAQ item with question and answer
@@ -25,10 +26,11 @@ export interface ProductFAQSettings {
 }
 
 /**
- * ProductFAQ widget data (static section, no API data needed)
+ * ProductFAQ widget data — IResponse from DATA_SOURCE_TYPES.PRODUCT
  */
 export interface ProductFAQData {
-  // Static content section -- no dynamic data
+  success?: boolean;
+  data?: ApiProduct | null;
 }
 
 /**

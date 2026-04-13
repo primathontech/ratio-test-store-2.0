@@ -3,6 +3,7 @@
 import React, { memo } from "react";
 import Image from "next/image";
 import { ReasonsToLoveProps } from "../types";
+import { ProductMetadataKey } from "@/widgets/common/ProductDetail/types";
 
 /* ------------------------------------------------------------------ */
 /*  V1 — Reasons to Love                                              */
@@ -10,12 +11,28 @@ import { ReasonsToLoveProps } from "../types";
 /* ------------------------------------------------------------------ */
 
 export const V1 = memo(function V1({
+  data,
   settings,
   className,
 }: ReasonsToLoveProps) {
+  const product = data?.success ? data.data : null;
+
+  const apiImage =
+    product?.metadata?.[ProductMetadataKey.REASONS_TO_LOVE_IMAGE]?.value;
+
+  // Hide widget when no image is available from API or settings
+  if (
+    !(Array.isArray(apiImage) && apiImage.length > 0) &&
+    !settings?.imageSrc
+  ) {
+    return null;
+  }
+
   const heading = settings?.heading || "Reasons to Love";
   const imageSrc =
-    settings?.imageSrc || "/ReasonsToLove/images/reasons-to-love.webp";
+    Array.isArray(apiImage) && apiImage.length > 0
+      ? String(apiImage[0])
+      : (settings?.imageSrc ?? "");
   const imageAlt = settings?.imageAlt || "Reasons to love";
   const imageWidth = settings?.imageWidth || 970;
   const imageHeight = settings?.imageHeight || 4800;

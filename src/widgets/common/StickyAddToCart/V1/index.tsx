@@ -82,15 +82,17 @@ const SpinnerIcon = () => (
 /*  V1 -- Sticky Add To Cart Bar                                       */
 /* ------------------------------------------------------------------ */
 
-export const V1 = memo(function V1({ settings }: StickyAddToCartProps) {
-  const productTitle =
-    settings?.productTitle ||
-    "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)";
-  const productImage =
-    settings?.productImage || "/StickyAddToCart/images/product-thumb.jpg";
-  const productImageAlt = settings?.productImageAlt || "Product thumbnail";
+export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
+  const product = data?.success ? data.data : null;
+
+  const productTitle = product?.title ?? settings?.productTitle ?? "";
+  const productImage = product?.image?.url ?? settings?.productImage ?? "";
+  const productImageAlt =
+    product?.image?.alt_text ?? settings?.productImageAlt ?? "";
   const mrpLabel = settings?.mrpLabel || "M.R.P.";
-  const price = settings?.price || "\u20B9399";
+  const price = product
+    ? `\u20B9${Math.round(product.price / 100)}`
+    : settings?.price || "";
   const buttonText = settings?.buttonText || "Add to cart";
   const cartHref = settings?.cartHref || "/cart";
 
@@ -120,6 +122,11 @@ export const V1 = memo(function V1({ settings }: StickyAddToCartProps) {
       setIsLoading(false);
     }, 1500);
   }, []);
+
+  // Hide widget when no product data and no settings fallback
+  if (!product && !settings?.productTitle) {
+    return null;
+  }
 
   return (
     <div

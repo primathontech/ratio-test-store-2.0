@@ -8,6 +8,8 @@ import {
   ProductImage,
   ProductVariant,
   ProductBenefit,
+  ProductMetadataKey,
+  ApiProduct,
 } from "../types";
 
 /* ------------------------------------------------------------------ */
@@ -84,120 +86,27 @@ const StarIcon = ({ filled = true }: { filled?: boolean }) => (
 );
 
 /* ------------------------------------------------------------------ */
-/*  Default Data                                                       */
+/*  API Data Transformers                                              */
 /* ------------------------------------------------------------------ */
 
-const DEFAULT_IMAGES: ProductImage[] = [
-  {
-    src: "https://bblunt.com/cdn/shop/files/FOP_1_b2475ca2-4e11-4e3c-a738-71b656362fd8.jpg?v=1757585507&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/3FOPwithKMMarketplace_466fe4a5-d079-40d4-bf88-b25f20033eb4.jpg?v=1757585507&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/3FOPwithKM_6c48b7bc-e8a6-4093-be58-c8b89cfcb143.jpg?v=1757585507&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/4Model_04866ef5-9047-42c3-9c44-d92c8ba40fd9.jpg?v=1769693591&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/5New_Oldcopy_895c387e-8db2-4977-b506-f149d8832a33.jpg?v=1769693591&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/6ColourPayoff_1d918634-eed7-40ab-8161-b8d66e5f8e97.jpg?v=1769693591&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/7KMs_a233ac7a-2d04-4ecc-a7be-9f3e2056b581.jpg?v=1769693591&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/8PowerIngredients_cf1b49b6-52ed-43dd-8a87-a45e46c0797f.jpg?v=1769693591&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/9HowtoUse_b65ab8f5-9ebd-4b25-acb9-d9678f1286d1.jpg?v=1769693591&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/10Insidethebox_4b8b2ad0-1d95-4a90-ae24-557ff9599c4e.jpg?v=1769693591&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/11Shades_fa1130d0-f9e3-4b34-b35c-a7a77aa205b1.jpg?v=1769693591&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/12Promises_4e448f05-149d-44ba-b962-3e7c0cd7dc70.jpg?v=1769693591&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-  {
-    src: "https://bblunt.com/cdn/shop/files/BOP_2.jpg?v=1769693591&width=1200",
-    alt: "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)",
-  },
-];
+function transformApiImages(product: ApiProduct): ProductImage[] {
+  return product.images.map((img) => ({
+    src: img.url,
+    alt: img.alt_text || product.title,
+  }));
+}
 
-const DEFAULT_VARIANTS: ProductVariant[] = [
-  {
-    name: "Cherry Red(Shade 6.62)",
-    price: "\u20B9399",
-    unitPrice: "(\u20B93.07 / g)",
-    href: "/products/high-shine-conditioning-hair-colour-cherry-red-shade-6-62",
-    swatchImage:
-      "https://bblunt.com/cdn/shop/files/Salon_cherry_red.jpg?v=1734587875&width=400",
-  },
-  {
-    name: "Natural Black (Shade 1)",
-    price: "\u20B9399",
-    unitPrice: "(\u20B93.07 / g)",
-    href: "/products/high-shine-conditioning-hair-colour-natural-black-shade-1",
-    swatchImage:
-      "https://bblunt.com/cdn/shop/files/Natural_black_salon.jpg?v=1734587911&width=400",
-  },
-  {
-    name: "Chocolate Dark Brown (Shade 3)",
-    price: "\u20B9399",
-    unitPrice: "(\u20B93.07 / g)",
-    href: "/products/high-shine-conditioning-hair-colour-chocolate-dark-brown-shade-3",
-    swatchImage:
-      "https://bblunt.com/cdn/shop/files/Choclate_dark_brown_salon.jpg?v=1734587934&width=400",
-  },
-  {
-    name: "Coffee Natural Brown (Shade 4.31)",
-    price: "\u20B9399",
-    unitPrice: "(\u20B93.07 / g)",
-    href: "/products/high-shine-conditioning-hair-colour-coffee-natural-brown-shade-4-31",
-    swatchImage:
-      "https://bblunt.com/cdn/shop/files/temp-file-1770731144551-0.png?v=1770731531&width=400",
-  },
-  {
-    name: "Mahogany Reddish Brown (Shade 4.56)",
-    price: "\u20B9399",
-    unitPrice: "(\u20B93.07 / g)",
-    href: "/products/high-shine-conditioning-hair-colour-mahogany-reddish-brown-shade-4-56",
-    swatchImage:
-      "https://bblunt.com/cdn/shop/files/FOP_1_b2475ca2-4e11-4e3c-a738-71b656362fd8.jpg?v=1757585507&width=400",
-    isActive: true,
-  },
-  {
-    name: "Honey Light Golden Brown (Shade 5.32)",
-    price: "\u20B9399",
-    unitPrice: "(\u20B93.07 / g)",
-    href: "/products/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
-    swatchImage:
-      "https://bblunt.com/cdn/shop/files/Honey_light_golden_brown_salon.jpg?v=1734587978&width=400",
-  },
-];
+function transformApiBenefits(product: ApiProduct): ProductBenefit[] {
+  const whatItDoes = product.metadata?.[ProductMetadataKey.WHAT_IT_DOES]?.value;
+  if (Array.isArray(whatItDoes) && whatItDoes.length > 0) {
+    return whatItDoes.map((text) => ({ text: String(text) }));
+  }
+  return [];
+}
 
-const DEFAULT_BENEFITS: ProductBenefit[] = [
-  { text: "MaliPeptide BondTech\u2122 & Shine Tonic" },
-  { text: "No Ammonia, 100% Grey Coverage" },
-];
+function formatPrice(paisa: number): string {
+  return `\u20B9${Math.round(paisa / 100)}`;
+}
 
 /* ------------------------------------------------------------------ */
 /*  Sub-components                                                     */
@@ -360,11 +269,12 @@ function RatingBadge({
   rating: string;
   reviewCount: string;
 }) {
+  const ratingNum = parseFloat(rating) || 0;
   return (
     <div className="flex items-center gap-[4px]">
       <div className="flex items-center">
         {[1, 2, 3, 4, 5].map((star) => (
-          <StarIcon key={star} filled={true} />
+          <StarIcon key={star} filled={star <= Math.round(ratingNum)} />
         ))}
       </div>
       <span
@@ -409,10 +319,12 @@ function BenefitsList({ benefits }: { benefits: ProductBenefit[] }) {
 function PriceDisplay({
   priceLabel,
   price,
+  originalPrice,
   taxInfo,
 }: {
   priceLabel: string;
   price: string;
+  originalPrice?: string;
   taxInfo: string;
 }) {
   return (
@@ -430,6 +342,14 @@ function PriceDisplay({
         >
           {price}
         </span>
+        {originalPrice && (
+          <span
+            className="text-[16px] leading-[26px] font-[400] text-[#999999] line-through ml-[8px]"
+            style={{ fontFamily: "Gotham, sans-serif" }}
+          >
+            {originalPrice}
+          </span>
+        )}
       </div>
       <span
         className="text-[12px] leading-[19px] font-[400] text-[#000000] pb-[2px]"
@@ -510,13 +430,31 @@ function VariantSelector({
   );
 }
 
+/** Trust badges row */
+function TrustBadges({ badges }: { badges: string[] }) {
+  if (!badges.length) return null;
+  return (
+    <div className="flex items-center gap-[12px] mt-[16px]">
+      {badges.map((url, idx) => (
+        <Image
+          key={idx}
+          src={url}
+          alt="Trust badge"
+          width={60}
+          height={60}
+          className="object-contain"
+        />
+      ))}
+    </div>
+  );
+}
+
 /** Add to Cart button */
 function AddToCartButton({ text }: { text: string }) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleClick = useCallback(() => {
     setIsLoading(true);
-    // Simulated add-to-cart action
     setTimeout(() => setIsLoading(false), 1500);
   }, []);
 
@@ -560,40 +498,80 @@ function AddToCartButton({ text }: { text: string }) {
 /* ------------------------------------------------------------------ */
 
 export const V1 = memo(function V1({
+  data,
   settings,
   className,
 }: ProductDetailProps) {
-  const title =
-    settings?.title ??
-    "High Shine Conditioning Hair Colour - Mahogany Reddish Brown (Shade 4.56)";
-  const rating = settings?.rating ?? "5.0";
-  const reviewCount = settings?.reviewCount ?? "11";
-  const benefits = settings?.benefits ?? DEFAULT_BENEFITS;
+  // Extract API product data
+  const product = data?.success ? data.data : null;
+
+  // Hide widget when no product data available
+  if (!product && !settings?.title) {
+    return null;
+  }
+
+  // Transform API data or fall back to settings
+  const title = product?.title ?? settings?.title ?? "";
+
+  const rating = product?.metadata?.[ProductMetadataKey.RATING]
+    ? String(product.metadata[ProductMetadataKey.RATING]!.value)
+    : (settings?.rating ?? "");
+
+  const reviewCount = product?.metadata?.[ProductMetadataKey.RATING_COUNT]
+    ? String(product.metadata[ProductMetadataKey.RATING_COUNT]!.value)
+    : (settings?.reviewCount ?? "");
+
+  const benefits = product
+    ? transformApiBenefits(product)
+    : (settings?.benefits ?? []);
+
   const netContentLabel = settings?.netContentLabel ?? "Net content:";
-  const netContent = settings?.netContent ?? "130g  (USP: \u20B93.07/g)";
+  const netContent = product?.metadata?.[ProductMetadataKey.PRODUCT_NET_CONTENT]
+    ? String(product.metadata[ProductMetadataKey.PRODUCT_NET_CONTENT]!.value)
+    : (settings?.netContent ?? "");
+
   const priceLabel = settings?.priceLabel ?? "M.R.P.";
-  const price = settings?.price ?? "\u20B9399";
+
+  const price = product ? formatPrice(product.price) : (settings?.price ?? "");
+
+  const originalPrice = product?.compare_at_price
+    ? formatPrice(product.compare_at_price)
+    : product?.metadata?.[ProductMetadataKey.OLD_PRICE]
+      ? `\u20B9${product.metadata[ProductMetadataKey.OLD_PRICE]!.value}`
+      : settings?.originalPrice;
+
   const taxInfo = settings?.taxInfo ?? "Incl. of all taxes";
   const variantLabel = settings?.variantLabel ?? "Select variant";
-  const variants = settings?.variants ?? DEFAULT_VARIANTS;
+
+  const variants: ProductVariant[] = settings?.variants ?? [];
+
   const addToCartText = settings?.addToCartText ?? "Add to cart";
-  const images = settings?.images ?? DEFAULT_IMAGES;
-  const badgeText = settings?.badgeText ?? "Get3@\u20B9799";
+
+  const images: ProductImage[] = product
+    ? transformApiImages(product)
+    : (settings?.images ?? []);
+
+  const badgeText = product?.metadata?.[ProductMetadataKey.PRODUCT_LABELS]
+    ? String(product.metadata[ProductMetadataKey.PRODUCT_LABELS]!.value)
+    : settings?.badgeText;
+
+  const trustBadges: string[] = product?.metadata?.[
+    ProductMetadataKey.TRUST_BADGES
+  ]?.value
+    ? (product.metadata[ProductMetadataKey.TRUST_BADGES]!.value as string[])
+    : [];
 
   return (
     <section
       className={`w-full bg-[#ffffff] ${className ?? ""}`}
       style={{ fontFamily: "Gotham, sans-serif" }}
     >
-      {/* Outer wrapper — matches section padding: pt-56 pb-32 desktop, pt-0 mobile */}
+      {/* Outer wrapper */}
       <div className="pt-0 pb-0 lg:pt-[56px] lg:pb-[32px]">
-        {/* Container with horizontal padding */}
         <div className="px-0 lg:px-[50px]">
           {/* === MOBILE: Info first, then gallery === */}
           <div className="block lg:hidden">
-            {/* Mobile Product Info (top portion) */}
             <div className="px-[16px] pt-[16px] pb-[4px]">
-              {/* Title */}
               <div className="mb-[12px]">
                 <h1
                   className="text-[14px] leading-[17px] font-[500] text-[#000000]"
@@ -603,26 +581,25 @@ export const V1 = memo(function V1({
                 </h1>
               </div>
 
-              {/* Rating */}
               <div className="mb-[12px]">
                 <RatingBadge rating={rating} reviewCount={reviewCount} />
               </div>
 
-              {/* Benefits */}
-              <div className="mb-[24px]">
-                <BenefitsList benefits={benefits} />
-              </div>
+              {benefits.length > 0 && (
+                <div className="mb-[24px]">
+                  <BenefitsList benefits={benefits} />
+                </div>
+              )}
             </div>
 
-            {/* Mobile Image Gallery (full width) */}
             <div>
               <ImageGallery images={images} badgeText={badgeText} />
             </div>
 
-            {/* Mobile Product Info (bottom portion) */}
             <div className="px-[16px] pt-[16px] pb-[16px]">
-              {/* Net content */}
-              <div className="mb-[16px]">
+              {trustBadges.length > 0 && <TrustBadges badges={trustBadges} />}
+
+              <div className="mb-[16px] mt-[16px]">
                 <span
                   className="text-[14px] leading-[14px] font-[400] text-[#000000]"
                   style={{ fontFamily: "Gotham, sans-serif" }}
@@ -637,38 +614,35 @@ export const V1 = memo(function V1({
                 </span>
               </div>
 
-              {/* Price */}
               <div className="mb-[24px]">
                 <PriceDisplay
                   priceLabel={priceLabel}
                   price={price}
+                  originalPrice={originalPrice}
                   taxInfo={taxInfo}
                 />
               </div>
 
-              {/* Variant Selector */}
-              <div className="mb-[24px]">
-                <VariantSelector label={variantLabel} variants={variants} />
-              </div>
+              {variants.length > 0 && (
+                <div className="mb-[24px]">
+                  <VariantSelector label={variantLabel} variants={variants} />
+                </div>
+              )}
 
-              {/* Add to Cart */}
               <AddToCartButton text={addToCartText} />
             </div>
           </div>
 
           {/* === DESKTOP: Two-column flex layout === */}
           <div className="hidden lg:flex gap-[16px]">
-            {/* Left Column — Image Gallery (sticky) */}
             <div className="w-1/2 shrink-0">
               <div className="sticky top-[30px]">
                 <ImageGallery images={images} badgeText={badgeText} />
               </div>
             </div>
 
-            {/* Right Column — Product Info (sticky) */}
             <div className="w-1/2">
               <div className="sticky top-[30px] pl-[13px]">
-                {/* Title */}
                 <div className="mb-[20px]">
                   <h1
                     className="text-[24px] leading-[29px] font-[700] text-[#000000]"
@@ -678,17 +652,22 @@ export const V1 = memo(function V1({
                   </h1>
                 </div>
 
-                {/* Rating */}
                 <div className="mb-[24px]">
                   <RatingBadge rating={rating} reviewCount={reviewCount} />
                 </div>
 
-                {/* Benefits */}
-                <div className="mb-[24px]">
-                  <BenefitsList benefits={benefits} />
-                </div>
+                {benefits.length > 0 && (
+                  <div className="mb-[24px]">
+                    <BenefitsList benefits={benefits} />
+                  </div>
+                )}
 
-                {/* Net content */}
+                {trustBadges.length > 0 && (
+                  <div className="mb-[24px]">
+                    <TrustBadges badges={trustBadges} />
+                  </div>
+                )}
+
                 <div className="pb-[16px] mb-[24px]">
                   <span
                     className="text-[14px] leading-[14px] font-[400] text-[#000000]"
@@ -704,21 +683,21 @@ export const V1 = memo(function V1({
                   </span>
                 </div>
 
-                {/* Price */}
                 <div className="mb-[24px]">
                   <PriceDisplay
                     priceLabel={priceLabel}
                     price={price}
+                    originalPrice={originalPrice}
                     taxInfo={taxInfo}
                   />
                 </div>
 
-                {/* Variant Selector */}
-                <div className="mb-[24px]">
-                  <VariantSelector label={variantLabel} variants={variants} />
-                </div>
+                {variants.length > 0 && (
+                  <div className="mb-[24px]">
+                    <VariantSelector label={variantLabel} variants={variants} />
+                  </div>
+                )}
 
-                {/* Add to Cart */}
                 <AddToCartButton text={addToCartText} />
               </div>
             </div>

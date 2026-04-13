@@ -1,4 +1,5 @@
 import { WidgetProps } from "@/widgets/types";
+import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 
 /**
  * A single customer review
@@ -34,7 +35,7 @@ export interface CustomerReviewsSettings {
   totalReviews?: number;
   /** Reviews per page */
   perPage?: number;
-  /** Review items */
+  /** Review items (static fallback) */
   reviews?: ReviewItem[];
   /** Sort options */
   sortOptions?: { label: string; value: string }[];
@@ -42,11 +43,52 @@ export interface CustomerReviewsSettings {
   defaultSort?: string;
 }
 
+/* ------------------------------------------------------------------ */
+/*  Reviews API Response Types                                         */
+/* ------------------------------------------------------------------ */
+
+/** Single review from the API */
+export interface ApiReview {
+  id: string;
+  product_id: string;
+  title: string;
+  rating: number;
+  review_text: string;
+  user_name: string;
+  user_type: string;
+  is_visible: boolean;
+  archived: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+/** Review average API response */
+export interface ApiReviewAverage {
+  average_rating: number;
+  total_reviews: number;
+}
+
+/** Reviews list API response */
+export interface ApiReviewsListResponse {
+  success: boolean;
+  data: {
+    reviews: ApiReview[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  };
+}
+
 /**
- * CustomerReviews widget data (static section, no API data needed)
+ * CustomerReviews widget data — IResponse from DATA_SOURCE_TYPES.PRODUCT
+ * (product data used to get the product ID for review API calls)
  */
 export interface CustomerReviewsData {
-  // Static content section -- no dynamic data
+  success?: boolean;
+  data?: ApiProduct | null;
 }
 
 /**

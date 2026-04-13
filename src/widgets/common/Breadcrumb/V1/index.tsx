@@ -2,7 +2,7 @@
 
 import React, { memo } from "react";
 import Link from "next/link";
-import { BreadcrumbProps } from "../types";
+import { BreadcrumbProps, BreadcrumbItem } from "../types";
 
 /* ------------------------------------------------------------------ */
 /*  Inline SVG -- Chevron separator (right-pointing arrow)             */
@@ -26,8 +26,28 @@ const ChevronSeparator = () => (
 /*  V1 -- Breadcrumb (inline-flex nav with chevron separators)         */
 /* ------------------------------------------------------------------ */
 
-export const V1 = memo(function V1({ settings, className }: BreadcrumbProps) {
-  const items = settings?.items || [];
+export const V1 = memo(function V1({
+  data,
+  settings,
+  className,
+}: BreadcrumbProps) {
+  const product = data?.success ? data.data : null;
+
+  // Build breadcrumb from API data or fall back to settings
+  const items: BreadcrumbItem[] = product
+    ? [
+        { text: "Home", href: "/" },
+        ...(product.product_type
+          ? [
+              {
+                text: product.product_type,
+                href: `/collections/${product.product_type.toLowerCase().replace(/\s+/g, "-")}`,
+              },
+            ]
+          : []),
+        { text: product.title },
+      ]
+    : settings?.items || [];
 
   if (items.length === 0) {
     return null;

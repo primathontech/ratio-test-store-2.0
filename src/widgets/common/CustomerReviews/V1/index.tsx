@@ -1,7 +1,14 @@
 "use client";
 
-import React, { memo, useState, useMemo, useCallback } from "react";
-import { CustomerReviewsProps, ReviewItem } from "../types";
+import React, { memo, useState, useMemo, useCallback, useEffect } from "react";
+import { CustomerReviewsProps, ReviewItem, ApiReviewAverage } from "../types";
+import { ReviewSortBy } from "@/widgets/common/ProductDetail/types";
+import {
+  fetchReviewAverage,
+  fetchReviewsList,
+  transformApiReview,
+  REVIEWS_PER_PAGE,
+} from "@/utils/reviews-service";
 
 /* ------------------------------------------------------------------ */
 /*  Star icon (filled/empty)                                           */
@@ -126,9 +133,11 @@ const ReviewCard = memo(function ReviewCard({
       </div>
 
       {/* Title */}
-      <b className="block text-[12px] font-[700] text-[#333333] mb-[8px]">
-        {review.title}
-      </b>
+      {review.title && (
+        <b className="block text-[12px] font-[700] text-[#333333] mb-[8px]">
+          {review.title}
+        </b>
+      )}
 
       {/* Body */}
       <p className="text-[12px] text-[#333333] leading-[17px] m-0">
@@ -208,57 +217,145 @@ const SortDropdownArrow = () => (
 );
 
 /* ------------------------------------------------------------------ */
+/*  Loading skeleton                                                   */
+/* ------------------------------------------------------------------ */
+
+const ReviewSkeleton = () => (
+  <div className="animate-pulse">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px]">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div key={i} className="bg-[#f4f6f8] rounded-[8px] p-[16px]">
+          <div className="h-[12px] bg-[#e0e0e0] rounded w-[60%] mb-[12px]" />
+          <div className="h-[12px] bg-[#e0e0e0] rounded w-[40%] mb-[8px]" />
+          <div className="h-[12px] bg-[#e0e0e0] rounded w-[80%]" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
+/* ------------------------------------------------------------------ */
 /*  Main V1 component                                                  */
 /* ------------------------------------------------------------------ */
 
-export const V1 = memo(function V1({ settings }: CustomerReviewsProps) {
-  const title = settings?.title ?? "Customer Reviews";
-  const averageRating = settings?.averageRating ?? 5.0;
-  const totalReviews = settings?.totalReviews ?? 11;
-  const perPage = settings?.perPage ?? 5;
-  const reviews = settings?.reviews ?? [];
-  const sortOptions = settings?.sortOptions ?? [
-    { label: "Most Recent", value: "most-recent" },
-    { label: "Highest Rating", value: "highest-rating" },
-    { label: "Lowest Rating", value: "lowest-rating" },
-    { label: "Pictures First", value: "pictures-first" },
-    { label: "Most Helpful", value: "most-helpful" },
-  ];
-  const defaultSort = settings?.defaultSort ?? "most-recent";
+export const V1 = memo(function V1({ data, settings }: CustomerReviewsProps) {
+  const product = data?.success ? data.data : null;
+  const productId = product?.id;
 
+  const title = settings?.title ?? "Customer Reviews";
+  const perPage = settings?.perPage ?? REVIEWS_PER_PAGE;
+  const sortOptions = settings?.sortOptions ?? [
+    { label: "Most Recent", value: ReviewSortBy.NEWEST },
+    { label: "Highest Rating", value: ReviewSortBy.HIGHEST },
+    { label: "Lowest Rating", value: ReviewSortBy.LOWEST },
+  ];
+  const defaultSort = settings?.defaultSort ?? ReviewSortBy.NEWEST;
+
+  // State
   const [currentPage, setCurrentPage] = useState(1);
   const [sortBy, setSortBy] = useState(defaultSort);
+  const [isLoading, setIsLoading] = useState(false);
 
-  /* Sort reviews */
-  const sortedReviews = useMemo(() => {
+  // API state
+  const [apiAverage, setApiAverage] = useState<ApiReviewAverage | null>(null);
+  const [apiReviews, setApiReviews] = useState<ReviewItem[]>([]);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalReviewCount, setTotalReviewCount] = useState(0);
+  const [hasFetched, setHasFetched] = useState(false);
+
+  // Fetch review average when product ID is available
+  useEffect(() => {
+    if (!productId) {
+      return;
+    }
+    let cancelled = false;
+
+    fetchReviewAverage(productId).then((avg) => {
+      if (cancelled) {
+        return;
+      }
+      if (avg) {
+        setApiAverage(avg);
+        setTotalReviewCount(avg.total_reviews || 0);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [productId]);
+
+  // Fetch reviews list when product ID, page, or sort changes
+  useEffect(() => {
+    if (!productId) {
+      return;
+    }
+    let cancelled = false;
+
+    setIsLoading(true);
+    fetchReviewsList(productId, currentPage, perPage, sortBy).then((res) => {
+      if (cancelled) {
+        return;
+      }
+      setIsLoading(false);
+      setHasFetched(true);
+      if (res?.success && res.data) {
+        setApiReviews(res.data.reviews.map(transformApiReview));
+        setTotalPages(res.data.pagination?.totalPages || 1);
+        setTotalReviewCount((prev) => res.data.pagination?.total ?? prev);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [productId, currentPage, perPage, sortBy]);
+
+  // Determine display values
+  const averageRating =
+    apiAverage?.average_rating ?? settings?.averageRating ?? 0;
+  const totalReviews = totalReviewCount || settings?.totalReviews || 0;
+
+  // Use API reviews if available, else settings fallback
+  const settingsReviews = settings?.reviews ?? [];
+  const reviews = hasFetched ? apiReviews : settingsReviews;
+
+  // For static reviews (no API), do client-side pagination
+  const staticSorted = useMemo(() => {
+    if (hasFetched) {
+      return reviews;
+    }
     const arr = [...reviews];
     switch (sortBy) {
-      case "highest-rating":
+      case ReviewSortBy.HIGHEST:
         arr.sort((a, b) => b.rating - a.rating);
         break;
-      case "lowest-rating":
+      case ReviewSortBy.LOWEST:
         arr.sort((a, b) => a.rating - b.rating);
         break;
       default:
         break;
     }
     return arr;
-  }, [reviews, sortBy]);
+  }, [reviews, sortBy, hasFetched]);
 
-  /* Paginate */
-  const totalPages = Math.max(1, Math.ceil(sortedReviews.length / perPage));
-  const paginatedReviews = useMemo(() => {
-    const start = (currentPage - 1) * perPage;
-    return sortedReviews.slice(start, start + perPage);
-  }, [sortedReviews, currentPage, perPage]);
+  const staticTotalPages = hasFetched
+    ? totalPages
+    : Math.max(1, Math.ceil(staticSorted.length / perPage));
+
+  const displayReviews = hasFetched
+    ? reviews
+    : staticSorted.slice((currentPage - 1) * perPage, currentPage * perPage);
+
+  const displayTotalPages = hasFetched ? totalPages : staticTotalPages;
 
   const handlePageChange = useCallback(
     (page: number) => {
-      if (page >= 1 && page <= totalPages) {
+      if (page >= 1 && page <= displayTotalPages) {
         setCurrentPage(page);
       }
     },
-    [totalPages]
+    [displayTotalPages]
   );
 
   const handleSortChange = useCallback(
@@ -268,6 +365,11 @@ export const V1 = memo(function V1({ settings }: CustomerReviewsProps) {
     },
     []
   );
+
+  // Hide widget when no product ID and no static reviews
+  if (!productId && !settingsReviews.length) {
+    return null;
+  }
 
   return (
     <section
@@ -311,7 +413,7 @@ export const V1 = memo(function V1({ settings }: CustomerReviewsProps) {
               <div className="flex items-center">
                 <StarRating rating={Math.round(averageRating)} size={14} />
                 <span className="text-[12px] text-[#333333] ml-[8px]">
-                  {averageRating.toFixed(2)} out of 5
+                  {Number(averageRating).toFixed(2)} out of 5
                 </span>
               </div>
               <span className="text-[12px] text-[#333333] md:ml-[8px] mt-[4px] md:mt-0">
@@ -379,45 +481,51 @@ export const V1 = memo(function V1({ settings }: CustomerReviewsProps) {
         </div>
 
         {/* ----- Reviews grid ----- */}
-        <div
-          className={[
-            "grid",
-            "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
-            "gap-[16px]",
-          ].join(" ")}
-        >
-          {paginatedReviews.map((review) => (
-            <ReviewCard key={review.id} review={review} />
-          ))}
-        </div>
+        {isLoading ? (
+          <ReviewSkeleton />
+        ) : (
+          <div
+            className={[
+              "grid",
+              "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+              "gap-[16px]",
+            ].join(" ")}
+          >
+            {displayReviews.map((review) => (
+              <ReviewCard key={review.id} review={review} />
+            ))}
+          </div>
+        )}
 
         {/* ----- Pagination ----- */}
-        {totalPages > 1 && (
+        {displayTotalPages > 1 && (
           <div className="flex items-center justify-center pt-[16px] pb-[16px] gap-[4px]">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
-              <button
-                key={page}
-                type="button"
-                onClick={() => handlePageChange(page)}
-                aria-label={`Page ${page}`}
-                className={[
-                  "inline-flex items-center justify-center",
-                  "min-w-[32px] h-[20px]",
-                  "px-[8px] py-[4px]",
-                  "text-[12px]",
-                  "border-0 bg-transparent cursor-pointer",
-                  "font-[Gotham,sans-serif]",
-                  currentPage === page
-                    ? "text-[#000000] font-[700]"
-                    : "text-[#636e6e] font-[400]",
-                  "hover:text-[#000000]",
-                  "transition-colors duration-150",
-                ].join(" ")}
-              >
-                {page}
-              </button>
-            ))}
-            {currentPage < totalPages && (
+            {Array.from({ length: displayTotalPages }, (_, i) => i + 1).map(
+              (page) => (
+                <button
+                  key={page}
+                  type="button"
+                  onClick={() => handlePageChange(page)}
+                  aria-label={`Page ${page}`}
+                  className={[
+                    "inline-flex items-center justify-center",
+                    "min-w-[32px] h-[20px]",
+                    "px-[8px] py-[4px]",
+                    "text-[12px]",
+                    "border-0 bg-transparent cursor-pointer",
+                    "font-[Gotham,sans-serif]",
+                    currentPage === page
+                      ? "text-[#000000] font-[700]"
+                      : "text-[#636e6e] font-[400]",
+                    "hover:text-[#000000]",
+                    "transition-colors duration-150",
+                  ].join(" ")}
+                >
+                  {page}
+                </button>
+              )
+            )}
+            {currentPage < displayTotalPages && (
               <>
                 <button
                   type="button"
@@ -437,8 +545,8 @@ export const V1 = memo(function V1({ settings }: CustomerReviewsProps) {
                 </button>
                 <button
                   type="button"
-                  onClick={() => handlePageChange(totalPages)}
-                  aria-label={`Page ${totalPages}`}
+                  onClick={() => handlePageChange(displayTotalPages)}
+                  aria-label={`Page ${displayTotalPages}`}
                   className={[
                     "inline-flex items-center justify-center",
                     "w-[20px] h-[20px]",

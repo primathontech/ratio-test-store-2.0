@@ -3,6 +3,12 @@
 import React, { memo, useState, useCallback, useRef, useEffect } from "react";
 import Image from "next/image";
 import { ProductTabsProps, ProductTab } from "../types";
+import {
+  ProductMetadataKey,
+  ProductTabType,
+  ProductTabHandlePrefix,
+} from "@/widgets/common/ProductDetail/types";
+import type { ApiProductDetailTab } from "@/widgets/common/ProductDetail/types";
 
 /* ------------------------------------------------------------------ */
 /*  Inline SVG — Chevron icon (down arrow)                             */
@@ -209,19 +215,22 @@ const AccordionItem = ({
             : "max-h-0 opacity-0 pb-0",
         ].join(" ")}
       >
-        {tab.type === "html" && tab.contentHTML && (
+        {tab.type === ProductTabType.HTML && tab.contentHTML && (
           <SafeHtmlContent html={tab.contentHTML} />
         )}
-        {tab.type === "steps" && tab.steps && (
+        {tab.type === ProductTabType.STEPS && tab.steps && (
           <StepsContent steps={tab.steps} />
         )}
-        {tab.type === "ingredients" && tab.ingredients && (
+        {tab.type === ProductTabType.INGREDIENTS && tab.ingredients && (
           <IngredientsContent ingredients={tab.ingredients} />
         )}
-        {tab.type === "list" && tab.items && <ListContent items={tab.items} />}
-        {tab.type === "ingredientsList" && tab.ingredientListings && (
-          <IngredientsListContent listings={tab.ingredientListings} />
+        {tab.type === ProductTabType.LIST && tab.items && (
+          <ListContent items={tab.items} />
         )}
+        {tab.type === ProductTabType.INGREDIENTS_LIST &&
+          tab.ingredientListings && (
+            <IngredientsListContent listings={tab.ingredientListings} />
+          )}
       </div>
     </div>
   );
@@ -231,13 +240,97 @@ const AccordionItem = ({
 /*  V1 — ProductTabs (Accordion layout)                                */
 /* ------------------------------------------------------------------ */
 
-export const V1 = memo(function V1({ settings, className }: ProductTabsProps) {
-  const tabs = settings?.tabs || [];
+/** Transform API product_details into ProductTab[] */
+function transformApiTabs(apiTabs: ApiProductDetailTab[]): ProductTab[] {
+  return apiTabs.map((tab) => {
+    const title = tab.fields.tab_title?.value?.[0] || "Tab";
+    const cards = tab.fields.tab_content?.value || [];
+
+    // Detect tab type by handle prefix
+    const handle = tab.handle || "";
+    if (handle.startsWith(ProductTabHandlePrefix.HOW_TO_USE)) {
+      return {
+        title,
+        type: ProductTabType.STEPS,
+        steps: cards.map((card, i) => ({
+          label: card.fields.title?.value?.[0] || `Step ${i + 1}`,
+          text: card.fields.content?.value?.[0] || "",
+        })),
+      };
+    }
+    if (handle.startsWith(ProductTabHandlePrefix.HERO_INGREDIENT)) {
+      return {
+        title,
+        type: ProductTabType.INGREDIENTS,
+        ingredients: cards.map((card) => ({
+          image: card.fields.image?.value?.[0] || "",
+          label: "",
+          text: card.fields.content?.value?.[0] || "",
+        })),
+      };
+    }
+    if (handle.startsWith(ProductTabHandlePrefix.SUITABLE_FOR)) {
+      return {
+        title,
+        type: ProductTabType.LIST,
+        items: cards.map((card) => card.fields.content?.value?.[0] || ""),
+      };
+    }
+    if (handle.startsWith(ProductTabHandlePrefix.INGREDIENTS_LIST)) {
+      return {
+        title,
+        type: ProductTabType.INGREDIENTS_LIST,
+        ingredientListings: cards.map((card) => ({
+          label: card.fields.title?.value?.[0] || "",
+          text: card.fields.content?.value?.[0] || "",
+        })),
+      };
+    }
+    // Default: list
+    return {
+      title,
+      type: ProductTabType.LIST,
+      items: cards.map((card) => card.fields.content?.value?.[0] || ""),
+    };
+  });
+}
+
+export const V1 = memo(function V1({
+  data,
+  settings,
+  className,
+}: ProductTabsProps) {
+  const product = data?.success ? data.data : null;
+
+  // Build tabs from API data or fall back to settings
+  const apiTabs =
+    product?.metadata?.[ProductMetadataKey.PRODUCT_DETAILS]?.value;
+  const descriptionTab: ProductTab | null = product?.description
+    ? {
+        title: "Description",
+        type: ProductTabType.HTML,
+        contentHTML: product.description,
+      }
+    : null;
+
+  let tabs: ProductTab[];
+  if (apiTabs && Array.isArray(apiTabs) && apiTabs.length > 0) {
+    const transformed = transformApiTabs(apiTabs);
+    tabs = descriptionTab ? [descriptionTab, ...transformed] : transformed;
+  } else {
+    tabs = settings?.tabs || [];
+  }
+
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
   const handleToggle = useCallback((index: number) => {
     setOpenIndex((prev) => (prev === index ? null : index));
   }, []);
+
+  // Hide widget when no tabs are available
+  if (tabs.length === 0) {
+    return null;
+  }
 
   return (
     <section
