@@ -1,6 +1,7 @@
 "use client";
 
-import React, { memo, useState, useCallback, useRef } from "react";
+import React, { memo, useState, useCallback, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -112,7 +113,239 @@ function formatPrice(paisa: number): string {
 /*  Sub-components                                                     */
 /* ------------------------------------------------------------------ */
 
-/** Image Gallery with slider and thumbnail strip */
+const CloseIcon = () => (
+  <svg
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M18 6L6 18M6 6l12 12"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+const ZoomIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2" />
+    <path
+      d="M21 21l-4.35-4.35"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+    <path
+      d="M11 8v6M8 11h6"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+    />
+  </svg>
+);
+
+/** Fullscreen Image Overlay — rendered via portal to document.body */
+function FullscreenOverlay({
+  images,
+  currentIndex,
+  onClose,
+  onPrev,
+  onNext,
+  onGoTo,
+}: {
+  images: ProductImage[];
+  currentIndex: number;
+  onClose: () => void;
+  onPrev: () => void;
+  onNext: () => void;
+  onGoTo: (idx: number) => void;
+}) {
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowLeft") onPrev();
+      if (e.key === "ArrowRight") onNext();
+    };
+    document.body.style.overflow = "hidden";
+    window.addEventListener("keydown", handleKey);
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [onClose, onPrev, onNext]);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = () => {
+    const diff = touchStartX.current - touchEndX.current;
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) onNext();
+      else onPrev();
+    }
+  };
+
+  if (!mounted) return null;
+
+  return createPortal(
+    <div
+      className="bg-[#ffffff]"
+      style={{
+        position: "fixed",
+        inset: 0,
+        zIndex: 99999,
+      }}
+    >
+      {/* Image area — fills entire viewport */}
+      <div
+        className="relative w-full h-full flex items-center justify-center"
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {/* Counter overlay — top left */}
+        <div className="absolute top-[12px] left-[16px] z-[20]">
+          <span
+            className="text-[14px] font-[500] text-[#666666]"
+            style={{ fontFamily: "Gotham, sans-serif" }}
+          >
+            {currentIndex + 1} / {images.length}
+          </span>
+        </div>
+
+        {/* Close button — top right */}
+        <button
+          onClick={onClose}
+          className="absolute top-[12px] right-[16px] z-[20] flex items-center justify-center w-[40px] h-[40px] text-[#000000] hover:bg-[#f0f0f0] rounded-[4px] transition-colors"
+          aria-label="Close fullscreen"
+        >
+          <CloseIcon />
+        </button>
+
+        {/* Prev arrow */}
+        {currentIndex > 0 && (
+          <button
+            onClick={onPrev}
+            className="absolute left-[16px] top-1/2 -translate-y-1/2 z-[10] flex items-center justify-center w-[48px] h-[48px] bg-[#ffffff] shadow-[0_2px_8px_rgba(0,0,0,0.15)] rounded-[9999px] hover:bg-[#f5f5f5] transition-colors"
+            aria-label="Previous image"
+          >
+            <ArrowLeftIcon />
+          </button>
+        )}
+
+        {/* Image — full height */}
+        <div className="relative w-full h-full">
+          <Image
+            src={images[currentIndex].src}
+            alt={images[currentIndex].alt}
+            fill
+            sizes="100vw"
+            className="object-contain"
+            priority
+          />
+        </div>
+
+        {/* Next arrow */}
+        {currentIndex < images.length - 1 && (
+          <button
+            onClick={onNext}
+            className="absolute right-[16px] top-1/2 -translate-y-1/2 z-[10] flex items-center justify-center w-[48px] h-[48px] bg-[#ffffff] shadow-[0_2px_8px_rgba(0,0,0,0.15)] rounded-[9999px] hover:bg-[#f5f5f5] transition-colors"
+            aria-label="Next image"
+          >
+            <ArrowRightIcon />
+          </button>
+        )}
+      </div>
+    </div>,
+    document.body
+  );
+}
+
+/** Zoom preview panel — uses fixed positioning to overlay on the right side */
+function ZoomPanel({
+  image,
+  mousePos,
+  imageRef,
+}: {
+  image: ProductImage;
+  mousePos: { x: number; y: number };
+  imageRef: React.RefObject<HTMLDivElement | null>;
+}) {
+  const [panelPos, setPanelPos] = useState({ top: 0, left: 0, size: 0 });
+
+  useEffect(() => {
+    const updatePos = () => {
+      if (!imageRef.current) return;
+      const rect = imageRef.current.getBoundingClientRect();
+      const panelSize = rect.height * 0.85;
+      setPanelPos({
+        top: rect.top,
+        left: rect.right + 16,
+        size: panelSize,
+      });
+    };
+    updatePos();
+    window.addEventListener("scroll", updatePos, { passive: true });
+    window.addEventListener("resize", updatePos);
+    return () => {
+      window.removeEventListener("scroll", updatePos);
+      window.removeEventListener("resize", updatePos);
+    };
+  }, [imageRef]);
+
+  if (panelPos.size === 0) return null;
+
+  return createPortal(
+    <div
+      className="hidden lg:block overflow-hidden pointer-events-none"
+      style={{
+        position: "fixed",
+        top: panelPos.top,
+        left: panelPos.left,
+        width: panelPos.size,
+        height: panelPos.size,
+        zIndex: 9999,
+        border: "1px solid #e5e7eb",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
+        backgroundColor: "#ffffff",
+      }}
+    >
+      <Image
+        src={image.src}
+        alt={image.alt}
+        fill
+        sizes="50vw"
+        className="object-cover"
+        style={{
+          transform: "scale(2.5)",
+          transformOrigin: `${mousePos.x}% ${mousePos.y}%`,
+        }}
+      />
+    </div>,
+    document.body
+  );
+}
+
+/** Image Gallery with hover zoom panel on right, fullscreen overlay, and mobile slider */
 function ImageGallery({
   images,
   badgeText,
@@ -121,7 +354,12 @@ function ImageGallery({
   badgeText?: string;
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
-  const sliderRef = useRef<HTMLDivElement>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 50, y: 50 });
+  const [mobileFullscreenIdx, setMobileFullscreenIdx] = useState(0);
+  const mainImageRef = useRef<HTMLDivElement>(null);
+  const mobileScrollRef = useRef<HTMLDivElement>(null);
 
   const goToSlide = useCallback(
     (index: number) => {
@@ -139,125 +377,244 @@ function ImageGallery({
     goToSlide(currentSlide + 1);
   }, [currentSlide, goToSlide]);
 
-  return (
-    <div className="relative">
-      {/* Main Image */}
-      <div className="relative overflow-hidden" ref={sliderRef}>
-        {/* Badge overlay */}
-        {badgeText && (
-          <div className="absolute top-[26px] left-0 z-[4]">
-            <div
-              className="flex items-center px-[15px] py-[6px]"
-              style={{
-                backgroundColor: "#e8083e",
-                borderRadius: "0 4px 4px 0",
-              }}
-            >
-              <span
-                className="text-[#ffffff] font-[700] leading-[17px]"
-                style={{ fontFamily: "Gotham, sans-serif", fontSize: "12px" }}
-              >
-                {badgeText}
-              </span>
-            </div>
-          </div>
-        )}
+  const openFullscreen = useCallback(
+    (idx?: number) => {
+      if (typeof idx === "number") setMobileFullscreenIdx(idx);
+      else setMobileFullscreenIdx(currentSlide);
+      setIsFullscreen(true);
+    },
+    [currentSlide]
+  );
 
-        {/* Slides */}
-        <div
-          className="flex transition-transform duration-300 ease-in-out"
-          style={{ transform: `translateX(-${currentSlide * 100}%)` }}
-        >
-          {images.map((image, idx) => (
-            <div
-              key={idx}
-              className="w-full shrink-0"
-              style={{ minWidth: "100%" }}
-            >
-              <div className="relative w-full" style={{ aspectRatio: "1 / 1" }}>
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 642px"
-                  className="object-cover"
-                  priority={idx === 0}
-                />
+  const closeFullscreen = useCallback(() => {
+    setIsFullscreen(false);
+  }, []);
+
+  // Desktop hover zoom handlers
+  const handleMouseEnter = useCallback(() => {
+    setIsHovering(true);
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    setIsHovering(false);
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!mainImageRef.current) return;
+    const rect = mainImageRef.current.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    setMousePos({
+      x: Math.max(0, Math.min(100, x)),
+      y: Math.max(0, Math.min(100, y)),
+    });
+  }, []);
+
+  const currentImage = images[currentSlide];
+
+  return (
+    <>
+      <div className="relative">
+        {/* ===== MOBILE: Native horizontal scroll slider ===== */}
+        <div className="lg:hidden relative">
+          {/* Badge overlay */}
+          {badgeText && (
+            <div className="absolute top-[26px] left-0 z-[4]">
+              <div
+                className="flex items-center px-[15px] py-[6px]"
+                style={{
+                  backgroundColor: "#e8083e",
+                  borderRadius: "0 4px 4px 0",
+                }}
+              >
+                <span
+                  className="text-[#ffffff] font-[700] leading-[17px]"
+                  style={{ fontFamily: "Gotham, sans-serif", fontSize: "12px" }}
+                >
+                  {badgeText}
+                </span>
               </div>
             </div>
-          ))}
+          )}
+
+          {/* Horizontal scroll container — 85% width images so next one peeks */}
+          <div
+            ref={mobileScrollRef}
+            className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar"
+            style={{ WebkitOverflowScrolling: "touch" }}
+          >
+            {images.map((image, idx) => (
+              <div
+                key={idx}
+                className="shrink-0 snap-start cursor-pointer"
+                style={{ width: "85%", aspectRatio: "1 / 1" }}
+                onClick={() => openFullscreen(idx)}
+              >
+                <div className="relative w-full h-full">
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    fill
+                    sizes="85vw"
+                    className="object-cover"
+                    priority={idx === 0}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Navigation Arrows */}
-        {currentSlide > 0 && (
-          <button
-            onClick={prevSlide}
-            className="absolute left-[16px] top-1/2 -translate-y-1/2 z-[5] flex items-center justify-center w-[44px] h-[44px] bg-[#ffffff] bg-opacity-80 rounded-[9999px] hover:bg-opacity-100 transition-opacity"
-            aria-label="Previous image"
-          >
-            <ArrowLeftIcon />
-          </button>
-        )}
+        {/* ===== DESKTOP: Slider with arrows + hover zoom ===== */}
+        <div className="hidden lg:block relative">
+          <div className="relative overflow-hidden">
+            {/* Badge overlay */}
+            {badgeText && (
+              <div className="absolute top-[26px] left-0 z-[4]">
+                <div
+                  className="flex items-center px-[15px] py-[6px]"
+                  style={{
+                    backgroundColor: "#e8083e",
+                    borderRadius: "0 4px 4px 0",
+                  }}
+                >
+                  <span
+                    className="text-[#ffffff] font-[700] leading-[17px]"
+                    style={{
+                      fontFamily: "Gotham, sans-serif",
+                      fontSize: "12px",
+                    }}
+                  >
+                    {badgeText}
+                  </span>
+                </div>
+              </div>
+            )}
 
-        {currentSlide < images.length - 1 && (
-          <button
-            onClick={nextSlide}
-            className="absolute right-[16px] top-1/2 -translate-y-1/2 z-[5] flex items-center justify-center w-[44px] h-[44px] bg-[#ffffff] bg-opacity-80 rounded-[9999px] hover:bg-opacity-100 transition-opacity"
-            aria-label="Next image"
-          >
-            <ArrowRightIcon />
-          </button>
-        )}
-      </div>
-
-      {/* Thumbnail Strip (desktop only) */}
-      <div className="hidden lg:block mt-[10px]">
-        <div className="flex gap-[10px] overflow-x-auto hide-scrollbar">
-          {images.map((image, idx) => (
-            <button
-              key={idx}
-              onClick={() => goToSlide(idx)}
-              className={`shrink-0 w-[99px] h-[99px] rounded-[3px] overflow-hidden border-[2px] transition-all ${
-                currentSlide === idx
-                  ? "border-[#000000] opacity-100"
-                  : "border-transparent opacity-70 hover:opacity-100"
-              }`}
-              aria-label={`View image ${idx + 1}`}
+            {/* Slides */}
+            <div
+              className="flex transition-transform duration-300 ease-in-out"
+              style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
-              <Image
-                src={image.src}
-                alt=""
-                width={99}
-                height={99}
-                className="object-cover w-full h-full"
-              />
-            </button>
-          ))}
+              {images.map((image, idx) => (
+                <div
+                  key={idx}
+                  className="w-full shrink-0"
+                  style={{ minWidth: "100%" }}
+                >
+                  <div
+                    ref={idx === currentSlide ? mainImageRef : undefined}
+                    className="relative w-full cursor-crosshair"
+                    style={{ aspectRatio: "1 / 1" }}
+                    onMouseEnter={handleMouseEnter}
+                    onMouseLeave={handleMouseLeave}
+                    onMouseMove={handleMouseMove}
+                    onClick={() => openFullscreen()}
+                  >
+                    <Image
+                      src={image.src}
+                      alt={image.alt}
+                      fill
+                      sizes="50vw"
+                      className="object-cover"
+                      priority={idx === 0}
+                    />
+                    {/* Zoom lens indicator */}
+                    {isHovering && idx === currentSlide && (
+                      <div
+                        className="absolute pointer-events-none border-[2px] border-[rgba(0,0,0,0.3)] bg-[rgba(255,255,255,0.2)]"
+                        style={{
+                          width: "40%",
+                          height: "40%",
+                          left: `${Math.max(0, Math.min(60, mousePos.x - 20))}%`,
+                          top: `${Math.max(0, Math.min(60, mousePos.y - 20))}%`,
+                        }}
+                      />
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Navigation Arrows */}
+            {currentSlide > 0 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  prevSlide();
+                }}
+                className="absolute left-[16px] top-1/2 -translate-y-1/2 z-[5] flex items-center justify-center w-[44px] h-[44px] bg-[#ffffff] bg-opacity-80 rounded-[9999px] hover:bg-opacity-100 transition-opacity"
+                aria-label="Previous image"
+              >
+                <ArrowLeftIcon />
+              </button>
+            )}
+
+            {currentSlide < images.length - 1 && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  nextSlide();
+                }}
+                className="absolute right-[16px] top-1/2 -translate-y-1/2 z-[5] flex items-center justify-center w-[44px] h-[44px] bg-[#ffffff] bg-opacity-80 rounded-[9999px] hover:bg-opacity-100 transition-opacity"
+                aria-label="Next image"
+              >
+                <ArrowRightIcon />
+              </button>
+            )}
+          </div>
+
+          {/* Zoomed preview panel — 85% of image size, right side */}
+          {isHovering && currentImage && mainImageRef.current && (
+            <ZoomPanel
+              image={currentImage}
+              mousePos={mousePos}
+              imageRef={mainImageRef}
+            />
+          )}
+
+          {/* Thumbnail Strip */}
+          <div className="mt-[10px]">
+            <div className="flex gap-[10px] overflow-x-auto hide-scrollbar">
+              {images.map((image, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => goToSlide(idx)}
+                  className={`shrink-0 w-[99px] h-[99px] rounded-[3px] overflow-hidden border-[2px] transition-all ${
+                    currentSlide === idx
+                      ? "border-[#000000] opacity-100"
+                      : "border-transparent opacity-70 hover:opacity-100"
+                  }`}
+                  aria-label={`View image ${idx + 1}`}
+                >
+                  <Image
+                    src={image.src}
+                    alt=""
+                    width={99}
+                    height={99}
+                    className="object-cover w-full h-full"
+                  />
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Dot indicators (mobile/tablet) */}
-      <div className="flex lg:hidden justify-center gap-[6px] mt-[12px]">
-        {images.slice(0, 8).map((_, idx) => (
-          <button
-            key={idx}
-            onClick={() => goToSlide(idx)}
-            className={`w-[8px] h-[8px] rounded-[9999px] transition-all ${
-              currentSlide === idx ? "bg-[#000000]" : "bg-[#d1d5db]"
-            }`}
-            aria-label={`Go to slide ${idx + 1}`}
-          />
-        ))}
-        {images.length > 8 && (
-          <span
-            className="text-[12px] text-[#666666] leading-[8px]"
-            style={{ fontFamily: "Gotham, sans-serif" }}
-          >
-            +{images.length - 8}
-          </span>
-        )}
-      </div>
-    </div>
+      {/* Fullscreen Overlay — portalled to body */}
+      {isFullscreen && (
+        <FullscreenOverlay
+          images={images}
+          currentIndex={mobileFullscreenIdx}
+          onClose={closeFullscreen}
+          onPrev={() => setMobileFullscreenIdx((i) => Math.max(0, i - 1))}
+          onNext={() =>
+            setMobileFullscreenIdx((i) => Math.min(images.length - 1, i + 1))
+          }
+          onGoTo={setMobileFullscreenIdx}
+        />
+      )}
+    </>
   );
 }
 
