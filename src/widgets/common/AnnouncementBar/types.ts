@@ -6,7 +6,6 @@ import { WidgetProps } from "@/widgets/types";
 export interface AnnouncementItem {
   text: string;
   href: string;
-  boldPart?: string;
 }
 
 /**

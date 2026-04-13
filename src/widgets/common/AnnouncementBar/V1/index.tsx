@@ -9,16 +9,28 @@ import { AnnouncementBarProps, AnnouncementItem } from "../types";
  */
 const DEFAULT_ITEMS: AnnouncementItem[] = [
   {
-    text: "Buy 3 Products at \u20B9799 | Use code : ",
+    text: "Buy 3 Products at \u20B9799 | Use code : <strong>FLAT3</strong>",
     href: "/pages/flat3",
-    boldPart: "FLAT3",
   },
   {
-    text: "Shop for \u20B9499 & Get 2 Best Sellers FREE | Code : ",
+    text: "Shop for \u20B9499 & Get 2 Best Sellers FREE | Code : <strong>FREEIM</strong>",
     href: "/pages/shine-squad-weekly-offer",
-    boldPart: "FREEIM",
   },
 ];
+
+// Utility function to format href for tooltip
+const formatHrefForTooltip = (href: string): string => {
+  // Remove /pages/ prefix if it exists
+  const cleanPath = href.replace(/^\/pages\//, "");
+
+  // If the path contains hyphens, return as-is (keep hyphens)
+  if (cleanPath.includes("-")) {
+    return cleanPath;
+  }
+
+  // If no hyphens, capitalize the entire string
+  return cleanPath.toUpperCase();
+};
 
 /**
  * AnnouncementBar V1 Component
@@ -113,30 +125,33 @@ export const V1 = memo(function V1({
       className="inline-flex shrink-0 items-center"
       aria-hidden={setIndex > 0 ? "true" : undefined}
     >
-      {items.map((item, i) => (
-        <div
-          key={`${setIndex}-${i}`}
-          className="relative inline-flex items-center pr-[40px] mr-[20px] lg:pr-[46px] lg:mr-[23px]"
-        >
-          <p className="py-[11px] mb-0">
-            <Link
-              href={item.href}
-              className="no-underline"
-              style={{ color: textColor }}
-            >
-              {item.boldPart
-                ? renderTextWithBold(item.text, item.boldPart)
-                : item.text}
-            </Link>
-          </p>
-          {/* Separator line (::after equivalent) */}
-          <span
-            className="absolute top-0 right-0 bottom-0 my-auto h-[1px] w-[22px]"
-            style={{ backgroundColor: textColor }}
-            aria-hidden="true"
-          />
-        </div>
-      ))}
+      {items.map((item, i) => {
+        const tooltipText = item.href ? formatHrefForTooltip(item.href) : "";
+
+        return (
+          <div
+            key={`${setIndex}-${i}`}
+            className="relative inline-flex items-center pr-[40px] mr-[20px] lg:pr-[46px] lg:mr-[23px]"
+          >
+            <p className="py-[11px] mb-0">
+              <Link
+                href={item.href}
+                title={tooltipText}
+                className="no-underline"
+                style={{ color: textColor }}
+                // eslint-disable-next-line no-restricted-syntax
+                dangerouslySetInnerHTML={{ __html: item.text }}
+              />
+            </p>
+            {/* Separator line (::after equivalent) */}
+            <span
+              className="absolute top-0 right-0 bottom-0 my-auto h-[1px] w-[22px]"
+              style={{ backgroundColor: textColor }}
+              aria-hidden="true"
+            />
+          </div>
+        );
+      })}
     </div>
   );
 
@@ -171,30 +186,5 @@ export const V1 = memo(function V1({
     </div>
   );
 });
-
-/**
- * Splits text around the bold keyword and wraps it in <strong>
- */
-function renderTextWithBold(text: string, boldPart: string) {
-  const idx = text.indexOf(boldPart);
-  if (idx === -1) {
-    // If boldPart not found in text, append it
-    return (
-      <>
-        {text}
-        <strong className="font-[700]">{boldPart}</strong>
-      </>
-    );
-  }
-  const before = text.slice(0, idx);
-  const after = text.slice(idx + boldPart.length);
-  return (
-    <>
-      {before}
-      <strong className="font-[700]">{boldPart}</strong>
-      {after}
-    </>
-  );
-}
 
 export { V1 as default };

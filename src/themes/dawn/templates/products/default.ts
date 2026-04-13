@@ -45,14 +45,12 @@ export const template: PageConfig = {
             pauseOnHover: true,
             items: [
               {
-                text: "Buy 3 Products at \u20B9799 | Use code : ",
+                text: "Buy 3 Products at \u20B9799 | Use code : <strong>FLAT3</strong>",
                 href: "/pages/flat3",
-                boldPart: "FLAT3",
               },
               {
-                text: "Shop for \u20B9499 & Get 2 Best Sellers FREE | Code : ",
+                text: "Shop for \u20B9499 & Get 2 Best Sellers FREE | Code : <strong>FREEIM</strong>",
                 href: "/pages/shine-squad-weekly-offer",
-                boldPart: "FREEIM",
               },
             ],
           },
