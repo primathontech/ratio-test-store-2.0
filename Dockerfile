@@ -24,6 +24,8 @@ FROM base AS builder
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 COPY --from=editor /app/src/app/editor/ src/app/editor/
+# Ensure editor workspace deps are installed (handles stale cache from pre-editor builds)
+RUN bun install --frozen-lockfile
 
 # CI: Docker secret provides .env; Local: .env.local already copied via COPY . .
 # DOCKER_BUILD enables standalone output in next.config.js
