@@ -278,37 +278,62 @@ const ChevronRightIcon = () => (
 /* ──────────────────────── Desktop Dropdown ──────────────────────── */
 
 function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
-  const isMultiGroup = groups.length > 1;
+  const hasHeadings = groups.some((g) => g.heading);
 
   return (
     <div
-      className={`absolute top-full left-0 z-[3] min-w-[268px] max-w-[300px] bg-[#ffffff] pt-[24px] pb-[24px] pl-[19px] pr-[20px] opacity-0 translate-y-[15px] pointer-events-none transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto ${isMultiGroup ? "min-w-[480px] max-w-[520px] flex gap-[30px]" : ""}`}
+      className="absolute top-full left-0 z-[3] w-[268px] bg-[#ffffff] pt-[24px] pb-[24px] pl-[19px] pr-[20px] opacity-0 translate-y-[15px] pointer-events-none transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto"
       style={{
         boxShadow: "0px 0px 3px 0px rgba(0, 0, 0, 0.12)",
       }}
     >
-      {groups.map((group, gi) => (
-        <div key={gi} className="flex-1">
-          {group.heading && (
-            <p className="text-[12px] font-[700] uppercase tracking-[1px] text-[#1d1d1d] mb-[12px]">
-              {group.heading}
-            </p>
-          )}
-          <ul className="list-none p-0 m-0 flex flex-col gap-[14px]">
-            {group.items.map((item, ii) => (
-              <li key={ii}>
-                <Link
-                  href={item.href}
-                  className="text-[14px] leading-[17px] font-[400] text-[#545454] no-underline hover:text-[#1d1d1d] transition-colors duration-200"
-                  style={{ fontFamily: "'Gotham', sans-serif" }}
-                >
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      ))}
+      {hasHeadings
+        ? /* Nested accordion style (e.g. Hair Care) */
+          groups.map((group, gi) => (
+            <details
+              key={gi}
+              className={`group/accordion ${gi > 0 ? "mt-[4px]" : ""}`}
+            >
+              <summary
+                className="flex items-center cursor-pointer list-none text-[14px] leading-[22.4px] font-[400] text-[#545454] py-[4px] [&::-webkit-details-marker]:hidden"
+                style={{ fontFamily: "'Gotham', sans-serif" }}
+              >
+                <span>{group.heading}</span>
+                <ChevronDownIcon className="w-[10px] h-[7px] ml-[8px] transition-transform duration-200 group-open/accordion:rotate-180" />
+              </summary>
+              <ul className="list-none p-0 m-0 pl-[19px] flex flex-col gap-[14px] pt-[10px] pb-[6px]">
+                {group.items.map((item, ii) => (
+                  <li key={ii}>
+                    <Link
+                      href={item.href}
+                      className="text-[14px] leading-[16.8px] font-[400] text-[#545454] no-underline hover:text-[#1d1d1d] transition-colors duration-200"
+                      style={{ fontFamily: "'Gotham', sans-serif" }}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </details>
+          ))
+        : /* Flat link list style (e.g. Product, Hair Colour, etc.) */
+          groups.map((group, gi) => (
+            <div key={gi}>
+              <ul className="list-none p-0 m-0 flex flex-col gap-[14px]">
+                {group.items.map((item, ii) => (
+                  <li key={ii}>
+                    <Link
+                      href={item.href}
+                      className="text-[14px] leading-[16.8px] font-[400] text-[#545454] no-underline hover:text-[#1d1d1d] transition-colors duration-200"
+                      style={{ fontFamily: "'Gotham', sans-serif" }}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
     </div>
   );
 }
@@ -401,11 +426,11 @@ function MobileDrawer({
         <nav className="py-[10px]">
           <ul className="list-none p-0 m-0">
             {navigation.map((item, index) => (
-              <li key={index} className="border-b border-[rgba(29,29,29,0.06)]">
+              <li key={index} className="border-b border-[#ececec]">
                 {item.dropdown ? (
                   <>
                     <button
-                      className="w-full flex items-center justify-between px-[20px] py-[14px] text-[14px] font-[500] text-[#1d1d1d] bg-transparent"
+                      className="w-full flex items-center justify-between px-[20px] py-[14px] text-[14px] font-[400] text-[#1d1d1d] bg-transparent"
                       onClick={() => toggleExpanded(index)}
                       aria-expanded={expandedIndex === index}
                       style={{ fontFamily: "'Gotham', sans-serif" }}
@@ -458,7 +483,7 @@ function MobileDrawer({
                 ) : (
                   <Link
                     href={item.href}
-                    className="block px-[20px] py-[14px] text-[14px] font-[500] text-[#1d1d1d] no-underline"
+                    className="block px-[20px] py-[14px] text-[14px] font-[400] text-[#1d1d1d] no-underline"
                     onClick={onClose}
                     style={{ fontFamily: "'Gotham', sans-serif" }}
                   >
@@ -474,6 +499,104 @@ function MobileDrawer({
   );
 }
 
+/* ──────────────────────── Search Input with Typing Animation ──── */
+
+const SEARCH_SUGGESTIONS = [
+  "Search for Shampoo",
+  "Search for Hair Care",
+  "Search for Conditioner",
+  "Search for Salon Treatment",
+];
+
+function SearchInput({
+  focused,
+  onFocusChange,
+}: {
+  focused: boolean;
+  onFocusChange: (v: boolean) => void;
+}) {
+  const [placeholder, setPlaceholder] = useState("");
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    let suggestionIdx = 0;
+    let charIdx = 0;
+    let isDeleting = false;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const tick = () => {
+      const current = SEARCH_SUGGESTIONS[suggestionIdx];
+
+      if (!isDeleting) {
+        charIdx++;
+        setPlaceholder(current.substring(0, charIdx));
+        if (charIdx >= current.length) {
+          // Pause at full text, then start deleting
+          timer = setTimeout(() => {
+            isDeleting = true;
+            tick();
+          }, 1500);
+          return;
+        }
+        timer = setTimeout(tick, 80);
+      } else {
+        charIdx--;
+        setPlaceholder(current.substring(0, charIdx));
+        if (charIdx <= 0) {
+          isDeleting = false;
+          suggestionIdx = (suggestionIdx + 1) % SEARCH_SUGGESTIONS.length;
+          timer = setTimeout(tick, 300);
+          return;
+        }
+        timer = setTimeout(tick, 40);
+      }
+    };
+
+    timer = setTimeout(tick, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  return (
+    <div className="relative">
+      <input
+        ref={inputRef}
+        type="search"
+        placeholder={placeholder}
+        className="w-[255px] h-[35px] min-h-[35px] rounded-[4px] bg-transparent pl-[35px] pr-[60px] pt-[8px] pb-[8px] text-[14px] font-[500] text-[#1d1d1d] placeholder:text-[#727272] outline-none"
+        style={{
+          fontFamily: "'Gotham', sans-serif",
+          border: `1px solid ${focused ? "#1d1d1d" : "#dddddd"}`,
+          transition: "border-color 0.2s",
+        }}
+        onFocus={() => onFocusChange(true)}
+        onBlur={() => onFocusChange(false)}
+      />
+      {/* Search icon inside input */}
+      <div className="absolute left-[10px] top-1/2 -translate-y-1/2 pointer-events-none">
+        <svg
+          width="20"
+          height="20"
+          viewBox="0 0 16 16"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          aria-hidden="true"
+        >
+          <path
+            d="M14.065 7.53199C14.065 11.15 11.1357 14.083 7.52225 14.083C3.90879 14.083 0.979492 11.15 0.979492 7.53199C0.979492 3.91395 3.90879 0.980957 7.52225 0.980957C11.1357 0.980957 14.065 3.91395 14.065 7.53199Z"
+            fill="white"
+          />
+          <path
+            d="M12.1012 12.2113L14.9997 15.0189M14.065 7.53199C14.065 11.15 11.1357 14.083 7.52225 14.083C3.90879 14.083 0.979492 11.15 0.979492 7.53199C0.979492 3.91395 3.90879 0.980957 7.52225 0.980957C11.1357 0.980957 14.065 3.91395 14.065 7.53199Z"
+            stroke="#999"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+          />
+        </svg>
+      </div>
+    </div>
+  );
+}
+
 /* ──────────────────────── Main Header V1 ──────────────────────── */
 
 export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
@@ -483,8 +606,6 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
   const navigation = settings?.navigation ?? DEFAULT_NAV;
   const logoSrc = settings?.logoSrc ?? "/Header/images/logo.png";
   const logoAlt = settings?.logoAlt ?? "BBlunt";
-  const searchPlaceholder =
-    settings?.searchPlaceholder ?? "Search For Conditioner, Shampoo...";
   const cartHref = settings?.cartHref ?? "/cart";
   const accountHref = settings?.accountHref ?? "/account";
   const cartCount = data?.cartCount ?? 0;
@@ -496,137 +617,123 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
   return (
     <>
       <header
-        className={`sticky top-0 z-[20] bg-[rgba(255,255,255,0.6)] backdrop-blur-sm ${className ?? ""}`}
+        className={`sticky top-0 z-[20] bg-[#ffffff] ${className ?? ""}`}
         style={{ fontFamily: "'Gotham', sans-serif" }}
       >
-        {/* Inner container with horizontal padding */}
-        <div className="w-full max-w-full px-[15px] lg:px-[40px]">
-          {/* Flex row: logo | nav | icons */}
-          <div className="flex items-center min-h-[60px] lg:min-h-[65px]">
-            {/* ---- Mobile Hamburger (visible below lg) ---- */}
-            <div className="flex items-center lg:hidden">
-              <button
-                className="p-[4px] text-[#1d1d1d]"
-                onClick={() => setMobileMenuOpen(true)}
-                aria-label="Open menu"
-                aria-expanded={mobileMenuOpen}
-              >
-                <HamburgerIcon />
-              </button>
-            </div>
+        {/* Inner container: 60px height + 15px padding on mobile/tablet, 65px + 40px on desktop (≥1100px) */}
+        <div className="w-full max-w-full flex items-center h-[60px] px-[15px] min-[1100px]:h-[65px] min-[1100px]:px-[40px]">
+          {/* ---- Mobile Hamburger (visible below 1100px) ---- */}
+          <div className="flex items-center mr-[12px] min-[1100px]:hidden">
+            <button
+              className="p-[4px] text-[#1d1d1d]"
+              onClick={() => setMobileMenuOpen(true)}
+              aria-label="Open menu"
+              aria-expanded={mobileMenuOpen}
+            >
+              <HamburgerIcon />
+            </button>
+          </div>
 
-            {/* ---- Logo ---- */}
-            <div className="flex items-center py-[5px] lg:py-[5px] flex-1 justify-center lg:flex-none lg:justify-start">
-              <Link href="/" className="block">
-                <Image
-                  src={logoSrc}
-                  alt={logoAlt}
-                  width={136}
-                  height={40}
-                  className="w-[100px] h-[30px] lg:w-[136px] lg:h-[40px]"
-                  priority
-                />
-              </Link>
-            </div>
+          {/* ---- Logo ---- */}
+          <div className="flex items-center py-[5px]">
+            <Link href="/" className="block">
+              <Image
+                src={logoSrc}
+                alt={logoAlt}
+                width={136}
+                height={40}
+                className="w-[87px] h-[26px] md:w-[136px] md:h-[40px]"
+                priority
+              />
+            </Link>
+          </div>
 
-            {/* ---- Desktop Navigation (visible from lg) ---- */}
-            <nav className="hidden lg:block flex-1 ml-[-16px]">
-              <ul className="list-none p-0 m-0 flex items-center justify-center gap-[22px] pl-[62px]">
-                {navigation.map((item, index) => (
-                  <li
-                    key={index}
-                    className="relative group flex flex-col justify-center"
+          {/* ---- Desktop Navigation (visible from 1100px) ---- */}
+          <nav className="hidden min-[1100px]:block flex-1">
+            <ul className="list-none p-0 m-0 inline-flex items-center gap-[32px] pl-[62px]">
+              {navigation.map((item, index) => (
+                <li key={index} className="relative group flex items-center">
+                  <Link
+                    href={item.href}
+                    className="relative flex items-center gap-[8px] text-[14px] leading-[16.8px] font-[700] text-[#000000] no-underline whitespace-nowrap after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[1px] after:bg-[#000000] after:origin-right after:scale-x-0 after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
+                    style={{ fontFamily: "'Gotham', sans-serif" }}
                   >
-                    <Link
-                      href={item.href}
-                      className="flex items-center gap-[8px] text-[14px] leading-[17px] font-[400] text-[#1d1d1d] no-underline whitespace-nowrap hover:opacity-70 transition-opacity duration-200"
-                      style={{ fontFamily: "'Gotham', sans-serif" }}
-                    >
-                      <span>{item.label}</span>
-                      {item.dropdown && (
-                        <ChevronDownIcon className="w-[10px] h-[7px]" />
-                      )}
-                    </Link>
-
-                    {/* Dropdown */}
+                    <span>{item.label}</span>
                     {item.dropdown && (
-                      <DesktopNavDropdown groups={item.dropdown} />
+                      <ChevronDownIcon className="w-[10px] h-[7px]" />
                     )}
-                  </li>
-                ))}
-              </ul>
-            </nav>
+                  </Link>
 
-            {/* ---- Right Side: Search / Cart / Account ---- */}
-            <div className="flex items-center justify-end gap-[19px]">
-              {/* Mobile search icon (visible below lg) */}
-              <button
-                className="lg:hidden p-[4px] text-[#000000]"
-                aria-label="Search"
-              >
-                <SearchIcon />
-              </button>
+                  {/* Dropdown */}
+                  {item.dropdown && (
+                    <DesktopNavDropdown groups={item.dropdown} />
+                  )}
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-              {/* Desktop search input (visible from lg) */}
-              <div className="hidden lg:block relative">
-                <input
-                  type="search"
-                  placeholder={searchPlaceholder}
-                  className={`w-[255px] h-[35px] min-h-[35px] rounded-[4px] border border-[#dddddd] bg-transparent pl-[35px] pr-[60px] pt-[8px] pb-[8px] text-[14px] font-[500] capitalize text-[#1d1d1d] placeholder:text-[#727272] outline-none transition-colors duration-200 ${
-                    searchFocused ? "border-[#1d1d1d]" : ""
-                  }`}
-                  style={{ fontFamily: "'Gotham', sans-serif" }}
-                  onFocus={() => setSearchFocused(true)}
-                  onBlur={() => setSearchFocused(false)}
-                />
-                {/* Search icon inside input */}
-                <div className="absolute left-[10px] top-1/2 -translate-y-1/2 pointer-events-none">
-                  <svg
-                    width="20"
-                    height="20"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
+          {/* Spacer to push icons right when no desktop nav */}
+          <div className="flex-1 min-[1100px]:hidden" />
+
+          {/* ---- Right Side: Search / Cart / Account ---- */}
+          <div className="flex items-center gap-[16px]">
+            {/* Mobile/Tablet search icon (visible below 1100px) */}
+            <button
+              className="p-[4px] text-[#000000] min-[1100px]:hidden"
+              aria-label="Search"
+            >
+              <SearchIcon />
+            </button>
+
+            {/* Desktop search input (visible from 1100px) */}
+            <div className="hidden min-[1100px]:block">
+              <SearchInput
+                focused={searchFocused}
+                onFocusChange={setSearchFocused}
+              />
+            </div>
+
+            {/* Cart */}
+            <Link
+              href={cartHref}
+              className="relative flex items-center gap-[5px] text-[#000000] no-underline"
+              aria-label={`Cart with ${cartCount} items`}
+            >
+              <span className="relative">
+                <CartIcon />
+                {cartCount > 0 && (
+                  <span
+                    className="absolute -top-[8px] -right-[8px] bg-[#e8083e] text-[#ffffff] text-[9px] font-[600] leading-[1] w-[15px] h-[15px] flex items-center justify-center rounded-[9999px]"
                     aria-hidden="true"
                   >
-                    <path
-                      d="M14.065 7.53199C14.065 11.15 11.1357 14.083 7.52225 14.083C3.90879 14.083 0.979492 11.15 0.979492 7.53199C0.979492 3.91395 3.90879 0.980957 7.52225 0.980957C11.1357 0.980957 14.065 3.91395 14.065 7.53199Z"
-                      fill="white"
-                    />
-                    <path
-                      d="M12.1012 12.2113L14.9997 15.0189M14.065 7.53199C14.065 11.15 11.1357 14.083 7.52225 14.083C3.90879 14.083 0.979492 11.15 0.979492 7.53199C0.979492 3.91395 3.90879 0.980957 7.52225 0.980957C11.1357 0.980957 14.065 3.91395 14.065 7.53199Z"
-                      stroke="#999"
-                      strokeWidth="1.6"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Cart */}
-              <Link
-                href={cartHref}
-                className="relative flex items-center text-[#000000] no-underline hover:opacity-70 transition-opacity duration-200"
-                aria-label={`Cart with ${cartCount} items`}
+                    {cartCount}
+                  </span>
+                )}
+              </span>
+              {/* "Cart" text: visible on tablet (md: 768px+) */}
+              <span
+                className="hidden md:inline text-[14px] font-[400] text-[#1d1d1d]"
+                style={{ fontFamily: "'Gotham', sans-serif" }}
               >
-                <CartIcon />
-                <span
-                  className="absolute -top-[8px] -right-[8px] bg-[#000000] text-[#ffffff] text-[10px] font-[600] leading-[1] w-[16px] h-[16px] flex items-center justify-center rounded-[9999px]"
-                  aria-hidden="true"
-                >
-                  {cartCount}
-                </span>
-              </Link>
+                Cart
+              </span>
+            </Link>
 
-              {/* Account */}
-              <Link
-                href={accountHref}
-                className="hidden lg:flex items-center text-[#1d1d1d] no-underline hover:opacity-70 transition-opacity duration-200"
-                aria-label="Account"
+            {/* Account: hidden on mobile <768px, visible on tablet + desktop */}
+            <Link
+              href={accountHref}
+              className="hidden md:flex items-center gap-[5px] text-[#1d1d1d] no-underline"
+              aria-label="Account"
+            >
+              <AccountIcon />
+              <span
+                className="text-[14px] font-[400] text-[#1d1d1d]"
+                style={{ fontFamily: "'Gotham', sans-serif" }}
               >
-                <AccountIcon />
-              </Link>
-            </div>
+                Account
+              </span>
+            </Link>
           </div>
         </div>
       </header>
