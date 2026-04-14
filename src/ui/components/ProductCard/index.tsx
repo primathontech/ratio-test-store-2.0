@@ -6,33 +6,6 @@ import { ProductCardTheme } from "./types";
 import type { ProductCardProps } from "./types";
 
 /* ------------------------------------------------------------------ */
-/*  SVG Icons                                                          */
-/* ------------------------------------------------------------------ */
-
-const CartIcon = () => (
-  <svg
-    width="14"
-    height="16"
-    viewBox="0 0 14 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M4.5 1.5C4.5 0.671573 5.17157 0 6 0H8C8.82843 0 9.5 0.671573 9.5 1.5V3H4.5V1.5Z"
-      stroke="currentColor"
-      strokeWidth="1"
-      fill="none"
-    />
-    <path
-      d="M0.5 4H13.5L12.5 15H1.5L0.5 4Z"
-      stroke="currentColor"
-      strokeWidth="1"
-      fill="none"
-    />
-  </svg>
-);
-
-/* ------------------------------------------------------------------ */
 /*  Star rating                                                        */
 /* ------------------------------------------------------------------ */
 
@@ -116,36 +89,46 @@ function badgeColor(variant?: string): string {
 
 const LIGHT_THEME = {
   cardBg: "#ffffff",
-  cardBorder: "1px solid rgba(29,29,29,0.12)",
+  cardBorder: "none",
+  cardRadius: "10px",
+  cardOverflow: "hidden" as const,
   textPrimary: "#1d1d1d",
   textSecondary: "#666666",
   textMuted: "#999999",
-  chipBg: "#ffffff",
-  chipBorder: "1px solid #333333",
-  chipColor: "#333333",
+  chipBg: "rgb(244, 246, 248)",
+  chipBorder: "none",
+  chipColor: "#1d1d1d",
+  chipPadding: "8px",
+  chipFontSize: "14px",
   weightBg: "rgba(255,255,255,0.9)",
   weightColor: "#333333",
   buttonBg: "#000000",
   buttonColor: "#ffffff",
+  buttonBorder: "2px solid #000000",
   buttonHoverBg: "rgb(56,56,56)",
   discountColor: "rgb(0, 160, 0)",
-  imageRadius: "0px",
-  buttonRadius: "0px",
+  imageRadius: "10px",
+  buttonRadius: "4px",
 };
 
 const DARK_THEME = {
   cardBg: "transparent",
   cardBorder: "none",
+  cardRadius: "0px",
+  cardOverflow: "visible" as const,
   textPrimary: "#ffffff",
   textSecondary: "rgba(255,255,255,0.7)",
   textMuted: "rgba(255,255,255,0.5)",
   chipBg: "rgb(29, 29, 29)",
   chipBorder: "none",
   chipColor: "#ffffff",
+  chipPadding: "4px 10px",
+  chipFontSize: "11px",
   weightBg: "rgba(0,0,0,0.5)",
   weightColor: "#ffffff",
   buttonBg: "#ffffff",
   buttonColor: "rgb(29, 29, 29)",
+  buttonBorder: "2px solid #ffffff",
   buttonHoverBg: "rgb(230,230,230)",
   discountColor: "rgb(0, 200, 0)",
   imageRadius: "10px",
@@ -169,6 +152,8 @@ export const ProductCard = memo(function ProductCard({
       style={{
         backgroundColor: t.cardBg,
         border: t.cardBorder,
+        borderRadius: t.cardRadius,
+        overflow: t.cardOverflow,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -252,12 +237,14 @@ export const ProductCard = memo(function ProductCard({
         {product.category && (
           <div className="mb-[8px]">
             <span
-              className="inline-flex text-[11px] px-[10px] py-[4px]"
+              className="inline-flex"
               style={{
                 color: t.chipColor,
                 backgroundColor: t.chipBg,
                 border: t.chipBorder,
                 borderRadius: "4px",
+                padding: t.chipPadding,
+                fontSize: t.chipFontSize,
                 fontFamily: "Gotham, sans-serif",
                 fontWeight: 400,
               }}
@@ -348,21 +335,20 @@ export const ProductCard = memo(function ProductCard({
         {/* Add to cart button */}
         <button
           type="button"
-          className="flex items-center justify-center gap-[8px] w-full mt-[12px] text-[14px] cursor-pointer"
+          className="flex items-center justify-center w-full mt-[12px] text-[14px] cursor-pointer"
           style={{
             backgroundColor: t.buttonBg,
             color: t.buttonColor,
             height: "42px",
             borderRadius: t.buttonRadius,
-            border: "none",
+            border: t.buttonBorder,
             fontFamily: "Gotham, sans-serif",
-            fontWeight: 400,
+            fontWeight: 500,
             transition: "background-color 0.2s",
           }}
           aria-label={`Add ${product.title} to cart`}
         >
-          <CartIcon />
-          <span>Add to cart</span>
+          Add to cart
         </button>
       </div>
     </div>

@@ -17,52 +17,46 @@ import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
 
 const ChevronRightIcon = () => (
   <svg
-    width="8"
-    height="14"
-    viewBox="0 0 8 14"
+    width="7"
+    height="11"
+    viewBox="0 0 7 11"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M1 1L7 7L1 13"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M1.5 11L7 5.5L1.5 0L0.52375 0.97625L5.0475 5.5L0.52375 10.0238L1.5 11Z"
+      fill="currentColor"
     />
   </svg>
 );
 
 const ChevronLeftIcon = () => (
   <svg
-    width="8"
-    height="14"
-    viewBox="0 0 8 14"
+    width="7"
+    height="11"
+    viewBox="0 0 7 11"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M7 1L1 7L7 13"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      d="M5.5 11L0 5.5L5.5 0L6.47625 0.97625L1.9525 5.5L6.47625 10.0238L5.5 11Z"
+      fill="currentColor"
     />
   </svg>
 );
 
-const ArrowRightIcon = () => (
+const ViewAllChevronIcon = () => (
   <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
+    width="7"
+    height="12"
+    viewBox="0 0 7 12"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M3.5 8H12.5M12.5 8L8.5 4M12.5 8L8.5 12"
+      d="M1 1L6 6L1 11"
       stroke="currentColor"
-      strokeWidth="1.5"
+      strokeWidth="2"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
@@ -127,10 +121,14 @@ function extractTabsFromData(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any
 ): CollectionTab[] | null {
-  if (!data || !data.success) return null;
+  if (!data || !data.success) {
+    return null;
+  }
 
   const collections: ApiCollectionResult[] = data.data;
-  if (!Array.isArray(collections) || collections.length === 0) return null;
+  if (!Array.isArray(collections) || collections.length === 0) {
+    return null;
+  }
 
   const tabs: CollectionTab[] = [];
 
@@ -138,7 +136,9 @@ function extractTabsFromData(
     const collectionData = collection.data;
     const products = collectionData?.products || collection.products;
 
-    if (!Array.isArray(products) || products.length === 0) continue;
+    if (!Array.isArray(products) || products.length === 0) {
+      continue;
+    }
 
     tabs.push({
       name: collectionData?.title || collection.handle,
@@ -181,7 +181,9 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
   const handleTabClick = useCallback(
     (index: number) => {
-      if (index === activeTabIndex) return;
+      if (index === activeTabIndex) {
+        return;
+      }
       setActiveTabIndex(index);
     },
     [activeTabIndex]
@@ -192,7 +194,9 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
   const renderProduct = useCallback(
     (idx: number) => {
       const product = products[idx];
-      if (!product) return null;
+      if (!product) {
+        return null;
+      }
       return <ProductCard product={product} theme={ProductCardTheme.DARK} />;
     },
     [products]
@@ -297,17 +301,17 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
               type="button"
               onClick={onClick}
               disabled={disabled}
-              className="absolute left-[-12px] top-[50%] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
+              className="absolute left-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
               style={{
+                top: "245px",
                 transform: "translateY(-50%)",
-                width: "40px",
-                height: "40px",
+                width: "46px",
+                height: "46px",
                 borderRadius: "9999px",
-                backgroundColor: !disabled
-                  ? "rgba(255,255,255,0.9)"
-                  : "rgba(255,255,255,0.3)",
-                border: "none",
-                color: !disabled ? "#1d1d1d" : "#999999",
+                backgroundColor: "transparent",
+                border: "1px solid transparent",
+                color: disabled ? "rgba(255,255,255,0.4)" : "#ffffff",
+                opacity: disabled ? 0.4 : 1,
                 transition: "all 0.2s",
               }}
               aria-label="Previous products"
@@ -320,17 +324,17 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
               type="button"
               onClick={onClick}
               disabled={disabled}
-              className="absolute right-[-12px] top-[50%] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
+              className="absolute right-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
               style={{
+                top: "245px",
                 transform: "translateY(-50%)",
-                width: "40px",
-                height: "40px",
+                width: "46px",
+                height: "46px",
                 borderRadius: "9999px",
-                backgroundColor: !disabled
-                  ? "rgba(255,255,255,0.9)"
-                  : "rgba(255,255,255,0.3)",
-                border: "none",
-                color: !disabled ? "#1d1d1d" : "#999999",
+                backgroundColor: "transparent",
+                border: "1px solid transparent",
+                color: disabled ? "rgba(255,255,255,0.4)" : "#ffffff",
+                opacity: disabled ? 0.4 : 1,
                 transition: "all 0.2s",
               }}
               aria-label="Next products"
@@ -345,19 +349,43 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
           <div className="flex justify-center" style={{ marginTop: "30px" }}>
             <a
               href={`/collections/${activeTab.handle}`}
-              className="inline-flex items-center gap-[8px] no-underline text-[14px]"
+              className="inline-flex items-center no-underline text-[14px] px-[20px] sm:px-[55px]"
               style={{
                 backgroundColor: "rgb(29, 29, 29)",
                 color: "#ffffff",
-                padding: "6px 55px",
+                paddingTop: "6px",
+                paddingBottom: "6px",
                 borderRadius: "4px",
                 fontFamily: "Gotham, sans-serif",
                 fontWeight: 400,
                 transition: "all 0.2s",
+                gap: "8px",
               }}
             >
+              {/* First 3 product preview images */}
+              <span className="inline-flex items-center" style={{ gap: "2px" }}>
+                {products.slice(0, 3).map((p, i) => (
+                  <Image
+                    key={i}
+                    src={
+                      p.mainImage.startsWith("//")
+                        ? `https:${p.mainImage}`
+                        : p.mainImage
+                    }
+                    alt=""
+                    width={26}
+                    height={26}
+                    className="rounded-[2px]"
+                    style={{
+                      width: "26px",
+                      height: "26px",
+                      objectFit: "cover",
+                    }}
+                  />
+                ))}
+              </span>
               <span>View all {activeTab.totalProducts} products</span>
-              <ArrowRightIcon />
+              <ViewAllChevronIcon />
             </a>
           </div>
         )}

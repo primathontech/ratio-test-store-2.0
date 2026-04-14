@@ -1,6 +1,7 @@
 "use client";
 
 import React, { memo, useMemo, useCallback } from "react";
+import Image from "next/image";
 import type { FeaturedCollectionCarouselProps, ApiProduct } from "../types";
 import { ProductCard } from "@/ui/components/ProductCard";
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
@@ -116,12 +117,16 @@ function extractFromData(
   data: any,
   collectionHandle?: string
 ): ExtractedCollection | null {
-  if (!data || !data.success) return null;
+  if (!data || !data.success) {
+    return null;
+  }
 
   const collection = data.data;
   const products = collection?.products;
 
-  if (!Array.isArray(products) || products.length === 0) return null;
+  if (!Array.isArray(products) || products.length === 0) {
+    return null;
+  }
 
   return {
     products: products.map(transformApiProduct),
@@ -165,7 +170,9 @@ export const V1 = memo(function V1({
   const renderProduct = useCallback(
     (idx: number) => {
       const product = products[idx];
-      if (!product) return null;
+      if (!product) {
+        return null;
+      }
       return <ProductCard product={product} />;
     },
     [products]
@@ -219,19 +226,22 @@ export const V1 = memo(function V1({
               type="button"
               onClick={onClick}
               disabled={disabled}
-              className="absolute left-[-20px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
+              className="absolute left-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
               style={{
-                top: "calc(50% - 80px)",
+                top: "245px",
                 transform: "translateY(-50%)",
-                width: "40px",
-                height: "40px",
+                width: "46px",
+                height: "46px",
                 borderRadius: "9999px",
-                backgroundColor: "rgba(255,255,255,0.95)",
-                border: "1px solid rgb(229, 229, 229)",
-                color: "#1d1d1d",
-                opacity: !disabled ? 1 : 0.4,
-                transition: "opacity 0.2s",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                backgroundColor: disabled
+                  ? "rgba(255,255,255,0.2)"
+                  : "rgb(0,0,0)",
+                border: disabled
+                  ? "1px solid rgba(255,255,255,0.01)"
+                  : "1px solid rgb(0,0,0)",
+                color: "#ffffff",
+                opacity: disabled ? 0.4 : 1,
+                transition: "all 0.2s",
               }}
               aria-label="Previous products"
             >
@@ -243,19 +253,22 @@ export const V1 = memo(function V1({
               type="button"
               onClick={onClick}
               disabled={disabled}
-              className="absolute right-[-20px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
+              className="absolute right-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
               style={{
-                top: "calc(50% - 80px)",
+                top: "245px",
                 transform: "translateY(-50%)",
-                width: "40px",
-                height: "40px",
+                width: "46px",
+                height: "46px",
                 borderRadius: "9999px",
-                backgroundColor: "rgba(255,255,255,0.95)",
-                border: "1px solid rgb(229, 229, 229)",
-                color: "#1d1d1d",
-                opacity: !disabled ? 1 : 0.4,
-                transition: "opacity 0.2s",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
+                backgroundColor: disabled
+                  ? "rgba(255,255,255,0.2)"
+                  : "rgb(0,0,0)",
+                border: disabled
+                  ? "1px solid rgba(255,255,255,0.01)"
+                  : "1px solid rgb(0,0,0)",
+                color: "#ffffff",
+                opacity: disabled ? 0.4 : 1,
+                transition: "all 0.2s",
               }}
               aria-label="Next products"
             >
@@ -269,17 +282,19 @@ export const V1 = memo(function V1({
           <div className="flex justify-center" style={{ marginTop: "32px" }}>
             <a
               href={`/collections/${handle}`}
-              className="inline-flex items-center gap-[8px] no-underline text-[14px]"
+              className="inline-flex items-center no-underline text-[14px] px-[20px] sm:px-[55px]"
               style={{
                 backgroundColor: "rgb(244, 246, 248)",
                 color: "#1d1d1d",
-                padding: "10px 20px",
+                paddingTop: "6px",
+                paddingBottom: "6px",
                 borderRadius: "4px",
-                border: "1px solid #1d1d1d",
+                border: "none",
                 fontFamily: "Gotham, sans-serif",
-                fontWeight: 500,
+                fontWeight: 400,
                 transition:
                   "background-color 0.25s ease-in-out, color 0.25s ease-in-out",
+                gap: "8px",
               }}
               onMouseEnter={(e) => {
                 const el = e.currentTarget;
@@ -292,6 +307,28 @@ export const V1 = memo(function V1({
                 el.style.color = "#1d1d1d";
               }}
             >
+              {/* First 3 product preview images */}
+              <span className="inline-flex items-center" style={{ gap: "2px" }}>
+                {products.slice(0, 3).map((p, i) => (
+                  <Image
+                    key={i}
+                    src={
+                      p.mainImage.startsWith("//")
+                        ? `https:${p.mainImage}`
+                        : p.mainImage
+                    }
+                    alt=""
+                    width={26}
+                    height={26}
+                    className="rounded-[2px]"
+                    style={{
+                      width: "26px",
+                      height: "26px",
+                      objectFit: "cover",
+                    }}
+                  />
+                ))}
+              </span>
               <span>View all {totalProducts} products</span>
               <ChevronRightIcon />
             </a>
