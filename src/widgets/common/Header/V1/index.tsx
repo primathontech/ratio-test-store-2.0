@@ -4,6 +4,8 @@ import React, { memo, useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { HeaderProps, NavItem, NavDropdownGroup } from "../types";
+import { CartBadge } from "../components/CartBadge";
+import { MobileNavigationDrawer } from "../components/MobileDrawer";
 
 /* ──────────────────────── Navigation Data ──────────────────────── */
 
@@ -190,18 +192,38 @@ const CartIcon = () => (
     aria-hidden="true"
   >
     <path
-      d="M1.49432 0.149612C1.79241 0.149918 2.09715 0.160753 2.26093 0.176956L2.42694 0.205276C2.75277 0.283356 3.0353 0.489126 3.22186 0.758011L3.30682 0.897659L3.31464 0.911331L3.31854 0.926956L3.9162 3.02364L14.8547 3.02559H14.8683V3.02657C15.9851 3.12744 16.7186 4.06166 16.5881 5.16914L16.5861 5.18379L16.5812 5.19844C16.3555 5.8849 16.1575 6.59294 15.9543 7.30391C15.8022 7.83612 15.647 8.36945 15.4758 8.89278L15.299 9.41231C14.9778 10.314 14.4748 10.9095 13.8508 11.2922C13.2305 11.6725 12.5015 11.8355 11.7375 11.8967C10.9739 11.9578 10.1613 11.918 9.37323 11.8811C8.58076 11.8439 7.81316 11.8099 7.11932 11.8801L7.10468 11.882L7.09003 11.8801C5.63666 11.749 4.39656 10.791 3.95233 9.39668C3.6814 8.54686 3.47751 7.62195 3.28632 6.69649C3.09459 5.76843 2.91673 4.84133 2.6955 3.97578C2.59064 3.56556 2.46824 3.15938 2.34686 2.74825C2.23568 2.37164 2.12657 1.99115 2.03339 1.60567C2.00785 1.60482 1.97745 1.60385 1.94257 1.60371C1.82819 1.60326 1.67728 1.60596 1.51874 1.60957C1.36128 1.61316 1.19637 1.61757 1.0578 1.61836C0.92483 1.61912 0.799575 1.61713 0.730652 1.60567C0.339042 1.53994 0.149528 1.20716 0.149597 0.895706C0.14967 0.584293 0.339214 0.252166 0.730652 0.186722C0.892412 0.159588 1.1993 0.149317 1.49432 0.149612Z"
+      d="M1.49432 0.149612C1.79241 0.149918 2.09715 0.160753 2.26093 0.176956L2.42694 0.205276C2.75277 0.283356 3.0353 0.489126 3.22186 0.758011L3.30682 0.897659L3.31464 0.911331L3.31854 0.926956L3.9162 3.02364L14.8547 3.02559H14.8683V3.02657C15.9851 3.12744 16.7186 4.06166 16.5881 5.16914L16.5861 5.18379L16.5812 5.19844C16.3555 5.8849 16.1575 6.59294 15.9543 7.30391C15.8022 7.83612 15.647 8.36945 15.4758 8.89278L15.299 9.41231C14.9778 10.314 14.4748 10.9095 13.8508 11.2922C13.2305 11.6725 12.5015 11.8355 11.7375 11.8967C10.9739 11.9578 10.1613 11.918 9.37323 11.8811C8.58076 11.8439 7.81316 11.8099 7.11932 11.8801L7.10468 11.882L7.09003 11.8801C5.63666 11.749 4.39656 10.791 3.95233 9.39668C3.6814 8.54686 3.47751 7.62195 3.28632 6.69649C3.09459 5.76843 2.91673 4.84133 2.6955 3.97578C2.59064 3.56556 2.46824 3.15938 2.34686 2.74825C2.23568 2.37164 2.12657 1.99115 2.03339 1.60567C2.00785 1.60482 1.97745 1.60385 1.94257 1.60371C1.82819 1.60326 1.67728 1.60596 1.51874 1.60957C1.36128 1.61316 1.19637 1.61757 1.0578 1.61836C0.92483 1.61912 0.799575 1.61713 0.730652 1.60567C0.339042 1.53994 0.149528 1.20716 0.149597 0.895706C0.14967 0.584293 0.339214 0.252166 0.730652 0.186722C0.892412 0.159588 1.1993 0.149317 1.49432 0.149612ZM5.30389 8.85664C5.54121 9.75437 6.32108 10.3827 7.25311 10.4436C8.02846 10.494 8.83338 10.4743 9.64667 10.4514C10.4528 10.4286 11.2681 10.402 12.0598 10.4397C12.8872 10.3492 13.5461 9.87909 13.8664 9.11641C14.13 8.48871 14.3253 7.79168 14.5178 7.08028C14.7092 6.37234 14.8985 5.64913 15.1506 4.98653L15.1545 4.97676L15.1662 4.92793C15.1675 4.90721 15.1655 4.88192 15.1594 4.85176C15.1474 4.79284 15.1209 4.72655 15.0822 4.66426C15.0435 4.6019 14.996 4.54945 14.9504 4.51387C14.9029 4.47692 14.8691 4.46797 14.8527 4.46797H4.27362L5.30389 8.85664Z"
       fill="black"
       stroke="black"
       strokeWidth="0.3"
     />
     <path
-      d="M6.36282 12.8823C8.68715 12.6261 8.96859 16.1177 6.7095 16.2935C4.4876 16.4658 4.19763 13.121 6.36282 12.8823Z"
+      d="M6.36282 12.8823C8.68715 12.6261 8.96859 16.1177 6.7095 16.2935C4.4876 16.4658 4.19763 13.121 6.36282 12.8823ZM6.46829 14.022C5.86251 14.1213 5.862 15.0453 6.46829 15.145C7.35354 15.2903 7.35402 13.8772 6.46829 14.022Z"
       fill="black"
     />
     <path
-      d="M12.0772 12.8823C14.4016 12.6261 14.683 16.1177 12.4239 16.2935C10.202 16.4658 9.91204 13.121 12.0772 12.8823Z"
+      d="M6.36282 12.8823C8.68715 12.6261 8.96859 16.1177 6.7095 16.2935C4.4876 16.4658 4.19763 13.121 6.36282 12.8823ZM6.46829 14.022C5.86251 14.1213 5.862 15.0453 6.46829 15.145C7.35354 15.2903 7.35402 13.8772 6.46829 14.022Z"
+      stroke="black"
+    />
+    <path
+      d="M12.0772 12.8823C14.4016 12.6261 14.683 16.1177 12.4239 16.2935C10.202 16.4658 9.91204 13.121 12.0772 12.8823ZM12.1827 14.022C11.5769 14.1213 11.5764 15.0453 12.1827 15.145C13.068 15.2903 13.0684 13.8772 12.1827 14.022Z"
       fill="black"
+    />
+    <path
+      d="M12.0772 12.8823C14.4016 12.6261 14.683 16.1177 12.4239 16.2935C10.202 16.4658 9.91204 13.121 12.0772 12.8823ZM12.1827 14.022C11.5769 14.1213 11.5764 15.0453 12.1827 15.145C13.068 15.2903 13.0684 13.8772 12.1827 14.022Z"
+      stroke="black"
+    />
+    <path
+      d="M4.08474 4.31764H14.8525C15.1021 4.31764 15.4068 4.79051 15.2901 5.04003C14.7925 6.34815 14.5406 7.89817 14.0044 9.17486C13.6606 9.99392 12.9492 10.4973 12.0658 10.5906C10.4872 10.5135 8.81005 10.6949 7.24336 10.593C6.24858 10.5282 5.41285 9.85725 5.15856 8.89533L4.08426 4.31764H4.08474Z"
+      fill="white"
+    />
+    <path
+      d="M6.46859 14.0216C7.35432 13.8769 7.35384 15.2897 6.46859 15.145C5.86192 15.0455 5.86239 14.1207 6.46859 14.0216Z"
+      fill="white"
+    />
+    <path
+      d="M12.1829 14.0216C13.0687 13.8769 13.0682 15.2897 12.1829 15.145C11.5763 15.0455 11.5767 14.1207 12.1829 14.0216Z"
+      fill="white"
     />
   </svg>
 );
@@ -240,41 +262,6 @@ const AccountIcon = () => (
   </svg>
 );
 
-const CloseIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <path
-      d="M16 1.4L14.6 0L8 6.6L1.4 0L0 1.4L6.6 8L0 14.6L1.4 16L8 9.4L14.6 16L16 14.6L9.4 8L16 1.4Z"
-      fill="currentColor"
-    />
-  </svg>
-);
-
-const ChevronRightIcon = () => (
-  <svg
-    width="8"
-    height="12"
-    viewBox="0 0 8 12"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <path
-      d="M1.5 1L6.5 6L1.5 11"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
 /* ──────────────────────── Desktop Dropdown ──────────────────────── */
 
 function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
@@ -295,18 +282,18 @@ function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
               className={`group/accordion ${gi > 0 ? "mt-[4px]" : ""}`}
             >
               <summary
-                className="flex items-center cursor-pointer list-none text-[14px] leading-[22.4px] font-[400] text-[#545454] py-[4px] [&::-webkit-details-marker]:hidden"
+                className="flex items-center cursor-pointer list-none text-[14px] leading-[22.4px] font-[400] text-[#545454] hover:text-[#0089DD] py-[4px] [&::-webkit-details-marker]:hidden justify-between"
                 style={{ fontFamily: "'Gotham', sans-serif" }}
               >
                 <span>{group.heading}</span>
                 <ChevronDownIcon className="w-[10px] h-[7px] ml-[8px] transition-transform duration-200 group-open/accordion:rotate-180" />
               </summary>
-              <ul className="list-none p-0 m-0 pl-[19px] flex flex-col gap-[14px] pt-[10px] pb-[6px]">
+              <ul className="list-none p-0 m-0 pl-[19px] flex flex-col gap-[14px]  ml-[2px] border-l border-[#e0e0e0]">
                 {group.items.map((item, ii) => (
                   <li key={ii}>
                     <Link
                       href={item.href}
-                      className="text-[14px] leading-[16.8px] font-[400] text-[#545454] no-underline hover:text-[#1d1d1d] transition-colors duration-200"
+                      className="text-[14px] leading-[16.8px] font-[400] text-[#545454] hover:text-[#0089DD] no-underline transition-colors duration-200"
                       style={{ fontFamily: "'Gotham', sans-serif" }}
                     >
                       {item.label}
@@ -324,7 +311,7 @@ function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
                   <li key={ii}>
                     <Link
                       href={item.href}
-                      className="text-[14px] leading-[16.8px] font-[400] text-[#545454] no-underline hover:text-[#1d1d1d] transition-colors duration-200"
+                      className="text-[14px] leading-[16.8px] font-[400] text-[#545454] no-underline transition-colors duration-200 hover:text-[#0089DD]"
                       style={{ fontFamily: "'Gotham', sans-serif" }}
                     >
                       {item.label}
@@ -335,167 +322,6 @@ function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
             </div>
           ))}
     </div>
-  );
-}
-
-/* ──────────────────────── Mobile Drawer ──────────────────────── */
-
-function MobileDrawer({
-  isOpen,
-  onClose,
-  navigation,
-}: {
-  isOpen: boolean;
-  onClose: () => void;
-  navigation: NavItem[];
-}) {
-  const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
-  const drawerRef = useRef<HTMLDivElement>(null);
-
-  // Prevent body scroll when drawer is open
-  useEffect(() => {
-    if (isOpen) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
-    }
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, [isOpen]);
-
-  // Close on escape key
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "Escape" && isOpen) {
-        onClose();
-      }
-    };
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen, onClose]);
-
-  const toggleExpanded = (index: number) => {
-    setExpandedIndex((prev) => (prev === index ? null : index));
-  };
-
-  return (
-    <>
-      {/* Overlay */}
-      <div
-        className={`fixed inset-0 z-[998] bg-[rgba(0,0,0,0.5)] transition-opacity duration-300 ${
-          isOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
-        onClick={onClose}
-        aria-hidden="true"
-      />
-
-      {/* Drawer Panel */}
-      <div
-        ref={drawerRef}
-        className={`fixed top-0 left-0 z-[999] h-full w-[85%] max-w-[380px] bg-[#ffffff] overflow-y-auto transition-transform duration-300 ease-out ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-        role="dialog"
-        aria-modal="true"
-        aria-label="Navigation menu"
-      >
-        {/* Drawer Header */}
-        <div className="flex items-center justify-between px-[15px] py-[12px] border-b border-[rgba(29,29,29,0.12)]">
-          <Link href="/" onClick={onClose}>
-            <Image
-              src="/Header/images/logo.png"
-              alt="BBlunt"
-              width={100}
-              height={30}
-              className="w-[100px] h-auto"
-            />
-          </Link>
-          <button
-            onClick={onClose}
-            className="p-[8px] text-[#1d1d1d]"
-            aria-label="Close menu"
-          >
-            <CloseIcon />
-          </button>
-        </div>
-
-        {/* Drawer Navigation */}
-        <nav className="py-[10px]">
-          <ul className="list-none p-0 m-0">
-            {navigation.map((item, index) => (
-              <li key={index} className="border-b border-[#ececec]">
-                {item.dropdown ? (
-                  <>
-                    <button
-                      className="w-full flex items-center justify-between px-[20px] py-[14px] text-[14px] font-[400] text-[#1d1d1d] bg-transparent"
-                      onClick={() => toggleExpanded(index)}
-                      aria-expanded={expandedIndex === index}
-                      style={{ fontFamily: "'Gotham', sans-serif" }}
-                    >
-                      <span>{item.label}</span>
-                      <ChevronDownIcon
-                        className={`w-[10px] h-[7px] transition-transform duration-200 ${
-                          expandedIndex === index ? "rotate-180" : ""
-                        }`}
-                      />
-                    </button>
-                    {/* Expanded Sub-items */}
-                    <div
-                      className={`overflow-hidden transition-all duration-300 ${
-                        expandedIndex === index
-                          ? "max-h-[1000px] opacity-100"
-                          : "max-h-0 opacity-0"
-                      }`}
-                    >
-                      <div className="px-[20px] pb-[14px]">
-                        {item.dropdown.map((group, gi) => (
-                          <div key={gi} className="mb-[10px]">
-                            {group.heading && (
-                              <p className="text-[11px] font-[700] uppercase tracking-[1px] text-[#999999] mb-[8px] mt-[4px]">
-                                {group.heading}
-                              </p>
-                            )}
-                            <ul className="list-none p-0 m-0">
-                              {group.items.map((subItem, si) => (
-                                <li key={si}>
-                                  <Link
-                                    href={subItem.href}
-                                    className="flex items-center justify-between py-[10px] text-[13px] font-[400] text-[#545454] no-underline hover:text-[#1d1d1d]"
-                                    onClick={onClose}
-                                    style={{
-                                      fontFamily: "'Gotham', sans-serif",
-                                    }}
-                                  >
-                                    <span>{subItem.label}</span>
-                                    <ChevronRightIcon />
-                                  </Link>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </>
-                ) : (
-                  <Link
-                    href={item.href}
-                    className="block px-[20px] py-[14px] text-[14px] font-[400] text-[#1d1d1d] no-underline"
-                    onClick={onClose}
-                    style={{ fontFamily: "'Gotham', sans-serif" }}
-                  >
-                    {item.label}
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-        </nav>
-      </div>
-    </>
   );
 }
 
@@ -565,8 +391,7 @@ function SearchInput({
         className="w-[255px] h-[35px] min-h-[35px] rounded-[4px] bg-transparent pl-[35px] pr-[60px] pt-[8px] pb-[8px] text-[14px] font-[500] text-[#1d1d1d] placeholder:text-[#727272] outline-none"
         style={{
           fontFamily: "'Gotham', sans-serif",
-          border: `1px solid ${focused ? "#1d1d1d" : "#dddddd"}`,
-          transition: "border-color 0.2s",
+          border: "1px solid #dddddd",
         }}
         onFocus={() => onFocusChange(true)}
         onBlur={() => onFocusChange(false)}
@@ -574,8 +399,8 @@ function SearchInput({
       {/* Search icon inside input */}
       <div className="absolute left-[10px] top-1/2 -translate-y-1/2 pointer-events-none">
         <svg
-          width="20"
-          height="20"
+          width="16"
+          height="16"
           viewBox="0 0 16 16"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -587,7 +412,7 @@ function SearchInput({
           />
           <path
             d="M12.1012 12.2113L14.9997 15.0189M14.065 7.53199C14.065 11.15 11.1357 14.083 7.52225 14.083C3.90879 14.083 0.979492 11.15 0.979492 7.53199C0.979492 3.91395 3.90879 0.980957 7.52225 0.980957C11.1357 0.980957 14.065 3.91395 14.065 7.53199Z"
-            stroke="#999"
+            stroke="#000000"
             strokeWidth="1.6"
             strokeLinecap="round"
           />
@@ -613,6 +438,20 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
   const closeMobileMenu = useCallback(() => {
     setMobileMenuOpen(false);
   }, []);
+
+  const getAppData = {
+    app_url: "#",
+    logo_url: "https://bblunt.com/cdn/shop/files/bbluntIcon.webp?v=1760440322",
+    title: "Get this App",
+    description: "For better experience and exclusive features",
+    button_text: "Use app",
+  };
+
+  const connectWithUsData = [
+    { key: "track_order", label: "Track Order", href: "/account" },
+    { key: "chat_with_us", label: "Chat with us", href: "#" },
+    { key: "need_help", label: "Need help ?", href: "#" },
+  ];
 
   return (
     <>
@@ -649,8 +488,8 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
           </div>
 
           {/* ---- Desktop Navigation (visible from 1100px) ---- */}
-          <nav className="hidden min-[1100px]:block flex-1">
-            <ul className="list-none p-0 m-0 inline-flex items-center gap-[32px] pl-[62px]">
+          <nav className="hidden min-[1100px]:flex flex-1 h-full">
+            <ul className="list-none p-0 m-0 inline-flex items-stretch gap-[22px] pl-[47px] h-full">
               {navigation.map((item, index) => (
                 <li key={index} className="relative group flex items-center">
                   <Link
@@ -677,7 +516,7 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
           <div className="flex-1 min-[1100px]:hidden" />
 
           {/* ---- Right Side: Search / Cart / Account ---- */}
-          <div className="flex items-center gap-[16px]">
+          <div className="flex items-center gap-[19px]">
             {/* Mobile/Tablet search icon (visible below 1100px) */}
             <button
               className="p-[4px] text-[#000000] min-[1100px]:hidden"
@@ -697,19 +536,12 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
             {/* Cart */}
             <Link
               href={cartHref}
-              className="relative flex items-center gap-[5px] text-[#000000] no-underline"
+              className="relative flex items-center gap-[16px] text-[#000000] no-underline"
               aria-label={`Cart with ${cartCount} items`}
             >
               <span className="relative">
                 <CartIcon />
-                {cartCount > 0 && (
-                  <span
-                    className="absolute -top-[8px] -right-[8px] bg-[#e8083e] text-[#ffffff] text-[9px] font-[600] leading-[1] w-[15px] h-[15px] flex items-center justify-center rounded-[9999px]"
-                    aria-hidden="true"
-                  >
-                    {cartCount}
-                  </span>
-                )}
+                <CartBadge count={cartCount} />
               </span>
               {/* "Cart" text: visible on tablet (md: 768px+) */}
               <span
@@ -723,7 +555,7 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
             {/* Account: hidden on mobile <768px, visible on tablet + desktop */}
             <Link
               href={accountHref}
-              className="hidden md:flex items-center gap-[5px] text-[#1d1d1d] no-underline"
+              className="hidden md:flex items-center gap-[8px] text-[#1d1d1d] no-underline"
               aria-label="Account"
             >
               <AccountIcon />
@@ -739,10 +571,44 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
       </header>
 
       {/* Mobile Drawer */}
-      <MobileDrawer
+      <MobileNavigationDrawer
         isOpen={mobileMenuOpen}
         onClose={closeMobileMenu}
-        navigation={navigation}
+        items={navigation.map((item) => ({
+          key: item.label.toLowerCase().replace(/\s+/g, "-"),
+          label: item.label,
+          href: item.href,
+          hasDropdown: !!item.dropdown,
+          dropdownItems: item.dropdown?.flatMap<{
+            key: string;
+            label: string;
+            href?: string;
+            isCategory?: boolean;
+            items?: { key: string; label: string; href: string }[];
+          }>((group) => {
+            if (group.heading) {
+              return [
+                {
+                  key: group.heading.toLowerCase().replace(/\s+/g, "-"),
+                  label: group.heading,
+                  isCategory: true,
+                  items: group.items.map((sub) => ({
+                    key: sub.label.toLowerCase().replace(/\s+/g, "-"),
+                    label: sub.label,
+                    href: sub.href,
+                  })),
+                },
+              ];
+            }
+            return group.items.map((sub) => ({
+              key: sub.label.toLowerCase().replace(/\s+/g, "-"),
+              label: sub.label,
+              href: sub.href,
+            }));
+          }),
+        }))}
+        getApp={getAppData}
+        connectWithUs={connectWithUsData}
       />
     </>
   );
