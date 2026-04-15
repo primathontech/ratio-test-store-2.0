@@ -43,6 +43,8 @@ export interface HeaderSettings {
   cartHref?: string;
   /** Account link href */
   accountHref?: string;
+  /** Header background color (hex). Defaults to #ffffff — when white, applies a frosted-glass blur. */
+  backgroundColor?: string;
 }
 
 /**
