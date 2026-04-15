@@ -434,6 +434,7 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
   const cartHref = settings?.cartHref ?? "/cart";
   const accountHref = settings?.accountHref ?? "/account";
   const cartCount = data?.cartCount ?? 0;
+  const backgroundColor = settings?.backgroundColor ?? "#ffffff";
 
   const closeMobileMenu = useCallback(() => {
     setMobileMenuOpen(false);
@@ -456,8 +457,17 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
   return (
     <>
       <header
-        className={`sticky top-0 z-[20] bg-[#ffffff] ${className ?? ""}`}
-        style={{ fontFamily: "'Gotham', sans-serif" }}
+        className={`sticky top-0 z-[20] ${className ?? ""}`}
+        style={{
+          fontFamily: "'Gotham', sans-serif",
+          background:
+            backgroundColor === "#ffffff"
+              ? "rgb(255 255 255 / .6)"
+              : backgroundColor,
+          backdropFilter: backgroundColor === "#ffffff" ? "blur(16px)" : "none",
+          WebkitBackdropFilter:
+            backgroundColor === "#ffffff" ? "blur(16px)" : "none",
+        }}
       >
         {/* Inner container: 60px height + 15px padding on mobile/tablet, 65px + 40px on desktop (≥1100px) */}
         <div className="w-full max-w-full flex items-center h-[60px] px-[15px] min-[1100px]:h-[65px] min-[1100px]:px-[40px]">
