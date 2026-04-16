@@ -131,11 +131,19 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
 
   /* Calculate how many slides we can advance based on viewport */
   const getVisibleCount = useCallback(() => {
-    if (typeof window === "undefined") return 5;
+    if (typeof window === "undefined") {
+      return 5;
+    }
     const w = window.innerWidth;
-    if (w < 768) return 2;
-    if (w < 1024) return 3;
-    if (w < 1440) return 4;
+    if (w < 768) {
+      return 2;
+    }
+    if (w < 1024) {
+      return 3;
+    }
+    if (w < 1440) {
+      return 4;
+    }
     return 5;
   }, []);
 
@@ -163,7 +171,9 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
   /* Calculate translateX based on currentIndex */
   /* Each tile width + gap, expressed as percentage of container */
   const getTranslateX = () => {
-    if (!containerRef.current || currentIndex === 0) return "0px";
+    if (!containerRef.current || currentIndex === 0) {
+      return "0px";
+    }
     const container = containerRef.current;
     const gap = 15; // 15px gap between tiles
     const containerWidth = container.offsetWidth;
@@ -174,15 +184,14 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
 
   return (
     <section
-      className="relative bg-[#ffffff] py-[50px] overflow-hidden"
+      className="relative bg-[#ffffff] pt-[25px] md:pt-[56px] overflow-hidden"
       aria-label="Shop by Concerns"
     >
       {/* Section Heading */}
       <h3
-        className="text-center mb-[30px] px-[16px]"
+        className="text-start md:text-center mb-[16px] md:mb-[30px] px-[16px] text-[24px] xl:text-[28px] mt-[25px] md:mt-[56px]"
         style={{
           fontFamily: "Gotham, sans-serif",
-          fontSize: "22px",
           lineHeight: "34px",
           fontWeight: 400,
           color: "#1D1D1D",
@@ -193,22 +202,26 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
       </h3>
 
       {/* Carousel wrapper */}
-      <div className="relative px-[50px] md:px-[60px]">
-        {/* Prev button — hidden on mobile */}
+      <div className="relative pl-[14px] md:px-[30px] xl:px-[70px]">
+        {/* Prev button */}
         <button
           onClick={goPrev}
           disabled={!canGoPrev}
           aria-label="Previous"
-          className="hidden md:flex absolute left-[4px] top-[50%] -translate-y-[50%] z-[2] w-[46px] h-[46px] items-center justify-center rounded-[9999px] border border-[#1D1D1D] bg-[#ffffff] text-[#1D1D1D] transition-opacity duration-300"
-          style={{ opacity: canGoPrev ? 1 : 0.4 }}
+          className="hidden md:flex absolute md:left-[-16px] xl:left-[18px] top-[50%] -translate-y-[50%] z-[2] w-[40px] xl:w-[46px] h-[40px] xl:h-[46px] items-center justify-center bg-[#ffffff] text-[#1D1D1D]"
         >
-          <PrevArrow />
+          <span
+            className="inline-flex transition-opacity duration-300"
+            style={{ opacity: canGoPrev ? 1 : 0.4 }}
+          >
+            <PrevArrow />
+          </span>
         </button>
 
         {/* Slider viewport */}
         <div className="overflow-hidden" ref={containerRef}>
           <div
-            className="flex gap-[15px] transition-transform duration-[400ms] ease-in-out"
+            className="flex gap-[8px] md:gap-[15px] transition-transform duration-[400ms] ease-in-out pl-0 md:pl-[15px]"
             style={{ transform: `translateX(${getTranslateX()})` }}
           >
             {tiles.map((tile, i) => (
@@ -224,15 +237,19 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
           </div>
         </div>
 
-        {/* Next button — hidden on mobile */}
+        {/* Next button */}
         <button
           onClick={goNext}
           disabled={!canGoNext}
           aria-label="Next"
-          className="hidden md:flex absolute right-[4px] top-[50%] -translate-y-[50%] z-[2] w-[46px] h-[46px] items-center justify-center rounded-[9999px] border border-[#1D1D1D] bg-[#ffffff] text-[#1D1D1D] transition-opacity duration-300"
-          style={{ opacity: canGoNext ? 1 : 0.4 }}
+          className="hidden md:flex absolute md:right-[-11px] xl:right-[18px] top-[50%] -translate-y-[50%] z-[2] w-[40px] xl:w-[46px] h-[40px] xl:h-[46px] items-center justify-center bg-[#ffffff] text-[#1D1D1D]"
         >
-          <NextArrow />
+          <span
+            className="inline-flex transition-opacity duration-300"
+            style={{ opacity: canGoNext ? 1 : 0.4 }}
+          >
+            <NextArrow />
+          </span>
         </button>
       </div>
     </section>

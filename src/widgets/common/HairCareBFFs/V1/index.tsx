@@ -239,12 +239,12 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       >
         {/* Tabs head: heading + tab buttons */}
         <div
-          className="flex flex-col items-center text-center"
+          className="flex flex-col items-start md:items-center text-center"
           style={{ gap: "30px", marginBottom: "30px" }}
         >
           {/* Heading */}
           <h4
-            className="text-[24px] leading-[34px]"
+            className="text-[24px] lg:text-[28px] leading-[34px]"
             style={{
               color: "#ffffff",
               fontWeight: 400,

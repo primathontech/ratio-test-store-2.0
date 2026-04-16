@@ -94,14 +94,18 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
   /* Update scroll button visibility */
   const updateScrollButtons = useCallback(() => {
     const el = viewportRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     setCanScrollLeft(el.scrollLeft > 2);
     setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - 2);
   }, []);
 
   useEffect(() => {
     const el = viewportRef.current;
-    if (!el) return;
+    if (!el) {
+      return;
+    }
     updateScrollButtons();
     el.addEventListener("scroll", updateScrollButtons, { passive: true });
     window.addEventListener("resize", updateScrollButtons);
@@ -114,7 +118,9 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
   const scrollBy = useCallback(
     (direction: "prev" | "next") => {
       const el = viewportRef.current;
-      if (!el) return;
+      if (!el) {
+        return;
+      }
       const slideWidth = el.scrollWidth / tiles.length;
       const amount = direction === "next" ? slideWidth : -slideWidth;
       el.scrollBy({ left: amount, behavior: "smooth" });
@@ -123,13 +129,15 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
   );
 
   return (
-    <section className="relative mt-[56px]" aria-label="Shop by Categories">
+    <section
+      className="relative mt-[25px] md:mt-[56px]"
+      aria-label="Shop by Categories"
+    >
       {/* Section Heading */}
       <h3
-        className="text-center mb-[16px] px-[16px] lg:mb-[30px]"
+        className="text-start md:text-center mb-[16px] px-[16px] lg:mb-[30px] text-[24px] lg:text-[28px]"
         style={{
           fontFamily: "Gotham, sans-serif",
-          fontSize: "22px",
           lineHeight: "34px",
           fontWeight: 400,
           color: "#1D1D1D",
@@ -146,7 +154,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
           onClick={() => scrollBy("prev")}
           disabled={!canScrollLeft}
           aria-label="Previous categories"
-          className="sbc-cat-nav-btn absolute left-[10px] top-[50%] -translate-y-[50%] z-[2] w-[40px] h-[40px] items-center justify-center rounded-[9999px] border border-[#1D1D1D] bg-[#ffffff] text-[#1D1D1D] transition-opacity duration-300"
+          className="sbc-cat-nav-btn hidden md:flex absolute left-[10px] top-[50%] -translate-y-[50%] z-[2] w-[40px] h-[40px] items-center justify-center rounded-[50%] border border-[#1D1D1D] bg-[#ffffff] text-[#1D1D1D] transition-opacity duration-300"
           style={{ opacity: canScrollLeft ? 1 : 0.35 }}
         >
           <PrevArrow />
@@ -155,7 +163,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
         {/* Scrollable viewport */}
         <div
           ref={viewportRef}
-          className="sbc-cat-viewport overflow-x-auto hide-scrollbar"
+          className="px-[10px] lg:px-[30px] xl:px-[70px] overflow-x-auto hide-scrollbar"
         >
           <div className="sbc-cat-container flex">
             {tiles.map((tile, i) => (
@@ -171,7 +179,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
                   style={{ color: "#000000", textDecoration: "none" }}
                 >
                   {/* Desktop image (>=768px) */}
-                  <div className="sbc-cat-img-desktop hidden md:flex justify-center items-center h-[120px]">
+                  <div className="sbc-cat-img-desktop hidden md:flex justify-center items-center h-[120px]  pl-[4px] lg:pl-[15px]">
                     <Image
                       src={tile.desktopImage}
                       alt={tile.label}
@@ -194,10 +202,9 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
                   </div>
                   {/* Label — visible only on mobile (<992px) */}
                   <div
-                    className="sbc-cat-label mt-[8px] lg:hidden"
+                    className="sbc-cat-label mt-[8px] lg:hidden text-[14px]"
                     style={{
                       fontFamily: "Gotham, sans-serif",
-                      fontSize: "12px",
                       lineHeight: "19px",
                       fontWeight: 500,
                       color: "#000000",
@@ -216,7 +223,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
           onClick={() => scrollBy("next")}
           disabled={!canScrollRight}
           aria-label="Next categories"
-          className="sbc-cat-nav-btn absolute right-[10px] top-[50%] -translate-y-[50%] z-[2] w-[40px] h-[40px] items-center justify-center rounded-[9999px] border border-[#1D1D1D] bg-[#ffffff] text-[#1D1D1D] transition-opacity duration-300"
+          className="sbc-cat-nav-btn hidden md:flex absolute right-[10px] top-[50%] -translate-y-[50%] z-[2] w-[40px] h-[40px] items-center justify-center rounded-[9999px] border border-[#1D1D1D] bg-[#ffffff] text-[#1D1D1D] transition-opacity duration-300"
           style={{ opacity: canScrollRight ? 1 : 0.35 }}
         >
           <NextArrow />
