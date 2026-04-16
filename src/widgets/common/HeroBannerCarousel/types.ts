@@ -22,6 +22,10 @@ export interface HeroBannerSlide {
   desktopPoster?: string;
   /** Mobile video poster image */
   mobilePoster?: string;
+  /** Indicator heading text (shown in media indicators) */
+  indicatorHeading?: string;
+  /** Indicator sub-heading text (shown in media indicators) */
+  indicatorSubHeading?: string;
 }
 
 /**

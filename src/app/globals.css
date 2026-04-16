@@ -2,6 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@media (max-width: 767px) {
+  .hero-carousel-slide {
+    left: 0 !important;
+    width: 100% !important;
+    transform: translateX(calc(var(--slide-offset, 0) * 100%)) !important;
+  }
+}
+
+@keyframes indicatorProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
 @layer base {
   /* Base styles that use CSS variables from theme */
   html {

@@ -181,6 +181,8 @@ export const template: PageConfig = {
                 desktopImage: "/HeroBannerCarousel/images/slide1-desktop.webp",
                 mobileImage: "/HeroBannerCarousel/images/slide1-mobile.png",
                 alt: "Get 3 Freebies on orders above Rs499 - Code FREETRIO",
+                indicatorHeading: "Free 3-Step\nRoutine",
+                indicatorSubHeading: "Shop our",
               },
               {
                 type: "image",
@@ -188,6 +190,8 @@ export const template: PageConfig = {
                 desktopImage: "/HeroBannerCarousel/images/slide2-desktop.jpg",
                 mobileImage: "/HeroBannerCarousel/images/slide2-mobile.jpg",
                 alt: "Buy 3 for Rs799 - Code FLAT3",
+                indicatorHeading: "B3P2",
+                indicatorSubHeading: "Shop our",
               },
               {
                 type: "image",
@@ -195,6 +199,8 @@ export const template: PageConfig = {
                 desktopImage: "/HeroBannerCarousel/images/slide3-desktop.jpg",
                 mobileImage: "/HeroBannerCarousel/images/slide3-mobile.jpg",
                 alt: "Up to 95% Frizz Reduction",
+                indicatorHeading: "Get3@999",
+                indicatorSubHeading: "Shop our",
               },
               {
                 type: "video",
@@ -208,6 +214,8 @@ export const template: PageConfig = {
                 mobilePoster:
                   "/HeroBannerCarousel/images/slide4-poster-mobile.jpg",
                 alt: "BBlunt Hair Care",
+                indicatorHeading: "Free 3-Step\nRoutine",
+                indicatorSubHeading: "Shop our",
               },
             ],
           },
