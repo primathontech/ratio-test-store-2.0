@@ -149,17 +149,6 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
 
       {/* Carousel wrapper — relative for nav button positioning */}
       <div className="relative">
-        {/* Prev button — hidden on desktop (>=992px) via lg breakpoint */}
-        <button
-          onClick={() => scrollBy("prev")}
-          disabled={!canScrollLeft}
-          aria-label="Previous categories"
-          className="sbc-cat-nav-btn hidden md:flex absolute left-[10px] top-[50%] -translate-y-[50%] z-[2] w-[40px] h-[40px] items-center justify-center rounded-[50%] border border-[#1D1D1D] bg-[#ffffff] text-[#1D1D1D] transition-opacity duration-300"
-          style={{ opacity: canScrollLeft ? 1 : 0.35 }}
-        >
-          <PrevArrow />
-        </button>
-
         {/* Scrollable viewport */}
         <div
           ref={viewportRef}
@@ -217,17 +206,6 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
             ))}
           </div>
         </div>
-
-        {/* Next button — hidden on desktop (>=992px) via lg breakpoint */}
-        <button
-          onClick={() => scrollBy("next")}
-          disabled={!canScrollRight}
-          aria-label="Next categories"
-          className="sbc-cat-nav-btn hidden md:flex absolute right-[10px] top-[50%] -translate-y-[50%] z-[2] w-[40px] h-[40px] items-center justify-center rounded-[9999px] border border-[#1D1D1D] bg-[#ffffff] text-[#1D1D1D] transition-opacity duration-300"
-          style={{ opacity: canScrollRight ? 1 : 0.35 }}
-        >
-          <NextArrow />
-        </button>
       </div>
     </section>
   );
