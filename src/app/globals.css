@@ -672,11 +672,11 @@
 }
 
 /* === ShopByCategories Carousel === */
-/* Nav buttons: hidden on desktop (>=992px), visible on tablet/mobile */
+/* Nav buttons: visible only on tablet (768px–991px), hidden on mobile and desktop */
 .sbc-cat-nav-btn {
   display: none;
 }
-@media (max-width: 991px) {
+@media (min-width: 768px) and (max-width: 991px) {
   .sbc-cat-nav-btn {
     display: inline-flex;
   }
