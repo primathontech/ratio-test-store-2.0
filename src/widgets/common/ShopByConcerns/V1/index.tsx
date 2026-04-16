@@ -189,7 +189,7 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
     >
       {/* Section Heading */}
       <h3
-        className="text-start md:text-center mb-[16px] md:mb-[30px] px-[16px] text-[24px] xl:text-[28px] mt-[25px] md:mt-[56px]"
+        className="text-start md:text-center mb-[16px] md:mb-[30px] px-[16px] text-[24px] xl:text-[28px] mt-[25px] md:mt-0"
         style={{
           fontFamily: "Gotham, sans-serif",
           lineHeight: "34px",
