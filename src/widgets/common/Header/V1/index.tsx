@@ -6,6 +6,7 @@ import Link from "next/link";
 import { HeaderProps, NavItem, NavDropdownGroup } from "../types";
 import { CartBadge } from "../components/CartBadge";
 import { MobileNavigationDrawer } from "../components/MobileDrawer";
+import { DropdownAccordion } from "../components/DropdownAccordion";
 
 /* ──────────────────────── Navigation Data ──────────────────────── */
 
@@ -265,39 +266,19 @@ function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
 
   return (
     <div
-      className="absolute top-full left-0 z-[3] w-[268px] bg-[#ffffff] pt-[24px] pb-[24px] pl-[19px] pr-[20px] opacity-0 translate-y-[15px] pointer-events-none transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto"
+      className="absolute top-full left-1/2 -translate-x-1/2 z-[3] w-[268px] bg-[#ffffff] pt-[24px] pb-[33px] pl-[19px] pr-[20px] opacity-0 translate-y-[15px] pointer-events-none transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto"
       style={{
         boxShadow: "0px 0px 3px 0px rgba(0, 0, 0, 0.12)",
       }}
     >
       {hasHeadings
         ? /* Nested accordion style (e.g. Hair Care) */
-          groups.map((group, gi) => (
-            <details
+          groups.map((group: any, gi) => (
+            <DropdownAccordion
               key={gi}
-              className={`group/accordion ${gi > 0 ? "mt-[4px]" : ""}`}
-            >
-              <summary
-                className="flex items-center cursor-pointer list-none text-[14px] leading-[22.4px] font-[400] text-[#545454] hover:text-[#0089DD] py-[4px] [&::-webkit-details-marker]:hidden justify-between"
-                style={{ fontFamily: "'Gotham', sans-serif" }}
-              >
-                <span>{group.heading}</span>
-                <ChevronDownIcon className="w-[10px] h-[7px] ml-[8px] transition-transform duration-200 group-open/accordion:rotate-180" />
-              </summary>
-              <ul className="list-none p-0 m-0 pl-[19px] flex flex-col gap-[14px]  ml-[2px] border-l border-[#e0e0e0]">
-                {group.items.map((item, ii) => (
-                  <li key={ii}>
-                    <Link
-                      href={item.href}
-                      className="text-[14px] leading-[16.8px] font-[400] text-[#545454] hover:text-[#0089DD] no-underline transition-colors duration-200"
-                      style={{ fontFamily: "'Gotham', sans-serif" }}
-                    >
-                      {item.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </details>
+              group={group}
+              className={gi > 0 ? "mt-[4px]" : ""}
+            />
           ))
         : /* Flat link list style (e.g. Product, Hair Colour, etc.) */
           groups.map((group, gi) => (
@@ -491,7 +472,7 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
 
           {/* ---- Desktop Navigation (visible from 1100px) ---- */}
           <nav className="hidden min-[1100px]:flex flex-1 h-full">
-            <ul className="list-none p-0 m-0 inline-flex items-stretch gap-[22px] pl-[47px] h-full">
+            <ul className="list-none p-0 m-0 inline-flex items-stretch gap-[32px] pl-[47px] h-full">
               {navigation.map((item, index) => (
                 <li key={index} className="relative group flex items-center">
                   <Link
