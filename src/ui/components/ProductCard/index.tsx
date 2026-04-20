@@ -10,17 +10,19 @@ import type { ProductCardProps } from "./types";
 /* ------------------------------------------------------------------ */
 
 const StarIcon = ({ filled }: { filled: boolean }) => (
-  <span
-    className="inline-block"
-    style={{
-      color: filled ? "#ffb700" : "#e0e0e0",
-      fontSize: "12px",
-      lineHeight: 1,
-    }}
+  <svg
+    width="14"
+    height="14"
+    viewBox="0 0 24 24"
+    fill={filled ? "#FBC210" : "#e0e0e0"}
+    stroke={filled ? "#FBC210" : "#e0e0e0"}
+    strokeWidth="2"
+    strokeLinejoin="round"
     aria-hidden="true"
+    className="w-full pr-[4px]"
   >
-    &#9733;
-  </span>
+    <path d="M12 2l2.9 6.9 7.1.6-5.4 4.7 1.7 7.1L12 17.3 5.7 21.3l1.7-7.1L2 9.5l7.1-.6L12 2z" />
+  </svg>
 );
 
 const StarRating = ({
@@ -42,18 +44,16 @@ const StarRating = ({
         role="img"
         aria-label={`${rating} star rating`}
       >
-        {[1, 2, 3, 4, 5].map((i) => (
-          <StarIcon key={i} filled={i <= Math.round(rating)} />
-        ))}
+        <StarIcon filled={rating > 0} />
       </span>
       <span
-        className="text-[12px] leading-[16px]"
+        className="text-[12px] md:text-[10px] leading-[16px]"
         style={{ color: textColor, fontFamily: "Gotham, sans-serif" }}
       >
         {rating.toFixed(1)}
       </span>
       <span
-        className="text-[12px] leading-[16px]"
+        className="text-[14px] leading-[16px]"
         style={{ color: textColor, fontFamily: "Gotham, sans-serif" }}
       >
         | {reviewCount}
@@ -79,7 +79,7 @@ function badgeColor(variant?: string): string {
       return "rgb(200, 50, 150)";
     case "trending":
     default:
-      return "rgb(72, 133, 24)";
+      return "#82C341";
   }
 }
 
@@ -90,17 +90,17 @@ function badgeColor(variant?: string): string {
 const LIGHT_THEME = {
   cardBg: "#ffffff",
   cardBorder: "none",
-  cardRadius: "10px",
+  cardRadius: "0px",
   cardOverflow: "hidden" as const,
   textPrimary: "#1d1d1d",
   textSecondary: "#666666",
   textMuted: "#999999",
-  chipBg: "rgb(244, 246, 248)",
+  chipBg: "#F4F6F8",
   chipBorder: "none",
   chipColor: "#1d1d1d",
   chipPadding: "8px",
   chipFontSize: "14px",
-  weightBg: "rgba(255,255,255,0.9)",
+  weightBg: "#fffc",
   weightColor: "#333333",
   buttonBg: "#000000",
   buttonColor: "#ffffff",
@@ -124,8 +124,8 @@ const DARK_THEME = {
   chipColor: "#ffffff",
   chipPadding: "4px 10px",
   chipFontSize: "11px",
-  weightBg: "rgba(0,0,0,0.5)",
-  weightColor: "#ffffff",
+  weightBg: "#fffc",
+  weightColor: "#1D1D1D",
   buttonBg: "#ffffff",
   buttonColor: "rgb(29, 29, 29)",
   buttonBorder: "2px solid #ffffff",
@@ -148,7 +148,7 @@ export const ProductCard = memo(function ProductCard({
 
   return (
     <div
-      className="flex flex-col h-full"
+      className="flex flex-col h-full pl-[12px] lg:pl-0"
       style={{
         backgroundColor: t.cardBg,
         border: t.cardBorder,
@@ -159,94 +159,93 @@ export const ProductCard = memo(function ProductCard({
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image area */}
-      <a
-        href={product.href}
-        className="relative block overflow-hidden"
-        style={{ aspectRatio: "1/1", borderRadius: t.imageRadius }}
-      >
-        {/* Promo badge */}
-        {product.badge && (
-          <div
-            className="absolute top-0 left-0 z-[2] px-[8px] py-[3px] text-[10px]"
-            style={{
-              backgroundColor: badgeColor(product.badgeVariant),
-              color: "#ffffff",
-              borderRadius: "2px",
-              fontFamily: "Gotham, sans-serif",
-              fontWeight: 600,
-            }}
-          >
-            {product.badge}
-          </div>
-        )}
+      <div className="pl-0 md:pl-[8px] pr-0 md:pr-[8px] pt-0 md:pt-[8px]">
+        <a
+          href={product.href}
+          className="relative block overflow-hidden"
+          style={{ aspectRatio: "1/1" }}
+        >
+          {/* Promo badge */}
+          {product.badge && (
+            <div className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2]">
+              <div
+                className="relative inline-flex items-center leading-[18px] md:leading-[21px] text-[12px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px]"
+                style={{
+                  backgroundColor: badgeColor(product.badgeVariant),
+                  color: "#ffffff",
+                  fontFamily: "Gotham, sans-serif",
+                  clipPath:
+                    "polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%)",
+                }}
+              >
+                {product.badge}
+              </div>
+            </div>
+          )}
 
-        {/* Size / weight label */}
-        {product.weight && (
-          <div
-            className="absolute bottom-[4px] right-[4px] z-[2] px-[6px] py-[2px] text-[11px]"
-            style={{
-              backgroundColor: t.weightBg,
-              color: t.weightColor,
-              borderRadius: "4px",
-              fontFamily: "Gotham, sans-serif",
-              fontWeight: 400,
-            }}
-          >
-            {product.weight}
-          </div>
-        )}
+          {/* Size / weight label */}
+          {product.weight && (
+            <div
+              className="absolute bottom-[4px] right-[4px] z-[2] p-[4px] text-[10px] text-[#1D1D1D] leading-[12px]"
+              style={{
+                backgroundColor: t.weightBg,
+                color: t.weightColor,
+                borderRadius: "4px",
+                fontFamily: "Gotham, sans-serif",
+                fontWeight: 600,
+              }}
+            >
+              {product.weight}
+            </div>
+          )}
 
-        {/* Main image */}
-        <Image
-          src={normalizeImgSrc(product.mainImage)}
-          alt={product.alt}
-          width={360}
-          height={360}
-          loading="lazy"
-          className="absolute inset-0 w-full h-full object-cover"
-          style={{
-            opacity: isHovered && product.hoverImage ? 0 : 1,
-            transition: "opacity 0.5s",
-            borderRadius: t.imageRadius,
-          }}
-        />
-
-        {/* Hover image */}
-        {product.hoverImage && (
+          {/* Main image */}
           <Image
-            src={normalizeImgSrc(product.hoverImage)}
+            src={normalizeImgSrc(product.mainImage)}
             alt={product.alt}
             width={360}
             height={360}
             loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover"
+            className="absolute inset-0 w-full h-full object-cover rounded-[2px]"
             style={{
-              opacity: isHovered ? 1 : 0,
-              transform: isHovered ? "scale(1.045)" : "scale(1)",
-              transition:
-                "opacity 0.5s, transform 2s cubic-bezier(0, 0, 0.44, 1.18)",
-              borderRadius: t.imageRadius,
+              opacity: isHovered && product.hoverImage ? 0 : 1,
+              transition: "opacity 0.5s",
             }}
           />
-        )}
-      </a>
+
+          {/* Hover image */}
+          {product.hoverImage && (
+            <Image
+              src={normalizeImgSrc(product.hoverImage)}
+              alt={product.alt}
+              width={360}
+              height={360}
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover rounded-[2px]"
+              style={{
+                opacity: isHovered ? 1 : 0,
+                transform: isHovered ? "scale(1.045)" : "scale(1)",
+                transition:
+                  "opacity 0.5s, transform 2s cubic-bezier(0, 0, 0.44, 1.18)",
+              }}
+            />
+          )}
+        </a>
+      </div>
 
       {/* Info area */}
-      <div className="flex flex-col flex-1 px-[12px] pt-[8px] pb-[12px]">
+      <div className="flex flex-col flex-1 gap-[5px] md:gap-[8px] mt-[8px] px-0 md:px-[8px] pb-0 md:pb-[8px]">
         {/* Category chip */}
         {product.category && (
-          <div className="mb-[8px]">
+          <div>
             <span
-              className="inline-flex"
+              className="inline-flex p-[4.5px] md:p-[8px] text-[12px] md:text-[14px] font-[600] leading-[14px]"
               style={{
                 color: t.chipColor,
                 backgroundColor: t.chipBg,
                 border: t.chipBorder,
                 borderRadius: "4px",
-                padding: t.chipPadding,
-                fontSize: t.chipFontSize,
                 fontFamily: "Gotham, sans-serif",
-                fontWeight: 400,
               }}
             >
               {product.category}
@@ -257,7 +256,7 @@ export const ProductCard = memo(function ProductCard({
         {/* Title */}
         <a
           href={product.href}
-          className="text-[14px] leading-[20px] no-underline line-clamp-2 mb-[4px]"
+          className="text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2"
           style={{
             color: t.textPrimary,
             fontFamily: "Gotham, sans-serif",
@@ -271,9 +270,9 @@ export const ProductCard = memo(function ProductCard({
         {/* Description */}
         {product.description && (
           <p
-            className="text-[12px] leading-[16px] line-clamp-2 mb-[4px]"
+            className="text-[12px] md:text-[13px] leading-[16px] line-clamp-2"
             style={{
-              color: t.textSecondary,
+              color: "#727272",
               fontFamily: "Gotham, sans-serif",
               fontWeight: 400,
             }}
@@ -283,7 +282,7 @@ export const ProductCard = memo(function ProductCard({
         )}
 
         {/* Rating */}
-        <div className="mb-[4px]">
+        <div>
           <StarRating
             rating={product.rating}
             reviewCount={product.reviewCount}
@@ -294,11 +293,11 @@ export const ProductCard = memo(function ProductCard({
         {/* Price row */}
         <div className="flex items-center gap-[6px] flex-wrap mt-auto">
           <span
-            className="text-[14px]"
+            className="text-[14px] md:text-[16px]"
             style={{
               color: t.textPrimary,
               fontFamily: "Gotham, sans-serif",
-              fontWeight: 700,
+              fontWeight: 600,
             }}
           >
             &#8377;{product.salePrice.toLocaleString("en-IN")}
@@ -335,15 +334,13 @@ export const ProductCard = memo(function ProductCard({
         {/* Add to cart button */}
         <button
           type="button"
-          className="flex items-center justify-center w-full mt-[12px] text-[14px] cursor-pointer"
+          className="flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px]"
           style={{
             backgroundColor: t.buttonBg,
             color: t.buttonColor,
-            height: "42px",
             borderRadius: t.buttonRadius,
             border: t.buttonBorder,
             fontFamily: "Gotham, sans-serif",
-            fontWeight: 500,
             transition: "background-color 0.2s",
           }}
           aria-label={`Add ${product.title} to cart`}

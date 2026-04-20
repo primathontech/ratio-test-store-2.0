@@ -91,14 +91,16 @@ function transformApiProduct(product: ApiProduct): ProductCardProduct {
     mainImage: mainImg,
     hoverImage: hoverImg,
     category: product.productType || "",
-    badge: product.metadata?.product_labels?.value || undefined,
+    badge: product.metadata?.product_labels?.value || "Get2@\u20B9599",
     rating: product.average_rating || 0,
     reviewCount: product.rating_count || 0,
     salePrice,
     originalPrice,
     discount,
-    weight: product.metadata?.product_net_content?.value || undefined,
-    description: product.metadata?.product_subtitle?.value || undefined,
+    weight: product.metadata?.product_net_content?.value || "250g",
+    description:
+      product.metadata?.product_subtitle?.value ||
+      "Reduces Up to 93% Hair Fall | Strengthens & Nourishes Hair",
   };
 }
 
@@ -173,7 +175,11 @@ export const V1 = memo(function V1({
       if (!product) {
         return null;
       }
-      return <ProductCard product={product} />;
+      return (
+        <div className="md:border md:border-[#EBEBEB] rounded-[4px] overflow-hidden">
+          <ProductCard product={product} />
+        </div>
+      );
     },
     [products]
   );
@@ -184,149 +190,137 @@ export const V1 = memo(function V1({
 
   return (
     <section
+      className="relative overflow-hidden mt-[25px] md:mt-[56px] pb-[32.4px] md:pb-[56px]"
       style={{
         backgroundColor: "#ffffff",
-        paddingTop: "50px",
-        paddingBottom: "50px",
-        marginTop: "56px",
         fontFamily: "Gotham, sans-serif",
       }}
     >
-      <div
-        className="mx-auto"
-        style={{
-          maxWidth: "1300px",
-          paddingLeft: "15px",
-          paddingRight: "15px",
-        }}
-      >
-        {/* Section heading */}
-        <h3
-          className="text-center"
-          style={{
-            fontSize: "32px",
-            lineHeight: "42px",
-            color: "#1d1d1d",
-            fontWeight: 400,
-            margin: "0 0 32px 0",
-            fontFamily: "Gotham, sans-serif",
-          }}
-        >
-          {headingNormal}
-          <strong style={{ fontWeight: 700 }}>{headingBold}</strong>
-        </h3>
+      {/* Content overlay */}
+      <div className="relative z-[1] mx-auto xl:mx-[20px] px-[6px] md:px-[30px] xl:px-[50px]">
+        {/* Heading */}
+        <div className="flex flex-col items-start md:items-center text-center mb-[24px] md:mb-[30px] px-[15px]">
+          <h4
+            className="text-[24px] lg:text-[28px] leading-[29px] md:leading-[34px]"
+            style={{
+              color: "#1D1D1D",
+              fontWeight: 400,
+              margin: 0,
+              fontFamily: "Gotham, sans-serif",
+            }}
+          >
+            {headingNormal}
+            <strong style={{ fontWeight: 700 }}>{headingBold}</strong>
+          </h4>
+        </div>
 
         {/* Carousel area */}
-        <SwipeCarousel
-          itemCount={products.length}
-          breakpoints={CAROUSEL_BREAKPOINTS}
-          renderItem={renderProduct}
-          renderPrev={(onClick, disabled) => (
-            <button
-              type="button"
-              onClick={onClick}
-              disabled={disabled}
-              className="absolute left-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
-              style={{
-                top: "245px",
-                transform: "translateY(-50%)",
-                width: "46px",
-                height: "46px",
-                borderRadius: "9999px",
-                backgroundColor: disabled
-                  ? "rgba(255,255,255,0.2)"
-                  : "rgb(0,0,0)",
-                border: disabled
-                  ? "1px solid rgba(255,255,255,0.01)"
-                  : "1px solid rgb(0,0,0)",
-                color: "#ffffff",
-                opacity: disabled ? 0.4 : 1,
-                transition: "all 0.2s",
-              }}
-              aria-label="Previous products"
-            >
-              <PrevArrowIcon />
-            </button>
-          )}
-          renderNext={(onClick, disabled) => (
-            <button
-              type="button"
-              onClick={onClick}
-              disabled={disabled}
-              className="absolute right-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
-              style={{
-                top: "245px",
-                transform: "translateY(-50%)",
-                width: "46px",
-                height: "46px",
-                borderRadius: "9999px",
-                backgroundColor: disabled
-                  ? "rgba(255,255,255,0.2)"
-                  : "rgb(0,0,0)",
-                border: disabled
-                  ? "1px solid rgba(255,255,255,0.01)"
-                  : "1px solid rgb(0,0,0)",
-                color: "#ffffff",
-                opacity: disabled ? 0.4 : 1,
-                transition: "all 0.2s",
-              }}
-              aria-label="Next products"
-            >
-              <NextArrowIcon />
-            </button>
-          )}
-        />
+        <div className="xl:mx-auto xl:max-w-[1300px]">
+          <SwipeCarousel
+            itemCount={products.length}
+            breakpoints={CAROUSEL_BREAKPOINTS}
+            renderItem={renderProduct}
+            renderPrev={(onClick, disabled) => (
+              <button
+                type="button"
+                onClick={onClick}
+                disabled={disabled}
+                className="absolute left-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
+                style={{
+                  top: "245px",
+                  transform: "translateY(-50%)",
+                  width: "46px",
+                  height: "46px",
+                  borderRadius: "9999px",
+                  backgroundColor: disabled
+                    ? "rgba(255,255,255,0.2)"
+                    : "rgb(0,0,0)",
+                  border: disabled
+                    ? "1px solid rgba(255,255,255,0.01)"
+                    : "1px solid rgb(0,0,0)",
+                  color: "#ffffff",
+                  opacity: disabled ? 0.4 : 1,
+                  transition: "all 0.2s",
+                }}
+                aria-label="Previous products"
+              >
+                <PrevArrowIcon />
+              </button>
+            )}
+            renderNext={(onClick, disabled) => (
+              <button
+                type="button"
+                onClick={onClick}
+                disabled={disabled}
+                className="absolute right-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
+                style={{
+                  top: "245px",
+                  transform: "translateY(-50%)",
+                  width: "46px",
+                  height: "46px",
+                  borderRadius: "9999px",
+                  backgroundColor: disabled
+                    ? "rgba(255,255,255,0.2)"
+                    : "rgb(0,0,0)",
+                  border: disabled
+                    ? "1px solid rgba(255,255,255,0.01)"
+                    : "1px solid rgb(0,0,0)",
+                  color: "#ffffff",
+                  opacity: disabled ? 0.4 : 1,
+                  transition: "all 0.2s",
+                }}
+                aria-label="Next products"
+              >
+                <NextArrowIcon />
+              </button>
+            )}
+          />
+        </div>
 
         {/* View all link */}
         {totalProducts > 0 && handle && (
-          <div className="flex justify-center" style={{ marginTop: "32px" }}>
+          <div className="flex justify-center mt-[17.4px] md:mt-[30px]">
             <a
               href={`/collections/${handle}`}
-              className="inline-flex items-center no-underline text-[14px] px-[20px] sm:px-[55px]"
+              className="inline-flex items-center no-underline text-[14px] md:text-[18px] pl-[16px] md:pl-[42px] pr-[16px] md:pr-[55px] w-full md:w-auto mx-[16px] md:mx-0 p-[6px] md:p-0 justify-center"
               style={{
-                backgroundColor: "rgb(244, 246, 248)",
-                color: "#1d1d1d",
+                backgroundColor: "#F4F6F8",
+                color: "#1D1D1D",
                 paddingTop: "6px",
                 paddingBottom: "6px",
                 borderRadius: "4px",
-                border: "none",
                 fontFamily: "Gotham, sans-serif",
-                fontWeight: 400,
-                transition:
-                  "background-color 0.25s ease-in-out, color 0.25s ease-in-out",
+                fontWeight: 500,
+                transition: "all 0.2s",
                 gap: "8px",
-              }}
-              onMouseEnter={(e) => {
-                const el = e.currentTarget;
-                el.style.backgroundColor = "#1d1d1d";
-                el.style.color = "#ffffff";
-              }}
-              onMouseLeave={(e) => {
-                const el = e.currentTarget;
-                el.style.backgroundColor = "rgb(244, 246, 248)";
-                el.style.color = "#1d1d1d";
               }}
             >
               {/* First 3 product preview images */}
-              <span className="inline-flex items-center" style={{ gap: "2px" }}>
+              <span className="inline-flex flex-row-reverse items-center">
                 {products.slice(0, 3).map((p, i) => (
-                  <Image
+                  <span
                     key={i}
-                    src={
-                      p.mainImage.startsWith("//")
-                        ? `https:${p.mainImage}`
-                        : p.mainImage
-                    }
-                    alt=""
-                    width={26}
-                    height={26}
-                    className="rounded-[2px]"
+                    className={`relative inline-flex overflow-hidden rounded-[6px] border border-[#dddddd] md:border-[3px] w-[20px] md:w-[32px] h-[20px] md:h-[32px] ${
+                      i === 0 ? "mr-0" : "mr-[-12px]"
+                    }`}
                     style={{
-                      width: "26px",
-                      height: "26px",
-                      objectFit: "cover",
+                      zIndex: products.slice(0, 3).length - i,
                     }}
-                  />
+                  >
+                    <Image
+                      src={
+                        p.mainImage.startsWith("//")
+                          ? `https:${p.mainImage}`
+                          : p.mainImage
+                      }
+                      alt=""
+                      width={27}
+                      height={27}
+                      style={{
+                        objectFit: "cover",
+                      }}
+                    />
+                  </span>
                 ))}
               </span>
               <span>View all {totalProducts} products</span>

@@ -19,8 +19,10 @@ export interface HairCareBFFsSettings {
   headingNormal?: string;
   /** Section heading — bold part */
   headingBold?: string;
-  /** Background image path */
+  /** Background image path (desktop) */
   backgroundImage?: string;
+  /** Background image path (mobile) */
+  backgroundImageMobile?: string;
 }
 
 /**
