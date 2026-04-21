@@ -2,6 +2,7 @@
 
 import React, { memo, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ProductCardTheme } from "./types";
 import type { ProductCardProps } from "./types";
 
@@ -160,7 +161,7 @@ export const ProductCard = memo(function ProductCard({
     >
       {/* Image area */}
       <div className="pl-0 md:pl-[8px] pr-0 md:pr-[8px] pt-0 md:pt-[8px]">
-        <a
+        <Link
           href={product.href}
           className="relative block overflow-hidden"
           style={{ aspectRatio: "1/1" }}
@@ -230,7 +231,7 @@ export const ProductCard = memo(function ProductCard({
               }}
             />
           )}
-        </a>
+        </Link>
       </div>
 
       {/* Info area */}
@@ -254,7 +255,7 @@ export const ProductCard = memo(function ProductCard({
         )}
 
         {/* Title */}
-        <a
+        <Link
           href={product.href}
           className="text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2  min-h-[33px] md:min-h-[40px]"
           style={{
@@ -265,7 +266,7 @@ export const ProductCard = memo(function ProductCard({
           }}
         >
           {product.title}
-        </a>
+        </Link>
 
         {/* Description */}
         {product.description && (

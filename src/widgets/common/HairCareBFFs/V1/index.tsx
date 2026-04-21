@@ -2,6 +2,7 @@
 
 import React, { memo, useState, useRef, useCallback, useMemo } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import type {
   HairCareBFFsProps,
   ApiProduct,
@@ -249,7 +250,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       </div>
 
       {/* Background image — desktop */}
-      <div className="absolute inset-0 z-[0] hidden md:block">
+      <div className="absolute inset-0 z-[0] hidden md:block mb-[32.4px] md:mb-[56px]">
         <Image
           src={backgroundImage}
           alt=""
@@ -261,7 +262,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       </div>
 
       {/* Content overlay */}
-      <div className="relative z-[1] mx-auto xl:mx-[20px] px-[6px] md:px-[30px] xl:px-[50px]">
+      <div className="relative z-[1] mx-auto xl:mx-[20px] px-[6px] md:px-[30px] xl:px-[50px] mb-[32px] md:mb-[56px]">
         {/* Tabs head: heading + tab buttons */}
         <div className="flex flex-col items-start md:items-center text-center mb-[24px] md:mb-[30px] px-[15px] gap-[15px] md:gap-[30px]">
           {/* Heading */}
@@ -348,7 +349,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
         {/* View all link */}
         {activeTab?.totalProducts && activeTab.totalProducts > 0 && (
           <div className="flex justify-center mt-[17.4px] md:mt-[30px]">
-            <a
+            <Link
               href={`/collections/${activeTab.handle}`}
               className="inline-flex items-center no-underline text-[14px] md:text-[18px] pl-[16px] md:pl-[42px] pr-[16px] md:pr-[55px] w-full md:w-auto mx-[16px] md:mx-0 p-[6px] md:p-0 justify-center"
               style={{
@@ -393,7 +394,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
               </span>
               <span>View all {activeTab.totalProducts} products</span>
               <ViewAllChevronIcon />
-            </a>
+            </Link>
           </div>
         )}
       </div>

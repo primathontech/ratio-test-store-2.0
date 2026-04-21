@@ -2,6 +2,7 @@
 
 import React, { memo, useMemo, useCallback } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import type { FeaturedCollectionCarouselProps, ApiProduct } from "../types";
 import { ProductCard } from "@/ui/components/ProductCard";
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
@@ -196,7 +197,7 @@ export const V1 = memo(function V1({
 
   return (
     <section
-      className="relative overflow-hidden mt-[25px] md:mt-[56px] pb-[32.4px] md:pb-[56px]"
+      className="relative overflow-hidden pb-[32.4px] md:pb-[56px]"
       style={{
         backgroundColor: "#ffffff",
         fontFamily: "Gotham, sans-serif",
@@ -286,7 +287,7 @@ export const V1 = memo(function V1({
         {/* View all link */}
         {totalProducts > 0 && handle && (
           <div className="flex justify-center mt-[17.4px] md:mt-[30px]">
-            <a
+            <Link
               href={`/collections/${handle}`}
               className="inline-flex items-center no-underline text-[14px] md:text-[18px] pl-[16px] md:pl-[42px] pr-[16px] md:pr-[55px] w-full md:w-auto mx-[16px] md:mx-0 p-[6px] md:p-0 justify-center"
               style={{
@@ -331,7 +332,7 @@ export const V1 = memo(function V1({
               </span>
               <span>View all {totalProducts} products</span>
               <ChevronRightIcon />
-            </a>
+            </Link>
           </div>
         )}
       </div>
