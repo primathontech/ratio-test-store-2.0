@@ -122,7 +122,7 @@ export const V1 = memo(function V1({
         </div>
 
         {/* Product grid: 2 cols mobile, 4 cols desktop */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-[12px] md:gap-[16px] lg:gap-[20px]">
+        <div className="grid grid-cols-2 lg:grid-cols-4">
           {products.map((product, idx) => (
             <ProductCard key={product.href || idx} product={product} />
           ))}

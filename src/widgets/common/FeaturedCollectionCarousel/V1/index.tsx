@@ -142,10 +142,10 @@ function extractFromData(
 /* ------------------------------------------------------------------ */
 
 const CAROUSEL_BREAKPOINTS = [
-  { minWidth: 0, cards: 2.3, gap: 16 },
-  { minWidth: 768, cards: 3, gap: 16 },
-  { minWidth: 1024, cards: 4, gap: 16 },
-  { minWidth: 1440, cards: 5, gap: 16 },
+  { minWidth: 0, cards: 2.3, gap: 0 },
+  { minWidth: 768, cards: 3, gap: 0 },
+  { minWidth: 1024, cards: 4, gap: 0 },
+  { minWidth: 1440, cards: 5, gap: 0 },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -175,8 +175,14 @@ export const V1 = memo(function V1({
       if (!product) {
         return null;
       }
+      const isFirst = idx === 0;
+      const isLast = idx === products.length - 1;
       return (
-        <div className="md:border md:border-[#EBEBEB] rounded-[4px] overflow-hidden">
+        <div
+          className={`md:border md:border-[#EBEBEB] overflow-hidden ${
+            isFirst ? "rounded-l-[4px]" : ""
+          } ${isLast ? "rounded-r-[4px]" : ""}`}
+        >
           <ProductCard product={product} />
         </div>
       );
