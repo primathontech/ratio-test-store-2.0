@@ -330,7 +330,9 @@ export const V1 = memo(function V1({
                   </span>
                 ))}
               </span>
-              <span>View all {totalProducts} products</span>
+              <span className="text-[#000000] font-[500]">
+                View all {totalProducts} products
+              </span>
               <ChevronRightIcon />
             </Link>
           </div>

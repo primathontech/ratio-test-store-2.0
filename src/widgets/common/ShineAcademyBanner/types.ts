@@ -12,8 +12,12 @@ export interface ShineAcademyBannerSettings {
   logoAlt?: string;
   /** Tagline text displayed below the logo */
   tagline?: string;
-  /** Mosaic collage image path */
+  /** Mosaic collage image path (fallback) */
   mosaicSrc?: string;
+  /** Mosaic collage image path for mobile */
+  mosaicSrcMobile?: string;
+  /** Mosaic collage image path for desktop */
+  mosaicSrcDesktop?: string;
   /** Mosaic alt text */
   mosaicAlt?: string;
   /** Section background color */

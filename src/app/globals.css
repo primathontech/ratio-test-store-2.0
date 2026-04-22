@@ -652,9 +652,9 @@
 
 /* Testimonials carousel slide widths — responsive */
 .testimonials-slide {
-  /* Mobile: 1 card visible with peek */
-  width: calc(100% - 40px);
-  min-width: calc(100% - 40px);
+  /* Mobile: ~1.5 cards visible (full + half peek) */
+  width: 71.3%;
+  min-width: 71.3%;
 }
 @media (min-width: 768px) {
   .testimonials-slide {

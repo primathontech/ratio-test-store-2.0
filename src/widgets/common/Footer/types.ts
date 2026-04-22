@@ -1,14 +1,61 @@
 import { WidgetProps } from "@/widgets/types";
 
+export interface FooterLink {
+  name: string;
+  href: string;
+}
+
+export interface SocialLink {
+  name: string;
+  href: string;
+  icon: string;
+}
+
+export interface PaymentMethod {
+  name: string;
+  icon: string;
+  image: string;
+}
+
+export interface ServiceIconItem {
+  name: string;
+  image: string;
+}
+
 /**
  * Footer widget settings
  */
 export interface FooterSettings {
-  /**
-   * Widget variant
-   * @default 'v1'
-   */
   variant?: string;
+  backgroundColor?: string;
+  showSocialLinks?: boolean;
+  showPaymentMethods?: boolean;
+  showAppDownload?: boolean;
+  mobileFooterTagline?: string;
+  logoUrl?: string;
+  logoAlt?: string;
+  appDownloadText?: string;
+  googlePlayUrl?: string;
+  appStoreUrl?: string;
+  googlePlayImage?: string;
+  googlePlayAlt?: string;
+  appStoreImage?: string;
+  appStoreAlt?: string;
+  serviceSectionsIcons?: ServiceIconItem[];
+  aboutTitle?: string;
+  aboutLinks?: FooterLink[];
+  usefulLinksTitle?: string;
+  usefulLinks?: FooterLink[];
+  ourSalonsTitle?: string;
+  ourSalonsLinks?: FooterLink[];
+  categoriesTitle?: string;
+  categoriesLinks?: FooterLink[];
+  myAccountTitle?: string;
+  myAccountLinks?: FooterLink[];
+  socialLinks?: SocialLink[];
+  paymentProtectionText?: string;
+  copyrightText?: string;
+  paymentMethods?: PaymentMethod[];
 }
 
 /**

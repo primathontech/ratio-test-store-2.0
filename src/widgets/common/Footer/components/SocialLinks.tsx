@@ -1,0 +1,36 @@
+import Link from "next/link";
+import React from "react";
+import { SocialLink } from "../types";
+import { SocialIcon } from "./SocialIcon";
+
+interface SocialLinksProps {
+  socialLinks: SocialLink[];
+  className?: string;
+}
+
+export const SocialLinks: React.FC<SocialLinksProps> = ({
+  socialLinks,
+  className,
+}) => {
+  if (socialLinks.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className={className}>
+      <div className="flex gap-[10px] md:gap-4">
+        {socialLinks.map((social, index) => (
+          <Link
+            key={index}
+            href={social.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex justify-center items-center transition-colors duration-200"
+          >
+            <SocialIcon iconName={social.icon} />
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+};

@@ -20,8 +20,10 @@ export const V1 = memo(function V1({
   const tagline =
     settings?.tagline ||
     "Every time you buy from our website, you play a significant role in impacting a woman\u2019s life by empowering her to shine on.";
-  const mosaicSrc =
-    settings?.mosaicSrc || "/images/shine-academy/mosaic-collage.webp";
+  const mosaicSrcDesktop =
+    settings?.mosaicSrcDesktop ||
+    settings?.mosaicSrc ||
+    "/images/shine-academy/home-shine-academy-desktop.webp";
   const mosaicAlt =
     settings?.mosaicAlt ||
     "BBlunt Shine Academy - salon stylists and trainees collage";
@@ -65,25 +67,16 @@ export const V1 = memo(function V1({
   return (
     <section
       ref={sectionRef}
-      className={["overflow-hidden", className || ""].join(" ")}
-      style={{ backgroundColor }}
+      className="overflow-hidden bg-gradient-to-b from-[#F7F0FF] to-white md:from-[#F3F9FF]"
     >
       {/* Outer container -- max-width 1400px */}
       <div className="mx-auto max-w-[1400px]">
         {/* Inner newsletter container -- max-width 1300px centered */}
         <div className="mx-auto max-w-[1300px] flex flex-col">
           {/* ---- Text column: logo + tagline ---- */}
-          <div
-            className={[
-              "sab-animate-on-scroll",
-              "flex flex-col items-center justify-center",
-              "px-[30px] py-[30px]",
-              "md:px-[40px] md:py-[40px]",
-              "st:px-[15px] st:py-[10px]",
-            ].join(" ")}
-          >
+          <div className="sab-animate-on-scroll flex flex-col items-center justify-center px-[15px] md:px-[40px]">
             {/* Shine Academy logo */}
-            <div className="relative w-[220px] h-[113px] md:w-[280px] md:h-[144px] xl:w-[336px] xl:h-[173px]">
+            <div className="relative w-[175px] h-[89.5px] md:w-[336px] md:h-[172px] xl:w-[336px] xl:h-[172.7px]">
               <Image
                 src={logoSrc}
                 alt={logoAlt}
@@ -94,42 +87,36 @@ export const V1 = memo(function V1({
             </div>
 
             {/* Tagline */}
-            <p
-              className={[
-                "font-[Gotham,sans-serif]",
-                "text-[18px] leading-[22px]",
-                "md:text-[22px] md:leading-[24px]",
-                "xl:text-[24px] xl:leading-[26px]",
-                "font-[500]",
-                "text-[#545454]",
-                "text-center",
-                "mt-[16px] md:mt-[20px] xl:mt-[26px]",
-                "max-w-[700px]",
-                "m-0",
-              ].join(" ")}
-            >
+            <p className="font-[Gotham,sans-serif] text-[12px] md:text-[24px] font-[500] text-[#545454] text-center mb-[18px] md:mb-0 mt-[18px] md:mt-[18px] max-w-[700px] m-0 leading-[13px] md:leading-[26.4px] px-[20px] md:px-0">
               {tagline}
             </p>
           </div>
 
           {/* ---- Image column: mosaic collage ---- */}
-          <div
-            className={["sab-animate-on-scroll", "flex items-center"].join(" ")}
-          >
-            <div
-              className="relative w-full overflow-hidden"
-              style={{ aspectRatio: "2.526" }}
-            >
+          <div className="sab-animate-on-scroll flex items-center">
+            {/* Mobile image (uses desktop asset) */}
+            <div className="relative w-full md:hidden px-[15px]">
+              <div className="overflow-hidden rounded-tl-[20px] rounded-tr-[20px] rounded-bl-0 rounded-br-[20px]">
+                <Image
+                  src={mosaicSrcDesktop}
+                  alt={mosaicAlt}
+                  width={2000}
+                  height={800}
+                  className="object-cover w-full h-auto block"
+                  sizes="calc(100vw - 30px)"
+                  loading="lazy"
+                />
+              </div>
+            </div>
+            {/* Desktop image */}
+            <div className="relative w-full overflow-hidden hidden md:block">
               <Image
-                src={mosaicSrc}
+                src={mosaicSrcDesktop}
                 alt={mosaicAlt}
-                fill
-                className={[
-                  "object-cover",
-                  "rounded-tl-[20px] rounded-tr-[20px] rounded-bl-[0px] rounded-br-[0px]",
-                  "md:rounded-tl-[20px] md:rounded-tr-[0px] md:rounded-bl-[20px] md:rounded-br-[0px]",
-                ].join(" ")}
-                sizes="(min-width: 1440px) 1300px, (min-width: 1024px) 960px, (min-width: 768px) 700px, calc(100vw - 30px)"
+                width={2000}
+                height={800}
+                className="object-contain rounded-tl-[20px] rounded-tr-[20px] md:rounded-tl-[20px] rounded-br-[20px] md:rounded-bl-[20px] w-full h-auto px-[15px] md:px-0"
+                sizes="(min-width: 1440px) 1300px, (min-width: 1024px) 960px, 700px"
                 loading="lazy"
               />
             </div>

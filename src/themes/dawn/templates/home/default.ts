@@ -65,7 +65,7 @@ export const template: PageConfig = {
       type: DATA_SOURCE_TYPES.COLLECTION,
       params: {
         handle: "most-loved-home-page",
-        productLimit: 1,
+        productLimit: 20,
       },
       required: false,
     },
@@ -403,8 +403,8 @@ export const template: PageConfig = {
       "For Party Ready Hair",
       "For ",
       "Party Ready Hair at Home",
-      "shampooCarousel",
-      "shampoo-haircarebffs"
+      "mostLovedCarousel",
+      "most-loved-home-page"
     ),
 
     // For Dull & Dry Hair — FeaturedCollectionCarousel #3
@@ -423,8 +423,8 @@ export const template: PageConfig = {
       "High Shine Creme Hair Colour",
       "",
       "High Shine Creme Hair Colour",
-      "shampooCarousel",
-      "shampoo-haircarebffs"
+      "mostLovedCarousel",
+      "most-loved-home-page"
     ),
 
     // For Damage Repair — FeaturedCollectionCarousel #5
@@ -443,8 +443,8 @@ export const template: PageConfig = {
       "For Advanced Smoothening",
       "For ",
       "Advanced Smoothening",
-      "shampooCarousel",
-      "shampoo-haircarebffs"
+      "mostLovedCarousel",
+      "most-loved-home-page"
     ),
 
     // For Extraordinary Shiny Hair — FeaturedCollectionCarousel #7
@@ -463,8 +463,8 @@ export const template: PageConfig = {
       "For Bond Repair",
       "For ",
       "Bond Repair",
-      "shampooCarousel",
-      "shampoo-haircarebffs"
+      "mostLovedCarousel",
+      "most-loved-home-page"
     ),
 
     // For Nourished & Defined Curls — FeaturedCollectionCarousel #9
@@ -483,8 +483,8 @@ export const template: PageConfig = {
       "For Dandruff Control",
       "For ",
       "Dandruff Control",
-      "shampooCarousel",
-      "shampoo-haircarebffs"
+      "mostLovedCarousel",
+      "most-loved-home-page"
     ),
 
     // 5 Minute Shampoo Hair Colour — FeaturedCollectionCarousel #11
@@ -592,9 +592,9 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
       },
       widgets: [

@@ -143,13 +143,7 @@ export const V1 = memo(function V1({ settings, className }: FaqAccordionProps) {
         {/* Section heading */}
         <h5
           className={[
-            "font-[Gotham,sans-serif]",
-            "text-[18px] leading-[22px] md:text-[22px] md:leading-[26px]",
-            "font-[400]",
-            "text-[#000000]",
-            "text-center",
-            "mb-[24px]",
-            "mt-0",
+            "font-[Gotham,sans-serif] text-[18px] leading-[22px] md:text-[22px] md:leading-[26px] font-[400] text-[#000000] text-center",
           ].join(" ")}
         >
           {title}
