@@ -284,7 +284,7 @@ export const V1 = memo(function HeroBannerCarouselV1({
     return (
       <div
         key={index}
-        className="absolute inset-y-0 left-0 w-full h-full md:left-1/2 md:w-[88%] lg:w-[90%] md:px-[30px] hero-carousel-slide"
+        className="absolute inset-y-0 left-0 w-full h-full md:left-1/2 hero-carousel-slide"
         style={
           {
             "--slide-offset": relativeOffset,
@@ -324,8 +324,8 @@ export const V1 = memo(function HeroBannerCarouselV1({
       aria-roledescription="carousel"
       aria-label="Hero Banner Carousel"
     >
-      {/* Slides viewport — desktop uses image aspect ratio, mobile overrides via class */}
-      <div className="relative w-full overflow-hidden hero-carousel-viewport h-[426px] md:h-[271px] lg:h-[366px] xl:h-[466px]">
+      {/* Slides viewport — uses aspect-ratio for fluid scaling, capped at design height */}
+      <div className="relative w-full overflow-hidden hero-carousel-viewport aspect-[1200/1200] md:aspect-[1440/529]">
         {slides.map((slide, i) => renderSlide(slide, i))}
       </div>
 

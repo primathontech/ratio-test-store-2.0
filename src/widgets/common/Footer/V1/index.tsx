@@ -65,7 +65,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
       <div className="mx-auto">
         {/* Main Footer Content */}
         <div
-          className={`mx-0 md:mx-[30px] xl:mx-[70px] px-[15px] pt-[22px] md:px-0 md:pt-[70px] transition-all duration-300 pb-[30px] ${
+          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[22px] md:px-0 md:pt-[40px] transition-all duration-300 pb-[30px] max-w-[1300px] ${
             isMobileAccordionOpen ? "pb-[100px]" : "pb-[120px] md:pb-[40px]"
           }`}
         >
@@ -263,7 +263,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
 
             {/* Desktop Layout (1024px+) */}
             <div className="hidden xl:flex xl:flex-row xl:flex-wrap">
-              <div className="xl:pr-[18.89%]">
+              <div className="lg:pr-[18.89%]">
                 <div className="flex flex-col items-start">
                   {logoUrl && (
                     <div>

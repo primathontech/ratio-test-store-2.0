@@ -222,7 +222,7 @@ export const V1 = memo(function V1({
         </div>
 
         {/* Carousel area */}
-        <div className="xl:mx-auto xl:max-w-[1300px]">
+        <div className="group xl:mx-auto xl:max-w-[1300px]">
           <SwipeCarousel
             itemCount={products.length}
             breakpoints={CAROUSEL_BREAKPOINTS}
@@ -232,10 +232,13 @@ export const V1 = memo(function V1({
                 type="button"
                 onClick={onClick}
                 disabled={disabled}
-                className="absolute left-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
+                className={`absolute left-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer -translate-y-1/2 lg:opacity-0 lg:translate-x-[20px] lg:group-hover:translate-x-0 ${
+                  disabled
+                    ? "lg:group-hover:opacity-40"
+                    : "lg:group-hover:opacity-100 hover:!bg-white hover:!text-black hover:!border-white"
+                }`}
                 style={{
                   top: "245px",
-                  transform: "translateY(-50%)",
                   width: "46px",
                   height: "46px",
                   borderRadius: "9999px",
@@ -246,8 +249,8 @@ export const V1 = memo(function V1({
                     ? "1px solid rgba(255,255,255,0.01)"
                     : "1px solid rgb(0,0,0)",
                   color: "#ffffff",
-                  opacity: disabled ? 0.4 : 1,
-                  transition: "all 0.2s",
+                  transition:
+                    "opacity 0.3s ease, transform 0.35s ease, background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease",
                 }}
                 aria-label="Previous products"
               >
@@ -259,10 +262,13 @@ export const V1 = memo(function V1({
                 type="button"
                 onClick={onClick}
                 disabled={disabled}
-                className="absolute right-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
+                className={`absolute right-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer -translate-y-1/2 lg:opacity-0 lg:-translate-x-[20px] lg:group-hover:translate-x-0 ${
+                  disabled
+                    ? "lg:group-hover:opacity-40"
+                    : "lg:group-hover:opacity-100 hover:!bg-white hover:!text-black hover:!border-white"
+                }`}
                 style={{
                   top: "245px",
-                  transform: "translateY(-50%)",
                   width: "46px",
                   height: "46px",
                   borderRadius: "9999px",
@@ -273,8 +279,8 @@ export const V1 = memo(function V1({
                     ? "1px solid rgba(255,255,255,0.01)"
                     : "1px solid rgb(0,0,0)",
                   color: "#ffffff",
-                  opacity: disabled ? 0.4 : 1,
-                  transition: "all 0.2s",
+                  transition:
+                    "opacity 0.3s ease, transform 0.35s ease, background-color 0.5s ease, border-color 0.5s ease, color 0.5s ease",
                 }}
                 aria-label="Next products"
               >
