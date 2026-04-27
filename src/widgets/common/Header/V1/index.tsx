@@ -7,6 +7,8 @@ import { HeaderProps, NavItem, NavDropdownGroup } from "../types";
 import { CartBadge } from "../components/CartBadge";
 import { MobileNavigationDrawer } from "../components/MobileDrawer";
 import { DropdownAccordion } from "../components/DropdownAccordion";
+import { SearchDropdown } from "@/widgets/common/Search/components/SearchDropdown";
+import { MobileSearchOverlay } from "@/widgets/common/Search/components/MobileSearchOverlay";
 
 /* ──────────────────────── Navigation Data ──────────────────────── */
 
@@ -314,9 +316,15 @@ const SEARCH_SUGGESTIONS = [
 function SearchInput({
   focused,
   onFocusChange,
+  value,
+  onChange,
+  onClick,
 }: {
   focused: boolean;
   onFocusChange: (v: boolean) => void;
+  value?: string;
+  onChange?: (v: string) => void;
+  onClick?: () => void;
 }) {
   const [placeholder, setPlaceholder] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
@@ -365,12 +373,18 @@ function SearchInput({
         ref={inputRef}
         type="search"
         placeholder={placeholder}
+        value={value ?? ""}
+        onChange={(e) => onChange?.(e.target.value)}
+        onClick={onClick}
         className="w-[255px] h-[35px] min-h-[35px] rounded-[4px] bg-transparent pl-[35px] pr-[60px] pt-[8px] pb-[8px] text-[14px] font-[500] text-[#1d1d1d] placeholder:text-[#727272] outline-none"
         style={{
           fontFamily: "'Gotham', sans-serif",
           border: "1px solid #dddddd",
         }}
-        onFocus={() => onFocusChange(true)}
+        onFocus={() => {
+          onFocusChange(true);
+          onClick?.();
+        }}
         onBlur={() => onFocusChange(false)}
       />
       {/* Search icon inside input */}
@@ -400,6 +414,10 @@ function SearchInput({
 export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+  const searchTriggerRef = useRef<HTMLDivElement>(null);
 
   const navigation = settings?.navigation ?? DEFAULT_NAV;
   const logoSrc = settings?.logoSrc ?? "/Header/images/logo.png";
@@ -502,6 +520,8 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
           <div className="flex items-center gap-[19px]">
             {/* Mobile/Tablet search icon (visible below 1100px) */}
             <button
+              type="button"
+              onClick={() => setMobileSearchOpen(true)}
               className="p-[4px] text-[#000000] min-[1100px]:hidden"
               aria-label="Search"
             >
@@ -509,10 +529,22 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
             </button>
 
             {/* Desktop search input (visible from 1100px) */}
-            <div className="hidden min-[1100px]:block">
+            <div
+              ref={searchTriggerRef}
+              className="hidden min-[1100px]:block relative"
+            >
               <SearchInput
                 focused={searchFocused}
                 onFocusChange={setSearchFocused}
+                value={searchQuery}
+                onChange={setSearchQuery}
+                onClick={() => setSearchOpen(true)}
+              />
+              <SearchDropdown
+                isOpen={searchOpen}
+                onClose={() => setSearchOpen(false)}
+                searchQuery={searchQuery}
+                triggerRef={searchTriggerRef}
               />
             </div>
 
@@ -592,6 +624,12 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
         }))}
         getApp={getAppData}
         connectWithUs={connectWithUsData}
+      />
+
+      {/* Mobile full-screen search overlay (<1100px) */}
+      <MobileSearchOverlay
+        isOpen={mobileSearchOpen}
+        onClose={() => setMobileSearchOpen(false)}
       />
     </>
   );

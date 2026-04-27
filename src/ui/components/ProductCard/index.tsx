@@ -30,16 +30,18 @@ const StarRating = ({
   rating,
   reviewCount,
   textColor,
+  className = "",
 }: {
   rating: number;
   reviewCount: number;
   textColor: string;
+  className?: string;
 }) => {
   if (reviewCount === 0) {
     return null;
   }
   return (
-    <div className="flex items-center gap-[4px]">
+    <div className={`flex items-center gap-[4px] ${className}`.trim()}>
       <span
         className="inline-flex items-center"
         role="img"
@@ -143,15 +145,38 @@ const DARK_THEME = {
 export const ProductCard = memo(function ProductCard({
   product,
   theme = ProductCardTheme.LIGHT,
+  className = "",
+  settings = {},
+  showProductType = true,
+  showNetContent = true,
+  showSubtitle = true,
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const t = theme === ProductCardTheme.DARK ? DARK_THEME : LIGHT_THEME;
+  const {
+    showBadge = true,
+    showRating = true,
+    showActionButton = true,
+    backgroundColor: bgOverride,
+    color: colorOverride,
+    linkClassName = "",
+    imageClassName = "",
+    detailsClassName = "",
+    titleClassName = "",
+    ratingClassName = "",
+    priceSectionClassName = "",
+    compareAtPriceClassName = "",
+    discountClassName = "",
+    actionButtonClassName = "",
+  } = settings;
+  const cardBg = bgOverride ?? t.cardBg;
+  const textPrimary = colorOverride ?? t.textPrimary;
 
   return (
     <div
-      className="flex flex-col h-full pl-[12px] lg:pl-0"
+      className={`flex flex-col h-full pl-[12px] lg:pl-0 ${className}`.trim()}
       style={{
-        backgroundColor: t.cardBg,
+        backgroundColor: cardBg,
         border: t.cardBorder,
         borderRadius: t.cardRadius,
         overflow: t.cardOverflow,
@@ -160,14 +185,16 @@ export const ProductCard = memo(function ProductCard({
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* Image area */}
-      <div className="pl-0 md:pl-[8px] pr-0 md:pr-[8px] pt-0 md:pt-[8px]">
+      <div
+        className={`pl-0 md:pl-[8px] pr-0 md:pr-[8px] pt-0 md:pt-[8px] ${linkClassName}`.trim()}
+      >
         <Link
           href={product.href}
-          className="relative block overflow-hidden"
+          className={`relative block overflow-hidden ${imageClassName}`.trim()}
           style={{ aspectRatio: "1/1" }}
         >
           {/* Promo badge */}
-          {product.badge && (
+          {showBadge && product.badge && (
             <div className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2]">
               <div
                 className="relative inline-flex items-center leading-[18px] md:leading-[21px] text-[12px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px]"
@@ -185,7 +212,7 @@ export const ProductCard = memo(function ProductCard({
           )}
 
           {/* Size / weight label */}
-          {product.weight && (
+          {showNetContent && product.weight && (
             <div
               className="absolute bottom-[4px] right-[4px] z-[2] p-[4px] text-[10px] text-[#1D1D1D] leading-[12px]"
               style={{
@@ -235,9 +262,11 @@ export const ProductCard = memo(function ProductCard({
       </div>
 
       {/* Info area */}
-      <div className="flex flex-col flex-1 gap-[5px] md:gap-[8px] mt-[8px] px-0 md:px-[8px] pb-0 md:pb-[8px]">
+      <div
+        className={`flex flex-col flex-1 gap-[5px] md:gap-[8px] mt-[8px] px-0 md:px-[8px] pb-0 md:pb-[8px] ${detailsClassName}`.trim()}
+      >
         {/* Category chip */}
-        {product.category && (
+        {showProductType && product.category && (
           <div>
             <span
               className="inline-flex p-[4.5px] md:p-[8px] text-[12px] md:text-[14px] font-[600] leading-[14px]"
@@ -257,9 +286,9 @@ export const ProductCard = memo(function ProductCard({
         {/* Title */}
         <Link
           href={product.href}
-          className="text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2  min-h-[33px] md:min-h-[40px]"
+          className={`text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2  min-h-[33px] md:min-h-[40px] ${titleClassName}`.trim()}
           style={{
-            color: t.textPrimary,
+            color: textPrimary,
             fontFamily: "Gotham, sans-serif",
             fontWeight: 400,
             transition: "color 0.25s",
@@ -269,7 +298,7 @@ export const ProductCard = memo(function ProductCard({
         </Link>
 
         {/* Description */}
-        {product.description && (
+        {showSubtitle && product.description && (
           <p
             className="text-[12px] md:text-[13px] leading-[16px] line-clamp-2"
             style={{
@@ -283,20 +312,25 @@ export const ProductCard = memo(function ProductCard({
         )}
 
         {/* Rating */}
-        <div>
-          <StarRating
-            rating={product.rating}
-            reviewCount={product.reviewCount}
-            textColor={t.textPrimary}
-          />
-        </div>
+        {showRating && (
+          <div>
+            <StarRating
+              rating={product.rating}
+              reviewCount={product.reviewCount}
+              textColor={textPrimary}
+              className={ratingClassName}
+            />
+          </div>
+        )}
 
         {/* Price row */}
-        <div className="flex items-center gap-[6px] flex-wrap mt-auto">
+        <div
+          className={`flex items-center gap-[6px] flex-wrap mt-auto ${priceSectionClassName}`.trim()}
+        >
           <span
             className="text-[14px] md:text-[16px]"
             style={{
-              color: t.textPrimary,
+              color: textPrimary,
               fontFamily: "Gotham, sans-serif",
               fontWeight: 600,
             }}
@@ -307,7 +341,7 @@ export const ProductCard = memo(function ProductCard({
             product.originalPrice > product.salePrice && (
               <>
                 <span
-                  className="text-[12px] line-through"
+                  className={`text-[12px] line-through ${compareAtPriceClassName}`.trim()}
                   style={{
                     color: t.textMuted,
                     fontFamily: "Gotham, sans-serif",
@@ -318,7 +352,7 @@ export const ProductCard = memo(function ProductCard({
                 </span>
                 {product.discount && (
                   <span
-                    className="text-[12px]"
+                    className={`text-[12px] ${discountClassName}`.trim()}
                     style={{
                       color: t.discountColor,
                       fontFamily: "Gotham, sans-serif",
@@ -333,21 +367,23 @@ export const ProductCard = memo(function ProductCard({
         </div>
 
         {/* Add to cart button */}
-        <button
-          type="button"
-          className="flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px]"
-          style={{
-            backgroundColor: t.buttonBg,
-            color: t.buttonColor,
-            borderRadius: t.buttonRadius,
-            border: t.buttonBorder,
-            fontFamily: "Gotham, sans-serif",
-            transition: "background-color 0.2s",
-          }}
-          aria-label={`Add ${product.title} to cart`}
-        >
-          Add to cart
-        </button>
+        {showActionButton && (
+          <button
+            type="button"
+            className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] ${actionButtonClassName}`.trim()}
+            style={{
+              backgroundColor: t.buttonBg,
+              color: t.buttonColor,
+              borderRadius: t.buttonRadius,
+              border: t.buttonBorder,
+              fontFamily: "Gotham, sans-serif",
+              transition: "background-color 0.2s",
+            }}
+            aria-label={`Add ${product.title} to cart`}
+          >
+            Add to cart
+          </button>
+        )}
       </div>
     </div>
   );
@@ -356,5 +392,6 @@ export const ProductCard = memo(function ProductCard({
 export {
   type ProductCardProduct,
   type ProductCardProps,
+  type ProductCardSettings,
   ProductCardTheme,
 } from "./types";

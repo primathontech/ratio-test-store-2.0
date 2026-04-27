@@ -43,9 +43,53 @@ export enum ProductCardTheme {
   DARK = "dark",
 }
 
+/** Optional className overrides + visibility toggles for the ProductCard */
+export interface ProductCardSettings {
+  /** Show the promo badge — defaults to true */
+  showBadge?: boolean;
+  /** Show the star rating row — defaults to true */
+  showRating?: boolean;
+  /** Show the Add to cart button — defaults to true */
+  showActionButton?: boolean;
+  /** Override card background color (overrides theme) */
+  backgroundColor?: string;
+  /** Override primary text color (overrides theme) */
+  color?: string;
+  /** Layout flag for "recommended product" usage; accepted for parity */
+  isRecommendedProduct?: boolean;
+  /** Classes appended to the wrapping product Link */
+  linkClassName?: string;
+  /** Classes appended to the image area Link */
+  imageClassName?: string;
+  /** Classes appended to the info/details container */
+  detailsClassName?: string;
+  /** Classes appended to the title Link */
+  titleClassName?: string;
+  /** Classes appended to the rating wrapper */
+  ratingClassName?: string;
+  /** Classes appended to the price row */
+  priceSectionClassName?: string;
+  /** Classes appended to the original (compare-at) price */
+  compareAtPriceClassName?: string;
+  /** Classes appended to the discount label */
+  discountClassName?: string;
+  /** Classes appended to the Add to cart button */
+  actionButtonClassName?: string;
+}
+
 /** Props for the ProductCard component */
 export interface ProductCardProps {
   product: ProductCardProduct;
   /** Card color theme — defaults to LIGHT */
   theme?: ProductCardTheme;
+  /** Classes appended to the root card container */
+  className?: string;
+  /** Per-element className overrides */
+  settings?: ProductCardSettings;
+  /** Show the category / product-type chip — defaults to true */
+  showProductType?: boolean;
+  /** Show the net content / weight badge on the image — defaults to true */
+  showNetContent?: boolean;
+  /** Show the subtitle / description line — defaults to true */
+  showSubtitle?: boolean;
 }
