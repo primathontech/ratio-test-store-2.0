@@ -8,11 +8,32 @@
   "config": {
     "colors": {
       "primary": "#000000",
-      "secondary": "#ffffff"
+      "secondary": "#ffffff",
+      "surface": "#727272",
+      "surface-4": "#F2F2F2",
+      "faq-border": "#ECECEC",
+      "light-pink": "#FF5B6F",
+      "loading-blue": "#0089DD",
+      "shimmer-gray": "#DADEE3",
+      "bg-gray": "#F4F6F8",
+      "lightest-gray": "#727272",
+      "title-hover": "#0089bf",
+      "star-yellow": "#FBC210",
+      "discount-red": "#F04438",
+      "compare-light": "#FFFFFF8C",
+      "compare-dark": "#1d1d1d8c"
     },
     "fonts": {
       "heading": "Inter",
       "body": "Inter"
+    },
+    "typography": {
+      "font-weight-light": "300",
+      "font-weight-normal": "400",
+      "font-weight-medium": "500",
+      "font-weight-semibold": "600",
+      "font-weight-bold": "700",
+      "font-weight-extrabold": "800"
     }
   }
 }

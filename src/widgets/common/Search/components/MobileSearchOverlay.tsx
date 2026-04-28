@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 import { RecommendedProducts } from "./RecommendedProducts";
 import { TrendingSearches } from "./TrendingSearches";
+import { useDebounce } from "@/hooks/useDebounce";
 
 export interface MobileSearchOverlayProps {
   isOpen: boolean;
@@ -66,6 +67,30 @@ export const MobileSearchOverlay: React.FC<MobileSearchOverlayProps> = ({
     router.push(searchRoutePattern.replace("{q}", encodeURIComponent(trimmed)));
   };
 
+  // Auto-fire after the user pauses typing. Pressing Enter still calls
+  // `submitQuery` immediately and skips this wait.
+  const SEARCH_DEBOUNCE_MS = 300;
+  const debouncedQuery = useDebounce(query.trim(), SEARCH_DEBOUNCE_MS);
+  const lastNavigatedQueryRef = useRef<string>("");
+
+  useEffect(() => {
+    if (!isOpen) {
+      lastNavigatedQueryRef.current = "";
+      return;
+    }
+    if (!debouncedQuery) {
+      return;
+    }
+    if (debouncedQuery === lastNavigatedQueryRef.current) {
+      return;
+    }
+    lastNavigatedQueryRef.current = debouncedQuery;
+    onClose();
+    router.push(
+      searchRoutePattern.replace("{q}", encodeURIComponent(debouncedQuery))
+    );
+  }, [debouncedQuery, isOpen, onClose, router, searchRoutePattern]);
+
   if (!isOpen) {
     return null;
   }
@@ -109,7 +134,7 @@ export const MobileSearchOverlay: React.FC<MobileSearchOverlayProps> = ({
             }
           }}
           placeholder={placeholder}
-          className="flex-1 min-w-0 h-[36px] text-[16px] text-[#1D1D1D] placeholder:text-[#727272] bg-transparent outline-none"
+          className="flex-1 min-w-0 h-[36px] text-[16px] text-[#1D1D1D] placeholder:text-[#727272] bg-transparent outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
           style={{ fontFamily: "'Gotham', sans-serif" }}
         />
 

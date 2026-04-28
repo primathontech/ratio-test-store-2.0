@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ProductCardTheme } from "./types";
 import type { ProductCardProps } from "./types";
+import SoldOutBadge from "./SoldOutBadge";
 
 /* ------------------------------------------------------------------ */
 /*  Star rating                                                        */
@@ -37,9 +38,6 @@ const StarRating = ({
   textColor: string;
   className?: string;
 }) => {
-  if (reviewCount === 0) {
-    return null;
-  }
   return (
     <div className={`flex items-center gap-[4px] ${className}`.trim()}>
       <span
@@ -59,11 +57,74 @@ const StarRating = ({
         className="text-[14px] leading-[16px]"
         style={{ color: textColor, fontFamily: "Gotham, sans-serif" }}
       >
-        | {reviewCount}
+        {" | "}
+        {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
       </span>
     </div>
   );
 };
+
+/* ------------------------------------------------------------------ */
+/*  Quantity pill (when isInCart)                                      */
+/* ------------------------------------------------------------------ */
+
+const QuantityPill = ({
+  quantity,
+  onIncrement,
+  onDecrement,
+  isLoading,
+  className = "",
+  buttonBg,
+  buttonColor,
+  buttonRadius,
+}: {
+  quantity: number;
+  onIncrement?: () => void;
+  onDecrement?: () => void;
+  isLoading: boolean;
+  className?: string;
+  buttonBg: string;
+  buttonColor: string;
+  buttonRadius: string;
+}) => (
+  <div
+    className={`flex items-center justify-between w-full h-[32px] md:h-[42px] px-[12px] text-[16px] font-medium ${className}`.trim()}
+    style={{
+      backgroundColor: buttonBg,
+      color: buttonColor,
+      borderRadius: buttonRadius,
+      fontFamily: "Gotham, sans-serif",
+    }}
+  >
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onDecrement?.();
+      }}
+      disabled={isLoading}
+      aria-label="Decrease quantity"
+      className="px-2 text-[20px] leading-none disabled:opacity-50 cursor-pointer"
+    >
+      −
+    </button>
+    <span className="flex-1 text-center">{isLoading ? "…" : quantity}</span>
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        onIncrement?.();
+      }}
+      disabled={isLoading}
+      aria-label="Increase quantity"
+      className="px-2 text-[20px] leading-none disabled:opacity-50 cursor-pointer"
+    >
+      +
+    </button>
+  </div>
+);
 
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
@@ -150,6 +211,13 @@ export const ProductCard = memo(function ProductCard({
   showProductType = true,
   showNetContent = true,
   showSubtitle = true,
+  onAddToCart,
+  onIncrement,
+  onDecrement,
+  isInCart = false,
+  cartItem,
+  isQuantityLoading = false,
+  isSoldOut: isSoldOutProp,
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const t = theme === ProductCardTheme.DARK ? DARK_THEME : LIGHT_THEME;
@@ -157,8 +225,15 @@ export const ProductCard = memo(function ProductCard({
     showBadge = true,
     showRating = true,
     showActionButton = true,
+    showQuantitySelector = true,
+    actionButtonText = "Add to cart",
+    actionButtonTextMobile,
+    soldOutText = "Sold Out",
+    soldOutTextMobile,
     backgroundColor: bgOverride,
     color: colorOverride,
+    actionButtonTextColor,
+    searchProductCard = false,
     linkClassName = "",
     imageClassName = "",
     detailsClassName = "",
@@ -171,219 +246,281 @@ export const ProductCard = memo(function ProductCard({
   } = settings;
   const cardBg = bgOverride ?? t.cardBg;
   const textPrimary = colorOverride ?? t.textPrimary;
+  const buttonTextColor = actionButtonTextColor ?? t.buttonColor;
+  const isSoldOut =
+    isSoldOutProp !== undefined ? isSoldOutProp : product.salePrice <= 0;
+  const showInCartPill = isInCart && showQuantitySelector;
 
   return (
     <div
-      className={`flex flex-col h-full pl-[12px] lg:pl-0 ${className}`.trim()}
-      style={{
-        backgroundColor: cardBg,
-        border: t.cardBorder,
-        borderRadius: t.cardRadius,
-        overflow: t.cardOverflow,
-      }}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      className={`block ${searchProductCard ? "" : "h-full"} ${linkClassName}`.trim()}
     >
-      {/* Image area */}
       <div
-        className={`pl-0 md:pl-[8px] pr-0 md:pr-[8px] pt-0 md:pt-[8px] ${linkClassName}`.trim()}
+        className={`flex flex-col ${searchProductCard ? "h-auto" : "h-full"} pl-[12px] lg:pl-0 ${className}`.trim()}
+        style={{
+          backgroundColor: cardBg,
+          borderRadius: t.cardRadius,
+          overflow: t.cardOverflow,
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
       >
-        <Link
-          href={product.href}
-          className={`relative block overflow-hidden ${imageClassName}`.trim()}
-          style={{ aspectRatio: "1/1" }}
-        >
-          {/* Promo badge */}
-          {showBadge && product.badge && (
-            <div className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2]">
+        {/* Image area */}
+        <div className="pl-0 md:pl-[8px] pr-0 md:pr-[8px] pt-0 md:pt-[8px]">
+          <Link
+            href={product.href}
+            className={`relative block overflow-hidden bg-gradient-to-br from-purple-50 via-blue-50 to-purple-100 ${imageClassName}`.trim()}
+            style={{ aspectRatio: "1/1" }}
+          >
+            {/* Sold-out overlay + center badge */}
+            {isSoldOut && (
+              <>
+                <div
+                  data-testid={`product-card-sold-out-overlay`}
+                  className="absolute z-[2] inset-0 size-full bg-black/10"
+                />
+                <div
+                  data-testid={`product-card-sold-out-badge-container`}
+                  className="absolute z-[3] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
+                >
+                  <SoldOutBadge />
+                </div>
+              </>
+            )}
+
+            {/* Promo badge */}
+            {showBadge && product.badge && (
+              <div className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2]">
+                <div
+                  className="relative inline-flex items-center leading-[18px] md:leading-[21px] text-[12px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px]"
+                  style={{
+                    backgroundColor: badgeColor(product.badgeVariant),
+                    color: "#ffffff",
+                    fontFamily: "Gotham, sans-serif",
+                    clipPath:
+                      "polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%)",
+                  }}
+                >
+                  {product.badge}
+                </div>
+              </div>
+            )}
+
+            {/* Size / weight label */}
+            {showNetContent && product.weight && (
               <div
-                className="relative inline-flex items-center leading-[18px] md:leading-[21px] text-[12px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px]"
+                className="absolute bottom-[4px] right-[4px] z-[2] p-[4px] text-[10px] text-[#1D1D1D] leading-[12px]"
                 style={{
-                  backgroundColor: badgeColor(product.badgeVariant),
-                  color: "#ffffff",
+                  backgroundColor: t.weightBg,
+                  color: t.weightColor,
+                  borderRadius: "4px",
                   fontFamily: "Gotham, sans-serif",
-                  clipPath:
-                    "polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%)",
+                  fontWeight: 600,
                 }}
               >
-                {product.badge}
+                {product.weight}
               </div>
-            </div>
-          )}
+            )}
 
-          {/* Size / weight label */}
-          {showNetContent && product.weight && (
-            <div
-              className="absolute bottom-[4px] right-[4px] z-[2] p-[4px] text-[10px] text-[#1D1D1D] leading-[12px]"
-              style={{
-                backgroundColor: t.weightBg,
-                color: t.weightColor,
-                borderRadius: "4px",
-                fontFamily: "Gotham, sans-serif",
-                fontWeight: 600,
-              }}
-            >
-              {product.weight}
-            </div>
-          )}
-
-          {/* Main image */}
-          <Image
-            src={normalizeImgSrc(product.mainImage)}
-            alt={product.alt}
-            width={360}
-            height={360}
-            loading="lazy"
-            className="absolute inset-0 w-full h-full object-cover rounded-[2px]"
-            style={{
-              opacity: isHovered && product.hoverImage ? 0 : 1,
-              transition: "opacity 0.5s",
-            }}
-          />
-
-          {/* Hover image */}
-          {product.hoverImage && (
+            {/* Main image */}
             <Image
-              src={normalizeImgSrc(product.hoverImage)}
+              src={normalizeImgSrc(product.mainImage)}
               alt={product.alt}
               width={360}
               height={360}
               loading="lazy"
               className="absolute inset-0 w-full h-full object-cover rounded-[2px]"
               style={{
-                opacity: isHovered ? 1 : 0,
-                transform: isHovered ? "scale(1.045)" : "scale(1)",
-                transition:
-                  "opacity 0.5s, transform 2s cubic-bezier(0, 0, 0.44, 1.18)",
+                opacity: isHovered && product.hoverImage ? 0 : 1,
+                transition: "opacity 0.5s",
               }}
             />
-          )}
-        </Link>
-      </div>
 
-      {/* Info area */}
-      <div
-        className={`flex flex-col flex-1 gap-[5px] md:gap-[8px] mt-[8px] px-0 md:px-[8px] pb-0 md:pb-[8px] ${detailsClassName}`.trim()}
-      >
-        {/* Category chip */}
-        {showProductType && product.category && (
-          <div>
-            <span
-              className="inline-flex p-[4.5px] md:p-[8px] text-[12px] md:text-[14px] font-[600] leading-[14px]"
-              style={{
-                color: t.chipColor,
-                backgroundColor: t.chipBg,
-                border: t.chipBorder,
-                borderRadius: "4px",
-                fontFamily: "Gotham, sans-serif",
-              }}
-            >
-              {product.category}
-            </span>
-          </div>
-        )}
+            {/* Hover image */}
+            {product.hoverImage && (
+              <Image
+                src={normalizeImgSrc(product.hoverImage)}
+                alt={product.alt}
+                width={360}
+                height={360}
+                loading="lazy"
+                className="absolute inset-0 w-full h-full object-cover rounded-[2px]"
+                style={{
+                  opacity: isHovered ? 1 : 0,
+                  transform: isHovered ? "scale(1.045)" : "scale(1)",
+                  transition:
+                    "opacity 0.5s, transform 2s cubic-bezier(0, 0, 0.44, 1.18)",
+                }}
+              />
+            )}
+          </Link>
+        </div>
 
-        {/* Title */}
-        <Link
-          href={product.href}
-          className={`text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2  min-h-[33px] md:min-h-[40px] ${titleClassName}`.trim()}
-          style={{
-            color: textPrimary,
-            fontFamily: "Gotham, sans-serif",
-            fontWeight: 400,
-            transition: "color 0.25s",
-          }}
-        >
-          {product.title}
-        </Link>
-
-        {/* Description */}
-        {showSubtitle && product.description && (
-          <p
-            className="text-[12px] md:text-[13px] leading-[16px] line-clamp-2"
-            style={{
-              color: "#727272",
-              fontFamily: "Gotham, sans-serif",
-              fontWeight: 400,
-            }}
-          >
-            {product.description}
-          </p>
-        )}
-
-        {/* Rating */}
-        {showRating && (
-          <div>
-            <StarRating
-              rating={product.rating}
-              reviewCount={product.reviewCount}
-              textColor={textPrimary}
-              className={ratingClassName}
-            />
-          </div>
-        )}
-
-        {/* Price row */}
+        {/* Info area */}
         <div
-          className={`flex items-center gap-[6px] flex-wrap mt-auto ${priceSectionClassName}`.trim()}
+          className={`flex flex-col flex-1 gap-[5px] md:gap-[8px] mt-[8px] px-0 md:px-[8px] pb-0 md:pb-[8px] ${detailsClassName}`.trim()}
         >
-          <span
-            className="text-[14px] md:text-[16px]"
+          {/* Category chip */}
+          {showProductType && product.category && (
+            <div>
+              <span
+                className="inline-flex p-[4.5px] md:p-[8px] text-[12px] md:text-[14px] font-[600] leading-[14px]"
+                style={{
+                  color: t.chipColor,
+                  backgroundColor: t.chipBg,
+                  border: t.chipBorder,
+                  borderRadius: "4px",
+                  fontFamily: "Gotham, sans-serif",
+                }}
+              >
+                {product.category}
+              </span>
+            </div>
+          )}
+
+          {/* Title */}
+          <Link
+            href={product.href}
+            className={`text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2  min-h-[33px] md:min-h-[40px] ${titleClassName}`.trim()}
             style={{
               color: textPrimary,
               fontFamily: "Gotham, sans-serif",
-              fontWeight: 600,
+              fontWeight: 400,
+              transition: "color 0.25s",
             }}
           >
-            &#8377;{product.salePrice.toLocaleString("en-IN")}
-          </span>
-          {product.originalPrice &&
-            product.originalPrice > product.salePrice && (
-              <>
-                <span
-                  className={`text-[12px] line-through ${compareAtPriceClassName}`.trim()}
-                  style={{
-                    color: t.textMuted,
-                    fontFamily: "Gotham, sans-serif",
-                    fontWeight: 400,
-                  }}
-                >
-                  &#8377;{product.originalPrice.toLocaleString("en-IN")}
-                </span>
-                {product.discount && (
+            {product.title}
+          </Link>
+
+          {/* Description */}
+          {showSubtitle && product.description && (
+            <p
+              className="text-[12px] md:text-[13px] leading-[16px] line-clamp-2 min-h-[32px]"
+              style={{
+                color: "#727272",
+                fontFamily: "Gotham, sans-serif",
+                fontWeight: 400,
+              }}
+            >
+              {product.description}
+            </p>
+          )}
+
+          {/* Rating */}
+          {showRating && (
+            <div>
+              <StarRating
+                rating={product.rating}
+                reviewCount={product.reviewCount}
+                textColor={textPrimary}
+                className={ratingClassName}
+              />
+            </div>
+          )}
+
+          {/* Price row */}
+          <div
+            className={`flex items-center gap-[6px] flex-wrap mt-auto ${priceSectionClassName}`.trim()}
+          >
+            <span
+              className="text-[14px] md:text-[16px]"
+              style={{
+                color: textPrimary,
+                fontFamily: "Gotham, sans-serif",
+                fontWeight: 600,
+              }}
+            >
+              &#8377;{product.salePrice.toLocaleString("en-IN")}
+            </span>
+            {product.originalPrice &&
+              product.originalPrice > product.salePrice && (
+                <>
                   <span
-                    className={`text-[12px] ${discountClassName}`.trim()}
+                    className={`text-[12px] line-through ${compareAtPriceClassName}`.trim()}
                     style={{
-                      color: t.discountColor,
+                      color: t.textMuted,
                       fontFamily: "Gotham, sans-serif",
-                      fontWeight: 600,
+                      fontWeight: 400,
                     }}
                   >
-                    {product.discount}
+                    &#8377;{product.originalPrice.toLocaleString("en-IN")}
                   </span>
-                )}
-              </>
-            )}
-        </div>
+                  {product.discount && (
+                    <span
+                      className={`text-[12px] ${discountClassName}`.trim()}
+                      style={{
+                        color: t.discountColor,
+                        fontFamily: "Gotham, sans-serif",
+                        fontWeight: 600,
+                      }}
+                    >
+                      {product.discount}
+                    </span>
+                  )}
+                </>
+              )}
+          </div>
 
-        {/* Add to cart button */}
-        {showActionButton && (
-          <button
-            type="button"
-            className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] ${actionButtonClassName}`.trim()}
-            style={{
-              backgroundColor: t.buttonBg,
-              color: t.buttonColor,
-              borderRadius: t.buttonRadius,
-              border: t.buttonBorder,
-              fontFamily: "Gotham, sans-serif",
-              transition: "background-color 0.2s",
-            }}
-            aria-label={`Add ${product.title} to cart`}
-          >
-            Add to cart
-          </button>
-        )}
+          {/* Add to cart / quantity pill / sold-out fallback */}
+          {showActionButton &&
+            (showInCartPill && !isSoldOut ? (
+              <QuantityPill
+                quantity={cartItem?.quantity ?? 1}
+                onIncrement={onIncrement}
+                onDecrement={onDecrement}
+                isLoading={isQuantityLoading}
+                className={actionButtonClassName}
+                buttonBg={t.buttonBg}
+                buttonColor={buttonTextColor}
+                buttonRadius={t.buttonRadius}
+              />
+            ) : (
+              <button
+                type="button"
+                onClick={(e) => {
+                  if (isSoldOut || !onAddToCart) {
+                    return;
+                  }
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onAddToCart();
+                }}
+                disabled={isQuantityLoading}
+                className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] disabled:opacity-60 ${actionButtonClassName}`.trim()}
+                style={{
+                  backgroundColor: t.buttonBg,
+                  color: buttonTextColor,
+                  borderRadius: t.buttonRadius,
+                  border: t.buttonBorder,
+                  fontFamily: "Gotham, sans-serif",
+                  transition: "background-color 0.2s",
+                }}
+                aria-label={
+                  isSoldOut
+                    ? `${soldOutText} - ${product.title}`
+                    : `${actionButtonText} - ${product.title}`
+                }
+              >
+                {isQuantityLoading ? (
+                  "…"
+                ) : isSoldOut ? (
+                  <>
+                    <span className="hidden md:inline">{soldOutText}</span>
+                    <span className="inline md:hidden">
+                      {soldOutTextMobile ?? soldOutText}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <span className="hidden md:inline">{actionButtonText}</span>
+                    <span className="inline md:hidden">
+                      {actionButtonTextMobile ?? actionButtonText}
+                    </span>
+                  </>
+                )}
+              </button>
+            ))}
+        </div>
       </div>
     </div>
   );

@@ -1,10 +1,13 @@
 /**
- * Shared Product Card types — used by PeopleAlsoBought, CollectionGrid, and
- * any future widget that renders product cards in the BBlunt design language.
+ * Shared Product Card types — used by PeopleAlsoBought, CollectionGrid,
+ * Search, and any future widget that renders product cards in the BBlunt
+ * design language.
  */
 
 /** A single product for the shared ProductCard component */
 export interface ProductCardProduct {
+  /** Stable identifier — used as React key in cart/quantity helpers */
+  id?: string | number;
   /** Product page URL */
   href: string;
   /** Product title */
@@ -37,6 +40,13 @@ export interface ProductCardProduct {
   description?: string;
 }
 
+/** Cart-line shape that the QuantityPill reads `quantity` from. Kept loose
+ * so any concrete cart item (e.g. shopkit `CartItem`) is structurally
+ * assignable without forcing an index signature on the source type. */
+export type ProductCardCartItem = {
+  quantity?: number;
+};
+
 /** Card color theme */
 export enum ProductCardTheme {
   LIGHT = "light",
@@ -51,12 +61,26 @@ export interface ProductCardSettings {
   showRating?: boolean;
   /** Show the Add to cart button — defaults to true */
   showActionButton?: boolean;
+  /** When in cart, show the +/- quantity pill instead of the action button — defaults to true */
+  showQuantitySelector?: boolean;
+  /** Action button text (desktop) — defaults to "Add to cart" */
+  actionButtonText?: string;
+  /** Action button text (mobile, < 769px) — defaults to actionButtonText */
+  actionButtonTextMobile?: string;
+  /** Sold-out fallback text (desktop) — defaults to "Sold Out" */
+  soldOutText?: string;
+  /** Sold-out fallback text (mobile) — defaults to soldOutText */
+  soldOutTextMobile?: string;
   /** Override card background color (overrides theme) */
   backgroundColor?: string;
   /** Override primary text color (overrides theme) */
   color?: string;
+  /** Override action button text color */
+  actionButtonTextColor?: string;
   /** Layout flag for "recommended product" usage; accepted for parity */
   isRecommendedProduct?: boolean;
+  /** Layout flag for "search results" usage — drops the `h-full` of the link wrapper so the action button sits at the natural bottom of the card */
+  searchProductCard?: boolean;
   /** Classes appended to the wrapping product Link */
   linkClassName?: string;
   /** Classes appended to the image area Link */
@@ -92,4 +116,21 @@ export interface ProductCardProps {
   showNetContent?: boolean;
   /** Show the subtitle / description line — defaults to true */
   showSubtitle?: boolean;
+
+  /* ─── Cart wiring (all optional — opt-in per consumer) ─────────────── */
+
+  /** Click handler for the Add to cart button. When omitted, the button is purely visual. */
+  onAddToCart?: () => void;
+  /** Click handler for the + button on the in-cart quantity pill. */
+  onIncrement?: () => void;
+  /** Click handler for the − button on the in-cart quantity pill. */
+  onDecrement?: () => void;
+  /** Whether the product is already in the user's cart. When true, the action button is replaced by a +/- pill. */
+  isInCart?: boolean;
+  /** Cart line for this product. The pill reads `cartItem.quantity` from it. */
+  cartItem?: ProductCardCartItem;
+  /** Disables the action button + pill, shows a "…" placeholder. */
+  isQuantityLoading?: boolean;
+  /** When true, renders a sold-out overlay + locks the action button to soldOutText. Falls back to deriving from `product.salePrice <= 0` when undefined. */
+  isSoldOut?: boolean;
 }

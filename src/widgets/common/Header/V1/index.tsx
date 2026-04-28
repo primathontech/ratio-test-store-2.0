@@ -1,14 +1,29 @@
 "use client";
 
-import React, { memo, useState, useRef, useEffect, useCallback } from "react";
+import React, {
+  memo,
+  Suspense,
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { HeaderProps, NavItem, NavDropdownGroup } from "../types";
 import { CartBadge } from "../components/CartBadge";
 import { MobileNavigationDrawer } from "../components/MobileDrawer";
 import { DropdownAccordion } from "../components/DropdownAccordion";
 import { SearchDropdown } from "@/widgets/common/Search/components/SearchDropdown";
 import { MobileSearchOverlay } from "@/widgets/common/Search/components/MobileSearchOverlay";
+import { SearchInputV2 } from "@/widgets/common/Search/components/SearchInputV2";
+import { TrendingSearches } from "@/widgets/common/Search/components/TrendingSearches";
+import { RecommendedProducts } from "@/widgets/common/Search/components/RecommendedProducts";
+import { useDebounce } from "@/hooks/useDebounce";
+
+const SEARCH_RESULTS_ROUTE = "/pages/search";
+const OVERLAY_VIEWPORT_BREAKPOINT = 1150;
 
 /* ──────────────────────── Navigation Data ──────────────────────── */
 
@@ -319,15 +334,20 @@ function SearchInput({
   value,
   onChange,
   onClick,
+  onSubmit,
+  inputRef: externalInputRef,
 }: {
   focused: boolean;
   onFocusChange: (v: boolean) => void;
   value?: string;
   onChange?: (v: string) => void;
   onClick?: () => void;
+  onSubmit?: (query: string) => void;
+  inputRef?: React.MutableRefObject<HTMLInputElement | null>;
 }) {
   const [placeholder, setPlaceholder] = useState("");
-  const inputRef = useRef<HTMLInputElement>(null);
+  const internalInputRef = useRef<HTMLInputElement | null>(null);
+  const inputRef = externalInputRef ?? internalInputRef;
 
   useEffect(() => {
     let suggestionIdx = 0;
@@ -367,8 +387,17 @@ function SearchInput({
     return () => clearTimeout(timer);
   }, []);
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const trimmed = (value ?? "").trim();
+    if (!trimmed) {
+      return;
+    }
+    onSubmit?.(trimmed);
+  };
+
   return (
-    <div className="relative">
+    <form onSubmit={handleSubmit} className="relative" role="search">
       <input
         ref={inputRef}
         type="search"
@@ -376,7 +405,7 @@ function SearchInput({
         value={value ?? ""}
         onChange={(e) => onChange?.(e.target.value)}
         onClick={onClick}
-        className="w-[255px] h-[35px] min-h-[35px] rounded-[4px] bg-transparent pl-[35px] pr-[60px] pt-[8px] pb-[8px] text-[14px] font-[500] text-[#1d1d1d] placeholder:text-[#727272] outline-none"
+        className="w-[255px] h-[35px] min-h-[35px] rounded-[4px] bg-transparent pl-[35px] pr-[60px] pt-[8px] pb-[8px] text-[14px] font-[500] text-[#1d1d1d] placeholder:text-surface outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
         style={{
           fontFamily: "'Gotham', sans-serif",
           border: "1px solid #dddddd",
@@ -388,7 +417,11 @@ function SearchInput({
         onBlur={() => onFocusChange(false)}
       />
       {/* Search icon inside input */}
-      <div className="absolute left-[10px] top-1/2 -translate-y-1/2 pointer-events-none">
+      <button
+        type="submit"
+        aria-label="Search"
+        className="absolute left-[10px] top-1/2 -translate-y-1/2 cursor-pointer"
+      >
         <svg
           width="16"
           height="16"
@@ -404,8 +437,8 @@ function SearchInput({
             strokeLinecap="round"
           />
         </svg>
-      </div>
-    </div>
+      </button>
+    </form>
   );
 }
 
@@ -415,9 +448,162 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  // Initialise from `?q=` so landing on /pages/search?q=bblunt
+  // pre-populates the header input. Mirrors how SearchPageWrapper reads the URL.
+  const searchParams = useSearchParams();
+  const urlQuery = searchParams?.get("q") ?? "";
+  const [searchQuery, setSearchQuery] = useState(urlQuery);
+
+  // Keep the input in sync with the URL on subsequent navigations
+  // (back/forward, programmatic push from elsewhere). Uses the URL as the
+  // source of truth — if the URL value matches local state, this is a no-op.
+  useEffect(() => {
+    setSearchQuery(urlQuery);
+  }, [urlQuery]);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const searchTriggerRef = useRef<HTMLDivElement>(null);
+  const desktopSearchInputRef = useRef<HTMLInputElement | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  /* ────── Mobile fullscreen search overlay (ported from V2 reference) ────── */
+
+  // Initial open-state honours sessionStorage flags set by SearchInputV2 when
+  // the user clears the search input (cross-page handshake), and otherwise
+  // defaults to open on the search results route.
+  const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(() => {
+    if (typeof window === "undefined") {
+      return false;
+    }
+    try {
+      const preventOverlay = sessionStorage.getItem("preventSearchOverlayOpen");
+      if (preventOverlay === "true") {
+        sessionStorage.removeItem("preventSearchOverlayOpen");
+        return false;
+      }
+      const openOnRedirect = sessionStorage.getItem("openMobileSearchOverlay");
+      if (openOnRedirect === "true") {
+        sessionStorage.removeItem("openMobileSearchOverlay");
+        return true;
+      }
+    } catch {
+      /* ignore */
+    }
+    return pathname?.includes(SEARCH_RESULTS_ROUTE) || false;
+  });
+
+  // After a navigation away from the search route, consume any pending
+  // `openMobileSearchOverlay` flag and pop the overlay open.
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    if (pathname?.includes(SEARCH_RESULTS_ROUTE)) {
+      return;
+    }
+    try {
+      if (sessionStorage.getItem("openMobileSearchOverlay") === "true") {
+        sessionStorage.removeItem("openMobileSearchOverlay");
+        setIsSearchOverlayOpen(true);
+      }
+    } catch {
+      /* ignore */
+    }
+  }, [pathname]);
+
+  // Track the live query inside the overlay's input so the externally
+  // rendered (full-width) dropdown can hide once the user starts typing.
+  const [overlayQuery, setOverlayQuery] = useState("");
+
+  const closeSearchOverlay = useCallback(() => {
+    setIsSearchOverlayOpen(false);
+  }, []);
+
+  // Reset the tracked query when the overlay re-opens fresh.
+  useEffect(() => {
+    if (!isSearchOverlayOpen) {
+      setOverlayQuery("");
+    }
+  }, [isSearchOverlayOpen]);
+
+  // Force-close the desktop dropdown whenever the overlay opens — keeps a
+  // single dropdown on screen if a viewport resize moves between desktop and
+  // overlay flows mid-session.
+  useEffect(() => {
+    if (isSearchOverlayOpen) {
+      setSearchOpen(false);
+    }
+  }, [isSearchOverlayOpen]);
+
+  useEffect(() => {
+    if (!urlQuery) {
+      return;
+    }
+    let id1 = 0;
+    let id2 = 0;
+    id1 = requestAnimationFrame(() => {
+      id2 = requestAnimationFrame(() => {
+        const el = desktopSearchInputRef.current;
+        if (!el) {
+          return;
+        }
+        if (document.activeElement !== el) {
+          el.focus();
+        }
+        const len = el.value.length;
+        try {
+          el.setSelectionRange(len, len);
+        } catch {
+          /* ignore */
+        }
+      });
+    });
+    return () => {
+      cancelAnimationFrame(id1);
+      cancelAnimationFrame(id2);
+    };
+  }, [urlQuery]);
+
+  const handleSearchSubmit = useCallback(
+    (query: string) => {
+      setSearchOpen(false);
+      setMobileSearchOpen(false);
+      router.push(`/pages/search?q=${encodeURIComponent(query)}`);
+    },
+    [router]
+  );
+
+  // Auto-fire search after the user pauses typing (debounced). Mirrors the
+  // reference behaviour: each keystroke updates `searchQuery`, but we only
+  // navigate once typing settles for `SEARCH_DEBOUNCE_MS`. Pressing Enter
+  // bypasses the wait via `handleSearchSubmit` above.
+  const SEARCH_DEBOUNCE_MS = 300;
+  const debouncedSearchQuery = useDebounce(
+    searchQuery.trim(),
+    SEARCH_DEBOUNCE_MS
+  );
+  const lastNavigatedQueryRef = useRef<string>("");
+
+  useEffect(() => {
+    if (!debouncedSearchQuery) {
+      return;
+    }
+    if (debouncedSearchQuery === lastNavigatedQueryRef.current) {
+      return;
+    }
+    // If the URL already reflects this query (e.g. the user landed on
+    // /pages/search?q=bblunt), record it so we don't do a redundant
+    // router.push on mount — but DO still keep the input in sync.
+    if (debouncedSearchQuery === urlQuery) {
+      lastNavigatedQueryRef.current = debouncedSearchQuery;
+      return;
+    }
+    lastNavigatedQueryRef.current = debouncedSearchQuery;
+    setSearchOpen(false);
+    setMobileSearchOpen(false);
+    router.push(`/pages/search?q=${encodeURIComponent(debouncedSearchQuery)}`);
+    // Focus is restored by the urlQuery-keyed useEffect once navigation lands.
+  }, [debouncedSearchQuery, urlQuery, router]);
 
   const navigation = settings?.navigation ?? DEFAULT_NAV;
   const logoSrc = settings?.logoSrc ?? "/Header/images/logo.png";
@@ -521,7 +707,18 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
             {/* Mobile/Tablet search icon (visible below 1100px) */}
             <button
               type="button"
-              onClick={() => setMobileSearchOpen(true)}
+              onClick={() => {
+                // Below the V2 reference breakpoint → fullscreen overlay.
+                // Above (tablet) → existing inline mobile search overlay.
+                if (
+                  typeof window !== "undefined" &&
+                  window.innerWidth < OVERLAY_VIEWPORT_BREAKPOINT
+                ) {
+                  setIsSearchOverlayOpen(true);
+                } else {
+                  setMobileSearchOpen(true);
+                }
+              }}
               className="p-[4px] text-[#000000] min-[1100px]:hidden"
               aria-label="Search"
             >
@@ -539,9 +736,11 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
                 value={searchQuery}
                 onChange={setSearchQuery}
                 onClick={() => setSearchOpen(true)}
+                onSubmit={handleSearchSubmit}
+                inputRef={desktopSearchInputRef}
               />
               <SearchDropdown
-                isOpen={searchOpen}
+                isOpen={searchOpen && !isSearchOverlayOpen}
                 onClose={() => setSearchOpen(false)}
                 searchQuery={searchQuery}
                 triggerRef={searchTriggerRef}
@@ -630,7 +829,93 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
       <MobileSearchOverlay
         isOpen={mobileSearchOpen}
         onClose={() => setMobileSearchOpen(false)}
+        searchRoutePattern="/pages/search?q={q}"
       />
+
+      {/* V2-style fullscreen search overlay (< 1150px). Backdrop + centered
+          top panel with SearchInputV2 (typewriter placeholder, debounced
+          submit). Trending + recommended panel is rendered separately at
+          full viewport width below the input strip. */}
+      {isSearchOverlayOpen && (
+        <div className="fixed inset-0 z-[22100] xl:hidden">
+          {/* Backdrop — closes on outside click */}
+          <div
+            className="absolute inset-0 z-[22100]"
+            aria-hidden="true"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                closeSearchOverlay();
+              }
+            }}
+          />
+
+          {/* Top white panel with input + close button (centered, max 600px) */}
+          <div className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-white w-full max-w-[600px] z-[22101]">
+            <div className="flex items-center justify-center px-4 h-[100px]">
+              <div className="w-full relative">
+                <Suspense
+                  fallback={
+                    <input
+                      type="text"
+                      placeholder="Search for products..."
+                      disabled
+                      className="w-full pl-9 pr-16 py-2 border border-black rounded-md focus:outline-none focus:border-black opacity-50"
+                    />
+                  }
+                >
+                  <SearchInputV2
+                    searchPlaceholder={[
+                      "Search for Shampoo",
+                      "Search for Hair Care",
+                      "Search for Conditioner",
+                      "Search for Salon Treatment",
+                    ]}
+                    className="w-full pl-9 pr-16 py-2 border border-black rounded-md focus:outline-none focus:border-black"
+                    isMobile={true}
+                    onClose={closeSearchOverlay}
+                    onQueryChange={setOverlayQuery}
+                    disableAutoDropdown={false}
+                    forceDropdownOpen={false}
+                    renderDropdown={false}
+                  />
+                </Suspense>
+                <button
+                  type="button"
+                  onClick={closeSearchOverlay}
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black flex items-center z-10"
+                  aria-label="Close search"
+                >
+                  <svg
+                    className="w-8 h-8"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Full-width dropdown panel below the input strip — only when the
+              user hasn't started typing yet. */}
+          {!overlayQuery.trim() && (
+            <div
+              className="absolute left-0 right-0 top-[100px] bg-white z-[22101] overflow-y-auto py-[16px] px-[12px] shadow-[0_0_8px_rgba(0,0,0,0.15)]"
+              style={{ maxHeight: "calc(100vh - 100px)" }}
+            >
+              <TrendingSearches onClose={closeSearchOverlay} />
+              <RecommendedProducts />
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 });
