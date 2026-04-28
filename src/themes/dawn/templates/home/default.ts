@@ -148,10 +148,10 @@ export const template: PageConfig = {
       ],
     },
 
-    // Hero Banner Carousel Section
+    // Banner Carousel Section
     {
-      id: "hero-banner-carousel-section",
-      name: "Hero Banner Carousel",
+      id: "banner-carousel-section",
+      name: "Banner Carousel",
       type: SECTION_TYPES.CONTENT_SECTION,
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
@@ -163,60 +163,64 @@ export const template: PageConfig = {
       },
       widgets: [
         {
-          id: "dawn-hero-banner-carousel",
-          name: "Hero Banner Carousel",
-          type: WIDGET_TYPES.HeroBannerCarousel,
+          id: "dawn-banner-carousel",
+          name: "Banner Carousel",
+          type: WIDGET_TYPES.BannerCarousel,
           settings: {
             variant: "v1",
-            autoPlayInterval: 5000,
+            autoplayInterval: 5000,
+            autoplay: true,
             loop: true,
-            desktopWidth: 1440,
-            desktopHeight: 529,
-            mobileWidth: 1200,
-            mobileHeight: 1200,
-            slides: [
+            pauseOnHover: true,
+            draggable: true,
+            showIndicators: true,
+            indicatorType: "media",
+            mobileAspectRatio: "1/1",
+            desktopAspectRatio: "1440/529",
+            bannerCarousel: [
               {
-                type: "image",
+                id: 1,
+                type: "IMAGE",
                 href: "/pages/shine-squad-bb30-offer",
-                desktopImage: "/HeroBannerCarousel/images/slide1-desktop.webp",
-                mobileImage: "/HeroBannerCarousel/images/slide1-mobile.png",
+                desktopSrc: "/BannerCarousel/images/slide1-desktop.webp",
+                mobileSrc: "/BannerCarousel/images/slide1-mobile.png",
                 alt: "Get 3 Freebies on orders above Rs499 - Code FREETRIO",
                 indicatorHeading: "Free 3-Step\nRoutine",
                 indicatorSubHeading: "Shop our",
               },
-              {
-                type: "image",
-                href: "/pages/flat3",
-                desktopImage: "/HeroBannerCarousel/images/slide2-desktop.jpg",
-                mobileImage: "/HeroBannerCarousel/images/slide2-mobile.jpg",
-                alt: "Buy 3 for Rs799 - Code FLAT3",
-                indicatorHeading: "B3P2",
-                indicatorSubHeading: "Shop our",
-              },
-              {
-                type: "image",
-                href: "/pages/shine-squad-get999",
-                desktopImage: "/HeroBannerCarousel/images/slide3-desktop.jpg",
-                mobileImage: "/HeroBannerCarousel/images/slide3-mobile.jpg",
-                alt: "Up to 95% Frizz Reduction",
-                indicatorHeading: "Get3@999",
-                indicatorSubHeading: "Shop our",
-              },
-              {
-                type: "video",
-                href: "/collections/dry-hair",
-                desktopVideoSrc:
-                  "https://bblunt.com/cdn/shop/videos/c/vp/9d41619129504abd8c80adeefe936559/9d41619129504abd8c80adeefe936559.SD-480p-1.5Mbps-64951035.mp4?v=0",
-                mobileVideoSrc:
-                  "https://bblunt.com/cdn/shop/videos/c/vp/23170c4a114945e69f8075c035dd7bbe/23170c4a114945e69f8075c035dd7bbe.HD-1080p-7.2Mbps-64441147.mp4?v=0",
-                desktopPoster:
-                  "/HeroBannerCarousel/images/slide4-poster-desktop.jpg",
-                mobilePoster:
-                  "/HeroBannerCarousel/images/slide4-poster-mobile.jpg",
-                alt: "BBlunt Hair Care",
-                indicatorHeading: "Free 3-Step\nRoutine",
-                indicatorSubHeading: "Shop our",
-              },
+              // {
+              //   id: 2,
+              //   type: "IMAGE",
+              //   href: "/pages/flat3",
+              //   desktopSrc: "/BannerCarousel/images/slide2-desktop.jpg",
+              //   mobileSrc: "/BannerCarousel/images/slide2-mobile.jpg",
+              //   alt: "Buy 3 for Rs799 - Code FLAT3",
+              //   indicatorHeading: "B3P2",
+              //   indicatorSubHeading: "Shop our",
+              // },
+              // {
+              //   id: 3,
+              //   type: "IMAGE",
+              //   href: "/pages/shine-squad-get999",
+              //   desktopSrc: "/BannerCarousel/images/slide3-desktop.jpg",
+              //   mobileSrc: "/BannerCarousel/images/slide3-mobile.jpg",
+              //   alt: "Up to 95% Frizz Reduction",
+              //   indicatorHeading: "Get3@999",
+              //   indicatorSubHeading: "Shop our",
+              // },
+              // {
+              //   id: 4,
+              //   type: "VIDEO",
+              //   href: "/collections/dry-hair",
+              //   desktopSrc:
+              //     "https://bblunt.com/cdn/shop/videos/c/vp/9d41619129504abd8c80adeefe936559/9d41619129504abd8c80adeefe936559.SD-480p-1.5Mbps-64951035.mp4?v=0",
+              //   mobileSrc:
+              //     "https://bblunt.com/cdn/shop/videos/c/vp/23170c4a114945e69f8075c035dd7bbe/23170c4a114945e69f8075c035dd7bbe.HD-1080p-7.2Mbps-64441147.mp4?v=0",
+              //   posterSrc: "/BannerCarousel/images/slide4-poster-desktop.jpg",
+              //   alt: "BBlunt Hair Care",
+              //   indicatorHeading: "Free 3-Step\nRoutine",
+              //   indicatorSubHeading: "Shop our",
+              // },
             ],
           },
         },

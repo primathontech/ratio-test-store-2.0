@@ -9,6 +9,7 @@
     "colors": {
       "primary": "#000000",
       "secondary": "#ffffff",
+      "black": "#000000",
       "surface": "#727272",
       "surface-4": "#F2F2F2",
       "faq-border": "#ECECEC",

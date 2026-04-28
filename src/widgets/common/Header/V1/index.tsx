@@ -405,7 +405,7 @@ function SearchInput({
         value={value ?? ""}
         onChange={(e) => onChange?.(e.target.value)}
         onClick={onClick}
-        className="w-[255px] h-[35px] min-h-[35px] rounded-[4px] bg-transparent pl-[35px] pr-[60px] pt-[8px] pb-[8px] text-[14px] font-[500] text-[#1d1d1d] placeholder:text-surface outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
+        className="w-[255px] h-[35px] min-h-[35px] rounded-[4px] bg-transparent pl-[33px] pr-[60px] pt-[8px] pb-[8px] text-[14px] font-[500] text-[#1d1d1d] placeholder:text-surface outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
         style={{
           fontFamily: "'Gotham', sans-serif",
           border: "1px solid #dddddd",
@@ -622,7 +622,7 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
     logo_url: "https://bblunt.com/cdn/shop/files/bbluntIcon.webp?v=1760440322",
     title: "Get this App",
     description: "For better experience and exclusive features",
-    button_text: "Use app",
+    button_text: "Get App",
   };
 
   const connectWithUsData = [
@@ -676,7 +676,7 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
 
           {/* ---- Desktop Navigation (visible from 1100px) ---- */}
           <nav className="hidden min-[1100px]:flex flex-1 h-full">
-            <ul className="list-none p-0 m-0 inline-flex items-stretch gap-[32px] pl-[47px] h-full">
+            <ul className="list-none p-0 m-0 inline-flex items-stretch gap-[22px] pl-[47px] h-full">
               {navigation.map((item, index) => (
                 <li key={index} className="relative group flex items-center">
                   <Link
@@ -703,7 +703,25 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
           <div className="flex-1 min-[1100px]:hidden" />
 
           {/* ---- Right Side: Search / Cart / Account ---- */}
-          <div className="flex items-center gap-[19px]">
+          <div className="flex items-center gap-[14px] xl:gap-[19px]">
+            {/* Get App - Only show on mobile, hide on tablet (md and up) */}
+            <Link
+              data-testid="header-get-app-button"
+              href={getAppData?.app_url || "#"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="md:hidden transition-all duration-200 ease-in-out flex items-center justify-center px-[6px] py-[3px] max-w-[65px] text-[12px] font-medium bg-black"
+              aria-label={getAppData?.button_text || "Get App"}
+              style={{
+                color: "#ffffff",
+                width: "71px",
+                height: "24px",
+                borderRadius: "100px",
+              }}
+            >
+              {getAppData?.button_text || "Get App"}
+            </Link>
+
             {/* Mobile/Tablet search icon (visible below 1100px) */}
             <button
               type="button"
@@ -719,7 +737,7 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
                   setMobileSearchOpen(true);
                 }
               }}
-              className="p-[4px] text-[#000000] min-[1100px]:hidden"
+              className="text-[#000000] min-[1100px]:hidden"
               aria-label="Search"
             >
               <SearchIcon />
