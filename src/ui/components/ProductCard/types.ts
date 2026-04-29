@@ -8,6 +8,12 @@
 export interface ProductCardProduct {
   /** Stable identifier — used as React key in cart/quantity helpers */
   id?: string | number;
+  /** Product identifier — used for cart add/lookup */
+  productId?: string;
+  /** Variant identifier — used for cart add/lookup */
+  variantId?: string;
+  /** Whether the product is purchasable. When false, the action button shows the sold-out state. */
+  availableForSale?: boolean;
   /** Product page URL */
   href: string;
   /** Product title */

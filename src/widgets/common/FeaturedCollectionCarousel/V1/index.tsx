@@ -7,6 +7,7 @@ import type { FeaturedCollectionCarouselProps, ApiProduct } from "../types";
 import { ProductCard } from "@/ui/components/ProductCard";
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
+import { useCartItem, useCartStore, type CartItem } from "@shopkit/cart";
 
 /* ------------------------------------------------------------------ */
 /*  SVG Icons                                                          */
@@ -86,6 +87,13 @@ function transformApiProduct(product: ApiProduct): ProductCardProduct {
   }
 
   return {
+    id: product.id,
+    productId: product.id,
+    variantId: product.variant?.id,
+    availableForSale:
+      typeof product.availableForSale === "boolean"
+        ? product.availableForSale
+        : product.variant?.availableForSale,
     href: `/products/${product.handle}`,
     title: product.title,
     alt,
@@ -105,12 +113,18 @@ function transformApiProduct(product: ApiProduct): ProductCardProduct {
   };
 }
 
+function getMainImage(product: ApiProduct): string {
+  return (
+    product.images?.find((img) => img.is_main)?.url || product.image_url || ""
+  );
+}
+
 /* ------------------------------------------------------------------ */
 /*  Extract products from COLLECTION API response                      */
 /* ------------------------------------------------------------------ */
 
 interface ExtractedCollection {
-  products: ProductCardProduct[];
+  products: ApiProduct[];
   totalProducts: number;
   handle: string;
 }
@@ -132,11 +146,116 @@ function extractFromData(
   }
 
   return {
-    products: products.map(transformApiProduct),
+    products: products as ApiProduct[],
     totalProducts: collection?.productPagination?.total || products.length,
     handle: collectionHandle || collection?.handle || "",
   };
 }
+
+/* ------------------------------------------------------------------ */
+/*  Cart-aware product card wrapper                                    */
+/* ------------------------------------------------------------------ */
+
+function buildCartItem(
+  product: ApiProduct,
+  cardProduct: ProductCardProduct
+): CartItem {
+  const variantId = product.variant?.id;
+  const productId = product.id;
+  const lineId = variantId ?? productId;
+
+  return {
+    id: lineId,
+    productId,
+    variantId,
+    sku: product.variant?.sku,
+    title: product.title,
+    price: { amount: product.price ?? 0, currencyCode: "INR" },
+    compareAtPrice:
+      typeof product.compare_at_price === "number"
+        ? { amount: product.compare_at_price, currencyCode: "INR" }
+        : undefined,
+    quantity: 1,
+    image: cardProduct.mainImage,
+    product_type: product.productType,
+  };
+}
+
+interface FeaturedCarouselCardProps {
+  product: ApiProduct;
+}
+
+const FeaturedCarouselCard = memo(function FeaturedCarouselCard({
+  product,
+}: FeaturedCarouselCardProps) {
+  const cardProduct = useMemo(() => transformApiProduct(product), [product]);
+  const productId = product.id;
+  const variantId = product.variant?.id;
+
+  const cartLine = useCartItem(productId, variantId);
+  const loadingItems = useCartStore((s) => s.loadingItems);
+  const addItem = useCartStore((s) => s.addItem);
+  const incrementItem = useCartStore((s) => s.incrementItem);
+  const decrementItem = useCartStore((s) => s.decrementItem);
+  const openCart = useCartStore((s) => s.openCart);
+
+  const isInCart = !!cartLine;
+  const isQuantityLoading =
+    (variantId ? !!loadingItems[variantId] : false) ||
+    (cartLine?.id ? !!loadingItems[cartLine.id] : false);
+
+  const handleAddToCart = useCallback(async () => {
+    if (cardProduct.availableForSale === false) {
+      return;
+    }
+    try {
+      await addItem(buildCartItem(product, cardProduct));
+      await openCart();
+    } catch (error) {
+      console.error("[FeaturedCollectionCarousel] addItem failed:", error);
+    }
+  }, [addItem, openCart, product, cardProduct]);
+
+  const handleIncrement = useCallback(async () => {
+    if (!cartLine) {
+      return;
+    }
+    try {
+      await incrementItem(cartLine.id, variantId);
+    } catch (error) {
+      console.error(
+        "[FeaturedCollectionCarousel] incrementItem failed:",
+        error
+      );
+    }
+  }, [incrementItem, cartLine, variantId]);
+
+  const handleDecrement = useCallback(async () => {
+    if (!cartLine) {
+      return;
+    }
+    try {
+      await decrementItem(cartLine.id, variantId);
+    } catch (error) {
+      console.error(
+        "[FeaturedCollectionCarousel] decrementItem failed:",
+        error
+      );
+    }
+  }, [decrementItem, cartLine, variantId]);
+
+  return (
+    <ProductCard
+      product={cardProduct}
+      onAddToCart={handleAddToCart}
+      onIncrement={handleIncrement}
+      onDecrement={handleDecrement}
+      isInCart={isInCart}
+      cartItem={cartLine}
+      isQuantityLoading={isQuantityLoading}
+    />
+  );
+});
 
 /* ------------------------------------------------------------------ */
 /*  Carousel breakpoints                                               */
@@ -166,7 +285,10 @@ export const V1 = memo(function V1({
     [data, collectionHandle]
   );
 
-  const products = extracted?.products ?? [];
+  const products = useMemo(
+    () => extracted?.products ?? [],
+    [extracted?.products]
+  );
   const totalProducts = extracted?.totalProducts ?? 0;
   const handle = extracted?.handle || collectionHandle;
 
@@ -178,7 +300,7 @@ export const V1 = memo(function V1({
       }
       return (
         <div className="md:border-r md:border-[#EBEBEB] overflow-hidden">
-          <ProductCard product={product} />
+          <FeaturedCarouselCard product={product} />
         </div>
       );
     },
@@ -304,31 +426,34 @@ export const V1 = memo(function V1({
             >
               {/* First 3 product preview images */}
               <span className="inline-flex flex-row-reverse items-center">
-                {products.slice(0, 3).map((p, i) => (
-                  <span
-                    key={i}
-                    className={`relative inline-flex overflow-hidden rounded-[6px] border border-[#dddddd] md:border-[3px] w-[20px] md:w-[32px] h-[20px] md:h-[32px] ${
-                      i === 0 ? "mr-0" : "mr-[-12px]"
-                    }`}
-                    style={{
-                      zIndex: products.slice(0, 3).length - i,
-                    }}
-                  >
-                    <Image
-                      src={
-                        p.mainImage.startsWith("//")
-                          ? `https:${p.mainImage}`
-                          : p.mainImage
-                      }
-                      alt=""
-                      width={27}
-                      height={27}
+                {products.slice(0, 3).map((p, i) => {
+                  const mainImage = getMainImage(p);
+                  return (
+                    <span
+                      key={p.id ?? i}
+                      className={`relative inline-flex overflow-hidden rounded-[6px] border border-[#dddddd] md:border-[3px] w-[20px] md:w-[32px] h-[20px] md:h-[32px] ${
+                        i === 0 ? "mr-0" : "mr-[-12px]"
+                      }`}
                       style={{
-                        objectFit: "cover",
+                        zIndex: products.slice(0, 3).length - i,
                       }}
-                    />
-                  </span>
-                ))}
+                    >
+                      <Image
+                        src={
+                          mainImage.startsWith("//")
+                            ? `https:${mainImage}`
+                            : mainImage
+                        }
+                        alt=""
+                        width={27}
+                        height={27}
+                        style={{
+                          objectFit: "cover",
+                        }}
+                      />
+                    </span>
+                  );
+                })}
               </span>
               <span className="text-[#000000] font-[500]">
                 View all {totalProducts} products

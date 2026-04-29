@@ -1,12 +1,13 @@
 "use client";
 
-import React, { memo, useMemo } from "react";
+import React, { memo, useCallback, useMemo } from "react";
 import type {
   FeaturedCollectionGridProps,
   FeaturedCollectionGridProduct,
   ApiProduct,
 } from "../types";
 import { ProductCard } from "@/ui/components/index";
+import { useCartItem, useCartStore, type CartItem } from "@shopkit/cart";
 
 /* ------------------------------------------------------------------ */
 /*  Transform: API product → ProductCardProduct                        */
@@ -36,6 +37,13 @@ function transformApiProduct(
   }
 
   return {
+    id: product.id,
+    productId: product.id,
+    variantId: product.variant?.id,
+    availableForSale:
+      typeof product.availableForSale === "boolean"
+        ? product.availableForSale
+        : product.variant?.availableForSale,
     href: `/products/${product.handle}`,
     title: product.title,
     alt,
@@ -60,17 +68,120 @@ function transformApiProduct(
 function extractProductsFromData(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any
-): FeaturedCollectionGridProduct[] | null {
-  if (!data || !data.success) return null;
+): ApiProduct[] | null {
+  if (!data || !data.success) {
+    return null;
+  }
 
   // DATA_SOURCE_TYPES.COLLECTION returns { success, data: { products: [...] } }
   const collection = data.data;
   const products = collection?.products;
 
-  if (!Array.isArray(products) || products.length === 0) return null;
+  if (!Array.isArray(products) || products.length === 0) {
+    return null;
+  }
 
-  return products.map(transformApiProduct);
+  return products as ApiProduct[];
 }
+
+/* ------------------------------------------------------------------ */
+/*  Cart-aware product card                                            */
+/* ------------------------------------------------------------------ */
+
+function buildCartItem(
+  product: ApiProduct,
+  cardProduct: FeaturedCollectionGridProduct
+): CartItem {
+  const variantId = product.variant?.id;
+  const productId = product.id;
+  const lineId = variantId ?? productId;
+
+  return {
+    id: lineId,
+    productId,
+    variantId,
+    sku: product.variant?.sku,
+    title: product.title,
+    price: { amount: product.price ?? 0, currencyCode: "INR" },
+    compareAtPrice:
+      typeof product.compare_at_price === "number"
+        ? { amount: product.compare_at_price, currencyCode: "INR" }
+        : undefined,
+    quantity: 1,
+    image: cardProduct.mainImage,
+    product_type: product.productType,
+  };
+}
+
+interface FeaturedCollectionGridCardProps {
+  product: ApiProduct;
+}
+
+const FeaturedCollectionGridCard = memo(function FeaturedCollectionGridCard({
+  product,
+}: FeaturedCollectionGridCardProps) {
+  const cardProduct = useMemo(() => transformApiProduct(product), [product]);
+  const productId = product.id;
+  const variantId = product.variant?.id;
+
+  const cartLine = useCartItem(productId, variantId);
+  const loadingItems = useCartStore((s) => s.loadingItems);
+  const addItem = useCartStore((s) => s.addItem);
+  const incrementItem = useCartStore((s) => s.incrementItem);
+  const decrementItem = useCartStore((s) => s.decrementItem);
+  const openCart = useCartStore((s) => s.openCart);
+
+  const isInCart = !!cartLine;
+  const isQuantityLoading =
+    (variantId ? !!loadingItems[variantId] : false) ||
+    (cartLine?.id ? !!loadingItems[cartLine.id] : false);
+
+  const handleAddToCart = useCallback(async () => {
+    if (cardProduct.availableForSale === false) {
+      return;
+    }
+    try {
+      await addItem(buildCartItem(product, cardProduct));
+      await openCart();
+    } catch (error) {
+      console.error("[FeaturedCollectionGrid] addItem failed:", error);
+    }
+  }, [addItem, openCart, product, cardProduct]);
+
+  const handleIncrement = useCallback(async () => {
+    if (!cartLine) {
+      return;
+    }
+    try {
+      await incrementItem(cartLine.id, variantId);
+    } catch (error) {
+      console.error("[FeaturedCollectionGrid] incrementItem failed:", error);
+    }
+  }, [incrementItem, cartLine, variantId]);
+
+  const handleDecrement = useCallback(async () => {
+    if (!cartLine) {
+      return;
+    }
+    try {
+      await decrementItem(cartLine.id, variantId);
+    } catch (error) {
+      console.error("[FeaturedCollectionGrid] decrementItem failed:", error);
+    }
+  }, [decrementItem, cartLine, variantId]);
+
+  return (
+    <ProductCard
+      product={cardProduct}
+      onAddToCart={handleAddToCart}
+      onIncrement={handleIncrement}
+      onDecrement={handleDecrement}
+      isInCart={isInCart}
+      cartItem={cartLine}
+      isQuantityLoading={isQuantityLoading}
+    />
+  );
+});
 
 /* ------------------------------------------------------------------ */
 /*  V1 — Category title banner + product grid                          */
@@ -124,7 +235,10 @@ export const V1 = memo(function V1({
         {/* Product grid: 2 cols mobile, 4 cols desktop */}
         <div className="grid grid-cols-2 lg:grid-cols-4">
           {products.map((product, idx) => (
-            <ProductCard key={product.href || idx} product={product} />
+            <FeaturedCollectionGridCard
+              key={product.id || idx}
+              product={product}
+            />
           ))}
         </div>
       </div>

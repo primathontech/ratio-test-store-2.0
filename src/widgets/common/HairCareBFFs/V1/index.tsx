@@ -11,6 +11,7 @@ import type {
 import { ProductCard, ProductCardTheme } from "@/ui/components/index";
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
+import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
 
 /* ------------------------------------------------------------------ */
 /*  SVG Icons                                                          */
@@ -90,6 +91,13 @@ function transformApiProduct(product: ApiProduct): ProductCardProduct {
   }
 
   return {
+    id: product.id,
+    productId: product.id,
+    variantId: product.variant?.id,
+    availableForSale:
+      typeof product.availableForSale === "boolean"
+        ? product.availableForSale
+        : product.variant?.availableForSale,
     href: `/products/${product.handle}`,
     title: product.title,
     alt,
@@ -116,7 +124,7 @@ function transformApiProduct(product: ApiProduct): ProductCardProduct {
 interface CollectionTab {
   name: string;
   handle: string;
-  products: ProductCardProduct[];
+  products: ApiProduct[];
   totalProducts: number;
 }
 
@@ -146,13 +154,133 @@ function extractTabsFromData(
     tabs.push({
       name: collectionData?.title || collection.handle,
       handle: collection.handle,
-      products: products.map(transformApiProduct),
+      products,
       totalProducts:
         collectionData?.productPagination?.total || products.length,
     });
   }
 
   return tabs.length > 0 ? tabs : null;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Cart-aware product card wrapper                                    */
+/* ------------------------------------------------------------------ */
+
+interface HairCareCardProps {
+  product: ApiProduct;
+  theme: ProductCardTheme;
+}
+
+function buildCartItem(
+  product: ApiProduct,
+  cardProduct: ProductCardProduct
+): CartItem {
+  const variantId = product.variant?.id;
+  const productId = product.id;
+  const lineId = variantId ?? productId;
+
+  return {
+    id: lineId,
+    productId,
+    variantId,
+    sku: product.variant?.sku,
+    title: product.title,
+    price: { amount: product.price ?? 0, currencyCode: "INR" },
+    compareAtPrice:
+      typeof product.compare_at_price === "number"
+        ? { amount: product.compare_at_price, currencyCode: "INR" }
+        : undefined,
+    quantity: 1,
+    image: cardProduct.mainImage,
+    product_type: product.productType,
+  };
+}
+
+const HairCareCard = memo(function HairCareCard({
+  product,
+  theme,
+}: HairCareCardProps) {
+  const cardProduct = useMemo(() => transformApiProduct(product), [product]);
+  const productId = product.id;
+  const variantId = product.variant?.id;
+
+  const items = useCartItems();
+  const loadingItems = useCartStore((s) => s.loadingItems);
+  const addItem = useCartStore((s) => s.addItem);
+  const incrementItem = useCartStore((s) => s.incrementItem);
+  const decrementItem = useCartStore((s) => s.decrementItem);
+  const openCart = useCartStore((s) => s.openCart);
+
+  const cartLine = useMemo(
+    () =>
+      items.find((i) => {
+        const lineProductId = i.productId ?? i.product_id;
+        const lineVariantId = i.variantId ?? i.variant_id;
+        return variantId
+          ? lineProductId === productId && lineVariantId === variantId
+          : lineProductId === productId;
+      }),
+    [items, productId, variantId]
+  );
+
+  const isInCart = !!cartLine;
+  const isQuantityLoading =
+    (variantId ? !!loadingItems[variantId] : false) ||
+    (cartLine?.id ? !!loadingItems[cartLine.id] : false);
+
+  const handleAddToCart = useCallback(async () => {
+    if (cardProduct.availableForSale === false) {
+      return;
+    }
+    try {
+      await addItem(buildCartItem(product, cardProduct));
+      await openCart();
+    } catch (error) {
+      console.error("[HairCareBFFs] addItem failed:", error);
+    }
+  }, [addItem, openCart, product, cardProduct]);
+
+  const handleIncrement = useCallback(async () => {
+    if (!cartLine) {
+      return;
+    }
+    try {
+      await incrementItem(cartLine.id, variantId);
+    } catch (error) {
+      console.error("[HairCareBFFs] incrementItem failed:", error);
+    }
+  }, [incrementItem, cartLine, variantId]);
+
+  const handleDecrement = useCallback(async () => {
+    if (!cartLine) {
+      return;
+    }
+    try {
+      await decrementItem(cartLine.id, variantId);
+    } catch (error) {
+      console.error("[HairCareBFFs] decrementItem failed:", error);
+    }
+  }, [decrementItem, cartLine, variantId]);
+
+  return (
+    <ProductCard
+      product={cardProduct}
+      theme={theme}
+      onAddToCart={handleAddToCart}
+      onIncrement={handleIncrement}
+      onDecrement={handleDecrement}
+      isInCart={isInCart}
+      cartItem={cartLine}
+      isQuantityLoading={isQuantityLoading}
+    />
+  );
+});
+
+function getMainImage(product: ApiProduct): string {
+  return (
+    product.images?.find((img) => img.is_main)?.url || product.image_url || ""
+  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -217,7 +345,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       }
       return (
         <div className={`${itemBorderClass} overflow-hidden`}>
-          <ProductCard product={product} theme={cardTheme} />
+          <HairCareCard product={product} theme={cardTheme} />
         </div>
       );
     },
@@ -366,31 +494,34 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
             >
               {/* First 3 product preview images */}
               <span className="inline-flex flex-row-reverse items-center">
-                {products.slice(0, 3).map((p, i) => (
-                  <span
-                    key={i}
-                    className={`relative inline-flex overflow-hidden rounded-[6px] border border-[#dddddd] md:border-[3px] w-[20px] md:w-[32px] h-[20px] md:h-[32px] ${
-                      i === 0 ? "mr-0" : "mr-[-12px]"
-                    }`}
-                    style={{
-                      zIndex: products.slice(0, 3).length - i,
-                    }}
-                  >
-                    <Image
-                      src={
-                        p.mainImage.startsWith("//")
-                          ? `https:${p.mainImage}`
-                          : p.mainImage
-                      }
-                      alt=""
-                      width={27}
-                      height={27}
+                {products.slice(0, 3).map((p, i) => {
+                  const mainImage = getMainImage(p);
+                  return (
+                    <span
+                      key={p.id ?? i}
+                      className={`relative inline-flex overflow-hidden rounded-[6px] border border-[#dddddd] md:border-[3px] w-[20px] md:w-[32px] h-[20px] md:h-[32px] ${
+                        i === 0 ? "mr-0" : "mr-[-12px]"
+                      }`}
                       style={{
-                        objectFit: "cover",
+                        zIndex: products.slice(0, 3).length - i,
                       }}
-                    />
-                  </span>
-                ))}
+                    >
+                      <Image
+                        src={
+                          mainImage.startsWith("//")
+                            ? `https:${mainImage}`
+                            : mainImage
+                        }
+                        alt=""
+                        width={27}
+                        height={27}
+                        style={{
+                          objectFit: "cover",
+                        }}
+                      />
+                    </span>
+                  );
+                })}
               </span>
               <span>View all {activeTab.totalProducts} products</span>
               <ViewAllChevronIcon />

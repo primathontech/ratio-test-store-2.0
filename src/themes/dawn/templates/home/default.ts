@@ -57,24 +57,24 @@ export const template: PageConfig = {
       type: DATA_SOURCE_TYPES.COLLECTION_BY_HANDLES,
       params: {
         handles: ["most-loved-home-page", "shampoo-haircarebffs"],
-        productLimit: 1,
       },
+      options: { params: { productLimit: 12 } },
       required: false,
     },
     mostLovedCarousel: {
       type: DATA_SOURCE_TYPES.COLLECTION,
       params: {
         handle: "most-loved-home-page",
-        productLimit: 20,
       },
+      options: { params: { productLimit: 12 } },
       required: false,
     },
     shampooCarousel: {
       type: DATA_SOURCE_TYPES.COLLECTION,
       params: {
         handle: "shampoo-haircarebffs",
-        productLimit: 1,
       },
+      options: { params: { productLimit: 12 } },
       required: false,
     },
   },

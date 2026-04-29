@@ -248,7 +248,11 @@ export const ProductCard = memo(function ProductCard({
   const textPrimary = colorOverride ?? t.textPrimary;
   const buttonTextColor = actionButtonTextColor ?? t.buttonColor;
   const isSoldOut =
-    isSoldOutProp !== undefined ? isSoldOutProp : product.salePrice <= 0;
+    isSoldOutProp !== undefined
+      ? isSoldOutProp
+      : product.availableForSale !== undefined
+        ? !product.availableForSale
+        : product.salePrice <= 0;
   const showInCartPill = isInCart && showQuantitySelector;
 
   return (
