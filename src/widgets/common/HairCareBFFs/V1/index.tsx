@@ -200,10 +200,14 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
   const tabsScrollRef = useRef<HTMLDivElement>(null);
 
   const cardTheme = ProductCardTheme.DARK;
-  const borderClass =
+  const outerBorderClass =
     cardTheme === ProductCardTheme.DARK
       ? "md:border md:border-white/20"
       : "md:border md:border-[#EBEBEB]";
+  const itemBorderClass =
+    cardTheme === ProductCardTheme.DARK
+      ? "md:border-r md:border-white/20"
+      : "md:border-r md:border-[#EBEBEB]";
 
   const renderProduct = useCallback(
     (idx: number) => {
@@ -211,19 +215,13 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       if (!product) {
         return null;
       }
-      const isFirst = idx === 0;
-      const isLast = idx === products.length - 1;
       return (
-        <div
-          className={`${borderClass} overflow-hidden ${
-            isFirst ? "rounded-l-[4px]" : ""
-          } ${isLast ? "rounded-r-[4px]" : ""}`}
-        >
+        <div className={`${itemBorderClass} overflow-hidden`}>
           <ProductCard product={product} theme={cardTheme} />
         </div>
       );
     },
-    [products, borderClass, cardTheme]
+    [products, itemBorderClass, cardTheme]
   );
 
   if (tabs.length === 0) {
@@ -267,7 +265,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
         <div className="flex flex-col items-start md:items-center text-center mb-[24px] md:mb-[30px] px-[15px] gap-[15px] md:gap-[30px]">
           {/* Heading */}
           <h4
-            className="text-[24px] lg:text-[28px] leading-[29px] md:leading-[34px]"
+            className="text-[24px] xl:text-[28px] leading-[29px] md:leading-[34px]"
             style={{
               color: "#ffffff",
               fontWeight: 400,
@@ -314,7 +312,9 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
         </div>
 
         {/* Carousel area */}
-        <div className="xl:mx-auto xl:max-w-[1300px]">
+        <div
+          className={`xl:mx-auto xl:max-w-[1300px] ${outerBorderClass} md:rounded-[8px] overflow-hidden`}
+        >
           <SwipeCarousel
             itemCount={products.length}
             breakpoints={HAIR_CARE_BFFS_BREAKPOINTS}

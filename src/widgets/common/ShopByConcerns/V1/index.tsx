@@ -135,7 +135,7 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
       return 5;
     }
     const w = window.innerWidth;
-    if (w < 768) {
+    if (w < 990) {
       return 2;
     }
     if (w < 1024) {
@@ -161,12 +161,14 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
   const canGoNext = currentIndex < maxIndex;
 
   const goPrev = useCallback(() => {
-    setCurrentIndex((prev) => Math.max(0, prev - 1));
-  }, []);
+    const visible = getVisibleCount();
+    setCurrentIndex((prev) => Math.max(0, prev - visible));
+  }, [getVisibleCount]);
 
   const goNext = useCallback(() => {
-    setCurrentIndex((prev) => Math.min(maxIndex, prev + 1));
-  }, [maxIndex]);
+    const visible = getVisibleCount();
+    setCurrentIndex((prev) => Math.min(maxIndex, prev + visible));
+  }, [maxIndex, getVisibleCount]);
 
   /* Calculate translateX based on currentIndex */
   /* Each tile width + gap, expressed as percentage of container */
@@ -184,12 +186,12 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
 
   return (
     <section
-      className="relative bg-[#ffffff] pt-[25px] md:pt-[56px] overflow-hidden"
+      className="relative bg-[#ffffff] pt-[44px] md:pt-[56px] overflow-hidden"
       aria-label="Shop by Concerns"
     >
       {/* Section Heading */}
       <h3
-        className="text-start md:text-center mb-[16px] md:mb-[30px] px-[16px] text-[24px] xl:text-[28px] mt-[25px] md:mt-0"
+        className="text-start md:text-center mb-[16px] md:mb-[30px] px-[16px] text-[24px] xl:text-[28px]"
         style={{
           fontFamily: "Gotham, sans-serif",
           lineHeight: "34px",
@@ -208,7 +210,7 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
           onClick={goPrev}
           disabled={!canGoPrev}
           aria-label="Previous"
-          className="hidden md:flex absolute md:left-[-16px] xl:left-[18px] top-[50%] -translate-y-[50%] z-[2] w-[40px] xl:w-[46px] h-[40px] xl:h-[46px] items-center justify-center bg-[#ffffff] text-[#1D1D1D]"
+          className="hidden md:flex absolute left-[2px] lg:left-[5px] xl:left-[18px] top-[50%] -translate-y-[50%] z-[2] w-[40px] xl:w-[46px] h-[40px] xl:h-[46px] items-center justify-center text-[#1D1D1D]"
         >
           <span
             className="inline-flex transition-opacity duration-300"
@@ -219,9 +221,9 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
         </button>
 
         {/* Slider viewport */}
-        <div className="overflow-hidden" ref={containerRef}>
+        <div className="overflow-hidden pl-0 md:pl-[15px]" ref={containerRef}>
           <div
-            className="flex gap-[8px] md:gap-[15px] transition-transform duration-[400ms] ease-in-out pl-0 md:pl-[15px]"
+            className="flex gap-[8px] lg:gap-[15px] transition-transform duration-[400ms] ease-in-out"
             style={{ transform: `translateX(${getTranslateX()})` }}
           >
             {tiles.map((tile, i) => (
@@ -242,7 +244,7 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
           onClick={goNext}
           disabled={!canGoNext}
           aria-label="Next"
-          className="hidden md:flex absolute md:right-[-11px] xl:right-[18px] top-[50%] -translate-y-[50%] z-[2] w-[40px] xl:w-[46px] h-[40px] xl:h-[46px] items-center justify-center bg-[#ffffff] text-[#1D1D1D]"
+          className="hidden md:flex absolute right-[0px] lg:right-[-11px] xl:right-[18px] top-[50%] -translate-y-[50%] z-[2] w-[40px] xl:w-[46px] h-[40px] xl:h-[46px] items-center justify-center text-[#1D1D1D]"
         >
           <span
             className="inline-flex transition-opacity duration-300"

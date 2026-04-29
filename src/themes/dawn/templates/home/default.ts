@@ -407,8 +407,8 @@ export const template: PageConfig = {
       "For Party Ready Hair",
       "For ",
       "Party Ready Hair at Home",
-      "mostLovedCarousel",
-      "most-loved-home-page"
+      "shampooCarousel",
+      "shampoo-haircarebffs"
     ),
 
     // For Dull & Dry Hair — FeaturedCollectionCarousel #3

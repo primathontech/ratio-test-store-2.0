@@ -125,12 +125,12 @@ const TestimonialCard = memo(function TestimonialCard({
           </h4>
 
           {/* Description */}
-          <p className="text-[14px] md:text-[14px] leading-[21.5px] font-[400] mb-[2.6rem] text-[#ffffff] font-[Gotham,sans-serif] m-0">
+          <p className="text-[14px] md:text-[14px] leading-[22.5px] font-[400] mb-[20px] md:mb-[2.6rem] text-[#ffffff] font-[Gotham,sans-serif] m-0">
             {item.reviewText}
           </p>
 
           {/* Star rating (bottom-left) */}
-          <div className="w-fit">
+          <div className="w-fit pt-[1px]">
             <StarRating
               count={item.stars}
               starColor={starColor}
@@ -225,13 +225,13 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
   return (
     <section
       ref={sectionRef}
-      className="w-full pb-[24.6px] md:pb-[56px] pt-0"
+      className="w-full pb-[24.6px] md:pb-[46.7px] xl:pb-[56px] pt-0"
       aria-label="Customer testimonials"
     >
-      <div className="mx-auto max-w-[1400px] pl-[15px] md:pl-[30px] lg:px-[50px]">
+      <div className="mx-auto max-w-[1400px] pl-[15px] md:pl-[30px] pr-0 md:pr-[30px] xl:px-[50px]">
         {/* Section heading */}
         <div className="mt-[25px] md:mt-[56px] mb-[16px] md:mb-[30px] text-left md:text-center testimonials-animate-on-scroll">
-          <h2 className="text-[24px] md:text-[28px] leading-[29px] lg:leading-[40px] font-[400] text-[#000000] font-[Gotham,sans-serif] m-0 md:inline-block md:text-left lg:block lg:text-center">
+          <h2 className="text-[24px] xl:text-[28px] leading-[29px] lg:leading-[40px] font-[400] text-[#000000] font-[Gotham,sans-serif] m-0 md:inline-block md:text-left lg:block lg:text-center">
             {headingRegular}{" "}
             <strong className="font-[700] block lg:inline">
               {headingBold}
@@ -251,7 +251,7 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
           {testimonials.map((item, idx) => (
             <div
               key={idx}
-              className="testimonials-slide shrink-0 w-[75%] md:w-[calc((100%-22px)/2)] lg:w-[calc((100%-44px)/3)]"
+              className="testimonials-slide shrink-0 w-[75%] md:w-[calc((100%-22px)/2)] min-[1150px]:w-[calc((100%-44px)/3)]"
               style={{ scrollSnapAlign: "start" }}
             >
               <TestimonialCard

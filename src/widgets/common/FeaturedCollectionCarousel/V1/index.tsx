@@ -176,14 +176,8 @@ export const V1 = memo(function V1({
       if (!product) {
         return null;
       }
-      const isFirst = idx === 0;
-      const isLast = idx === products.length - 1;
       return (
-        <div
-          className={`md:border md:border-[#EBEBEB] overflow-hidden ${
-            isFirst ? "rounded-l-[4px]" : ""
-          } ${isLast ? "rounded-r-[4px]" : ""}`}
-        >
+        <div className="md:border-r md:border-[#EBEBEB] overflow-hidden">
           <ProductCard product={product} />
         </div>
       );
@@ -208,7 +202,7 @@ export const V1 = memo(function V1({
         {/* Heading */}
         <div className="flex flex-col items-start md:items-center text-center mb-[24px] md:mb-[30px] px-[15px]">
           <h4
-            className="text-[24px] lg:text-[28px] leading-[29px] md:leading-[34px]"
+            className="text-[24px] xl:text-[28px] leading-[29px] md:leading-[34px]"
             style={{
               color: "#1D1D1D",
               fontWeight: 400,
@@ -222,7 +216,7 @@ export const V1 = memo(function V1({
         </div>
 
         {/* Carousel area */}
-        <div className="group xl:mx-auto xl:max-w-[1300px]">
+        <div className="group xl:mx-auto xl:max-w-[1300px] md:border md:border-[#EBEBEB] md:rounded-[8px] overflow-hidden">
           <SwipeCarousel
             itemCount={products.length}
             breakpoints={CAROUSEL_BREAKPOINTS}

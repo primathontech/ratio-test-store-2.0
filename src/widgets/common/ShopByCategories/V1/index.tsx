@@ -149,10 +149,25 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
 
       {/* Carousel wrapper — relative for nav button positioning */}
       <div className="relative">
+        {/* Prev button — visible only between 769px and 989px */}
+        <button
+          onClick={() => scrollBy("prev")}
+          disabled={!canScrollLeft}
+          aria-label="Previous"
+          className="hidden min-[768px]:flex min-[990px]:hidden absolute left-[2px] lg:left-[5px] top-[50%] -translate-y-[50%] z-[2] w-[40px] h-[40px] items-center justify-center text-[#1D1D1D]"
+        >
+          <span
+            className="inline-flex transition-opacity duration-300"
+            style={{ opacity: canScrollLeft ? 1 : 0.4 }}
+          >
+            <PrevArrow />
+          </span>
+        </button>
+
         {/* Scrollable viewport */}
         <div
           ref={viewportRef}
-          className="px-[10px] lg:px-[30px] xl:px-[70px] overflow-x-auto hide-scrollbar"
+          className="px-[10px] md:px-[30px] lg:px-[30px] xl:px-[70px] overflow-x-auto hide-scrollbar"
         >
           <div className="sbc-cat-container flex">
             {tiles.map((tile, i) => (
@@ -189,9 +204,9 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
                       loading="lazy"
                     />
                   </div>
-                  {/* Label — visible only on mobile (<992px) */}
+                  {/* Label — visible only on mobile (<768px) */}
                   <div
-                    className="sbc-cat-label mt-[8px] lg:hidden text-[14px]"
+                    className="sbc-cat-label mt-[8px] md:hidden text-[14px]"
                     style={{
                       fontFamily: "Gotham, sans-serif",
                       lineHeight: "19px",
@@ -206,6 +221,21 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
             ))}
           </div>
         </div>
+
+        {/* Next button — visible only between 769px and 989px */}
+        <button
+          onClick={() => scrollBy("next")}
+          disabled={!canScrollRight}
+          aria-label="Next"
+          className="hidden min-[768px]:flex min-[990px]:hidden absolute right-[2px] lg:right-[5px] top-[50%] -translate-y-[50%] z-[2] w-[40px] h-[40px] items-center justify-center text-[#1D1D1D]"
+        >
+          <span
+            className="inline-flex transition-opacity duration-300"
+            style={{ opacity: canScrollRight ? 1 : 0.4 }}
+          >
+            <NextArrow />
+          </span>
+        </button>
       </div>
     </section>
   );

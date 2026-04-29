@@ -676,7 +676,7 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
 
           {/* ---- Desktop Navigation (visible from 1100px) ---- */}
           <nav className="hidden min-[1100px]:flex flex-1 h-full">
-            <ul className="list-none p-0 m-0 inline-flex items-stretch gap-[22px] pl-[47px] h-full">
+            <ul className="list-none p-0 m-0 inline-flex items-stretch gap-[22px] min-[1450px]:gap-[32px] pl-[47px] h-full">
               {navigation.map((item, index) => (
                 <li key={index} className="relative group flex items-center">
                   <Link
