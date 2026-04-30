@@ -130,9 +130,6 @@ export const template: PageConfig = {
             rupeeSymbol: "₹",
             addToCartText: "Add to Cart",
 
-            // Gallery tuning — forward-compat. Widget currently uses the
-            // hardcoded GALLERY_DEFAULTS (see PDP_PRODUCT_GALLERY_FLOW.md §7.2);
-            // these values are accepted but not yet plumbed through.
             productGallery: {
               variant: "v1",
               layout: "vertical",
