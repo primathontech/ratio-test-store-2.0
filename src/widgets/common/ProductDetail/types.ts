@@ -17,6 +17,7 @@ export enum ProductMetadataKey {
   PRODUCT_NET_CONTENT = "product_net_content",
   PRODUCT_SUBTITLE = "product_subtitle",
   REASONS_TO_LOVE_IMAGE = "reasons_to_love_image",
+  REASONS_TO_LOVE_OBJECT = "reasons_to_love_object",
   TRUST_BADGES = "trust_badges",
   WHAT_IT_DOES = "what_it_does",
   RATING = "rating",
@@ -152,6 +153,19 @@ export interface ApiProductDetailCard {
   };
 }
 
+/** Reason-to-love card from reasons_to_love_object metadata */
+export interface ApiReasonToLoveCard {
+  id: string;
+  type: string;
+  handle: string;
+  status: string;
+  fields: {
+    title: { value: string[]; data_type: string };
+    content: { value: string[]; data_type: string };
+    image: { value: string[]; data_type: string };
+  };
+}
+
 /** Product detail tab from product_details metadata */
 export interface ApiProductDetailTab {
   id: string;
@@ -178,6 +192,10 @@ export interface ApiProductMetadata {
   [ProductMetadataKey.PRODUCT_SUBTITLE]?: ApiMetadataField;
   [ProductMetadataKey.REASONS_TO_LOVE_IMAGE]?: {
     value: string[];
+    data_type: string;
+  };
+  [ProductMetadataKey.REASONS_TO_LOVE_OBJECT]?: {
+    value: ApiReasonToLoveCard[];
     data_type: string;
   };
   [ProductMetadataKey.TRUST_BADGES]?: { value: string[]; data_type: string };

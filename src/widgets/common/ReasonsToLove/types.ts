@@ -9,19 +9,7 @@ export interface ReasonsToLoveSettings {
   variant?: string;
 
   /** Section heading text */
-  heading?: string;
-
-  /** Main image source */
-  imageSrc?: string;
-
-  /** Image alt text */
-  imageAlt?: string;
-
-  /** Image natural width (for next/image) */
-  imageWidth?: number;
-
-  /** Image natural height (for next/image) */
-  imageHeight?: number;
+  sectionTitle?: string;
 }
 
 /**
