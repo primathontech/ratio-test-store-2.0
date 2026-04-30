@@ -11,6 +11,7 @@ import React, {
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useCartTotalQuantity, useCartStore } from "@shopkit/cart";
 import { HeaderProps, NavItem, NavDropdownGroup } from "../types";
 import { CartBadge } from "../components/CartBadge";
 import { MobileNavigationDrawer } from "../components/MobileDrawer";
@@ -444,7 +445,7 @@ function SearchInput({
 
 /* ──────────────────────── Main Header V1 ──────────────────────── */
 
-export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
+export const V1 = memo(function V1({ settings, className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -608,9 +609,9 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
   const navigation = settings?.navigation ?? DEFAULT_NAV;
   const logoSrc = settings?.logoSrc ?? "/Header/images/logo.png";
   const logoAlt = settings?.logoAlt ?? "BBlunt";
-  const cartHref = settings?.cartHref ?? "/cart";
   const accountHref = settings?.accountHref ?? "/account";
-  const cartCount = data?.cartCount ?? 0;
+  const cartCount = useCartTotalQuantity();
+  const openCart = useCartStore((s) => s.openCart);
   const backgroundColor = settings?.backgroundColor ?? "#ffffff";
 
   const closeMobileMenu = useCallback(() => {
@@ -766,9 +767,12 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
             </div>
 
             {/* Cart */}
-            <Link
-              href={cartHref}
-              className="relative flex items-center gap-[16px] text-[#000000] no-underline"
+            <button
+              type="button"
+              onClick={() => {
+                void openCart();
+              }}
+              className="relative flex items-center gap-[16px] text-[#000000] no-underline bg-transparent border-0 p-0 cursor-pointer"
               aria-label={`Cart with ${cartCount} items`}
             >
               <span className="relative">
@@ -782,7 +786,7 @@ export const V1 = memo(function V1({ data, settings, className }: HeaderProps) {
               >
                 Cart
               </span>
-            </Link>
+            </button>
 
             {/* Account: hidden on mobile <768px, visible on tablet + desktop */}
             <Link
