@@ -23,6 +23,18 @@ module.exports = createNextConfig({
         port: "",
         pathname: "/**",
       },
+      {
+        protocol: "https",
+        hostname: "gkwk-dev-os-resources.s3.ap-south-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "os-resources.gokwik.co",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 
