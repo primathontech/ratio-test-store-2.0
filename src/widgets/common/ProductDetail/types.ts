@@ -224,14 +224,45 @@ export interface ApiProduct {
 /* ------------------------------------------------------------------ */
 
 /**
- * A product image in the gallery
+ * A product image (or video) in the gallery. Field names match the API
+ * response so the gallery components can consume API data without remapping.
  */
 export interface ProductImage {
-  src: string;
-  alt: string;
-  isVideo?: boolean;
-  videoThumbnail?: string;
+  url: string;
+  altText: string;
+  id?: string;
+  /** Media type from the API (e.g. "IMAGE" or "VIDEO") */
+  type?: string;
+  /** Poster/thumbnail used when rendering a VIDEO entry */
+  thumbnail_url?: string;
 }
+
+/**
+ * Color-tagged product label (e.g. green "Get2@₹599" pill on the main image).
+ * Built from `product_labels` metadata.
+ */
+export interface ProductLabel {
+  key: string;
+  label: string;
+  background: string;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Gallery — Layout / Style enums                                     */
+/* ------------------------------------------------------------------ */
+
+export type TLayoutMode = "vertical" | "horizontal" | "minimal";
+
+export type TAutoPlayAnimation = "slide-left" | "slide-right" | "fade" | "none";
+
+export type TThumbnailLayout = "single-row" | "multi-row";
+
+export type TNavigationArrowPosition = {
+  left?: string;
+  right?: string;
+  top?: string;
+  bottom?: string;
+};
 
 /**
  * A product variant/shade option
@@ -303,6 +334,67 @@ export interface ProductDetailSettings {
 
   /** Badge text on top of image (e.g., "Get3@...799") */
   badgeText?: string;
+
+  /* ------------------------------------------------------------------ */
+  /*  BbluntProductInfo content / translation strings                    */
+  /* ------------------------------------------------------------------ */
+
+  /** Plural-friendly suffix after review count (e.g. "reviews"). */
+  reviewsText?: string;
+
+  /** MRP label (e.g. "M.R.P."). */
+  mrp?: string;
+
+  /** Discount suffix appended to the percentage (e.g. "% off"). */
+  discount?: string;
+
+  /** USP label inside the per-unit price block (e.g. "USP"). */
+  usp?: string;
+
+  /** Currency symbol used wherever a price is rendered. */
+  rupeeSymbol?: string;
+
+  /** Heading shown above the variant cards. */
+  selectSizeText?: string;
+
+  /** Label rendered on the ATC button when the product is sold out. */
+  soldOutText?: string;
+
+  /** Heading prefix on the net-content line (e.g. "Net content"). */
+  netContentText?: string;
+
+  /** Italic note below the price (e.g. "Incl. of all taxes"). */
+  inclusiveOfAllTaxesText?: string;
+
+  /* ------------------------------------------------------------------ */
+  /*  Coupon marquee (between price and variant picker)                  */
+  /* ------------------------------------------------------------------ */
+
+  showProductMarquee?: boolean;
+  productMarqueeText?: string;
+  productMarqueeCouponCode?: string;
+  productMarqueeSpeed?: string;
+  productMarqueeHref?: string;
+
+  /* ------------------------------------------------------------------ */
+  /*  Forward-compat — gallery + responsive sub-objects                  */
+  /* ------------------------------------------------------------------ */
+
+  /**
+   * Gallery tuning sub-object — the widget currently uses the hardcoded
+   * `GALLERY_DEFAULTS` from `../constants`, per
+   * `docs/PDP_PRODUCT_GALLERY_FLOW.md` §7.2. The field is typed loosely
+   * so templates can include it for forward compatibility without a
+   * type error if/when we wire it through.
+   */
+  productGallery?: Record<string, unknown>;
+
+  /**
+   * Widget-level responsive overrides (e.g. `mobile.stackVertically`,
+   * `mobile.galleryWidth`). Currently informational — the V1 layout
+   * always stacks on mobile and renders 50/50 on desktop.
+   */
+  responsive?: Record<string, unknown>;
 }
 
 /**

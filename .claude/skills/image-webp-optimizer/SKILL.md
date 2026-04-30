@@ -14,10 +14,12 @@ Convert images to WebP using `cwebp`, replace all codebase references, remove or
 ```
 
 **Arguments:**
+
 - `<path>` — One or more image files or directories (required). Directories are searched recursively.
 - `--quality N` — WebP quality 1–100 (default: 80)
 
 **Examples:**
+
 ```
 /image-webp-optimizer src/assets/hero.jpg
 /image-webp-optimizer src/assets/hero.jpg public/images/banner.png
@@ -36,12 +38,14 @@ Follow these 4 steps strictly in order for each invocation.
 3. Remaining tokens are file/directory paths (relative to project root)
 
 **Quality safeguards:**
+
 - If quality < 60 → warn user and clamp to 60: `"Quality clamped to 60 — values below this cause severe artifacts"`
 - If quality < 70 → warn: `"Low quality setting may cause visible artifacts"`
 
 ### Step 2 — Collect Target Files
 
 For each path argument:
+
 - **If file:** Add to conversion list if extension is `.jpg`, `.jpeg`, `.png`, `.gif`, or `.bmp`
 - **If directory:** Use Glob to find `**/*.{jpg,jpeg,png,gif,bmp}` recursively, add all matches
 - **Skip** any `.webp` files silently
@@ -60,6 +64,7 @@ cwebp -q <quality> "<input-path>" -o "<output-path>"
 Where `<output-path>` replaces the original extension with `.webp` (e.g., `hero.jpg` → `hero.webp`).
 
 After conversion, check sizes using `stat` or `ls -l`:
+
 - Record **before** size (original) and **after** size (webp output)
 - If output is **larger** than original → delete the `.webp` output, mark file as `skipped — original smaller`, and move to next file
 - If `cwebp` command fails → mark as `failed`, move to next file
@@ -83,6 +88,7 @@ For each successfully converted file where the `.webp` is smaller:
 3. **Only then** delete the original: `rm "<original-path>"`
 
 **Never delete if:**
+
 - Conversion failed
 - Output was larger (already cleaned up in Step 3)
 - `.webp` file doesn't exist on disk
@@ -120,10 +126,10 @@ Format sizes in human-readable units (KB/MB). Include skipped and failed files i
 
 ## Common Mistakes
 
-| Mistake | Prevention |
-|---------|-----------|
+| Mistake                               | Prevention                                             |
+| ------------------------------------- | ------------------------------------------------------ |
 | Deleting original when webp is larger | Always compare sizes first; delete webp output instead |
-| Missing references in CSS `url()` | Grep for bare filename, not just `src=` patterns |
-| Converting already-optimized PNGs | Check if webp output is larger; skip if so |
-| Breaking imports with wrong path | Replace only the extension, not the full path |
-| Quality too low causing artifacts | Enforce floor of 60, warn below 70 |
+| Missing references in CSS `url()`     | Grep for bare filename, not just `src=` patterns       |
+| Converting already-optimized PNGs     | Check if webp output is larger; skip if so             |
+| Breaking imports with wrong path      | Replace only the extension, not the full path          |
+| Quality too low causing artifacts     | Enforce floor of 60, warn below 70                     |

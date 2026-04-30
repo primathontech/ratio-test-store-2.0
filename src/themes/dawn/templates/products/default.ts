@@ -109,6 +109,71 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
+
+            // Coupon marquee (between price block and variant picker)
+            showProductMarquee: true,
+            productMarqueeText: "Shop for ₹499 & Get 2 Bestsellers Free",
+            productMarqueeCouponCode: "FREEHF",
+            productMarqueeSpeed: "8s",
+            productMarqueeHref:
+              "https://bblunt.com/pages/shine-squad-weekly-offer",
+
+            // Right-column copy
+            netContentText: "Net content",
+            inclusiveOfAllTaxesText: "Incl. of all taxes",
+            reviewsText: "reviews",
+            mrp: "M.R.P.",
+            usp: "USP",
+            discount: "% off",
+            selectSizeText: "Select Size",
+            soldOutText: "Sold out",
+            rupeeSymbol: "₹",
+            addToCartText: "Add to Cart",
+
+            // Gallery tuning — forward-compat. Widget currently uses the
+            // hardcoded GALLERY_DEFAULTS (see PDP_PRODUCT_GALLERY_FLOW.md §7.2);
+            // these values are accepted but not yet plumbed through.
+            productGallery: {
+              variant: "v1",
+              layout: "vertical",
+              mainImageRadius: 0,
+              mobileMainImageRadius: 0,
+              showNavigationArrows: true,
+              navigationArrowSize: 46,
+              navigationArrowBgColor: "#ffffff",
+              navigationArrowIconColor: "#000000",
+              navigationArrowShape: "circle",
+              thumbnailSize: "81px",
+              mobileThumbnailSize: "18.5%",
+              thumbnailRadius: 6,
+              thumbnailSpacing: 16,
+              mobileThumbnailSpacing: 10,
+              activeThumbnailBorderColor: "#000000",
+              activeThumbnailBorderWidth: 2,
+              thumbnailsPerRow: 4,
+              thumbnailLayout: "single-row",
+              showThumbnailArrows: false,
+              enableHoverPreview: true,
+              autoPlay: false,
+              autoPlayInterval: 1500,
+              autoPlayAnimation: "slide-left",
+              pauseOnHover: true,
+              showExpandIcon: false,
+              enableZoom: true,
+              lightboxBgColor: "rgba(255, 255, 255, 1)",
+              lightboxOverlayOpacity: 1,
+              enablePinchZoom: true,
+              zoomIconColor: "#000",
+            },
+
+            responsive: {
+              mobile: {
+                stackVertically: true,
+                galleryWidth: 100,
+                infoWidth: 100,
+                gap: 24,
+              },
+            },
           },
         },
       ],

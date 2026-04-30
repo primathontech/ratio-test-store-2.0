@@ -87,15 +87,17 @@ const IngredientsContent = ({
   <div className="flex flex-col gap-[24px]">
     {ingredients.map((item, i) => (
       <div key={i} className="flex items-center gap-[16px]">
-        <div className="shrink-0 w-[108px] h-[122px] relative">
-          <Image
-            src={item.image}
-            alt={item.text}
-            fill
-            className="object-contain"
-            sizes="108px"
-          />
-        </div>
+        {item.image && (
+          <div className="shrink-0 w-[108px] h-[122px] relative">
+            <Image
+              src={item.image}
+              alt={item.text}
+              fill
+              className="object-contain"
+              sizes="108px"
+            />
+          </div>
+        )}
         <div className="flex flex-col">
           <span className="text-[14px] leading-[22px] font-[700] text-[#0089dd]">
             {item.label}
@@ -240,10 +242,24 @@ const AccordionItem = ({
 /*  V1 — ProductTabs (Accordion layout)                                */
 /* ------------------------------------------------------------------ */
 
+/**
+ * The API types declare these field values as `string[]`, but the API
+ * sometimes returns a single string instead. Indexing a string with `[0]`
+ * silently returns its first character (e.g. "h" for "https://..."),
+ * which then breaks `next/image`. Always go through this helper.
+ */
+function pickFirstString(value: unknown): string {
+  if (Array.isArray(value)) {
+    const first = value[0];
+    return typeof first === "string" ? first : "";
+  }
+  return typeof value === "string" ? value : "";
+}
+
 /** Transform API product_details into ProductTab[] */
 function transformApiTabs(apiTabs: ApiProductDetailTab[]): ProductTab[] {
   return apiTabs.map((tab) => {
-    const title = tab.fields.tab_title?.value?.[0] || "Tab";
+    const title = pickFirstString(tab.fields.tab_title?.value) || "Tab";
     const cards = tab.fields.tab_content?.value || [];
 
     // Detect tab type by handle prefix
@@ -253,8 +269,8 @@ function transformApiTabs(apiTabs: ApiProductDetailTab[]): ProductTab[] {
         title,
         type: ProductTabType.STEPS,
         steps: cards.map((card, i) => ({
-          label: card.fields.title?.value?.[0] || `Step ${i + 1}`,
-          text: card.fields.content?.value?.[0] || "",
+          label: pickFirstString(card.fields.title?.value) || `Step ${i + 1}`,
+          text: pickFirstString(card.fields.content?.value),
         })),
       };
     }
@@ -263,9 +279,9 @@ function transformApiTabs(apiTabs: ApiProductDetailTab[]): ProductTab[] {
         title,
         type: ProductTabType.INGREDIENTS,
         ingredients: cards.map((card) => ({
-          image: card.fields.image?.value?.[0] || "",
+          image: pickFirstString(card.fields.image?.value),
           label: "",
-          text: card.fields.content?.value?.[0] || "",
+          text: pickFirstString(card.fields.content?.value),
         })),
       };
     }
@@ -273,7 +289,7 @@ function transformApiTabs(apiTabs: ApiProductDetailTab[]): ProductTab[] {
       return {
         title,
         type: ProductTabType.LIST,
-        items: cards.map((card) => card.fields.content?.value?.[0] || ""),
+        items: cards.map((card) => pickFirstString(card.fields.content?.value)),
       };
     }
     if (handle.startsWith(ProductTabHandlePrefix.INGREDIENTS_LIST)) {
@@ -281,8 +297,8 @@ function transformApiTabs(apiTabs: ApiProductDetailTab[]): ProductTab[] {
         title,
         type: ProductTabType.INGREDIENTS_LIST,
         ingredientListings: cards.map((card) => ({
-          label: card.fields.title?.value?.[0] || "",
-          text: card.fields.content?.value?.[0] || "",
+          label: pickFirstString(card.fields.title?.value),
+          text: pickFirstString(card.fields.content?.value),
         })),
       };
     }
@@ -290,7 +306,7 @@ function transformApiTabs(apiTabs: ApiProductDetailTab[]): ProductTab[] {
     return {
       title,
       type: ProductTabType.LIST,
-      items: cards.map((card) => card.fields.content?.value?.[0] || ""),
+      items: cards.map((card) => pickFirstString(card.fields.content?.value)),
     };
   });
 }
