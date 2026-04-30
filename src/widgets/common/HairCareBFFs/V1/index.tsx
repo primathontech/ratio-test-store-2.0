@@ -210,7 +210,6 @@ const HairCareCard = memo(function HairCareCard({
   const addItem = useCartStore((s) => s.addItem);
   const incrementItem = useCartStore((s) => s.incrementItem);
   const decrementItem = useCartStore((s) => s.decrementItem);
-  const openCart = useCartStore((s) => s.openCart);
 
   const cartLine = useMemo(
     () =>
@@ -235,11 +234,10 @@ const HairCareCard = memo(function HairCareCard({
     }
     try {
       await addItem(buildCartItem(product, cardProduct));
-      await openCart();
     } catch (error) {
       console.error("[HairCareBFFs] addItem failed:", error);
     }
-  }, [addItem, openCart, product, cardProduct]);
+  }, [addItem, product, cardProduct]);
 
   const handleIncrement = useCallback(async () => {
     if (!cartLine) {

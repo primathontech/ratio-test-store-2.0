@@ -129,7 +129,6 @@ const FeaturedCollectionGridCard = memo(function FeaturedCollectionGridCard({
   const addItem = useCartStore((s) => s.addItem);
   const incrementItem = useCartStore((s) => s.incrementItem);
   const decrementItem = useCartStore((s) => s.decrementItem);
-  const openCart = useCartStore((s) => s.openCart);
 
   const isInCart = !!cartLine;
   const isQuantityLoading =
@@ -142,11 +141,10 @@ const FeaturedCollectionGridCard = memo(function FeaturedCollectionGridCard({
     }
     try {
       await addItem(buildCartItem(product, cardProduct));
-      await openCart();
     } catch (error) {
       console.error("[FeaturedCollectionGrid] addItem failed:", error);
     }
-  }, [addItem, openCart, product, cardProduct]);
+  }, [addItem, product, cardProduct]);
 
   const handleIncrement = useCallback(async () => {
     if (!cartLine) {
