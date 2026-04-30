@@ -55,10 +55,10 @@ const KwikPassCustom = dynamic(
   { ssr: false }
 );
 
-const CustomCartDrawer = dynamic(
+const CartDrawer = dynamic(
   () =>
-    import("@/integrations/cart-drawer-custom").then((mod) => ({
-      default: mod.CustomCartDrawer,
+    import("@/widgets/common/CartDrawer").then((mod) => ({
+      default: mod.CartDrawer,
     })),
   { ssr: false }
 );
@@ -120,7 +120,7 @@ export default async function RootLayout({
           <AppCartInitializer merchantName={merchantName} />
           {children}
           {hasKwikcartDisabled ? (
-            <CustomCartDrawer locale={locale as "en"} />
+            <CartDrawer locale={locale as "en"} />
           ) : (
             <KwikCartRemounter />
           )}

@@ -13,34 +13,8 @@
 
 @layer base {
   /* Base styles that use CSS variables from theme */
-  html {
-    @apply antialiased text-[62.5%];
-  }
-
   body {
     @apply bg-background text-text font-body min-h-screen;
-  }
-
-  /* FBT font size overrides (rem base is 62.5%) */
-  #fbt-container-shopify .text-xs {
-    font-size: 1.2rem;
-  }
-  #fbt-container-shopify .text-sm {
-    font-size: 1.4rem;
-  }
-  #fbt-container-shopify .text-base {
-    font-size: 1.6rem;
-  }
-  #fbt-container-shopify .text-lg {
-    font-size: 1.8rem;
-  }
-  #fbt-container-shopify .text-xl {
-    font-size: 2rem;
-  }
-  @media (min-width: 768px) {
-    #fbt-container-shopify .md\:text-xl {
-      font-size: 2rem;
-    }
   }
 
   /* Typography defaults */
