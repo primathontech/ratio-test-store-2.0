@@ -59,7 +59,7 @@ const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
   <svg
     className={[
       "transition-transform duration-[400ms] delay-[100ms]",
-      isOpen ? "rotate-180" : "rotate-0",
+      isOpen ? "rotate-0" : "rotate-180",
     ].join(" ")}
     xmlns="http://www.w3.org/2000/svg"
     width="18"
