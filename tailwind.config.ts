@@ -398,16 +398,16 @@ const config: Config = {
       // Border radius
       borderRadius: {
         none: "var(--border-radius-none)",
+        xs: "var(--border-radius-xs)",
         sm: "var(--border-radius-sm)",
         DEFAULT: "var(--border-radius)",
         md: "var(--border-radius-md)",
         lg: "var(--border-radius-lg)",
         xl: "var(--border-radius-xl)",
+        "2xl": "var(--border-radius-2xl)",
+        "3xl": "var(--border-radius-3xl)",
+        "4xl": "var(--border-radius-4xl)",
         full: "var(--border-radius-full)",
-        "radius-20": "var(--border-radius-20)",
-        "faq-header": "var(--border-faq-header)",
-        "faq-image": "var(--border-radius-20)",
-        "10": "var(--border-radius-10)",
       },
 
       // Box shadows

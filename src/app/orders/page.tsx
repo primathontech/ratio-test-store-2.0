@@ -1,10 +1,9 @@
-// app/page.tsx
+// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
 import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
-import { getThemeName } from "@/utils";
+import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
-import { getRouteTranslations } from "@/utils";
 
 export const dynamic = "force-dynamic";
 
@@ -16,12 +15,12 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default async function OrdersPage() {
+export default async function ThankYouPage() {
   const themeName = getThemeName();
   const locale = getStaticLocale();
 
   const routeContext = {
-    templateName: TEMPLATE_TYPES.orders,
+    templateName: TEMPLATE_TYPES["thank-you"],
     path: "/orders",
     params: {},
     query: {},
@@ -34,11 +33,8 @@ export default async function OrdersPage() {
     language: locale,
   });
 
-  // Get the page builder (widgets auto-loaded)
   const pageBuilder = getPageBuilder();
 
-  // Note: The builder uses "merchantName" internally for loading themes/templates
-  // from @/themes/{name}/templates/, so we pass themeName here
   const pageContent = await pageBuilder.renderPage({
     merchantName: themeName,
     routeContext,
