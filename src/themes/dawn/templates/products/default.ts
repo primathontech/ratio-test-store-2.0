@@ -490,6 +490,45 @@ export const template: PageConfig = {
       ],
     },
 
+    // Recently Viewed Section
+    {
+      id: "recently-viewed-section",
+      name: "Recently Viewed",
+      type: SECTION_TYPES.CONTENT_SECTION,
+      settings: {
+        layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 20, right: 0, bottom: 20, left: 0 } },
+          tablet: { padding: { top: 30, right: 0, bottom: 30, left: 0 } },
+          desktop: { padding: { top: 40, right: 0, bottom: 40, left: 0 } },
+        },
+      },
+      widgets: [
+        {
+          id: "dawn-recently-viewed",
+          name: "Recently Viewed",
+          type: WIDGET_TYPES.RecentlyViewed,
+          dataSourceKey: "productData",
+          settings: {
+            variant: "v1",
+            heading: "Recently Viewed",
+            maxProducts: 10,
+            showActionButton: true,
+            actionButtonText: "Add to cart",
+            actionButtonTextMobile: "Add",
+            actionButtonTextColor: "#ffffff",
+            showBadge: true,
+            showRating: true,
+            soldOutText: "Sold Out",
+            soldOutTextMobile: "Sold",
+            productCardBackgroundColor: "#ffffff",
+            sectionBackgroundColor: "#ffffff",
+            sectionTextColor: "#1d1d1d",
+          },
+        },
+      ],
+    },
+
     // Additional Information Section
     {
       id: "additional-information-section",
