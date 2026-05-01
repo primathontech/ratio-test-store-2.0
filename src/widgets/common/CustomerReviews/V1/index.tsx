@@ -1,569 +1,385 @@
 "use client";
 
-import React, { memo, useState, useMemo, useCallback, useEffect } from "react";
-import { CustomerReviewsProps, ReviewItem, ApiReviewAverage } from "../types";
-import { ReviewSortBy } from "@/widgets/common/ProductDetail/types";
+import { useAuth } from "@shopkit/core/context";
+import KwikPassScriptCustom from "@/integrations/kwikpass-custom/KwikPassScriptCustom";
+import type React from "react";
+import { useEffect, useState } from "react";
+import { ReviewFormCustom } from "../components/ReviewFormCustom";
+import ReviewsListCustom from "../components/ReviewListCustom";
 import {
-  fetchReviewAverage,
-  fetchReviewsList,
-  transformApiReview,
-  REVIEWS_PER_PAGE,
-} from "@/utils/reviews-service";
+  ReviewSortDropdown,
+  type ReviewSortOption,
+} from "../components/ReviewSortDropdown";
+import { STAR_PATH } from "../constants";
+import { getProductAverageRating } from "../utils/get-review-api";
+import { CustomerReviewsProps } from "../types";
 
-/* ------------------------------------------------------------------ */
-/*  Star icon (filled/empty)                                           */
-/* ------------------------------------------------------------------ */
+declare global {
+  interface Window {
+    handleCustomLogin?: (param: boolean) => void;
+    __KP_LOGIN_SDK_INSTANCE__?: { handleKpLogin: () => void };
+  }
+}
 
-const StarIcon = ({
-  filled,
-  size = 12,
-}: {
-  filled: boolean;
-  size?: number;
-}) => (
-  <span
-    className="inline-block"
-    style={{
-      color: filled ? "#fbc210" : "#e0e0e0",
-      fontSize: `${size}px`,
-      lineHeight: 1,
-      letterSpacing: "2px",
-    }}
-    aria-hidden="true"
-  >
-    &#9733;
-  </span>
-);
+/** Sort options for review list (label/key for API). */
+const REVIEW_SORT_OPTIONS: ReviewSortOption[] = [
+  { label: "Most Recent", key: "newest" },
+  { label: "Highest Rating", key: "rating_desc" },
+  { label: "Lowest Rating", key: "rating_asc" },
+  { label: "Most Helpful", key: "" },
+];
 
-const StarRating = ({
-  rating,
-  size = 12,
-}: {
-  rating: number;
-  size?: number;
-}) => (
-  <span
-    className="inline-flex items-center"
-    role="img"
-    aria-label={`${rating} star rating`}
-  >
-    {[1, 2, 3, 4, 5].map((i) => (
-      <StarIcon key={i} filled={i <= rating} size={size} />
-    ))}
-  </span>
-);
-
-/* ------------------------------------------------------------------ */
-/*  Verified buyer badge                                               */
-/* ------------------------------------------------------------------ */
-
-const VerifiedBadge = () => (
-  <span
-    className={[
-      "inline-block",
-      "px-[6px] py-[2px]",
-      "bg-[#000000] text-[#ffffff]",
-      "text-[10px] leading-[12px]",
-      "font-[Gotham,sans-serif] font-[400]",
-      "rounded-[2px]",
-      "ml-[8px]",
-      "align-middle",
-    ].join(" ")}
-  >
-    Verified
-  </span>
-);
-
-/* ------------------------------------------------------------------ */
-/*  Author avatar circle                                               */
-/* ------------------------------------------------------------------ */
-
-const AuthorAvatar = ({ name }: { name: string }) => {
-  const initial = name.charAt(0).toUpperCase();
-  return (
-    <span
-      className={[
-        "inline-flex items-center justify-center",
-        "w-[36px] h-[36px]",
-        "rounded-[9999px]",
-        "bg-[rgba(224,224,224,0.5)]",
-        "text-[12px] font-[500]",
-        "text-[#333333]",
-        "shrink-0",
-        "mr-[8px]",
-      ].join(" ")}
-      aria-hidden="true"
-    >
-      {initial}
-    </span>
-  );
-};
-
-/* ------------------------------------------------------------------ */
-/*  Single review card                                                 */
-/* ------------------------------------------------------------------ */
-
-const ReviewCard = memo(function ReviewCard({
-  review,
-}: {
-  review: ReviewItem;
-}) {
-  return (
-    <div
-      className={[
-        "bg-[#ffffff]",
-        "p-[16px]",
-        "text-[12px] leading-[17px]",
-        "font-[Gotham,sans-serif]",
-        "text-[#333333]",
-        "border-t border-[rgba(29,29,29,0.12)]",
-      ].join(" ")}
-    >
-      {/* Rating row + date */}
-      <div className="flex items-center justify-between mb-[8px]">
-        <StarRating rating={review.rating} size={12} />
-        <span className="text-[12px] text-[#7b7b7b]">{review.date}</span>
-      </div>
-
-      {/* Author row */}
-      <div className="flex items-center mb-[10px]">
-        <AuthorAvatar name={review.author} />
-        <span className="text-[12px] text-[#000000]">{review.author}</span>
-        {review.verifiedBuyer && <VerifiedBadge />}
-      </div>
-
-      {/* Title */}
-      {review.title && (
-        <b className="block text-[12px] font-[700] text-[#333333] mb-[8px]">
-          {review.title}
-        </b>
-      )}
-
-      {/* Body */}
-      <p className="text-[12px] text-[#333333] leading-[17px] m-0">
-        {review.body}
-      </p>
-    </div>
-  );
-});
-
-/* ------------------------------------------------------------------ */
-/*  Chevron icon for pagination                                        */
-/* ------------------------------------------------------------------ */
-
-const ChevronRight = () => (
-  <svg
-    width="8"
-    height="12"
-    viewBox="0 0 8 12"
-    fill="none"
-    className="inline-block"
-  >
-    <path
-      d="M1.5 1L6.5 6L1.5 11"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-const ChevronDoubleRight = () => (
-  <svg
-    width="12"
-    height="12"
-    viewBox="0 0 12 12"
-    fill="none"
-    className="inline-block"
-  >
-    <path
-      d="M1 1L6 6L1 11"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M6 1L11 6L6 11"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-/* ------------------------------------------------------------------ */
-/*  Sort dropdown arrow                                                */
-/* ------------------------------------------------------------------ */
-
-const SortDropdownArrow = () => (
-  <svg
-    width="10"
-    height="6"
-    viewBox="0 0 10 6"
-    fill="none"
-    className="ml-[4px] inline-block"
-  >
-    <path
-      d="M1 1L5 5L9 1"
-      stroke="currentColor"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
-/* ------------------------------------------------------------------ */
-/*  Loading skeleton                                                   */
-/* ------------------------------------------------------------------ */
-
-const ReviewSkeleton = () => (
-  <div className="animate-pulse">
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-[16px]">
-      {Array.from({ length: 3 }).map((_, i) => (
-        <div key={i} className="bg-[#f4f6f8] rounded-[8px] p-[16px]">
-          <div className="h-[12px] bg-[#e0e0e0] rounded w-[60%] mb-[12px]" />
-          <div className="h-[12px] bg-[#e0e0e0] rounded w-[40%] mb-[8px]" />
-          <div className="h-[12px] bg-[#e0e0e0] rounded w-[80%]" />
-        </div>
-      ))}
-    </div>
-  </div>
-);
-
-/* ------------------------------------------------------------------ */
-/*  Main V1 component                                                  */
-/* ------------------------------------------------------------------ */
-
-export const V1 = memo(function V1({ data, settings }: CustomerReviewsProps) {
+const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
+  data,
+  settings,
+}) => {
+  // Extract product data — supports DATA_SOURCE_TYPES.PRODUCT envelope { success, data }
   const product = data?.success ? data.data : null;
-  const productId = product?.id;
+  const productLoose = product as
+    | (typeof product & {
+        averageRating?: number;
+        totalReviews?: number;
+      })
+    | null;
 
-  const title = settings?.title ?? "Customer Reviews";
-  const perPage = settings?.perPage ?? REVIEWS_PER_PAGE;
-  const sortOptions = settings?.sortOptions ?? [
-    { label: "Most Recent", value: ReviewSortBy.NEWEST },
-    { label: "Highest Rating", value: ReviewSortBy.HIGHEST },
-    { label: "Lowest Rating", value: ReviewSortBy.LOWEST },
-  ];
-  const defaultSort = settings?.defaultSort ?? ReviewSortBy.NEWEST;
+  const {
+    title = "Customer Reviews",
+    writeReviewButtonText = "Write a review",
+    cancelReviewButtonText = "Cancel review",
+  } = settings || {};
 
-  // State
-  const [currentPage, setCurrentPage] = useState(1);
-  const [sortBy, setSortBy] = useState(defaultSort);
-  const [isLoading, setIsLoading] = useState(false);
-
-  // API state
-  const [apiAverage, setApiAverage] = useState<ApiReviewAverage | null>(null);
-  const [apiReviews, setApiReviews] = useState<ReviewItem[]>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalReviewCount, setTotalReviewCount] = useState(0);
-  const [hasFetched, setHasFetched] = useState(false);
-
-  // Fetch review average when product ID is available
-  useEffect(() => {
-    if (!productId) {
-      return;
+  // Derive productId / externalId from various inputs
+  let productId: string | undefined = undefined;
+  let externalId: number | null = null;
+  if (product?.id) {
+    if (typeof product.id === "string") {
+      if (product.id.includes("/")) {
+        const idPart = product.id.split("/").pop();
+        productId = idPart;
+        externalId = idPart ? Number(idPart) : null;
+      } else {
+        productId = product.id;
+        externalId = Number(product.id) || null;
+      }
+    } else {
+      productId = String(product.id);
+      externalId = Number(product.id);
     }
-    let cancelled = false;
-
-    fetchReviewAverage(productId).then((avg) => {
-      if (cancelled) {
-        return;
-      }
-      if (avg) {
-        setApiAverage(avg);
-        setTotalReviewCount(avg.total_reviews || 0);
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [productId]);
-
-  // Fetch reviews list when product ID, page, or sort changes
-  useEffect(() => {
-    if (!productId) {
-      return;
-    }
-    let cancelled = false;
-
-    setIsLoading(true);
-    fetchReviewsList(productId, currentPage, perPage, sortBy).then((res) => {
-      if (cancelled) {
-        return;
-      }
-      setIsLoading(false);
-      setHasFetched(true);
-      if (res?.success && res.data) {
-        setApiReviews(res.data.reviews.map(transformApiReview));
-        setTotalPages(res.data.pagination?.totalPages || 1);
-        setTotalReviewCount((prev) => res.data.pagination?.total ?? prev);
-      }
-    });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [productId, currentPage, perPage, sortBy]);
-
-  // Determine display values
-  const averageRating =
-    apiAverage?.average_rating ?? settings?.averageRating ?? 0;
-  const totalReviews = totalReviewCount || settings?.totalReviews || 0;
-
-  // Use API reviews if available, else settings fallback
-  const settingsReviews = settings?.reviews ?? [];
-  const reviews = hasFetched ? apiReviews : settingsReviews;
-
-  // For static reviews (no API), do client-side pagination
-  const staticSorted = useMemo(() => {
-    if (hasFetched) {
-      return reviews;
-    }
-    const arr = [...reviews];
-    switch (sortBy) {
-      case ReviewSortBy.HIGHEST:
-        arr.sort((a, b) => b.rating - a.rating);
-        break;
-      case ReviewSortBy.LOWEST:
-        arr.sort((a, b) => a.rating - b.rating);
-        break;
-      default:
-        break;
-    }
-    return arr;
-  }, [reviews, sortBy, hasFetched]);
-
-  const staticTotalPages = hasFetched
-    ? totalPages
-    : Math.max(1, Math.ceil(staticSorted.length / perPage));
-
-  const displayReviews = hasFetched
-    ? reviews
-    : staticSorted.slice((currentPage - 1) * perPage, currentPage * perPage);
-
-  const displayTotalPages = hasFetched ? totalPages : staticTotalPages;
-
-  const handlePageChange = useCallback(
-    (page: number) => {
-      if (page >= 1 && page <= displayTotalPages) {
-        setCurrentPage(page);
-      }
-    },
-    [displayTotalPages]
-  );
-
-  const handleSortChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      setSortBy(e.target.value);
-      setCurrentPage(1);
-    },
-    []
-  );
-
-  // Hide widget when no product ID and no static reviews
-  if (!productId && !settingsReviews.length) {
-    return null;
   }
 
+  if (!productId && data?.productId) {
+    productId =
+      typeof data.productId === "string"
+        ? data.productId
+        : String(data.productId);
+  }
+
+  if (!externalId && data?.externalId) {
+    externalId =
+      typeof data.externalId === "number"
+        ? data.externalId
+        : Number(data.externalId) || null;
+  }
+
+  // Pre-injected review data fallbacks
+  const averageRating =
+    data?.averageRating || productLoose?.averageRating || null;
+  const totalReviews = data?.totalReviews || productLoose?.totalReviews || null;
+  const ratingCounts = data?.ratingCounts || {
+    fiveStarCount: 0,
+    fourStarCount: 0,
+    threeStarCount: 0,
+    twoStarCount: 0,
+    oneStarCount: 0,
+  };
+
+  const onReviewSubmitted = data?.onReviewSubmitted;
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [, setRatingCountsState] = useState(ratingCounts);
+  const [calculatedTotalReviews, setCalculatedTotalReviews] = useState<
+    number | null
+  >(totalReviews || null);
+  const [calculatedAverageRating, setCalculatedAverageRating] = useState<
+    number | null
+  >(averageRating || null);
+  const [isLoadingCounts, setIsLoadingCounts] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [openKwikPass] = useState(false);
+  const [selectedSortKey, setSelectedSortKey] = useState<string>("newest");
+  const { accessToken } = useAuth();
+
+  useEffect(() => {
+    const fetchRatingCounts = async () => {
+      if (!productId) {
+        return;
+      }
+      try {
+        setIsLoadingCounts(true);
+        setError(null);
+
+        const reviewCounts = await getProductAverageRating(Number(productId));
+        const totalRatings = reviewCounts?.total_ratings;
+        const fetchedAverage = reviewCounts?.average_rating;
+
+        if (!reviewCounts) {
+          setError("Could not fetch rating counts");
+          return;
+        }
+
+        const updatedCounts = {
+          fiveStarCount: reviewCounts.ratings[5]?.count || 0,
+          fourStarCount: reviewCounts.ratings[4]?.count || 0,
+          threeStarCount: reviewCounts.ratings[3]?.count || 0,
+          twoStarCount: reviewCounts.ratings[2]?.count || 0,
+          oneStarCount: reviewCounts.ratings[1]?.count || 0,
+        };
+
+        setRatingCountsState(updatedCounts);
+        setCalculatedTotalReviews(totalRatings ?? null);
+        setCalculatedAverageRating(fetchedAverage ?? null);
+      } catch {
+        setError("Failed to load rating counts");
+      } finally {
+        setIsLoadingCounts(false);
+      }
+    };
+
+    fetchRatingCounts();
+  }, [productId]);
+
+  // Login before writing reviews
+  const handleKwikPassLogin = () => {
+    try {
+      if (typeof window !== "undefined") {
+        if (window.__KP_LOGIN_SDK_INSTANCE__) {
+          window.__KP_LOGIN_SDK_INSTANCE__.handleKpLogin();
+        } else if (window.handleCustomLogin) {
+          window.handleCustomLogin(false);
+        }
+      }
+    } catch {
+      // Login failed silently
+    }
+  };
+
+  const rating = calculatedAverageRating ?? 0;
+  const fullStars = Math.floor(rating);
+  const partial = rating - fullStars;
+
+  const toggleReviewForm = () => {
+    if (reviewSubmitted) {
+      window.scrollTo(0, 0);
+      window.location.reload();
+    }
+    if (!accessToken) {
+      handleKwikPassLogin();
+      return;
+    }
+    setShowReviewForm(!showReviewForm);
+  };
+
+  const starPath = STAR_PATH;
+
   return (
-    <section
-      className={[
-        "w-full",
-        "px-[15px] md:px-[30px] lg:px-[50px]",
-        "py-0",
-        "font-[Gotham,sans-serif]",
-        "text-[#1d1d1d]",
-      ].join(" ")}
+    <div
+      data-testid="review-section-container"
+      className="w-full max-w-[1200px] mx-auto px-[31px] md:px-[45px] xl:px-0"
     >
-      <div className="max-w-[1200px] mx-auto">
-        {/* ----- Header card with summary + write a review ----- */}
+      <div
+        data-testid="review-section-inner-container"
+        className="mx-auto py-8 md:py-10"
+      >
         <div
-          className={[
-            "bg-[#ffffff]",
-            "rounded-[10px]",
-            "shadow-[0px_4px_16px_rgba(0,0,0,0.1)]",
-            "pt-[24px] pb-[16px] px-[16px]",
-            "text-center",
-            "mb-0",
-          ].join(" ")}
+          data-testid="review-section-summary-card"
+          className="rounded-2xl bg-white px-[16px] py-8 w-full max-w-full shadow-[0px_4px_16px_rgba(0,0,0,0.1)]"
         >
-          {/* Title */}
-          <h2
-            className={[
-              "text-[12px] leading-[17px]",
-              "font-[400]",
-              "text-[#333333]",
-              "mb-[24px]",
-              "m-0",
-            ].join(" ")}
-          >
+          <h2 className="text-center text-text-sm font-normal text-[#222222] mb-4 md:mb-6">
             {title}
           </h2>
 
-          {/* Stars + summary row + Write a review */}
-          <div className="flex flex-col md:flex-row items-center justify-center gap-[12px] md:gap-0 pb-[24px]">
-            {/* Star summary */}
-            <div className="flex flex-col md:flex-row items-center md:mr-[16px]">
-              <div className="flex items-center">
-                <StarRating rating={Math.round(averageRating)} size={14} />
-                <span className="text-[12px] text-[#333333] ml-[8px]">
-                  {Number(averageRating).toFixed(2)} out of 5
-                </span>
-              </div>
-              <span className="text-[12px] text-[#333333] md:ml-[8px] mt-[4px] md:mt-0">
-                Based on {totalReviews} reviews
-              </span>
-            </div>
-
-            {/* Write a review button */}
-            <button
-              type="button"
-              className={[
-                "bg-[#000000] text-[#ffffff]",
-                "text-[12px] font-[700] leading-[16px]",
-                "py-[10px] px-[20px]",
-                "rounded-[25px]",
-                "border-0 cursor-pointer",
-                "mx-[50px]",
-                "hover:bg-[#333333]",
-                "transition-colors duration-200",
-              ].join(" ")}
-              aria-label="Write a review"
+          {isLoadingCounts ? (
+            <div
+              data-testid="review-section-loading"
+              className="flex flex-col items-center justify-center py-10"
             >
-              Write a review
-            </button>
-          </div>
-        </div>
+              <div className="inline-block animate-spin rounded-[50%] h-10 w-10 border-2 border-[#222222] border-t-transparent" />
+              <p className="mt-3 text-sm text-[#666666]">Loading reviews...</p>
+            </div>
+          ) : error ? (
+            <div
+              data-testid="review-section-error"
+              className="text-center py-8"
+            >
+              <p className="text-sm text-red-500">{error}</p>
+            </div>
+          ) : (
+            <>
+              <div className="flex flex-col items-center lg:flex-row lg:justify-center lg:items-center lg:gap-24 lg:pl-16">
+                <div className="flex flex-col items-center lg:items-start">
+                  {calculatedTotalReviews !== null &&
+                  calculatedTotalReviews > 0 ? (
+                    <>
+                      <div className="flex items-center justify-center flex-wrap">
+                        {[1, 2, 3, 4, 5].map((i) => {
+                          if (i <= fullStars) {
+                            return (
+                              <svg
+                                key={i}
+                                viewBox="0 0 25 25"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                                className="shrink-0 w-[16px] h-[11px] md:w-[12px] md:h-[12px]"
+                              >
+                                <path d={starPath} fill="#FBC210" />
+                              </svg>
+                            );
+                          }
+                          if (i === fullStars + 1 && partial > 0) {
+                            return (
+                              <div
+                                key={i}
+                                className="relative shrink-0 w-[16px] h-[11px] md:w-[12px] md:h-[12px]"
+                              >
+                                <svg
+                                  viewBox="0 0 25 25"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="absolute inset-0 w-[12px] h-[11px]"
+                                >
+                                  <path d={starPath} fill="#E5E5E5" />
+                                </svg>
+                                <svg
+                                  viewBox="0 0 25 25"
+                                  fill="none"
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="absolute inset-0 overflow-visible w-[12px] h-[11px]"
+                                  style={{
+                                    clipPath: `inset(0 ${100 - partial * 100}% 0 0)`,
+                                  }}
+                                >
+                                  <path d={starPath} fill="#FBC210" />
+                                </svg>
+                              </div>
+                            );
+                          }
+                          return (
+                            <svg
+                              key={i}
+                              viewBox="0 0 25 25"
+                              fill="none"
+                              xmlns="http://www.w3.org/2000/svg"
+                              className="shrink-0 w-[12px] h-[11px]"
+                            >
+                              <path d={starPath} fill="#E5E5E5" />
+                            </svg>
+                          );
+                        })}
+                        <span className="ml-2 text-text-sm text-[#222222] whitespace-nowrap">
+                          {rating.toFixed(2)} out of 5
+                        </span>
+                      </div>
+                      <p className="text-text-sm text-[#333333]">
+                        Based on {calculatedTotalReviews} reviews
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-text-sm text-[#333333] text-center">
+                      Be the first to write a review
+                    </p>
+                  )}
+                </div>
 
-        {/* ----- Sort bar ----- */}
-        <div
-          className={[
-            "bg-[#ffffff]",
-            "rounded-[10px]",
-            "shadow-[0px_4px_16px_rgba(0,0,0,0.1)]",
-            "mt-[24px] mb-[24px]",
-            "px-[16px] py-[8px]",
-          ].join(" ")}
-        >
-          <div className="flex items-center">
-            <div className="inline-flex items-center relative">
-              <select
-                value={sortBy}
-                onChange={handleSortChange}
-                className={[
-                  "appearance-none",
-                  "bg-transparent border-0",
-                  "text-[12px] text-[#636e6e]",
-                  "font-[Gotham,sans-serif]",
-                  "pr-[20px] py-[10px]",
-                  "cursor-pointer",
-                  "outline-none",
-                ].join(" ")}
-                aria-label="Sort reviews"
-              >
-                {sortOptions.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label}
-                  </option>
-                ))}
-              </select>
-              <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#636e6e]">
-                <SortDropdownArrow />
-              </span>
+                <div
+                  className="hidden lg:block w-px self-stretch bg-[#E0E0E0]"
+                  aria-hidden
+                />
+
+                <div className="flex justify-center mt-10 mb-4 lg:mt-0 lg:mb-0 w-full lg:w-auto">
+                  <button
+                    id="write-review"
+                    aria-label="Write a review"
+                    onClick={toggleReviewForm}
+                    className="w-full h-[36px] lg:w-[240px] lg:h-[36px] py-[10px] lg:py-0 px-[20px] rounded-[30px] bg-black text-white text-text-sm font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
+                  >
+                    {reviewSubmitted
+                      ? "Refresh page"
+                      : showReviewForm
+                        ? cancelReviewButtonText
+                        : writeReviewButtonText}
+                  </button>
+                </div>
+              </div>
+
+              <div
+                className={`grid transition-[grid-template-rows,opacity] duration-500 ease-in-out ${
+                  !showReviewForm
+                    ? "grid-rows-[1fr] opacity-100"
+                    : "grid-rows-[0fr] opacity-0"
+                }`}
+              ></div>
+            </>
+          )}
+
+          <div
+            className={`mt-6 md:mt-8 border-t border-[#E0E0E0] transition-opacity duration-300 ${
+              showReviewForm
+                ? "opacity-100"
+                : "opacity-0 h-0 mt-0 md:mt-0 overflow-hidden"
+            }`}
+            aria-hidden
+          />
+
+          <ReviewFormCustom
+            embedInCard
+            isOpen={showReviewForm}
+            onClose={() => setShowReviewForm(false)}
+            productId={productId}
+            externalId={externalId}
+            setReviewSubmitted={setReviewSubmitted}
+            onSubmit={async () => {
+              setReviewSubmitted(true);
+              if (onReviewSubmitted) {
+                onReviewSubmitted();
+              }
+            }}
+          />
+
+          <div
+            className={`grid transition-[grid-template-rows,opacity] duration-500 ease-in-out ${
+              showReviewForm
+                ? "grid-rows-[1fr] opacity-100"
+                : "grid-rows-[0fr] opacity-0"
+            }`}
+          >
+            <div className="overflow-hidden">
+              <div
+                className="border-t border-[#E0E0E0] mx-2 mt-8 md:mt-10"
+                aria-hidden
+              />
             </div>
           </div>
         </div>
-
-        {/* ----- Reviews grid ----- */}
-        {isLoading ? (
-          <ReviewSkeleton />
-        ) : (
-          <div
-            className={[
-              "grid",
-              "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
-              "gap-[16px]",
-            ].join(" ")}
-          >
-            {displayReviews.map((review) => (
-              <ReviewCard key={review.id} review={review} />
-            ))}
-          </div>
-        )}
-
-        {/* ----- Pagination ----- */}
-        {displayTotalPages > 1 && (
-          <div className="flex items-center justify-center pt-[16px] pb-[16px] gap-[4px]">
-            {Array.from({ length: displayTotalPages }, (_, i) => i + 1).map(
-              (page) => (
-                <button
-                  key={page}
-                  type="button"
-                  onClick={() => handlePageChange(page)}
-                  aria-label={`Page ${page}`}
-                  className={[
-                    "inline-flex items-center justify-center",
-                    "min-w-[32px] h-[20px]",
-                    "px-[8px] py-[4px]",
-                    "text-[12px]",
-                    "border-0 bg-transparent cursor-pointer",
-                    "font-[Gotham,sans-serif]",
-                    currentPage === page
-                      ? "text-[#000000] font-[700]"
-                      : "text-[#636e6e] font-[400]",
-                    "hover:text-[#000000]",
-                    "transition-colors duration-150",
-                  ].join(" ")}
-                >
-                  {page}
-                </button>
-              )
-            )}
-            {currentPage < displayTotalPages && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  aria-label={`Page ${currentPage + 1}`}
-                  className={[
-                    "inline-flex items-center justify-center",
-                    "w-[20px] h-[20px]",
-                    "px-[4px] py-[4px]",
-                    "border-0 bg-transparent cursor-pointer",
-                    "text-[#636e6e]",
-                    "hover:text-[#000000]",
-                    "transition-colors duration-150",
-                  ].join(" ")}
-                >
-                  <ChevronRight />
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handlePageChange(displayTotalPages)}
-                  aria-label={`Page ${displayTotalPages}`}
-                  className={[
-                    "inline-flex items-center justify-center",
-                    "w-[20px] h-[20px]",
-                    "px-[4px] py-[4px]",
-                    "border-0 bg-transparent cursor-pointer",
-                    "text-[#636e6e]",
-                    "hover:text-[#000000]",
-                    "transition-colors duration-150",
-                  ].join(" ")}
-                >
-                  <ChevronDoubleRight />
-                </button>
-              </>
-            )}
-          </div>
-        )}
       </div>
-    </section>
+
+      {openKwikPass && <KwikPassScriptCustom />}
+
+      {calculatedTotalReviews !== null && calculatedTotalReviews > 0 && (
+        <div className="mx-auto pb-6 md:pb-8">
+          <div className="rounded-2xl bg-white px-4 py-3 shadow-[0px_4px_16px_rgba(0,0,0,0.1)] flex items-center justify-between gap-4">
+            <ReviewSortDropdown
+              options={REVIEW_SORT_OPTIONS}
+              value={selectedSortKey}
+              onChange={setSelectedSortKey}
+            />
+          </div>
+        </div>
+      )}
+
+      <ReviewsListCustom productId={productId} sortKey={selectedSortKey} />
+    </div>
   );
-});
+};
+
+export const V1 = ReviewSummaryCustom;
+export default ReviewSummaryCustom;

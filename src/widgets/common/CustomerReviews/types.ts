@@ -2,93 +2,75 @@ import { WidgetProps } from "@/widgets/types";
 import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 
 /**
- * A single customer review
+ * Rating counts breakdown for reviews
  */
-export interface ReviewItem {
-  /** Unique identifier */
-  id: string;
-  /** Star rating (1-5) */
-  rating: number;
-  /** Review title */
-  title: string;
-  /** Review body text */
-  body: string;
-  /** Reviewer display name */
-  author: string;
-  /** Whether the reviewer is a verified buyer */
-  verifiedBuyer: boolean;
-  /** Date string (e.g. "03/26/2026") */
-  date: string;
+export interface RatingCounts {
+  fiveStarCount?: number;
+  fourStarCount?: number;
+  threeStarCount?: number;
+  twoStarCount?: number;
+  oneStarCount?: number;
 }
 
 /**
- * CustomerReviews widget settings
+ * CustomerReviews widget settings — strongly typed based on widget registry
  */
 export interface CustomerReviewsSettings {
   /** Widget variant */
   variant?: string;
-  /** Section heading text */
+  /** Section title */
   title?: string;
-  /** Average rating (e.g. 5.00) */
-  averageRating?: number;
-  /** Total number of reviews */
-  totalReviews?: number;
-  /** Reviews per page */
-  perPage?: number;
-  /** Review items (static fallback) */
-  reviews?: ReviewItem[];
-  /** Sort options */
-  sortOptions?: { label: string; value: string }[];
-  /** Default sort value */
-  defaultSort?: string;
-}
-
-/* ------------------------------------------------------------------ */
-/*  Reviews API Response Types                                         */
-/* ------------------------------------------------------------------ */
-
-/** Single review from the API */
-export interface ApiReview {
-  id: string;
-  product_id: string;
-  title: string;
-  rating: number;
-  review_text: string;
-  user_name: string;
-  user_type: string;
-  is_visible: boolean;
-  archived: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-/** Review average API response */
-export interface ApiReviewAverage {
-  average_rating: number;
-  total_reviews: number;
-}
-
-/** Reviews list API response */
-export interface ApiReviewsListResponse {
-  success: boolean;
-  data: {
-    reviews: ApiReview[];
-    pagination: {
-      total: number;
-      page: number;
-      limit: number;
-      totalPages: number;
-    };
-  };
+  /** Show review form */
+  showReviewForm?: boolean;
+  /** Show rating distribution */
+  showRatingDistribution?: boolean;
+  /** Show overall rating summary */
+  showRatingSummary?: boolean;
+  /** Show review list */
+  showReviewList?: boolean;
+  /** Number of reviews to display initially */
+  initialReviewCount?: number;
+  /** Enable pagination for reviews */
+  enablePagination?: boolean;
+  /** Reviews per page (if pagination enabled) */
+  reviewsPerPage?: number;
+  /** Allow users to write reviews */
+  allowWriteReview?: boolean;
+  /** Require login to write review */
+  requireLoginToReview?: boolean;
+  /** Custom button text for writing a review */
+  writeReviewButtonText?: string;
+  /** Custom button text for cancel a review */
+  cancelReviewButtonText?: string;
+  /** Custom empty state message */
+  emptyStateMessage?: string;
+  /** Background color for the section */
+  backgroundColor?: string;
+  /** Text color */
+  textColor?: string;
+  /** Border color */
+  borderColor?: string;
 }
 
 /**
  * CustomerReviews widget data — IResponse from DATA_SOURCE_TYPES.PRODUCT
- * (product data used to get the product ID for review API calls)
+ * (product data used to derive product ID and any optional review fallbacks)
  */
 export interface CustomerReviewsData {
   success?: boolean;
   data?: ApiProduct | null;
+  /** Direct product ID — overrides id derived from data.data */
+  productId?: string | number;
+  /** External product ID (numeric) */
+  externalId?: number;
+  /** Average rating (0-5) — pre-injected fallback */
+  averageRating?: number | null;
+  /** Total number of reviews — pre-injected fallback */
+  totalReviews?: number | null;
+  /** Rating counts breakdown — pre-injected fallback */
+  ratingCounts?: RatingCounts;
+  /** Callback called when a review is submitted */
+  onReviewSubmitted?: () => void | Promise<void>;
 }
 
 /**
