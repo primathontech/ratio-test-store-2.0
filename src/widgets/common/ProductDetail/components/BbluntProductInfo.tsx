@@ -311,7 +311,7 @@ export function BbluntProductInfo({
     return (
       <div
         data-testid="product-tags-container"
-        className="flex flex-wrap gap-[16px] mb-4 pb-4 md:pb-12"
+        className="flex flex-wrap gap-[16px] mb-4 pb-4 md:pb-[24px]"
       >
         {productMetaTags.map((tag, index) => (
           <div

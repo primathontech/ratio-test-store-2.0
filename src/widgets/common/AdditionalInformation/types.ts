@@ -30,14 +30,22 @@ export interface ProseBlock {
 export interface AdditionalInformationSettings {
   /** Widget variant */
   variant?: string;
-  /** Section heading text */
+  /** Section heading text (V2) */
   title?: string;
-  /** Info blocks to display in the expanded grid (V1) */
+  /** Section heading text (V1, mirrors docs/ProductAdditionalInfoSection convention) */
+  sectionTitle?: string;
+  /** Info blocks to display in the expanded grid (V1, fallback only) */
   items?: InfoBlock[];
   /** Whether the accordion starts expanded */
   defaultExpanded?: boolean;
   /** Structured prose content blocks for SEO accordion (V2) */
   proseBlocks?: ProseBlock[];
+  /** "Marketed By" address shown in V1 grid (V1) */
+  marketedBy?: string;
+  /** "Country of Origin" shown in V1 grid (V1) */
+  countryOfOrigin?: string;
+  /** "Customer Care Details" line shown in V1 grid (V1) */
+  customerCareDetails?: string;
 }
 
 /**
