@@ -19,9 +19,11 @@ export interface ProductFAQSettings {
   variant?: string;
   /** Section heading text */
   title?: string;
-  /** FAQ items array */
+  /** Alias for title (matches docs/ProductFaqSection convention) */
+  sectionTitle?: string;
+  /** FAQ items array (used as fallback when API has no product_faq metadata) */
   items?: FAQItem[];
-  /** Whether the outer accordion starts expanded */
+  /** @deprecated outer collapsible removed in current variant */
   defaultExpanded?: boolean;
 }
 

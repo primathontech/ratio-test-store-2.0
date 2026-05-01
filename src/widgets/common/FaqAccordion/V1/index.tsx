@@ -37,17 +37,19 @@ const FaqAccordionItem = ({
   item,
   isOpen,
   onToggle,
+  isFirst,
   isLast,
 }: {
   item: FaqItem;
   isOpen: boolean;
   onToggle: () => void;
+  isFirst: boolean;
   isLast: boolean;
 }) => {
   return (
     <div
       className={[
-        "border-t border-[rgba(29,29,29,0.12)]",
+        isFirst ? "" : "border-t border-[rgba(29,29,29,0.12)]",
         isLast ? "border-b border-[rgba(29,29,29,0.12)]" : "",
       ].join(" ")}
     >
@@ -57,10 +59,10 @@ const FaqAccordionItem = ({
         onClick={onToggle}
         aria-expanded={isOpen}
         className={[
-          "w-full flex items-center justify-between",
+          "w-full flex items-left justify-between",
           "cursor-pointer",
           "bg-transparent border-0 outline-none",
-          "py-[15px] px-0",
+          "py-[14px] px-0",
           "text-left",
           "list-none",
           "[&::-webkit-details-marker]:hidden",
@@ -143,7 +145,7 @@ export const V1 = memo(function V1({ settings, className }: FaqAccordionProps) {
         {/* Section heading */}
         <h5
           className={[
-            "font-[Gotham,sans-serif] text-[18px] leading-[22px] md:text-[22px] md:leading-[26px] font-[400] text-[#000000] text-center",
+            "font-[Gotham,sans-serif] text-[18px] leading-[22px] md:text-[22px] md:leading-[26px] font-[400] text-[#000000]",
           ].join(" ")}
         >
           {title}
@@ -157,6 +159,7 @@ export const V1 = memo(function V1({ settings, className }: FaqAccordionProps) {
               item={item}
               isOpen={openIndex === index}
               onToggle={() => handleToggleItem(index)}
+              isFirst={index === 0}
               isLast={index === items.length - 1}
             />
           ))}

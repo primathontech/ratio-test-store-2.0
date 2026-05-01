@@ -1,127 +1,162 @@
 "use client";
 
 import React, { memo, useState, useCallback } from "react";
+import Image from "next/image";
+import { Box } from "@/ui/atomic";
 import { ProductFAQProps, FAQItem } from "../types";
-import { ProductMetadataKey } from "@/widgets/common/ProductDetail/types";
+import {
+  ProductMetadataKey,
+  type ApiProductFaqCard,
+} from "@/widgets/common/ProductDetail/types";
 
 /* ------------------------------------------------------------------ */
-/*  Inline SVG -- Chevron icon for outer accordion header              */
+/*  Inline helpers — equivalent to                                     */
+/*    ProductAdditionalInfoSection/utils/getAdditionalInfoItems        */
 /* ------------------------------------------------------------------ */
 
-const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
-  <svg
-    width="14"
-    height="8"
-    viewBox="0 0 14 8"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    className={[
-      "transition-transform duration-300",
-      isOpen ? "rotate-180" : "rotate-0",
-    ].join(" ")}
-  >
-    <path
-      d="M1 1L7 7L13 1"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
+function ensureArray<T>(value: unknown): T[] {
+  if (Array.isArray(value)) {
+    return value as T[];
+  }
+  if (value === null || value === undefined) {
+    return [];
+  }
+  return [value as T];
+}
+
+function getFirstValue(value: unknown): string {
+  if (Array.isArray(value)) {
+    return typeof value[0] === "string" ? value[0] : "";
+  }
+  return typeof value === "string" ? value : "";
+}
+
+function transformFaqData(
+  faqField: ApiProductFaqCard[] | ApiProductFaqCard | undefined
+): FAQItem[] {
+  const nodes = ensureArray<ApiProductFaqCard>(faqField);
+  if (nodes.length === 0) {
+    return [];
+  }
+
+  return nodes
+    .map((item) => {
+      const title = getFirstValue(item?.fields?.title?.value).trim();
+      const description = getFirstValue(
+        item?.fields?.description?.value
+      ).trim();
+      return { question: title, answer: description };
+    })
+    .filter((it) => it.question || it.answer);
+}
 
 /* ------------------------------------------------------------------ */
-/*  Plus / Minus icon for individual FAQ items                         */
+/*  Plus / minus toggle icon — cross-fades between plus_icon (closed)  */
+/*  and minus_icon (open) with a slight rotation tween                 */
 /* ------------------------------------------------------------------ */
 
 const PlusMinusIcon = ({ isOpen }: { isOpen: boolean }) => (
   <span
-    className={[
-      "flex items-center justify-center",
-      "w-[20px] h-[20px]",
-      "text-[20px] leading-[20px]",
-      "font-[Gotham,sans-serif] font-[400]",
-      "text-[#1d1d1d]",
-      "select-none shrink-0",
-      "transition-transform duration-300",
-    ].join(" ")}
+    className="relative inline-flex items-center justify-center w-[16px] h-[16px]"
     aria-hidden="true"
   >
-    {isOpen ? "\u2212" : "+"}
+    <Image
+      src="/svg/plus_icon.svg"
+      alt=""
+      width={16}
+      height={16}
+      className={[
+        "absolute inset-0 m-auto transition-all duration-[400ms] ease-in-out",
+        isOpen ? "opacity-0 rotate-90" : "opacity-100 rotate-0",
+      ].join(" ")}
+    />
+    <Image
+      src="/svg/minus_icon.svg"
+      alt=""
+      width={16}
+      height={7}
+      className={[
+        "absolute inset-0 m-auto transition-all duration-[400ms] ease-in-out",
+        isOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-90",
+      ].join(" ")}
+    />
   </span>
 );
 
 /* ------------------------------------------------------------------ */
-/*  Single FAQ Accordion Item                                          */
+/*  Single accordion row                                               */
 /* ------------------------------------------------------------------ */
 
 const FAQAccordionItem = ({
   item,
   isOpen,
   onToggle,
+  isFirst,
+  isLast,
 }: {
   item: FAQItem;
   isOpen: boolean;
   onToggle: () => void;
-}) => {
-  return (
-    <li className="border-b border-[rgba(29,29,29,0.12)] last:border-b-0">
-      {/* Question row */}
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={isOpen}
+  isFirst: boolean;
+  isLast: boolean;
+}) => (
+  <div
+    data-testid="product-faq-item"
+    className={[
+      "pb-[10px] mb-[10px]",
+      isFirst ? "" : "border-t border-[rgba(29,29,29,0.12)]",
+      isLast ? "border-b border-[rgba(29,29,29,0.12)]" : "",
+    ].join(" ")}
+  >
+    <button
+      type="button"
+      onClick={onToggle}
+      aria-expanded={isOpen}
+      className={[
+        "w-full flex items-center justify-between",
+        "cursor-pointer bg-transparent border-0 outline-none",
+        "py-[14px] px-0 text-left",
+      ].join(" ")}
+    >
+      <span
         className={[
-          "w-full flex items-center justify-between",
-          "cursor-pointer",
-          "bg-transparent border-0 outline-none",
-          "py-[20px] px-[32px]",
-          "text-left",
-          "transition-all duration-300",
+          "font-[Gotham,sans-serif]",
+          "text-[14px] leading-[22px] md:text-[18px] md:leading-[26px]",
+          "font-[700] text-[#1D1D1D] pr-[16px]",
         ].join(" ")}
       >
-        <span
+        {item.question}
+      </span>
+      <span className="flex items-center justify-center shrink-0 text-[#000000]">
+        <PlusMinusIcon isOpen={isOpen} />
+      </span>
+    </button>
+
+    <div
+      className={[
+        "overflow-hidden transition-all duration-[400ms] ease-in-out",
+        isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0",
+      ].join(" ")}
+    >
+      <div className="pt-[24px] pb-[22px] px-0">
+        <p
           className={[
             "font-[Gotham,sans-serif]",
-            "text-[14px] leading-[22px] md:text-[16px] md:leading-[26px]",
-            "font-[700]",
-            "text-[#1d1d1d]",
-            "pr-[16px]",
+            "text-[12px] leading-[19px] md:text-[14px] md:leading-[22.4px]",
+            "font-[400] text-[#545454] m-0",
           ].join(" ")}
         >
-          {item.question}
-        </span>
-        <PlusMinusIcon isOpen={isOpen} />
-      </button>
-
-      {/* Answer panel */}
-      <div
-        className={[
-          "overflow-hidden",
-          "transition-all duration-300 ease-in-out",
-          isOpen ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0",
-        ].join(" ")}
-      >
-        <div className="px-[32px] pb-[14px]">
-          <p
-            className={[
-              "font-[Gotham,sans-serif]",
-              "text-[14px] leading-[22px] md:text-[16px] md:leading-[26px]",
-              "font-[400]",
-              "text-[#555555]",
-              "m-0",
-            ].join(" ")}
-          >
-            {item.answer}
-          </p>
-        </div>
+          {item.answer}
+        </p>
       </div>
-    </li>
-  );
-};
+    </div>
+  </div>
+);
 
 /* ------------------------------------------------------------------ */
-/*  V1 -- ProductFAQ (Outer accordion + inner FAQ list)                */
+/*  V1 — ProductFAQ                                                    */
+/*  Mirrors docs/ProductFaqSection DOM:                                */
+/*    outer bg-[#F4F6F8] wrapper → Box card → title + accordion list   */
 /* ------------------------------------------------------------------ */
 
 export const V1 = memo(function V1({
@@ -129,103 +164,57 @@ export const V1 = memo(function V1({
   settings,
   className,
 }: ProductFAQProps) {
-  const product = data?.success ? data.data : null;
-
-  const title = settings?.title || "Product FAQs";
-  const defaultExpanded = settings?.defaultExpanded ?? true;
-
-  // Build FAQ items from API or fall back to settings
-  const apiFaq = product?.metadata?.[ProductMetadataKey.PRODUCT_FAQ]?.value;
-  const items: FAQItem[] =
-    Array.isArray(apiFaq) && apiFaq.length > 0
-      ? apiFaq.map((faq) => ({
-          question: faq.fields?.title?.value?.[0] || "",
-          answer: faq.fields?.description?.value || "",
-        }))
-      : settings?.items || [];
-
-  const [sectionOpen, setSectionOpen] = useState(defaultExpanded);
   const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const handleToggleSection = useCallback(() => {
-    setSectionOpen((prev) => !prev);
-  }, []);
-
   const handleToggleItem = useCallback((index: number) => {
     setOpenIndex((prev) => (prev === index ? null : index));
   }, []);
 
-  // Hide widget when no FAQ items are available
+  const product = data?.success ? data.data : null;
+  if (!product) {
+    return null;
+  }
+
+  const apiFaq = product.metadata?.[ProductMetadataKey.PRODUCT_FAQ]?.value;
+  const apiItems = transformFaqData(apiFaq);
+  const items: FAQItem[] =
+    apiItems.length > 0 ? apiItems : settings?.items || [];
+
   if (items.length === 0) {
     return null;
   }
 
-  return (
-    <section className={["bg-[#f4f6f8]", className || ""].join(" ")}>
-      {/* Container -- max-width 1400px, centered */}
-      <div className="mx-auto max-w-[1400px]">
-        {/* Outer accordion wrapper */}
-        <div>
-          {/* Section header -- "Product FAQs" + chevron */}
-          <button
-            type="button"
-            onClick={handleToggleSection}
-            aria-expanded={sectionOpen}
-            className={[
-              "w-full flex items-center justify-between",
-              "cursor-pointer",
-              "bg-transparent border-0 outline-none",
-              "py-[40px] px-[32px]",
-              "md:py-[40px] md:px-[32px]",
-              "text-left",
-              "transition-all duration-300",
-            ].join(" ")}
-          >
-            <span
-              className={[
-                "font-[Gotham,sans-serif]",
-                "text-[20px] leading-[26px] md:text-[24px] md:leading-[29px]",
-                "font-[700]",
-                "text-[#1d1d1d]",
-              ].join(" ")}
-            >
-              {title}
-            </span>
-            <span
-              className={[
-                "flex items-center justify-center",
-                "w-[24px] h-[24px]",
-                "text-[#1d1d1d]",
-                "transition-colors duration-300",
-              ].join(" ")}
-            >
-              <ChevronIcon isOpen={sectionOpen} />
-            </span>
-          </button>
+  const title = settings?.title || settings?.sectionTitle || "FAQ";
 
-          {/* Collapsible FAQ list */}
-          <div
-            className={[
-              "overflow-hidden",
-              "transition-all duration-300 ease-in-out",
-              sectionOpen ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0",
-            ].join(" ")}
-          >
-            <div className="px-[0px]">
-              <ul className="list-none m-0 p-0">
-                {items.map((item, index) => (
-                  <FAQAccordionItem
-                    key={index}
-                    item={item}
-                    isOpen={openIndex === index}
-                    onToggle={() => handleToggleItem(index)}
-                  />
-                ))}
-              </ul>
-            </div>
-          </div>
+  return (
+    <div
+      data-testid="product-faq-section-container"
+      className={`bg-[#F4F6F8] xl:px-[30px] ${className || ""}`}
+    >
+      <Box className="max-w-[1400px] mx-auto px-[24px] py-[16px] md:py-[38px] rounded-3xl bg-white border-b border-[#ECECEC]">
+        <h5
+          className={[
+            "w-full text-left mb-[15px] md:mb-[38px]",
+            "font-[Gotham,sans-serif]",
+            "text-[24px] leading-[29px]",
+            "font-[700] text-[#000000]",
+          ].join(" ")}
+        >
+          {title}
+        </h5>
+
+        <div>
+          {items.map((item, index) => (
+            <FAQAccordionItem
+              key={index}
+              item={item}
+              isOpen={openIndex === index}
+              onToggle={() => handleToggleItem(index)}
+              isFirst={index === 0}
+              isLast={index === items.length - 1}
+            />
+          ))}
         </div>
-      </div>
-    </section>
+      </Box>
+    </div>
   );
 });
