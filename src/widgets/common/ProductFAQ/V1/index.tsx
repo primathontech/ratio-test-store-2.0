@@ -51,6 +51,31 @@ function transformFaqData(
 }
 
 /* ------------------------------------------------------------------ */
+/*  Inline SVG — Chevron icon (upward arrow, rotates on open)          */
+/*  Mirrors AdditionalInformation V1/V2 section-toggle arrow           */
+/* ------------------------------------------------------------------ */
+
+const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
+  <svg
+    className={[
+      "transition-transform duration-[400ms] delay-[100ms]",
+      isOpen ? "rotate-180" : "rotate-0",
+    ].join(" ")}
+    xmlns="http://www.w3.org/2000/svg"
+    width="18"
+    height="18"
+    viewBox="0 0 11 7"
+    fill="none"
+    aria-hidden="true"
+  >
+    <path
+      d="M-2.40413e-07 5.5L5.5 -2.40413e-07L11 5.5L10.0237 6.47625L5.5 1.9525L0.976249 6.47625L-2.40413e-07 5.5Z"
+      fill="currentColor"
+    />
+  </svg>
+);
+
+/* ------------------------------------------------------------------ */
 /*  Plus / minus toggle icon — cross-fades between plus_icon (closed)  */
 /*  and minus_icon (open) with a slight rotation tween                 */
 /* ------------------------------------------------------------------ */
@@ -169,6 +194,13 @@ export const V1 = memo(function V1({
     setOpenIndex((prev) => (prev === index ? null : index));
   }, []);
 
+  const [isSectionOpen, setIsSectionOpen] = useState<boolean>(
+    settings?.defaultExpanded ?? true
+  );
+  const handleToggleSection = useCallback(() => {
+    setIsSectionOpen((prev) => !prev);
+  }, []);
+
   const product = data?.success ? data.data : null;
   if (!product) {
     return null;
@@ -191,18 +223,43 @@ export const V1 = memo(function V1({
       className={`bg-[#F4F6F8] xl:px-[30px] ${className || ""}`}
     >
       <Box className="max-w-[1400px] mx-auto px-[24px] py-[16px] md:py-[38px] rounded-3xl bg-white border-b border-[#ECECEC]">
-        <h5
+        <button
+          type="button"
+          onClick={handleToggleSection}
+          aria-expanded={isSectionOpen}
           className={[
-            "w-full text-left mb-[15px] md:mb-[38px]",
-            "font-[Gotham,sans-serif]",
-            "text-[24px] leading-[29px]",
-            "font-[700] text-[#000000]",
+            "w-full flex items-center justify-between",
+            "cursor-pointer bg-transparent border-0 outline-none",
+            "mb-[15px] md:mb-[38px] text-left",
           ].join(" ")}
         >
-          {title}
-        </h5>
+          <h5
+            className={[
+              "font-[Gotham,sans-serif]",
+              "text-[24px] leading-[29px]",
+              "font-[700] text-[#000000] m-0",
+            ].join(" ")}
+          >
+            {title}
+          </h5>
+          <span
+            className={[
+              "flex items-center justify-center",
+              "w-[18px] h-[18px]",
+              "text-[#1d1d1d]",
+              "shrink-0 ml-[16px]",
+            ].join(" ")}
+          >
+            <ChevronIcon isOpen={isSectionOpen} />
+          </span>
+        </button>
 
-        <div>
+        <div
+          className={[
+            "overflow-hidden transition-all duration-[400ms] ease-in-out",
+            isSectionOpen ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0",
+          ].join(" ")}
+        >
           {items.map((item, index) => (
             <FAQAccordionItem
               key={index}

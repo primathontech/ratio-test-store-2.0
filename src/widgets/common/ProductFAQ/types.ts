@@ -23,7 +23,7 @@ export interface ProductFAQSettings {
   sectionTitle?: string;
   /** FAQ items array (used as fallback when API has no product_faq metadata) */
   items?: FAQItem[];
-  /** @deprecated outer collapsible removed in current variant */
+  /** Whether the outer section starts expanded (default: true) */
   defaultExpanded?: boolean;
 }
 
