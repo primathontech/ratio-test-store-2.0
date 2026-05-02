@@ -16,6 +16,7 @@ import { HeaderProps, NavItem, NavDropdownGroup } from "../types";
 import { CartBadge } from "../components/CartBadge";
 import { MobileNavigationDrawer } from "../components/MobileDrawer";
 import { DropdownAccordion } from "../components/DropdownAccordion";
+import { KwikpassLoginCustom } from "@/integrations/kwikpass-custom";
 import { SearchDropdown } from "@/widgets/common/Search/components/SearchDropdown";
 import { MobileSearchOverlay } from "@/widgets/common/Search/components/MobileSearchOverlay";
 import { SearchInputV2 } from "@/widgets/common/Search/components/SearchInputV2";
@@ -243,39 +244,7 @@ const CartIcon = () => (
   </svg>
 );
 
-const AccountIcon = () => (
-  <svg
-    width="19"
-    height="22"
-    viewBox="0 0 19 22"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <path
-      d="M12.9883 10.6297C14.6192 10.6297 15.6562 11.6758 16.2588 13.034C16.8609 14.3912 17.0346 16.0692 16.9404 17.3602C16.8262 18.9251 15.6393 20.0846 14.1064 20.2167H4.59961C3.85475 20.1125 3.28639 19.8723 2.86133 19.5301C2.4361 19.1877 2.15711 18.7444 1.98633 18.2391C1.64564 17.231 1.73463 15.9707 1.95508 14.746C2.13628 13.7403 2.49726 12.7049 3.10645 11.9237C3.71704 11.1408 4.57762 10.6132 5.75195 10.6297C5.87948 10.6316 6.02185 10.6774 6.16699 10.745C6.31292 10.813 6.46634 10.9056 6.61719 11.0038C6.76786 11.1018 6.91829 11.2071 7.05664 11.3016C7.19578 11.3967 7.32257 11.4807 7.42969 11.5379C8.70668 12.2205 10.1094 12.1907 11.3701 11.4891C11.4755 11.4305 11.5974 11.349 11.7295 11.2577C11.8608 11.1668 12.0025 11.0667 12.1455 10.9745C12.2884 10.8823 12.4345 10.7969 12.5762 10.7342C12.7174 10.6717 12.8577 10.6298 12.9883 10.6297Z"
-      fill="black"
-      stroke="black"
-      strokeWidth="0.1"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M4.83691 6.51595C4.61388 2.50638 9.36395 0.235708 12.2656 3.00227C14.012 4.66745 14.107 7.45859 12.5186 9.24544L12.3604 9.41536C9.67966 12.1332 5.04937 10.3371 4.83691 6.51595Z"
-      fill="black"
-      stroke="black"
-      strokeWidth="0.1"
-      strokeLinejoin="round"
-    />
-    <path
-      d="M5.65838 11.7626C7.39342 13.0303 9.2169 13.5764 11.2261 12.7941C11.8915 12.535 12.4159 12.1136 13.0301 11.7657C15.053 11.8137 15.6543 14.1892 15.7967 15.8537C15.9391 17.5182 15.84 18.9137 13.9096 19.0939H4.79838C3.97507 19.0365 3.20792 18.5999 2.97181 17.7603C2.77372 17.0569 2.90415 15.7743 3.02796 15.0414C3.27955 13.5562 3.92157 11.8321 5.65794 11.7626H5.65838Z"
-      fill="white"
-    />
-    <path
-      d="M8.90598 2.92484C11.8786 2.65586 13.6928 6.16284 11.7385 8.44509C10.2188 10.2194 7.40617 9.88321 6.31756 7.81838C5.22675 5.74862 6.61293 3.13195 8.90598 2.92484Z"
-      fill="white"
-    />
-  </svg>
-);
+// AccountIcon was inlined here previously; now lives inside UserAccount.
 
 /* ──────────────────────── Desktop Dropdown ──────────────────────── */
 
@@ -609,7 +578,6 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
   const navigation = settings?.navigation ?? DEFAULT_NAV;
   const logoSrc = settings?.logoSrc ?? "/Header/images/logo.png";
   const logoAlt = settings?.logoAlt ?? "BBlunt";
-  const accountHref = settings?.accountHref ?? "/account";
   const cartCount = useCartTotalQuantity();
   const openCart = useCartStore((s) => s.openCart);
   const backgroundColor = settings?.backgroundColor ?? "#ffffff";
@@ -788,20 +756,11 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               </span>
             </button>
 
-            {/* Account: hidden on mobile <768px, visible on tablet + desktop */}
-            <Link
-              href={accountHref}
-              className="hidden md:flex items-center gap-[8px] text-[#1d1d1d] no-underline"
-              aria-label="Account"
-            >
-              <AccountIcon />
-              <span
-                className="text-[14px] font-[400] text-[#1d1d1d]"
-                style={{ fontFamily: "'Gotham', sans-serif" }}
-              >
-                Account
-              </span>
-            </Link>
+            {/* Account: triggers KwikPass login when logged out, shows
+                dropdown (Profile / Order History / Logout) when logged in. */}
+            <div className="hidden md:flex items-center">
+              <KwikpassLoginCustom />
+            </div>
           </div>
         </div>
       </header>

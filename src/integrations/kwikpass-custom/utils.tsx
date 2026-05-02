@@ -70,7 +70,9 @@ export const fireUserEngagementEvent = () => {
  */
 export const handleKwikpassLogin = (onClose?: () => void) => {
   try {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      return;
+    }
 
     // Custom platform login
     if (window.handleCustomLogin) {
@@ -85,3 +87,18 @@ export const handleKwikpassLogin = (onClose?: () => void) => {
 
 // Placeholder CartStorage - should be replaced with actual implementation
 export const getCartToken = () => localStorage.getItem("cart_token") || "";
+
+/**
+ * Clears all auth-related storage entries written by KwikPass.
+ * Called from the logout flow to ensure no stale token survives.
+ */
+export const clearKwikpassAuthStorage = () => {
+  try {
+    localStorage.removeItem("customerDetails");
+    localStorage.removeItem("GUESTUSERDATA");
+    sessionStorage.removeItem("gk_access_token");
+    sessionStorage.removeItem("gkAccessToken");
+  } catch {
+    // Safari Private Browsing throws SecurityError on storage access
+  }
+};

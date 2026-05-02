@@ -2,6 +2,9 @@
 
 import { Box } from "@/ui/atomic";
 import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@shopkit/core/context";
+import { handleKwikpassLogin } from "@/integrations/kwikpass-custom";
 import ConnectWithUs from "./ConnectWithUs";
 import GetApp from "./GetApp";
 import { MobileNavigationItem } from "./MobileNavigationItem";
@@ -31,6 +34,20 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
   connectWithUs = [],
   getApp,
 }) => {
+  const router = useRouter();
+  const { accessToken } = useAuth();
+  const isLoggedIn = !!accessToken;
+
+  // If logged in, route to /account; otherwise trigger KwikPass login overlay.
+  const handleAccountClick = () => {
+    onClose();
+    if (isLoggedIn) {
+      router.push("/account");
+      return;
+    }
+    handleKwikpassLogin();
+  };
+
   // Prevent body scroll when drawer is open
   useEffect(() => {
     if (isOpen) {
@@ -133,7 +150,13 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
 
         {/* User Actions */}
         <Box className="mx-4 border-t shrink-0">
-          <button className="py-4 flex gap-2 items-center">
+          <button
+            type="button"
+            onClick={handleAccountClick}
+            className="py-4 flex gap-2 items-center bg-transparent border-0 cursor-pointer"
+            aria-label={isLoggedIn ? "My Account" : "Login"}
+            data-testid="mobile-drawer-account-button"
+          >
             <svg
               width="20"
               height="20"
@@ -150,7 +173,9 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
               <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
-            <p className="text-[14px] text-[#1d1d1d]">Login</p>
+            <p className="text-[14px] text-[#1d1d1d]">
+              {isLoggedIn ? "My Account" : "Login"}
+            </p>
           </button>
         </Box>
       </Box>
