@@ -111,7 +111,7 @@ export const template: PageConfig = {
             variant: "v1",
 
             // Coupon marquee (between price block and variant picker)
-            showProductMarquee: true,
+            showProductMarquee: false,
             productMarqueeText: "Shop for ₹499 & Get 2 Bestsellers Free",
             productMarqueeCouponCode: "FREEHF",
             productMarqueeSpeed: "8s",
@@ -552,6 +552,33 @@ export const template: PageConfig = {
             variant: "v1",
             title: "Additional Information",
             defaultExpanded: false,
+          },
+        },
+      ],
+    },
+
+    // Product Disclaimer Section
+    {
+      id: "product-disclaimer-section",
+      name: "Product Disclaimer",
+      type: SECTION_TYPES.CONTENT_SECTION,
+      settings: {
+        layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        },
+      },
+      widgets: [
+        {
+          id: "dawn-product-disclaimer",
+          name: "Product Disclaimer",
+          type: WIDGET_TYPES.ProductDisclaimer,
+          dataSourceKey: "productData",
+          settings: {
+            variant: "v1",
+            sectionTitle: "Disclaimer",
           },
         },
       ],
