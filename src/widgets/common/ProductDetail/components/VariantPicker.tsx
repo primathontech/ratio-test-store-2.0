@@ -73,6 +73,8 @@ export function VariantPicker({
   selectSizeText,
   discount,
   rupeeSymbol,
+  currentPrice,
+  compareAtPrice,
 }: VariantPickerProps) {
   const [variantNetContent, setNetContent] = useState<string[]>([]);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
@@ -166,13 +168,15 @@ export function VariantPicker({
   }
 
   return (
-    <div data-testid="variant-picker-container" className="my-6">
+    <div data-testid="variant-picker-container" className="flex flex-col">
       {selectSizeText && (
-        <p className="text-[16px] font-[700] pb-[4px]">{selectSizeText}</p>
+        <p className="text-[16px] font-[700] leading-[25.6px] text-[#000000] m-0">
+          {selectSizeText}
+        </p>
       )}
       <div
         data-testid="variant-picker-list"
-        className="flex gap-6 py-4 md:py-8 overflow-x-auto [&::-webkit-scrollbar]:hidden"
+        className="flex gap-[16px] overflow-x-auto pt-[14px] pr-[12px] [&::-webkit-scrollbar]:hidden mb-[24px]"
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -190,14 +194,35 @@ export function VariantPicker({
             variant?.fields?.variant?.value?.[0]?.handle;
           const handleObj =
             typeof variantHandleEntry === "string" ? null : variantHandleEntry;
+          const variantHandleStr =
+            typeof variantHandleEntry === "string"
+              ? variantHandleEntry
+              : (handleObj?.handle ?? "");
 
-          const matchesRoute = handleObj?.handle === currentHandle;
+          // The API omits the navigation link for the current variant (handle
+          // is undefined / empty). Treat that as the selected one.
+          const hasNavigationLink = !!variantHandleStr;
+          const matchesRoute = hasNavigationLink
+            ? variantHandleStr === currentHandle
+            : true;
           const variantImageUrl = handleObj?.imageUrl;
+
+          // Pull price from the handle object when present; otherwise fall
+          // back to the product's main price (this is the current variant).
           const price = handleObj?.price;
-          const priceInRupees = typeof price === "number" ? price / 100 : 0;
+          const priceInRupees =
+            typeof price === "number"
+              ? price / 100
+              : !hasNavigationLink
+                ? currentPrice
+                : 0;
           const comparedPrice = handleObj?.compareAtPrice;
           const comparedPriceInRupees =
-            typeof comparedPrice === "number" ? comparedPrice / 100 : null;
+            typeof comparedPrice === "number"
+              ? comparedPrice / 100
+              : !hasNavigationLink && compareAtPrice > 0
+                ? compareAtPrice
+                : null;
 
           const variantHasDiscount =
             comparedPriceInRupees !== null &&
@@ -215,7 +240,7 @@ export function VariantPicker({
             );
             const variantUnitValue = getUnitValue(variantContent);
             if (variantUnitPrice && variantUnitValue) {
-              variantUnitWithPrice = `${variantUnitPrice}/${variantUnitValue}`;
+              variantUnitWithPrice = `${variantUnitPrice} / ${variantUnitValue}`;
             }
           }
 
@@ -224,20 +249,20 @@ export function VariantPicker({
               key={variant.id}
               data-testid={`variant-card-${variant.id}`}
               onClick={() => onVariantSelect?.(variant)}
-              className={`relative flex flex-row cursor-pointer p-1.5 border rounded-lg text-[14px] text-black font-[600] transition-colors flex-shrink-0 min-w-[165px] md:min-w-[175px] overflow-visible ${
-                matchesRoute ? "border-[#1D1D1D] border-2" : "border-gray-300"
+              className={`relative flex flex-row cursor-pointer p-0 rounded-[4px] transition-colors flex-shrink-0 min-w-[168px] md:min-w-[175px] overflow-visible max-w-[224px] ${
+                matchesRoute
+                  ? "border-[1.6px] border-solid border-[#1D1D1D]"
+                  : "border-[0.8px] border-solid border-[rgba(0,0,0,0.1)]"
               }`}
             >
               {matchesRoute && (
                 <div
                   data-testid={`variant-selected-icon-${variant.id}`}
-                  className="absolute -top-2 -right-2 z-10 w-6 h-6 rounded-[50%] bg-[#1D1D1D] flex items-center justify-center"
+                  className="absolute -top-[12px] -right-[8px] z-[10] w-[20px] h-[20px] rounded-[50%] bg-[#1D1D1D] flex items-center justify-center"
                 >
-                  {/* Inline checkmark — `/bblunt/svg/selected_variant.svg`
-                      from the reference doesn't exist in this project. */}
                   <svg
-                    width="14"
-                    height="14"
+                    width="12"
+                    height="12"
                     viewBox="0 0 24 24"
                     fill="none"
                     xmlns="http://www.w3.org/2000/svg"
@@ -256,7 +281,7 @@ export function VariantPicker({
 
               <div
                 data-testid={`variant-swatch-wrapper-${variant.id}`}
-                className="rounded-md overflow-hidden flex-shrink-0 mr-3 md:mr-4"
+                className="rounded-md overflow-hidden flex-shrink-0 m-[4px]"
               >
                 <Image
                   src={swatchImage || variantImageUrl || fallbackImageUrl}
@@ -272,27 +297,27 @@ export function VariantPicker({
                 data-testid={`variant-content-wrapper-${variant.id}`}
                 className="leading-none flex-1 flex flex-col justify-between min-w-[83px] md:min-w-[90px] max-w-[150px]"
               >
-                <div>
+                <div className="px-[8px]">
                   <div
                     data-testid={`variant-name-${variant.id}`}
-                    className="text-[14px] md:text-[12px] leading-[20px] font-[400]"
+                    className="text-[14px] md:text-[12px] leading-[22.4px] md:leading-[19.2px] font-[400] text-[#000000] mt-[5px]"
                   >
                     {name}
                   </div>
                   <div
                     data-testid={`variant-price-section-${variant.id}`}
-                    className="flex items-center gap-2 flex-nowrap text-left mr-3 md:mr-4"
+                    className="flex items-center gap-[4px] flex-nowrap text-left mr-3 md:mr-4"
                   >
-                    <span className="text-[16px] md:text-20 font-[700] whitespace-nowrap">
+                    <span className="text-[16px] font-[700] leading-[25.6px] text-[#1D1D1D] whitespace-nowrap">
                       ₹{priceInRupees}
                     </span>
                     {variantHasDiscount && (
                       <>
-                        <span className="text-[14px] font-[500] text-[#727272] line-through whitespace-nowrap">
+                        <span className="text-[12px] font-[400] leading-[19.2px] text-[#727272] line-through whitespace-nowrap mt-[2px]">
                           {rupeeSymbol}
                           {comparedPriceInRupees}
                         </span>
-                        <span className="text-[14px] font-[500] text-[#D6322C] whitespace-nowrap">
+                        <span className="text-[12px] font-[500] leading-[19.2px] text-[#D6322C] whitespace-nowrap mt-[2px]">
                           {variantDiscountPercentage}
                           {discount}
                         </span>
@@ -304,10 +329,10 @@ export function VariantPicker({
                 {variantUnitWithPrice && (
                   <div
                     data-testid={`variant-unit-price-${variant.id}`}
-                    className="bg-[#F4F6F8] pt-1 align-baseline text-left text-[14px] md:text-[16px] font-[700]"
+                    className="text-left text-[12px] font-[700] leading-[19.2px] text-[#000000] p-[8px]"
                   >
-                    {rupeeSymbol}
-                    {variantUnitWithPrice}
+                    ({rupeeSymbol}
+                    {variantUnitWithPrice})
                   </div>
                 )}
               </div>

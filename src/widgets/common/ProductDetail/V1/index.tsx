@@ -82,10 +82,10 @@ export const V1 = memo(function V1({
       style={{ fontFamily: "Gotham, sans-serif" }}
     >
       <div className="pt-0 pb-0 lg:pt-[47px] xl:pt-[56px] lg:pb-[27px] xl:pb-[32px]">
-        <div className="px-0 lg:px-[70px]">
+        <div className="px-[16px] md:px-[30px] xl:px-[70px] pt-[16px] md:pt-0">
           {/* Mobile — info stacks above gallery (gallery slot is rendered
               inside BbluntProductInfo via `renderGallery`). */}
-          <div className="block md:hidden px-[16px] pt-[16px] pb-[16px]">
+          <div className="block md:hidden">
             <BbluntProductInfo
               data={product}
               renderGallery={
@@ -96,7 +96,7 @@ export const V1 = memo(function V1({
           </div>
 
           {/* Desktop — two-column layout. */}
-          <div className="hidden md:flex gap-[16px] px-[30px] pt-0 pb-0 md:pt-[47px] lg:pt-0 md:pb-[27px] lg:pb-0">
+          <div className="hidden md:flex gap-[16px] pt-0 pb-0 md:pt-[47px] lg:pt-0 md:pb-[27px] lg:pb-0">
             <div className="flex-1 min-w-0">
               <div className="sticky top-[30px]">
                 <ProductGallery images={images} productLabel={productLabel} />
@@ -104,7 +104,7 @@ export const V1 = memo(function V1({
             </div>
 
             <div className="flex-1 min-w-0">
-              <div className="sticky top-[30px] pl-0 lg:pl-[13px]">
+              <div className="sticky top-[30px] pl-0 xl:pl-[13px]">
                 <BbluntProductInfo data={product} {...infoProps} />
               </div>
             </div>

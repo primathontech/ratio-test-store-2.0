@@ -44,8 +44,9 @@ export const NavigationArrow: React.FC<NavigationArrowProps> = ({
     rounded: "rounded-lg",
   };
 
+  // No rotation needed since we have separate left/right SVGs
   const rotationMap = {
-    left: "rotate-180",
+    left: "",
     right: "",
     up: "rotate-90",
     down: "-rotate-90",
@@ -106,21 +107,62 @@ export const NavigationArrow: React.FC<NavigationArrowProps> = ({
           height={size * 0.6}
         />
       ) : (
-        <svg
-          width={size * 0.7}
-          height={size * 0.7}
-          viewBox="0 0 24 24"
-          fill="none"
-          className={rotationMap[direction]}
-        >
-          <path
-            d="M9 18l6-6-6-6"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        <>
+          {direction === "left" && (
+            <svg
+              width="12"
+              height="22"
+              viewBox="0 0 12 22"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className={rotationMap[direction]}
+            >
+              <path
+                d="M11 21L1 11L11 0.999999"
+                stroke={disabled ? "#00000066" : "#000000"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+          {direction === "right" && (
+            <svg
+              width="12"
+              height="22"
+              viewBox="0 0 12 22"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className={rotationMap[direction]}
+            >
+              <path
+                d="M1 1L11 11L1 21"
+                stroke={disabled ? "#00000066" : "#000000"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+          {(direction === "up" || direction === "down") && (
+            <svg
+              width="12"
+              height="22"
+              viewBox="0 0 12 22"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              className={rotationMap[direction]}
+            >
+              <path
+                d="M1 1L11 11L1 21"
+                stroke={disabled ? "#00000066" : "#000000"}
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          )}
+        </>
       )}
     </button>
   );

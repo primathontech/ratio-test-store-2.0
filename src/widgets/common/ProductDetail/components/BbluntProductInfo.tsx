@@ -95,15 +95,15 @@ export function BbluntProductInfo({
   data,
   reviews: reviewsProp,
   renderGallery,
-  addToCartText = "Add to Cart",
+  addToCartText = "Add to cart",
   netContentText = "Net content",
   inclusiveOfAllTaxesText = "Incl. of all taxes",
   reviewsText = "reviews",
-  mrp = "M.R.P.",
+  mrp = "MRP:",
   discount = "% off",
   usp = "USP",
   rupeeSymbol = "₹",
-  selectSizeText = "Select Size",
+  selectSizeText = "Select size",
   soldOutText = "Sold out",
   showProductMarquee,
   productMarqueeText,
@@ -198,16 +198,22 @@ export function BbluntProductInfo({
     ? data.compare_at_price / 100
     : undefined;
 
-  // Variant click → navigate to the variant's product page.
+  // Variant click → navigate to the variant's product page. Preserve the
+  // collection segment when the user is on a `/collections/X/products/Y` URL.
   const handleVariantSelect = (variant: NewVariantNode) => {
     const variantHandleEntry = variant?.fields?.variant?.value?.[0]?.handle;
     const variantHandle =
       typeof variantHandleEntry === "string"
         ? variantHandleEntry
         : variantHandleEntry?.handle;
-    if (variantHandle && pathname) {
-      router.push(generateProductNavigationURL(variantHandle, pathname));
+    if (!variantHandle) {
+      return;
     }
+    const parts = pathname?.split("/") ?? [];
+    const collectionsIndex = parts.indexOf("collections");
+    const collectionHandle =
+      collectionsIndex !== -1 ? parts[collectionsIndex + 1] : undefined;
+    router.push(generateProductNavigationURL(variantHandle, collectionHandle));
   };
 
   const scrollToReviewsSection = () => {
@@ -243,19 +249,19 @@ export function BbluntProductInfo({
 
   const ratingSection = (
     <div
-      className="flex items-center gap-1.5 lg:justify-start !mt-0 !mb-[24px]"
+      className="flex items-center gap-[2px] lg:justify-start !mt-0 mb-[12px] md:!mb-[24px]"
       data-testid="bblunt-product-all-details-rating-section"
     >
       <svg
         className="w-[16px] h-[16px] flex-shrink-0"
         fill="#E6B30D"
-        viewBox="0 0 24 24"
+        viewBox="0 0 16 16"
         xmlns="http://www.w3.org/2000/svg"
       >
-        <path d="M12 2L14.5 8.5L21.5 9.5L16.5 14.5L18 21.5L12 18L6 21.5L7.5 14.5L2.5 9.5L9.5 8.5L12 2Z" />
+        <path d="M8 1.33L9.87 5.67L14.67 6.33L11.33 9.67L12 14.67L8 12L4 14.67L4.67 9.67L1.33 6.33L6.13 5.67L8 1.33Z" />
       </svg>
       <span
-        className="font-[500] text-[16px] cursor-pointer hover:opacity-70 transition-opacity text-[#1D1D1D]"
+        className="font-[500] text-[14px] md:text-[16px] leading-[1.4em] cursor-pointer hover:opacity-70 transition-opacity text-[#1D1D1D]"
         onClick={scrollToReviewsSection}
         role="button"
         tabIndex={0}
@@ -269,14 +275,11 @@ export function BbluntProductInfo({
       >
         {reviews?.average ?? "—"}
       </span>
-      <span
-        className="text-[12px] min-[375px]:text-[14px] font-[500] mx-1"
-        style={{ color: "#000000" }}
-      >
-        |
+      <span className="text-[14px] md:text-[16px] font-[500] mx-1 text-[#1D1D1D]">
+        ┃
       </span>
       <span
-        className="text-[#3C4CFF] font-[500] text-[16px] cursor-pointer hover:opacity-70 transition-opacity"
+        className="text-[#3C4CFF] font-[500] text-[14px] md:text-[16px] leading-[1.4em] cursor-pointer hover:opacity-70 transition-opacity"
         onClick={scrollToReviewsSection}
         role="button"
         tabIndex={0}
@@ -294,9 +297,9 @@ export function BbluntProductInfo({
   );
 
   const productTitle = (
-    <div data-testid="product-title-wrapper" className="mb-[20px]">
+    <div data-testid="product-title-wrapper" className="mb-[12px] md:mb-[20px]">
       <h1
-        className="text-[16px] font-[500] md:text-[24px] md:font-[700] leading-[19px] md:leading-[28.5px] text-[#1D1D1D]"
+        className="text-[16px] font-[500] md:text-[24px] md:font-[700] leading-[19.2px] md:leading-[28.8px] text-[#1D1D1D]"
         data-testid="bblunt-product-all-details-title"
       >
         {data?.title}
@@ -311,14 +314,14 @@ export function BbluntProductInfo({
     return (
       <div
         data-testid="product-tags-container"
-        className="flex flex-wrap gap-[16px] mb-4 pb-4 md:pb-[24px]"
+        className="flex flex-wrap gap-[8px] md:gap-[16px] pb-[24px]"
       >
         {productMetaTags.map((tag, index) => (
           <div
             key={index}
             data-testid={`product-tag-${index}`}
-            className="flex items-center gap-2 rounded-[7px] border-[0.5px] border-[#DDDDDD]"
-            style={{ backgroundColor: "#f4f6f8", padding: "3px 13px" }}
+            className="flex items-center gap-[12px] rounded-[4px] md:rounded-[7px] border-[0.5px] border-[#DDDDDD] py-0 md:py-[3px] px-[13px]"
+            style={{ backgroundColor: "#f4f6f8" }}
           >
             <Image
               src="/svg/tag_icon.svg"
@@ -328,7 +331,7 @@ export function BbluntProductInfo({
               className="flex-shrink-0"
               unoptimized
             />
-            <span className="text-[12px] md:text-[16px] font-[500] text-[#1D1D1D]">
+            <span className="text-[14px] md:text-[16px] font-[500] leading-[1.6em] text-[#1D1D1D]">
               {tag}
             </span>
           </div>
@@ -344,11 +347,11 @@ export function BbluntProductInfo({
     return (
       <div
         data-testid="net-content-section"
-        className="text-[14px] py-4 md:py-0 font-400 text-[#1D1D1D] leading-[1.29em]"
+        className="text-[14px] py-4 md:py-0 font-[400] text-[#1D1D1D] leading-[14px] mb-0 md:mb-[16px]"
         style={{ color: "#1D1D1D" }}
       >
         {netContentText}:{" "}
-        <span className="font-[500] md:font-[700]">{productNetContent}</span>
+        <span className="font-[700]">{productNetContent}</span>
         {unitPrice && unitValue && (
           <>
             {" "}
@@ -363,7 +366,7 @@ export function BbluntProductInfo({
   };
 
   const priceSection = () => (
-    <div data-testid="price-section-container" className="mb-8">
+    <div data-testid="price-section-container" className="mb-[24px]">
       <div
         data-testid="price-section-content"
         className="flex flex-col md:gap-2 gap-4"
@@ -375,22 +378,22 @@ export function BbluntProductInfo({
               data-testid="price-mobile-line"
               className="flex flex-wrap items-center gap-2 md:hidden"
             >
-              <span className="text-[20px] font-[700] text-[#1D1D1D] leading-[1]">
+              <span className="text-[22px] font-[700] text-[#1D1D1D] leading-[1em]">
                 {rupeeSymbol}
                 {currentPrice}
               </span>
-              <span className="text-[12px] font-[500] text-[#a3a3a3] mt-4">
+              <span className="text-[14px] font-[400] text-[#a3a3a3] leading-[14px] mt-4">
                 {mrp}{" "}
                 <span className="line-through mt-2">
                   {rupeeSymbol}
                   {compareAtPrice}
                 </span>
               </span>
-              <span className="text-[14px] font-[500] text-[#D6322C] mt-4">
+              <span className="text-[14px] font-[700] text-[#D6322C] mt-4">
                 {calculateDiscountPercentage(compareAtPrice, currentPrice)}
                 {discount}
               </span>
-              <span className="text-[12px] italic text-[#a3a3a3] whitespace-nowrap mt-4">
+              <span className="text-[12px] italic text-[#a3a3a3] leading-[19.2px] whitespace-nowrap mt-4">
                 {inclusiveOfAllTaxesText}
               </span>
             </div>
@@ -400,25 +403,25 @@ export function BbluntProductInfo({
               data-testid="price-desktop-container"
               className="hidden md:flex flex-col"
             >
-              <div className="flex items-center gap-4">
-                <span className="text-[26px] font-[700] text-[#1D1D1D]">
+              <div className="flex items-center gap-[10px] leading-[17px] md:leading-[16px] xl:leading-[14px]">
+                <span className="text-[26px] font-[700] text-[#1D1D1D] leading-[26px]">
                   {rupeeSymbol}
                   {Number(currentPrice).toLocaleString()}
                 </span>
-                <span className="text-[14px] font-[700] text-[#D6322C] mt-3">
+                <span className="text-[14px] font-[700] text-[#D6322C] mt-[10px]">
                   {calculateDiscountPercentage(compareAtPrice, currentPrice)}
                   {discount}
                 </span>
               </div>
               <div className="flex items-center">
-                <span className="text-[14px] font-[500] text-[#a3a3a3]">
+                <span className="text-[14px] font-[400] text-[#a3a3a3] leading-[14px]">
                   {mrp}{" "}
                   <span className="line-through">
                     {rupeeSymbol}
                     {Number(compareAtPrice).toLocaleString()}
                   </span>
                 </span>
-                <span className="text-[12px] ml-2 italic text-[#a3a3a3] mt-1">
+                <span className="text-[12px] ml-2 italic text-[#a3a3a3] leading-[19.2px] mt-1">
                   {inclusiveOfAllTaxesText}
                 </span>
               </div>
@@ -429,14 +432,14 @@ export function BbluntProductInfo({
             data-testid="price-no-discount-line"
             className="flex flex-wrap items-baseline gap-2 mt-4"
           >
-            <span className="text-[14px] font-[500] text-[#a3a3a3] mt-2">
+            <span className="text-[14px] font-[400] text-[#a3a3a3] leading-[14px] mt-2">
               {mrp}
             </span>
-            <span className="text-[20px] md:text-[26px] font-[700] text-[#1D1D1D] leading-[1] mt-2">
+            <span className="text-[22px] md:text-[26px] font-[700] text-[#1D1D1D] leading-[1em] mt-2">
               {rupeeSymbol}
               {currentPrice}
             </span>
-            <span className="text-[12px] italic text-[#a3a3a3] whitespace-nowrap mt-2">
+            <span className="text-[12px] italic text-[#a3a3a3] leading-[19.2px] whitespace-nowrap mt-2">
               {inclusiveOfAllTaxesText}
             </span>
           </div>
@@ -526,7 +529,7 @@ export function BbluntProductInfo({
 
       <button
         data-testid="cart-item-add-to-cart"
-        className="hidden md:flex w-full h-[48px] bg-[#1D1D1D] text-white rounded-[10px] font-[700] text-[24px] leading-[1.2em] items-center justify-center mt-6 transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="hidden md:flex w-full h-[48px] bg-[#1D1D1D] text-white rounded-[10px] font-[700] text-[22px] leading-[1.2em] items-center justify-center mt-6 transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleAddToCart}
         disabled={isLoading || !data?.availableForSale || !cartToken}
       >

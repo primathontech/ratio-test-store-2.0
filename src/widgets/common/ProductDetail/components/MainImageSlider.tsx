@@ -231,13 +231,13 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
           style={{
             fontSize: "12px",
             ...(isMobile
-              ? { top: "2rem", left: "0.75rem" }
+              ? { top: "22px", left: "8px" }
               : isCurrentVideo
                 ? {
                     top: "calc(50% - 180.5px)",
                     left: "calc(50% - 321px)",
                   }
-                : { top: "30px", left: "1rem" }),
+                : { top: "33px", left: "6px" }),
           }}
         >
           <div className="relative inline-block">
@@ -540,7 +540,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
           <div
             className="absolute z-10"
             style={{
-              left: navigationArrowLeftPosition?.left || "1rem",
+              left: navigationArrowLeftPosition?.left || "10px",
               right: navigationArrowLeftPosition?.right,
               top: navigationArrowLeftPosition?.top || "50%",
               bottom: navigationArrowLeftPosition?.bottom,
@@ -568,7 +568,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
             className="absolute z-10"
             style={{
               left: navigationArrowRightPosition?.left,
-              right: navigationArrowRightPosition?.right || "1rem",
+              right: navigationArrowRightPosition?.right || "-5px",
               top: navigationArrowRightPosition?.top || "50%",
               bottom: navigationArrowRightPosition?.bottom,
               transform:
@@ -597,7 +597,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
 
       {/* Mobile pagination row — small bars (active = wide black, idle = small grey) */}
       {isMobile && images.length > 1 && (
-        <div className="py-8 flex items-center justify-center gap-2">
+        <div className="py-[10px] flex items-center justify-center gap-2">
           {images.map((image, index) => {
             const isActive = index === currentIndex;
             return (
