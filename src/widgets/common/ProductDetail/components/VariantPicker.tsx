@@ -160,6 +160,29 @@ export function VariantPicker({
     return productsIndex !== -1 ? parts[productsIndex + 1] || null : null;
   })();
 
+  const selectedVariantIndex = (() => {
+    if (!variants) {
+      return -1;
+    }
+    const exactMatch = variants.findIndex((v) => {
+      const raw = v?.fields?.variant?.value?.[0]?.handle;
+      const handle = typeof raw === "string" ? raw : (raw?.handle ?? "");
+      return !!handle && handle === currentHandle;
+    });
+    if (exactMatch !== -1) {
+      return exactMatch;
+    }
+    const linkless: number[] = [];
+    variants.forEach((v, i) => {
+      const raw = v?.fields?.variant?.value?.[0]?.handle;
+      const handle = typeof raw === "string" ? raw : (raw?.handle ?? "");
+      if (!handle) {
+        linkless.push(i);
+      }
+    });
+    return linkless.length === 1 ? linkless[0] : -1;
+  })();
+
   if (isZoomOpen) {
     return null;
   }
@@ -194,33 +217,21 @@ export function VariantPicker({
             variant?.fields?.variant?.value?.[0]?.handle;
           const handleObj =
             typeof variantHandleEntry === "string" ? null : variantHandleEntry;
-          const variantHandleStr =
-            typeof variantHandleEntry === "string"
-              ? variantHandleEntry
-              : (handleObj?.handle ?? "");
 
-          // The API omits the navigation link for the current variant (handle
-          // is undefined / empty). Treat that as the selected one.
-          const hasNavigationLink = !!variantHandleStr;
-          const matchesRoute = hasNavigationLink
-            ? variantHandleStr === currentHandle
-            : true;
+          const matchesRoute = ind === selectedVariantIndex;
           const variantImageUrl = handleObj?.imageUrl;
-
-          // Pull price from the handle object when present; otherwise fall
-          // back to the product's main price (this is the current variant).
           const price = handleObj?.price;
           const priceInRupees =
             typeof price === "number"
               ? price / 100
-              : !hasNavigationLink
+              : matchesRoute
                 ? currentPrice
                 : 0;
           const comparedPrice = handleObj?.compareAtPrice;
           const comparedPriceInRupees =
             typeof comparedPrice === "number"
               ? comparedPrice / 100
-              : !hasNavigationLink && compareAtPrice > 0
+              : matchesRoute && compareAtPrice > 0
                 ? compareAtPrice
                 : null;
 

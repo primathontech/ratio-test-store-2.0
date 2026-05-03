@@ -291,9 +291,9 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 20, right: 0, bottom: 20, left: 0 } },
-          tablet: { padding: { top: 30, right: 0, bottom: 30, left: 0 } },
-          desktop: { padding: { top: 40, right: 0, bottom: 40, left: 0 } },
+          mobile: { padding: { top: 24, right: 0, bottom: 24, left: 0 } },
+          tablet: { padding: { top: 27, right: 0, bottom: 27, left: 0 } },
+          desktop: { padding: { top: 32, right: 0, bottom: 32, left: 0 } },
         },
       },
       widgets: [
@@ -330,9 +330,9 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 24, right: 0, bottom: 24, left: 0 } },
+          tablet: { padding: { top: 27, right: 0, bottom: 27, left: 0 } },
+          desktop: { padding: { top: 32, right: 0, bottom: 32, left: 0 } },
         },
       },
       widgets: [
@@ -411,9 +411,9 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
       },
       widgets: [

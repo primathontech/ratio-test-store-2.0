@@ -2,8 +2,8 @@
 
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { useCartStore, type CartItem } from "@shopkit/cart";
+import React, { useEffect, useRef, useState } from "react";
+import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
 
 import { useResponsive } from "@/hooks/useResponsive";
 import { generateProductNavigationURL } from "@/utils/navigation";
@@ -15,7 +15,7 @@ import {
   NewVariantPickerData,
   NewVariantNode,
 } from "./VariantPicker";
-import { Spinner } from "@/ui/atomic";
+import { ProductCardToast } from "@/ui/components/ProductCard/Toast";
 import {
   calculateDiscountPercentage,
   ensureArray,
@@ -62,19 +62,26 @@ const PRODUCT_INFO_METAFIELD_KEYS = {
  */
 function buildCartItem(product: ApiProduct, variantId?: string): CartItem {
   const lineId = variantId ?? product.id;
+
+  // Get the default variant or first variant for pricing
+  const defaultVariant =
+    product.variants?.find((v) => v.title === "Default Title") ||
+    product.variants?.[0];
+  const priceInPaise = defaultVariant?.price ?? product.price ?? 0;
+  const compareAtPriceInPaise = product.compare_at_price;
+
   return {
     id: lineId,
     productId: product.id,
-    variantId,
-    sku: product.variants?.[0]?.sku,
+    variantId: variantId || defaultVariant?.id,
+    sku: defaultVariant?.sku,
     title: product.title,
-    price: { amount: product.price ?? 0, currencyCode: "INR" },
-    compareAtPrice:
-      typeof product.compare_at_price === "number"
-        ? { amount: product.compare_at_price, currencyCode: "INR" }
-        : undefined,
+    price: { amount: priceInPaise, currencyCode: "INR" },
+    compareAtPrice: compareAtPriceInPaise
+      ? { amount: compareAtPriceInPaise, currencyCode: "INR" }
+      : undefined,
     quantity: 1,
-    image: product.image?.url,
+    image: product.image?.url || product.images?.[0]?.url,
     product_type: product.product_type,
   };
 }
@@ -123,15 +130,81 @@ export function BbluntProductInfo({
   const openCart = useCartStore((s) => s.openCart);
   const loadingItems = useCartStore((s) => s.loadingItems);
   const cartToken = useCartStore((s) => s.cartToken);
+  const items = useCartItems();
   const isLoading = Boolean(
     loadingItems[data?.id] ||
     (selectedVariantId && loadingItems[selectedVariantId])
   );
 
+  const productId = data?.id;
+  const effectiveVariantId =
+    selectedVariantId ??
+    data?.variants?.find((v) => v.title === "Default Title")?.id ??
+    data?.variants?.[0]?.id;
+
+  const cartLine = items.find((i) => {
+    const lineProductId = i.productId ?? i.product_id;
+    const lineVariantId = i.variantId ?? i.variant_id;
+    return effectiveVariantId
+      ? lineProductId === productId && lineVariantId === effectiveVariantId
+      : lineProductId === productId;
+  });
+  const currentQuantity = cartLine?.quantity ?? 0;
+  const isInCart = !!cartLine;
+
+  const [showToast, setShowToast] = useState(false);
+  const pendingAddRef = useRef<{
+    prevQuantity: number;
+    prevInCart: boolean;
+  } | null>(null);
+  const pendingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const pending = pendingAddRef.current;
+    if (!pending) {
+      return;
+    }
+    const becameInCart = isInCart && !pending.prevInCart;
+    const quantityIncreased =
+      isInCart && currentQuantity > pending.prevQuantity;
+    if (becameInCart || quantityIncreased) {
+      setShowToast(true);
+      pendingAddRef.current = null;
+      if (pendingTimeoutRef.current) {
+        clearTimeout(pendingTimeoutRef.current);
+        pendingTimeoutRef.current = null;
+      }
+    }
+  }, [isInCart, currentQuantity]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingTimeoutRef.current) {
+        clearTimeout(pendingTimeoutRef.current);
+      }
+    };
+  }, []);
+
   const handleAddToCart = async () => {
+    if (!data) {
+      return;
+    }
+
+    pendingAddRef.current = {
+      prevQuantity: currentQuantity,
+      prevInCart: isInCart,
+    };
+    if (pendingTimeoutRef.current) {
+      clearTimeout(pendingTimeoutRef.current);
+    }
+    pendingTimeoutRef.current = setTimeout(() => {
+      pendingAddRef.current = null;
+      pendingTimeoutRef.current = null;
+    }, 5000);
+
     try {
-      await addItem(buildCartItem(data, selectedVariantId));
-      await openCart();
+      const cartItem = buildCartItem(data, selectedVariantId);
+      await addItem(cartItem);
     } catch (error) {
       console.error("[BbluntProductInfo] addItem failed:", error);
     }
@@ -489,6 +562,24 @@ export function BbluntProductInfo({
               onVariantSelect={handleVariantSelect}
             />
           )}
+
+          {/* Mobile Add to Cart Button */}
+          <button
+            data-testid="cart-item-add-to-cart-mobile"
+            className="flex md:hidden w-full h-[48px] bg-[#1D1D1D] text-white rounded-[10px] font-[700] text-[18px] leading-[1.2em] items-center justify-center mt-6 transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={handleAddToCart}
+            disabled={isLoading || !data?.availableForSale || !cartToken}
+          >
+            {isLoading ? (
+              <div className="flex items-center justify-center">
+                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              </div>
+            ) : !data?.availableForSale ? (
+              soldOutText
+            ) : (
+              addToCartText
+            )}
+          </button>
         </div>
       )}
 
@@ -527,20 +618,29 @@ export function BbluntProductInfo({
         </div>
       )}
 
+      {/* Desktop Add to Cart Button */}
       <button
         data-testid="cart-item-add-to-cart"
-        className="hidden md:flex w-full h-[48px] bg-[#1D1D1D] text-white rounded-[10px] font-[700] text-[22px] leading-[1.2em] items-center justify-center mt-6 transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="hidden md:flex w-full h-[48px] bg-[#000000] text-white rounded-[10px] font-[700] text-[22px] leading-[1.2em] items-center justify-center mt-6 transition-opacity shine-link-button disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleAddToCart}
         disabled={isLoading || !data?.availableForSale || !cartToken}
       >
         {isLoading ? (
-          <Spinner className="size-[2.4rem] text-gray-800" />
+          <div className="flex items-center justify-center">
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+          </div>
         ) : !data?.availableForSale ? (
           soldOutText
         ) : (
           addToCartText
         )}
       </button>
+
+      <ProductCardToast
+        show={showToast}
+        onClose={() => setShowToast(false)}
+        title="Item added to your cart"
+      />
     </div>
   );
 }

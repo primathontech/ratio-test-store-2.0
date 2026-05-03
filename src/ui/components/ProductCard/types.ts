@@ -69,6 +69,10 @@ export interface ProductCardSettings {
   showActionButton?: boolean;
   /** When in cart, show the +/- quantity pill instead of the action button — defaults to true */
   showQuantitySelector?: boolean;
+  /** Show a "Item added to your cart" toast when an Add-to-cart click successfully updates the cart — defaults to false */
+  showAddToCartToast?: boolean;
+  /** Toast title — defaults to "Item added to your cart" */
+  addToCartToastTitle?: string;
   /** Action button text (desktop) — defaults to "Add to cart" */
   actionButtonText?: string;
   /** Action button text (mobile, < 769px) — defaults to actionButtonText */

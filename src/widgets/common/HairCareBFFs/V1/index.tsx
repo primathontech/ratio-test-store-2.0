@@ -265,6 +265,7 @@ const HairCareCard = memo(function HairCareCard({
     <ProductCard
       product={cardProduct}
       theme={theme}
+      settings={{ showAddToCartToast: true }}
       onAddToCart={handleAddToCart}
       onIncrement={handleIncrement}
       onDecrement={handleDecrement}

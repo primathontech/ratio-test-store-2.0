@@ -58,7 +58,7 @@ export const V1 = memo(function V1({
   return (
     <div
       data-testid="product-additional-info-section-container"
-      className="mx-6 md:mx-auto max-w-[1400px] lg:px-6 xl:px-[80px] bg-white mb-4"
+      className="mx-auto max-w-[1400px] px-[15px] md:px-[30px] xl:px-[50px] bg-white mb-4"
     >
       <Box
         data-testid="product-additional-info-section-inner-container"
@@ -69,7 +69,7 @@ export const V1 = memo(function V1({
           onClick={toggleExpanded}
           aria-expanded={isExpanded}
           data-testid="product-additional-info-section-header"
-          className="w-full flex items-center justify-between cursor-pointer select-none mb-8 py-[15px] bg-transparent border-0 outline-none text-left"
+          className="w-full flex items-center justify-between cursor-pointer select-none py-[24px] md:py-[27px] xl:py-[32px] bg-transparent border-0 outline-none text-left"
         >
           <h3
             data-testid="product-additional-info-section-title"

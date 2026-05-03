@@ -262,7 +262,7 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
 
   return (
     <section
-      className="relative overflow-hidden pb-[32.4px] md:pb-[56px]"
+      className="relative overflow-hidden"
       style={{
         backgroundColor: settings?.sectionBackgroundColor || "#ffffff",
         fontFamily: "Gotham, sans-serif",
@@ -271,11 +271,11 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
       {/* Content overlay */}
       <div className="relative z-[1] mx-auto xl:mx-[20px] px-[6px] md:px-[30px] xl:px-[50px]">
         {/* Heading */}
-        <div className="flex flex-col items-start text-center mb-[24px] md:mb-[30px] px-[15px]">
+        <div className="flex flex-col items-start text-center mb-[16px] md:mb-[30px] px-[15px]">
           <h4
-            className="text-[24px] xl:text-[28px] leading-[29px] md:leading-[34px]"
+            className="text-[24px] leading-[29px] md:leading-[34px]"
             style={{
-              color: settings?.sectionTextColor || "#1D1D1D",
+              color: settings?.sectionTextColor || "#000000",
               fontWeight: 700,
               margin: 0,
               fontFamily: "Gotham, sans-serif",

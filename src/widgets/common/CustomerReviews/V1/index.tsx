@@ -194,7 +194,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
           data-testid="review-section-summary-card"
           className="rounded-2xl bg-white px-[16px] py-8 w-full max-w-full shadow-[0px_4px_16px_rgba(0,0,0,0.1)]"
         >
-          <h2 className="text-center text-text-sm font-normal text-[#222222] mb-4 md:mb-6">
+          <h2 className="text-center text-[14px] font-normal text-[#222222] mb-4 md:mb-6">
             {title}
           </h2>
 

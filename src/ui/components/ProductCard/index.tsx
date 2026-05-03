@@ -1,11 +1,12 @@
 "use client";
 
-import React, { memo, useState } from "react";
+import React, { memo, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { ProductCardTheme } from "./types";
 import type { ProductCardProps } from "./types";
 import SoldOutBadge from "./SoldOutBadge";
+import { ProductCardToast } from "./Toast";
 
 /* ------------------------------------------------------------------ */
 /*  Star rating                                                        */
@@ -64,6 +65,15 @@ const StarRating = ({
   );
 };
 
+const InlineButtonLoader = ({ color }: { color: string }) => (
+  <span className="flex items-center justify-center" aria-hidden="true">
+    <span
+      className="h-4 w-4 animate-spin rounded-full border-2 border-t-transparent"
+      style={{ borderColor: color, borderTopColor: "transparent" }}
+    />
+  </span>
+);
+
 /* ------------------------------------------------------------------ */
 /*  Quantity pill (when isInCart)                                      */
 /* ------------------------------------------------------------------ */
@@ -74,8 +84,6 @@ const QuantityPill = ({
   onDecrement,
   isLoading,
   className = "",
-  buttonBg,
-  buttonColor,
   buttonRadius,
 }: {
   quantity: number;
@@ -83,15 +91,13 @@ const QuantityPill = ({
   onDecrement?: () => void;
   isLoading: boolean;
   className?: string;
-  buttonBg: string;
-  buttonColor: string;
   buttonRadius: string;
 }) => (
   <div
-    className={`flex items-center justify-between w-full h-[32px] md:h-[42px] px-[12px] text-[16px] font-medium ${className}`.trim()}
+    className={`flex items-center justify-between w-full h-[32px] md:h-[42px] px-[12px] text-[16px] font-medium border border-[#000000] ${className}`.trim()}
     style={{
-      backgroundColor: buttonBg,
-      color: buttonColor,
+      backgroundColor: "#FFFFFF",
+      color: "#000000",
       borderRadius: buttonRadius,
       fontFamily: "Gotham, sans-serif",
     }}
@@ -109,7 +115,11 @@ const QuantityPill = ({
     >
       −
     </button>
-    <span className="flex-1 text-center">{isLoading ? "…" : quantity}</span>
+    <span className="flex flex-1 items-center justify-center text-center">
+      <span className="flex h-[30px] w-[30px] items-center justify-center bg-[#F4F6F8] md:h-[40px] md:w-[40px]">
+        {quantity}
+      </span>
+    </span>
     <button
       type="button"
       onClick={(e) => {
@@ -192,7 +202,7 @@ const DARK_THEME = {
   weightColor: "#1D1D1D",
   buttonBg: "#ffffff",
   buttonColor: "rgb(29, 29, 29)",
-  buttonBorder: "2px solid #ffffff",
+  buttonBorder: "2px solid #000000",
   buttonHoverBg: "rgb(230,230,230)",
   discountColor: "rgb(0, 200, 0)",
   imageRadius: "10px",
@@ -220,12 +230,20 @@ export const ProductCard = memo(function ProductCard({
   isSoldOut: isSoldOutProp,
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+  const pendingAddRef = useRef<{
+    prevQuantity: number;
+    prevInCart: boolean;
+  } | null>(null);
+  const pendingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const t = theme === ProductCardTheme.DARK ? DARK_THEME : LIGHT_THEME;
   const {
     showBadge = true,
     showRating = true,
     showActionButton = true,
     showQuantitySelector = true,
+    showAddToCartToast = false,
+    addToCartToastTitle = "Item added to your cart",
     actionButtonText = "Add to cart",
     actionButtonTextMobile,
     soldOutText = "Sold Out",
@@ -254,6 +272,54 @@ export const ProductCard = memo(function ProductCard({
         ? !product.availableForSale
         : product.salePrice <= 0;
   const showInCartPill = isInCart && showQuantitySelector;
+
+  const currentQuantity = cartItem?.quantity ?? 0;
+
+  useEffect(() => {
+    const pending = pendingAddRef.current;
+    if (!pending) {
+      return;
+    }
+    const becameInCart = isInCart && !pending.prevInCart;
+    const quantityIncreased =
+      isInCart && currentQuantity > pending.prevQuantity;
+    if (becameInCart || quantityIncreased) {
+      setShowToast(true);
+      pendingAddRef.current = null;
+      if (pendingTimeoutRef.current) {
+        clearTimeout(pendingTimeoutRef.current);
+        pendingTimeoutRef.current = null;
+      }
+    }
+  }, [isInCart, currentQuantity]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingTimeoutRef.current) {
+        clearTimeout(pendingTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  const handleAddToCartClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    if (isSoldOut || !onAddToCart) {
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    pendingAddRef.current = {
+      prevQuantity: currentQuantity,
+      prevInCart: isInCart,
+    };
+    if (pendingTimeoutRef.current) {
+      clearTimeout(pendingTimeoutRef.current);
+    }
+    pendingTimeoutRef.current = setTimeout(() => {
+      pendingAddRef.current = null;
+      pendingTimeoutRef.current = null;
+    }, 5000);
+    onAddToCart();
+  };
 
   return (
     <div
@@ -474,23 +540,14 @@ export const ProductCard = memo(function ProductCard({
                 onDecrement={onDecrement}
                 isLoading={isQuantityLoading}
                 className={actionButtonClassName}
-                buttonBg={t.buttonBg}
-                buttonColor={buttonTextColor}
                 buttonRadius={t.buttonRadius}
               />
             ) : (
               <button
                 type="button"
-                onClick={(e) => {
-                  if (isSoldOut || !onAddToCart) {
-                    return;
-                  }
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onAddToCart();
-                }}
+                onClick={handleAddToCartClick}
                 disabled={isQuantityLoading}
-                className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] disabled:opacity-60 ${actionButtonClassName}`.trim()}
+                className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] disabled:cursor-not-allowed ${actionButtonClassName}`.trim()}
                 style={{
                   backgroundColor: t.buttonBg,
                   color: buttonTextColor,
@@ -506,7 +563,7 @@ export const ProductCard = memo(function ProductCard({
                 }
               >
                 {isQuantityLoading ? (
-                  "…"
+                  <InlineButtonLoader color={buttonTextColor} />
                 ) : isSoldOut ? (
                   <>
                     <span className="hidden md:inline">{soldOutText}</span>
@@ -526,6 +583,13 @@ export const ProductCard = memo(function ProductCard({
             ))}
         </div>
       </div>
+      {showAddToCartToast && (
+        <ProductCardToast
+          show={showToast}
+          onClose={() => setShowToast(false)}
+          title={addToCartToastTitle}
+        />
+      )}
     </div>
   );
 });

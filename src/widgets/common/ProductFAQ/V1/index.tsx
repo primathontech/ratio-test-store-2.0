@@ -57,10 +57,7 @@ function transformFaqData(
 
 const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
   <svg
-    className={[
-      "transition-transform duration-[400ms] delay-[100ms]",
-      isOpen ? "rotate-0" : "rotate-180",
-    ].join(" ")}
+    className={`transition-transform duration-[400ms] delay-[100ms] ${isOpen ? "rotate-0" : "rotate-180"}`}
     xmlns="http://www.w3.org/2000/svg"
     width="18"
     height="18"
@@ -88,22 +85,16 @@ const PlusMinusIcon = ({ isOpen }: { isOpen: boolean }) => (
     <Image
       src="/svg/plus_icon.svg"
       alt=""
-      width={16}
-      height={16}
-      className={[
-        "absolute inset-0 m-auto transition-all duration-[400ms] ease-in-out",
-        isOpen ? "opacity-0 rotate-90" : "opacity-100 rotate-0",
-      ].join(" ")}
+      width={14}
+      height={14}
+      className={`absolute inset-0 m-auto transition-all duration-[400ms] ease-in-out ${isOpen ? "opacity-0 rotate-90" : "opacity-100 rotate-0"}`}
     />
     <Image
       src="/svg/minus_icon.svg"
       alt=""
-      width={16}
+      width={14}
       height={7}
-      className={[
-        "absolute inset-0 m-auto transition-all duration-[400ms] ease-in-out",
-        isOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-90",
-      ].join(" ")}
+      className={`absolute inset-0 m-auto transition-all duration-[400ms] ease-in-out ${isOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-90"}`}
     />
   </span>
 );
@@ -127,29 +118,15 @@ const FAQAccordionItem = ({
 }) => (
   <div
     data-testid="product-faq-item"
-    className={[
-      "pb-[10px] mb-[10px]",
-      isFirst ? "" : "border-t border-[rgba(29,29,29,0.12)]",
-      isLast ? "border-b border-[rgba(29,29,29,0.12)]" : "",
-    ].join(" ")}
+    className={`pb-[10px] mb-[10px] ${isFirst ? "" : "border-t border-[rgba(29,29,29,0.12)]"} ${isLast ? "border-b border-[rgba(29,29,29,0.12)]" : ""}`}
   >
     <button
       type="button"
       onClick={onToggle}
       aria-expanded={isOpen}
-      className={[
-        "w-full flex items-center justify-between",
-        "cursor-pointer bg-transparent border-0 outline-none",
-        "py-[14px] px-0 text-left",
-      ].join(" ")}
+      className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-[14px] px-0 text-left"
     >
-      <span
-        className={[
-          "font-[Gotham,sans-serif]",
-          "text-[14px] leading-[22px] md:text-[18px] md:leading-[26px]",
-          "font-[700] text-[#1D1D1D] pr-[16px]",
-        ].join(" ")}
-      >
+      <span className="font-[Gotham,sans-serif] text-[16px] leading-[22px] md:text-[18px] md:leading-[26px] font-[500] md:font-[700] text-[#1D1D1D] pr-[16px]">
         {item.question}
       </span>
       <span className="flex items-center justify-center shrink-0 text-[#000000]">
@@ -158,19 +135,10 @@ const FAQAccordionItem = ({
     </button>
 
     <div
-      className={[
-        "overflow-hidden transition-all duration-[400ms] ease-in-out",
-        isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0",
-      ].join(" ")}
+      className={`overflow-hidden transition-all duration-[400ms] ease-in-out ${isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}`}
     >
       <div className="pt-[24px] pb-[22px] px-0">
-        <p
-          className={[
-            "font-[Gotham,sans-serif]",
-            "text-[12px] leading-[19px] md:text-[14px] md:leading-[22.4px]",
-            "font-[400] text-[#545454] m-0",
-          ].join(" ")}
-        >
+        <p className="font-[Gotham,sans-serif] text-[12px] leading-[19px] md:text-[14px] md:leading-[22.4px] font-[400] text-[#545454] m-0">
           {item.answer}
         </p>
       </div>
@@ -222,43 +190,23 @@ export const V1 = memo(function V1({
       data-testid="product-faq-section-container"
       className={`bg-[#F4F6F8] xl:px-[30px] ${className || ""}`}
     >
-      <Box className="max-w-[1400px] mx-auto px-[24px] py-[16px] md:py-[38px] rounded-3xl bg-white border-b border-[#ECECEC]">
+      <Box className="max-w-[1400px] mx-auto px-[16px] md:px-[24px] rounded-3xl bg-white border-b border-[#ECECEC]">
         <button
           type="button"
           onClick={handleToggleSection}
           aria-expanded={isSectionOpen}
-          className={[
-            "w-full flex items-center justify-between",
-            "cursor-pointer bg-transparent border-0 outline-none",
-            "mb-[15px] md:mb-[38px] text-left",
-          ].join(" ")}
+          className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-[24px] md:py-[38px] text-left"
         >
-          <h5
-            className={[
-              "font-[Gotham,sans-serif]",
-              "text-[24px] leading-[29px]",
-              "font-[700] text-[#000000] m-0",
-            ].join(" ")}
-          >
+          <h5 className="font-[Gotham,sans-serif] text-[16px] md:text-[24px] leading-[29px] font-[400] md:font-[700] text-[#000000] m-0">
             {title}
           </h5>
-          <span
-            className={[
-              "flex items-center justify-center",
-              "w-[18px] h-[18px]",
-              "text-[#1d1d1d]",
-              "shrink-0 ml-[16px]",
-            ].join(" ")}
-          >
+          <span className="flex items-center justify-center w-[18px] h-[18px] text-[#1d1d1d] shrink-0 ml-[16px]">
             <ChevronIcon isOpen={isSectionOpen} />
           </span>
         </button>
 
         <div
-          className={[
-            "overflow-hidden transition-all duration-[400ms] ease-in-out",
-            isSectionOpen ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0",
-          ].join(" ")}
+          className={`overflow-hidden transition-all duration-[400ms] ease-in-out ${isSectionOpen ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"}`}
         >
           {items.map((item, index) => (
             <FAQAccordionItem

@@ -120,20 +120,20 @@ export const V1 = memo(function V1({
     >
       <div
         data-testid="reason-to-love-section-inner-container"
-        className="flex flex-col w-full px-[15px] md:px-[30px] lg:px-0 pb-[21px] md:mb-[32px]"
+        className="flex flex-col w-full px-[15px] md:px-[30px] lg:px-0 md:mb-[32px]"
       >
         <div
           data-testid="reason-to-love-section-content-wrapper"
           className="w-full flex flex-col justify-center"
         >
-          <p className="text-left text-[16px] md:text-[22px] md:mt-8 lg:mt-[32px] lg:text-[24px] font-bold text-black mb-8">
+          <p className="text-left text-[16px] md:text-[22px] md:mt-8 lg:mt-[30px] lg:text-[24px] font-[700] text-black mb-8">
             {sectionTitle}
           </p>
 
           {reasonToLoveImageUrl && (
             <div
               data-testid="reason-to-love-section-image-container"
-              className="w-full rounded-2xl overflow-hidden"
+              className="w-full overflow-hidden"
             >
               <Image
                 src={reasonToLoveImageUrl}
@@ -143,7 +143,7 @@ export const V1 = memo(function V1({
                 height={4200}
                 loading="lazy"
                 sizes="(max-width: 768px) 100vw, 1237px"
-                className="object-cover rounded-2xl w-full h-auto mx-auto xl:px-[150px]"
+                className="object-cover w-full h-auto mx-auto max-w-[970px]"
               />
             </div>
           )}

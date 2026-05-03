@@ -16,20 +16,15 @@ import type { ApiProductDetailTab } from "@/widgets/common/ProductDetail/types";
 
 const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
   <svg
-    width="14"
-    height="8"
     viewBox="0 0 14 8"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={[
-      "transition-transform duration-300",
-      isOpen ? "rotate-180" : "rotate-0",
-    ].join(" ")}
+    className={`w-3 h-2 md:w-4 md:h-[10px] transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"}`}
   >
     <path
       d="M1 1L7 7L13 1"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="3"
       strokeLinecap="round"
       strokeLinejoin="round"
     />
@@ -52,7 +47,7 @@ function SafeHtmlContent({ html }: { html: string }) {
   return (
     <div
       ref={containerRef}
-      className="rich-text-content text-[14px] leading-[22px] font-[400] text-[#1d1d1d] [&_p]:mb-[16px] [&_p:last-child]:mb-0 [&_strong]:font-[700] [&_em]:italic [&_br]:block"
+      className="rich-text-content text-[14px] leading-[24.4px] font-[400] text-[#1d1d1d] [&_p]:mb-[16px] [&_p:last-child]:mb-0 [&_strong]:font-[700] [&_em]:italic [&_br]:block font-[Gotham,sans-serif]"
     />
   );
 }
@@ -70,7 +65,7 @@ const StepsContent = ({
   <div className="flex flex-col gap-[16px]">
     {steps.map((step, i) => (
       <div key={i} className="flex flex-col">
-        <span className="text-[14px] leading-[22px] font-[700] text-[#1d1d1d]">
+        <span className="text-[14px] md:text-[16px] leading-[22px] font-[700] text-[#1d1d1d] font-[Gotham,sans-serif] ">
           {step.label} : <span className="font-[400]">{step.text}</span>
         </span>
       </div>
@@ -88,12 +83,12 @@ const IngredientsContent = ({
     {ingredients.map((item, i) => (
       <div key={i} className="flex items-center gap-[16px]">
         {item.image && (
-          <div className="shrink-0 w-[108px] h-[122px] relative">
+          <div className="shrink-0 w-[58px] md:w-[108px] h-[58px] md:h-[108px] relative">
             <Image
               src={item.image}
               alt={item.text}
               fill
-              className="object-contain"
+              className="object-cover rounded-[50%]"
               sizes="108px"
             />
           </div>
@@ -102,7 +97,7 @@ const IngredientsContent = ({
           <span className="text-[14px] leading-[22px] font-[700] text-[#0089dd]">
             {item.label}
           </span>
-          <span className="text-[14px] leading-[22px] font-[400] text-[#1d1d1d] mt-[4px]">
+          <span className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] mt-[4px] font-[Gotham,sans-serif] ">
             {item.text}
           </span>
         </div>
@@ -117,7 +112,7 @@ const ListContent = ({ items }: { items: string[] }) => (
     {items.map((item, i) => (
       <p
         key={i}
-        className="text-[14px] leading-[22px] font-[400] text-[#1d1d1d] m-0"
+        className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] m-0 font-[Gotham,sans-serif]"
       >
         {item}
       </p>
@@ -137,7 +132,7 @@ const IngredientsListContent = ({
         <span className="text-[14px] leading-[22px] font-[700] text-[#1d1d1d] mb-[4px]">
           {listing.label}
         </span>
-        <p className="text-[14px] leading-[22px] font-[400] text-[#1d1d1d] m-0">
+        <p className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] m-0 font-[Gotham,sans-serif]">
           {listing.text}
         </p>
       </div>
@@ -159,63 +154,34 @@ const AccordionItem = ({
   onToggle: () => void;
 }) => {
   return (
-    <div
-      className={[
-        "bg-[#ffffff] rounded-[15px]",
-        "mb-[8px] xl:mb-[16px]",
-        "overflow-hidden",
-      ].join(" ")}
-    >
+    <div className="bg-[#ffffff] rounded-[15px] mb-[8px] md:mb-[16px] overflow-hidden">
       {/* Summary / Header row */}
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
-        className={[
-          "w-full flex items-center justify-between",
-          "cursor-pointer",
-          "bg-[#ffffff] rounded-[15px]",
-          "border-0 outline-none",
-          "transition-colors duration-300",
-        ].join(" ")}
+        className="group w-full flex items-center justify-between cursor-pointer bg-[#ffffff] rounded-[15px] border-0 outline-none transition-colors duration-300"
       >
         {/* Title text */}
         <span
-          className={[
-            "font-[Gotham,sans-serif]",
-            "text-[16px] leading-[26px] xl:text-[24px] xl:leading-[38px]",
-            "font-[700]",
-            "py-[24px] px-[16px] xl:py-[38px] xl:px-[24px]",
-            "transition-colors duration-300",
-            isOpen ? "text-[#0089dd]" : "text-[#000000]",
-          ].join(" ")}
+          className={`font-[Gotham,sans-serif] text-[16px] leading-[26px] md:text-[24px] md:leading-[38px] font-[400] md:font-[700] py-[24px] px-[16px] md:pt-[38px] xl:px-[24px] transition-colors duration-300 ${isOpen ? "md:pb-[16px]" : "md:pb-[38px]"} text-[#000000] group-hover:text-[#0089dd]`}
         >
           {tab.title}
         </span>
 
         {/* Chevron icon */}
-        <span
-          className={[
-            "flex items-center justify-center",
-            "w-[54px] h-[20px]",
-            "mr-[16px] xl:mr-[24px]",
-            isOpen ? "text-[#0089dd]" : "text-[rgba(0,0,0,0.8)]",
-            "transition-colors duration-300",
-          ].join(" ")}
-        >
+        <span className="flex items-center justify-center w-[54px] h-[20px] mr-[16px] xl:mr-[24px] text-[rgba(0,0,0,0.8)] group-hover:text-[#0089dd] transition-colors duration-300">
           <ChevronIcon isOpen={isOpen} />
         </span>
       </button>
 
       {/* Content panel */}
       <div
-        className={[
-          "px-[20px] overflow-hidden",
-          "transition-all duration-300 ease-in-out",
+        className={`px-[20px] overflow-hidden transition-all duration-300 ease-in-out ${
           isOpen
             ? "max-h-[2000px] opacity-100 pb-[20px]"
-            : "max-h-0 opacity-0 pb-0",
-        ].join(" ")}
+            : "max-h-0 opacity-0 pb-0"
+        }`}
       >
         {tab.type === ProductTabType.HTML && tab.contentHTML && (
           <SafeHtmlContent html={tab.contentHTML} />
@@ -349,11 +315,7 @@ export const V1 = memo(function V1({
   }
 
   return (
-    <section
-      className={["bg-[#f4f6f8]", "pt-[10px] pb-[1px]", className || ""].join(
-        " "
-      )}
-    >
+    <section className={`bg-[#f4f6f8] pt-[10px] pb-[1px] ${className || ""}`}>
       {/* Container — max-width 1400px, centered */}
       <div className="mx-auto max-w-[1400px]">
         {/* Accordion items */}

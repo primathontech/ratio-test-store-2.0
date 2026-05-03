@@ -7,7 +7,7 @@ import type { FeaturedCollectionCarouselProps, ApiProduct } from "../types";
 import { ProductCard } from "@/ui/components/ProductCard";
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
-import { useCartItem, useCartStore, type CartItem } from "@shopkit/cart";
+import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
 
 /* ------------------------------------------------------------------ */
 /*  SVG Icons                                                          */
@@ -192,7 +192,18 @@ const FeaturedCarouselCard = memo(function FeaturedCarouselCard({
   const productId = product.id;
   const variantId = product.variant?.id;
 
-  const cartLine = useCartItem(productId, variantId);
+  const items = useCartItems();
+  const cartLine = useMemo(
+    () =>
+      items.find((i) => {
+        const lineProductId = i.productId ?? i.product_id;
+        const lineVariantId = i.variantId ?? i.variant_id;
+        return variantId
+          ? lineProductId === productId && lineVariantId === variantId
+          : lineProductId === productId;
+      }),
+    [items, productId, variantId]
+  );
   const loadingItems = useCartStore((s) => s.loadingItems);
   const addItem = useCartStore((s) => s.addItem);
   const incrementItem = useCartStore((s) => s.incrementItem);
@@ -245,6 +256,7 @@ const FeaturedCarouselCard = memo(function FeaturedCarouselCard({
   return (
     <ProductCard
       product={cardProduct}
+      settings={{ showAddToCartToast: true }}
       onAddToCart={handleAddToCart}
       onIncrement={handleIncrement}
       onDecrement={handleDecrement}
