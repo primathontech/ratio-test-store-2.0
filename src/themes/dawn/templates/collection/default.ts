@@ -1,14 +1,33 @@
 import type { PageConfig } from "@shopkit/builder";
 import { WIDGET_TYPES } from "@/widgets/.generated/types";
-import { SECTION_TYPES, SECTION_LAYOUT_OPTIONS } from "@shopkit/builder";
+import {
+  SECTION_TYPES,
+  SECTION_LAYOUT_OPTIONS,
+  DATA_SOURCE_TYPES,
+} from "@shopkit/builder";
 import { additionalInfoProseBlocks } from "./additional-info-content";
 
 /**
  * Collection Page Template for dawn
+ *
+ * `collectionData` is fed by the v2 collection API. The handle is injected
+ * by the page builder from the route (`/collections/[collectionname]`),
+ * so `params: {}` is intentional — the builder merges `routeContext.params`
+ * into each dataSource at render time.
  */
 export const template: PageConfig = {
   id: "dawn-collection",
-  dataSources: {},
+  dataSources: {
+    collectionData: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {},
+      options: {
+        version: "v2",
+        params: { productLimit: 24 },
+      },
+      required: true,
+    },
+  },
   sections: [
     // Header Section
     {
@@ -51,15 +70,19 @@ export const template: PageConfig = {
           id: "collection-hero-banner-widget",
           name: "Collection Hero Banner",
           type: WIDGET_TYPES.CollectionHeroBanner,
+          dataSourceKey: "collectionData",
           settings: {
             variant: "v1",
-            desktopImage: "/images/collections/shampoo-hero-desktop.jpg",
-            mobileImage: "/images/collections/shampoo-hero-mobile.jpg",
-            alt: "Showstopper Shampoos for Salon-Like Hair",
-            desktopWidth: 1300,
-            desktopHeight: 406,
-            mobileWidth: 360,
-            mobileHeight: 191,
+            bannerCarousel: [],
+            autoplay: true,
+            autoplayInterval: 5000,
+            loop: true,
+            pauseOnHover: true,
+            draggable: true,
+            showIndicators: true,
+            indicatorType: "simple",
+            mobileAspectRatio: "1/1",
+            desktopAspectRatio: "1440/450",
           },
         },
       ],
@@ -83,6 +106,7 @@ export const template: PageConfig = {
           id: "collection-heading-widget",
           name: "Collection Heading",
           type: WIDGET_TYPES.CollectionHeading,
+          dataSourceKey: "collectionData",
           settings: { variant: "v1" },
         },
       ],
@@ -106,6 +130,7 @@ export const template: PageConfig = {
           id: "collection-grid-widget",
           name: "Collection Grid",
           type: WIDGET_TYPES.CollectionGrid,
+          dataSourceKey: "collectionData",
           settings: {
             variant: "v1",
           },

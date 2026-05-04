@@ -1,34 +1,110 @@
 import { WidgetProps } from "@/widgets/types";
+import type { IBannerCarouselItem } from "../BannerCarousel/types";
 
 /**
- * CollectionHeroBanner widget settings
+ * Collection banner item shape from the v2 collection metadata
  */
-export interface CollectionHeroBannerSettings {
-  /** Widget variant */
-  variant?: string;
-  /** Desktop banner image path (used at >=768px) */
-  desktopImage?: string;
-  /** Mobile banner image path (used at <768px) */
-  mobileImage?: string;
-  /** Alt text for the banner image */
-  alt?: string;
-  /** Optional link URL wrapping the entire banner */
-  href?: string;
-  /** Desktop image natural width */
-  desktopWidth?: number;
-  /** Desktop image natural height */
-  desktopHeight?: number;
-  /** Mobile image natural width */
-  mobileWidth?: number;
-  /** Mobile image natural height */
-  mobileHeight?: number;
+export interface CollectionBannerItem {
+  id: string;
+  type: string;
+  handle: string;
+  status: string;
+  fields: {
+    desktop_image?: {
+      value: string[];
+      data_type: string;
+    };
+    mobile_image?: {
+      value: string[];
+      data_type: string;
+    };
+    redirection_link?: {
+      value: string[];
+      data_type: string;
+    };
+    redirect_in_new_tab?: {
+      value: boolean;
+      data_type: string;
+    };
+  };
 }
 
 /**
- * CollectionHeroBanner widget data (static section -- no API data needed)
+ * Collection metadata fields the banner reads from
+ */
+export interface CollectionBannerMetadata {
+  collection_banners?: {
+    value: CollectionBannerItem[];
+    data_type: string;
+  };
+  mobile_banner?: {
+    value: string[];
+    data_type: string;
+  };
+  collection_banner_image?: {
+    value: string[];
+    data_type: string;
+  };
+  collection_redirection?: {
+    value: string;
+    data_type: string;
+  };
+}
+
+/**
+ * CollectionHeroBanner widget settings — proxy to BannerCarousel
+ */
+export interface CollectionHeroBannerSettings {
+  variant?: string;
+
+  /** Fallback banner items when API returns no banners */
+  bannerCarousel?: IBannerCarouselItem[];
+
+  /** Auto-play interval in milliseconds (default: 5000) */
+  autoplayInterval?: number;
+
+  /** Enable auto-play (default: true) */
+  autoplay?: boolean;
+
+  /** Enable loop (default: true) */
+  loop?: boolean;
+
+  /** Pause on hover (default: true) */
+  pauseOnHover?: boolean;
+
+  /** Enable drag/swipe (default: true) */
+  draggable?: boolean;
+
+  /** Show indicators (default: true) */
+  showIndicators?: boolean;
+
+  /** Indicator type — `media` shows previews, `simple` shows dots/bars (default: simple) */
+  indicatorType?: "media" | "simple";
+
+  /** Additional CSS classes */
+  className?: string;
+
+  /** Inline styles */
+  style?: React.CSSProperties;
+
+  /** Aspect ratio for mobile (e.g. "1/1") */
+  mobileAspectRatio?: string | number;
+
+  /** Aspect ratio for desktop (e.g. "182/57") */
+  desktopAspectRatio?: string | number;
+}
+
+/**
+ * CollectionHeroBanner widget data — collection data from `collectionData` source
  */
 export interface CollectionHeroBannerData {
-  // Static image banner -- no dynamic data
+  data?: {
+    data?: {
+      collectionByHandle?: {
+        metadata?: CollectionBannerMetadata;
+      };
+    };
+  };
 }
 
 /**

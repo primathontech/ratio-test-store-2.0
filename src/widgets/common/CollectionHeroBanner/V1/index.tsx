@@ -1,74 +1,69 @@
 "use client";
 
 import React, { memo } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import { CollectionHeroBannerProps } from "../types";
+import { BannerCarousel } from "../../BannerCarousel";
+import type { CollectionHeroBannerProps } from "../types";
+import { extractBannerData } from "../utils/extractBannerData";
 
 /**
  * CollectionHeroBanner V1
  *
- * Full-width responsive hero banner for collection pages.
- * Uses a <picture>-like approach with two separate Next.js Image components:
- * - Desktop image (>=768px): ~3.2:1 aspect ratio (1300x406 natural)
- * - Mobile image (<768px): ~1.88:1 aspect ratio (360x191 natural)
- *
- * All text content (headline, CTA button) is baked into the banner images.
- * No HTML text overlays are needed.
+ * Reads the active collection's metadata banners (v2 collection API) and
+ * delegates rendering to the shared BannerCarousel widget. When the API
+ * returns no banners, falls back to `settings.bannerCarousel`.
  */
 export const V1 = memo(function CollectionHeroBannerV1({
+  data,
   settings,
   className,
+  locale,
 }: CollectionHeroBannerProps) {
-  const desktopImage =
-    settings?.desktopImage || "/images/collections/shampoo-hero-desktop.jpg";
-  const mobileImage =
-    settings?.mobileImage || "/images/collections/shampoo-hero-mobile.jpg";
-  const alt = settings?.alt || "Collection Hero Banner";
-  const href = settings?.href;
-  const desktopWidth = settings?.desktopWidth || 1300;
-  const desktopHeight = settings?.desktopHeight || 406;
-  const mobileWidth = settings?.mobileWidth || 360;
-  const mobileHeight = settings?.mobileHeight || 191;
+  const {
+    bannerCarousel = [],
+    autoplayInterval = 5000,
+    autoplay = true,
+    loop = true,
+    pauseOnHover = true,
+    draggable = true,
+    showIndicators = true,
+    indicatorType = "simple",
+    mobileAspectRatio = "1/1",
+    desktopAspectRatio = "182/57",
+    style,
+  } = settings ?? {};
 
-  const bannerContent = (
-    <>
-      {/* Desktop / Tablet image (>=768px) */}
-      <Image
-        src={desktopImage}
-        alt={alt}
-        width={desktopWidth}
-        height={desktopHeight}
-        priority
-        className="hidden md:block w-full h-auto object-cover"
-        sizes="100vw"
-      />
-      {/* Mobile image (<768px) */}
-      <Image
-        src={mobileImage}
-        alt={alt}
-        width={mobileWidth}
-        height={mobileHeight}
-        priority
-        className="block md:hidden w-full h-auto object-cover"
-        sizes="100vw"
-      />
-    </>
-  );
+  const dynamicBannerCarousel = extractBannerData(data ?? {});
+  const finalBannerCarousel =
+    dynamicBannerCarousel.length > 0 ? dynamicBannerCarousel : bannerCarousel;
 
-  if (href) {
-    return (
-      <section className={`w-full overflow-hidden ${className || ""}`}>
-        <Link href={href} className="block w-full">
-          {bannerContent}
-        </Link>
-      </section>
-    );
+  if (finalBannerCarousel.length === 0) {
+    return null;
   }
 
+  const bannerCarouselSettings = {
+    variant: "v1" as const,
+    bannerCarousel: finalBannerCarousel,
+    autoplayInterval,
+    autoplay,
+    loop,
+    pauseOnHover,
+    draggable,
+    showIndicators,
+    indicatorType,
+    mobileAspectRatio,
+    desktopAspectRatio,
+    className,
+    style,
+  };
+
   return (
-    <section className={`w-full overflow-hidden ${className || ""}`}>
-      {bannerContent}
-    </section>
+    <div data-testid="collection-hero-banner-v1">
+      <BannerCarousel
+        data={data}
+        settings={bannerCarouselSettings}
+        className={className}
+        locale={locale}
+      />
+    </div>
   );
 });
