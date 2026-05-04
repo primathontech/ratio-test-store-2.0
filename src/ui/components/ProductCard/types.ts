@@ -130,7 +130,7 @@ export interface ProductCardProps {
   /* ─── Cart wiring (all optional — opt-in per consumer) ─────────────── */
 
   /** Click handler for the Add to cart button. When omitted, the button is purely visual. */
-  onAddToCart?: () => void;
+  onAddToCart?: () => void | Promise<void>;
   /** Click handler for the + button on the in-cart quantity pill. */
   onIncrement?: () => void;
   /** Click handler for the − button on the in-cart quantity pill. */

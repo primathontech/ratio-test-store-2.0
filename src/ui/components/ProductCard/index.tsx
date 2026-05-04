@@ -1,8 +1,9 @@
 "use client";
 
-import React, { memo, useEffect, useRef, useState } from "react";
+import React, { memo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useCartStore } from "@shopkit/cart";
 import { ProductCardTheme } from "./types";
 import type { ProductCardProps } from "./types";
 import SoldOutBadge from "./SoldOutBadge";
@@ -231,11 +232,8 @@ export const ProductCard = memo(function ProductCard({
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showToast, setShowToast] = useState(false);
-  const pendingAddRef = useRef<{
-    prevQuantity: number;
-    prevInCart: boolean;
-  } | null>(null);
-  const pendingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const isCartOpen = useCartStore((s) => s.isOpen);
   const t = theme === ProductCardTheme.DARK ? DARK_THEME : LIGHT_THEME;
   const {
     showBadge = true,
@@ -273,52 +271,27 @@ export const ProductCard = memo(function ProductCard({
         : product.salePrice <= 0;
   const showInCartPill = isInCart && showQuantitySelector;
 
-  const currentQuantity = cartItem?.quantity ?? 0;
-
-  useEffect(() => {
-    const pending = pendingAddRef.current;
-    if (!pending) {
-      return;
-    }
-    const becameInCart = isInCart && !pending.prevInCart;
-    const quantityIncreased =
-      isInCart && currentQuantity > pending.prevQuantity;
-    if (becameInCart || quantityIncreased) {
-      setShowToast(true);
-      pendingAddRef.current = null;
-      if (pendingTimeoutRef.current) {
-        clearTimeout(pendingTimeoutRef.current);
-        pendingTimeoutRef.current = null;
-      }
-    }
-  }, [isInCart, currentQuantity]);
-
-  useEffect(() => {
-    return () => {
-      if (pendingTimeoutRef.current) {
-        clearTimeout(pendingTimeoutRef.current);
-      }
-    };
-  }, []);
-
-  const handleAddToCartClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleAddToCartClick = async (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
     if (isSoldOut || !onAddToCart) {
       return;
     }
     e.preventDefault();
     e.stopPropagation();
-    pendingAddRef.current = {
-      prevQuantity: currentQuantity,
-      prevInCart: isInCart,
-    };
-    if (pendingTimeoutRef.current) {
-      clearTimeout(pendingTimeoutRef.current);
+    setIsLoading(true);
+    let success = false;
+    try {
+      await onAddToCart();
+      success = useCartStore.getState().error === null;
+    } catch {
+      // failures don't surface a toast
+    } finally {
+      setIsLoading(false);
     }
-    pendingTimeoutRef.current = setTimeout(() => {
-      pendingAddRef.current = null;
-      pendingTimeoutRef.current = null;
-    }, 5000);
-    onAddToCart();
+    if (success && !isCartOpen && !isInCart && !showToast) {
+      setShowToast(true);
+    }
   };
 
   return (
@@ -546,7 +519,7 @@ export const ProductCard = memo(function ProductCard({
               <button
                 type="button"
                 onClick={handleAddToCartClick}
-                disabled={isQuantityLoading}
+                disabled={isQuantityLoading || isLoading}
                 className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] disabled:cursor-not-allowed ${actionButtonClassName}`.trim()}
                 style={{
                   backgroundColor: t.buttonBg,
@@ -562,7 +535,7 @@ export const ProductCard = memo(function ProductCard({
                     : `${actionButtonText} - ${product.title}`
                 }
               >
-                {isQuantityLoading ? (
+                {isQuantityLoading || isLoading ? (
                   <InlineButtonLoader color={buttonTextColor} />
                 ) : isSoldOut ? (
                   <>
@@ -585,7 +558,7 @@ export const ProductCard = memo(function ProductCard({
       </div>
       {showAddToCartToast && (
         <ProductCardToast
-          show={showToast}
+          show={showToast && !isCartOpen}
           onClose={() => setShowToast(false)}
           title={addToCartToastTitle}
         />
