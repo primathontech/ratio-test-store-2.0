@@ -122,10 +122,10 @@ export const template: PageConfig = {
       ],
     },
 
-    // Collection Heading Section
+    // Collection Page Section
     {
-      id: "collection-heading-section",
-      name: "Collection Heading",
+      id: "collection-page-section",
+      name: "Collection Page",
       type: SECTION_TYPES.CONTENT_SECTION,
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
@@ -137,33 +137,9 @@ export const template: PageConfig = {
       },
       widgets: [
         {
-          id: "collection-heading-widget",
-          name: "Collection Heading",
-          type: WIDGET_TYPES.CollectionHeading,
-          dataSourceKey: "collectionData",
-          settings: { variant: "v1" },
-        },
-      ],
-    },
-
-    // Collection Grid Section
-    {
-      id: "collection-grid-section",
-      name: "Collection Grid",
-      type: SECTION_TYPES.CONTENT_SECTION,
-      settings: {
-        layout: SECTION_LAYOUT_OPTIONS.FULL,
-        responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-        },
-      },
-      widgets: [
-        {
-          id: "collection-grid-widget",
-          name: "Collection Grid",
-          type: WIDGET_TYPES.CollectionGrid,
+          id: "collection-page-widget",
+          name: "Collection Page",
+          type: WIDGET_TYPES.CollectionPage,
           dataSourceKey: "collectionData",
           settings: {
             variant: "v1",

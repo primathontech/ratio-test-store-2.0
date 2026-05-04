@@ -1,5 +1,5 @@
 /**
- * Shared Product Card types — used by PeopleAlsoBought, CollectionGrid,
+ * Shared Product Card types — used by PeopleAlsoBought, CollectionPage,
  * Search, and any future widget that renders product cards in the BBlunt
  * design language.
  */

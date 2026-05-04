@@ -19,7 +19,9 @@ const config: Config = {
         lm: "769px", // large mobile (> 480px && ≤ 769px)
         mt: "860px", // medium tablet (> 768px && ≤ 860px)
         st: "1125px",
+        xl2: "1150px",
         xxl: "1387px", // custom breakpoint
+        xl3: "1400px",
       },
       // Base color system using CSS variables
       colors: {
