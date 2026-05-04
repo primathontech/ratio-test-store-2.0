@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { CouponOffer, UseCouponsReturn } from "../../types";
-import { getCommerceClient } from "@/config/commerce";
-
-const DISCOUNT_API_URL = process.env.NEXT_PUBLIC_GOKWIK_DISCOUNT_API_URL!;
+import type {
+  DiscountOffer,
+  DiscountResponse,
+} from "@/app/api/v1/discounts/route";
 
 export const useCoupons = (): UseCouponsReturn => {
   const [coupons, setCoupons] = useState<CouponOffer[]>([]);
@@ -16,9 +17,8 @@ export const useCoupons = (): UseCouponsReturn => {
       setIsLoading(true);
       setError(null);
 
-      const client = getCommerceClient();
-      const response = await client.fetchRequest({
-        url: DISCOUNT_API_URL,
+      // eslint-disable-next-line no-restricted-syntax
+      const response = await fetch("/api/v1/discounts", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -28,19 +28,21 @@ export const useCoupons = (): UseCouponsReturn => {
           limit: 10,
           status: "published",
           visibility: "always",
-          merchant_id: process.env.NEXT_PUBLIC_MERCHANT_ID!,
         }),
       });
 
-      if (!response.success) {
-        throw new Error(response.message || "Failed to fetch coupons");
+      if (!response.ok) {
+        throw new Error(`Failed to fetch coupons: ${response.status}`);
       }
 
-      const data: any = response.data;
+      const data: DiscountResponse = await response.json();
 
-      // Transform API response to our simplified coupon format
+      if (!data.success) {
+        throw new Error("API returned unsuccessful response");
+      }
+
       const transformedCoupons: CouponOffer[] = data.data.data.map(
-        (discount: any) => ({
+        (discount: DiscountOffer) => ({
           id: discount.id,
           title: discount.title,
           code: discount.code,
