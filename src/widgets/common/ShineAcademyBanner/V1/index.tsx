@@ -87,7 +87,7 @@ export const V1 = memo(function V1({
             </div>
 
             {/* Tagline */}
-            <p className="font-[Gotham,sans-serif] text-[12px] md:text-[24px] font-[500] text-[#545454] text-center mb-[18px] md:mb-0 mt-[18px] md:mt-[18px] max-w-[700px] m-0 leading-[13px] md:leading-[26.4px] px-[20px] md:px-0">
+            <p className="text-[12px] md:text-[24px] font-[500] text-[#545454] text-center mb-[18px] md:mb-0 mt-[18px] md:mt-[18px] max-w-[700px] m-0 leading-[13px] md:leading-[26.4px] px-[20px] md:px-0">
               {tagline}
             </p>
           </div>

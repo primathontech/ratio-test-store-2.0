@@ -61,7 +61,7 @@ export const V1 = memo(function AboutUsValuesV1({
             {/* Heading */}
             <div
               className="mt-[15px] text-center text-[22px] font-[700] leading-[35px]"
-              style={{ color: headingColor, fontFamily: "Gotham, sans-serif" }}
+              style={{ color: headingColor }}
             >
               {item.heading}
             </div>
@@ -69,7 +69,7 @@ export const V1 = memo(function AboutUsValuesV1({
             {/* Body text */}
             <div
               className="mt-[10px] mb-[30px] px-[15px] lg:px-[30px] text-center text-[16px] lg:text-[18px] leading-[26px] lg:leading-[29px] font-[400]"
-              style={{ color: bodyColor, fontFamily: "Gotham, sans-serif" }}
+              style={{ color: bodyColor }}
             >
               {item.body}
             </div>

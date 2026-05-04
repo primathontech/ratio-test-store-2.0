@@ -318,10 +318,7 @@ const FilterSidebar = memo(function FilterSidebar({
   }, []);
 
   return (
-    <aside
-      className="hidden lg:block sticky top-[120px] self-start w-[240px] flex-shrink-0 pr-[20px]"
-      style={{ fontFamily: "Gotham, sans-serif" }}
-    >
+    <aside className="hidden lg:block sticky top-[120px] self-start w-[240px] flex-shrink-0 pr-[20px]">
       <h2
         className="text-[18px] leading-[24px] mb-[16px]"
         style={{ fontWeight: 500, color: "#1d1d1d" }}
@@ -453,10 +450,7 @@ const MobileFilterDrawer = memo(function MobileFilterDrawer({
   const currentGroup = filterGroups.find((g) => g.paramName === activeGroup);
 
   return (
-    <div
-      className="fixed inset-0 z-[999] lg:hidden"
-      style={{ fontFamily: "Gotham, sans-serif" }}
-    >
+    <div className="fixed inset-0 z-[999] lg:hidden">
       {/* Backdrop */}
       <div
         className="absolute inset-0"
@@ -514,7 +508,6 @@ const MobileFilterDrawer = memo(function MobileFilterDrawer({
                       : "3px solid transparent",
                   fontWeight: activeGroup === group.paramName ? 500 : 400,
                   color: "#1d1d1d",
-                  fontFamily: "Gotham, sans-serif",
                 }}
                 onClick={() => setActiveGroup(group.paramName)}
               >
@@ -564,7 +557,6 @@ const MobileFilterDrawer = memo(function MobileFilterDrawer({
                     style={{
                       color: "#1d1d1d",
                       fontWeight: 400,
-                      fontFamily: "Gotham, sans-serif",
                     }}
                   >
                     {option.label}
@@ -587,7 +579,6 @@ const MobileFilterDrawer = memo(function MobileFilterDrawer({
               background: "none",
               border: "none",
               color: "#666666",
-              fontFamily: "Gotham, sans-serif",
               fontWeight: 400,
             }}
             onClick={onClearAll}
@@ -602,7 +593,6 @@ const MobileFilterDrawer = memo(function MobileFilterDrawer({
               color: "#ffffff",
               border: "none",
               borderRadius: "0px",
-              fontFamily: "Gotham, sans-serif",
               fontWeight: 500,
             }}
             onClick={onClose}
@@ -648,11 +638,7 @@ const SortDropdown = memo(function SortDropdown({
     sortOptions.find((o) => o.value === selectedSort)?.label || "Sort by";
 
   return (
-    <div
-      className="relative"
-      ref={dropdownRef}
-      style={{ fontFamily: "Gotham, sans-serif" }}
-    >
+    <div className="relative" ref={dropdownRef}>
       <button
         type="button"
         className="flex items-center gap-[8px] cursor-pointer text-[14px]"
@@ -700,7 +686,6 @@ const SortDropdown = memo(function SortDropdown({
                   border: "none",
                   color: "#1d1d1d",
                   fontWeight: isSelected ? 500 : 400,
-                  fontFamily: "Gotham, sans-serif",
                 }}
                 onClick={() => {
                   onSortChange(option.value);
@@ -768,10 +753,7 @@ const MobileSortDrawer = memo(function MobileSortDrawer({
   }
 
   return (
-    <div
-      className="fixed inset-0 z-[999] lg:hidden"
-      style={{ fontFamily: "Gotham, sans-serif" }}
-    >
+    <div className="fixed inset-0 z-[999] lg:hidden">
       <div
         className="absolute inset-0"
         style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
@@ -814,7 +796,6 @@ const MobileSortDrawer = memo(function MobileSortDrawer({
                   border: "none",
                   color: "#1d1d1d",
                   fontWeight: isSelected ? 500 : 400,
-                  fontFamily: "Gotham, sans-serif",
                 }}
                 onClick={() => {
                   onSortChange(option.value);
@@ -875,7 +856,6 @@ const MobileChipsBar = memo(function MobileChipsBar({
     <div
       className="lg:hidden flex items-center gap-[8px] overflow-x-auto pb-[8px] mb-[12px] scrollbar-none"
       style={{
-        fontFamily: "Gotham, sans-serif",
         WebkitOverflowScrolling: "touch",
       }}
     >
@@ -889,7 +869,6 @@ const MobileChipsBar = memo(function MobileChipsBar({
           borderRadius: "20px",
           color: "#1d1d1d",
           fontWeight: 400,
-          fontFamily: "Gotham, sans-serif",
         }}
         onClick={onFilterOpen}
       >
@@ -907,7 +886,6 @@ const MobileChipsBar = memo(function MobileChipsBar({
           borderRadius: "20px",
           color: "#1d1d1d",
           fontWeight: 400,
-          fontFamily: "Gotham, sans-serif",
         }}
         onClick={onSortOpen}
       >
@@ -931,7 +909,6 @@ const MobileChipsBar = memo(function MobileChipsBar({
               border: "1px solid #e0e0e0",
               borderRadius: "20px",
               fontWeight: 400,
-              fontFamily: "Gotham, sans-serif",
               transition: "all 0.15s",
             }}
             onClick={() => onFilterChipClick(opt.paramName, opt.value)}
@@ -1023,7 +1000,6 @@ export const V1 = memo(function V1({ settings }: CollectionGridProps) {
       className="w-full"
       style={{
         backgroundColor: "#ffffff",
-        fontFamily: "Gotham, sans-serif",
         paddingBottom: "70px",
       }}
       aria-label="Product collection grid"

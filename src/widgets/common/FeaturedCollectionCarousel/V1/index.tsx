@@ -326,7 +326,6 @@ export const V1 = memo(function V1({
       className="relative overflow-hidden pb-[32.4px] md:pb-[56px]"
       style={{
         backgroundColor: "#ffffff",
-        fontFamily: "Gotham, sans-serif",
       }}
     >
       {/* Content overlay */}
@@ -339,7 +338,6 @@ export const V1 = memo(function V1({
               color: "#1D1D1D",
               fontWeight: 400,
               margin: 0,
-              fontFamily: "Gotham, sans-serif",
             }}
           >
             {headingNormal}
@@ -428,7 +426,6 @@ export const V1 = memo(function V1({
                 paddingTop: "6px",
                 paddingBottom: "6px",
                 borderRadius: "4px",
-                fontFamily: "Gotham, sans-serif",
                 fontWeight: 500,
                 transition: "all 0.2s",
                 gap: "8px",

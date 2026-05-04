@@ -70,7 +70,7 @@ const FaqAccordionItem = ({
       >
         <span
           className={[
-            "font-[Gotham,sans-serif]",
+            "",
             "text-[14px] leading-[22px] md:text-[16px] md:leading-[26px]",
             "font-[500]",
             "text-[#000000]",
@@ -101,7 +101,7 @@ const FaqAccordionItem = ({
         <div className="pt-[24px] pb-[22px] px-0">
           <p
             className={[
-              "font-[Gotham,sans-serif]",
+              "",
               "text-[12px] leading-[19px] md:text-[14px] md:leading-[22.4px]",
               "font-[400]",
               "text-[#545454]",
@@ -145,7 +145,7 @@ export const V1 = memo(function V1({ settings, className }: FaqAccordionProps) {
         {/* Section heading */}
         <h5
           className={[
-            "font-[Gotham,sans-serif] text-[18px] leading-[22px] md:text-[22px] md:leading-[26px] font-[400] text-[#000000]",
+            "text-[18px] leading-[22px] md:text-[22px] md:leading-[26px] font-[400] text-[#000000]",
           ].join(" ")}
         >
           {title}

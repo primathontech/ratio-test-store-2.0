@@ -55,42 +55,6 @@
     @apply font-mono;
   }
 
-  @font-face {
-    font-family: "Gotham";
-    src: url("/dawn/fonts/Gotham-Light.woff2") format("woff2");
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-  }
-  @font-face {
-    font-family: "Gotham";
-    src: url("/dawn/fonts/Gotham-Book.woff2") format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-  }
-  @font-face {
-    font-family: "Gotham";
-    src: url("/dawn/fonts/Gotham-Medium.woff2") format("woff2");
-    font-weight: 500;
-    font-style: normal;
-    font-display: swap;
-  }
-  @font-face {
-    font-family: "Gotham";
-    src: url("/dawn/fonts/Gotham-Medium-Extra-Bold.woff2") format("woff2");
-    font-weight: 600;
-    font-style: normal;
-    font-display: swap;
-  }
-  @font-face {
-    font-family: "Gotham";
-    src: url("/dawn/fonts/Gotham-Bold.woff2") format("woff2");
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
-  }
-
   /* Form elements */
   input,
   textarea,
@@ -536,7 +500,6 @@
 
 /* === AdditionalInfoAccordion SEO Prose === */
 .additional-info-prose {
-  font-family: Gotham, sans-serif;
   font-size: 14px;
   line-height: 22px;
   font-weight: 400;

@@ -36,7 +36,6 @@ export function DropdownAccordion({
         <Link
           href={group.items[0]?.href ?? "#"}
           className="text-[14px] leading-[22.4px] font-[400] text-inherit no-underline"
-          style={{ fontFamily: "'Gotham', sans-serif" }}
         >
           {group.heading}
         </Link>
@@ -59,7 +58,6 @@ export function DropdownAccordion({
               <Link
                 href={item.href}
                 className="text-[14px] leading-[16.8px] font-[400] text-[#545454] hover:text-[#0089DD] no-underline transition-colors duration-200"
-                style={{ fontFamily: "'Gotham', sans-serif" }}
               >
                 {item.label}
               </Link>

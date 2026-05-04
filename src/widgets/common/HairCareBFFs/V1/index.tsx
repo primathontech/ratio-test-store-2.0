@@ -358,9 +358,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
   return (
     <section
       className="relative overflow-hidden mt-[25px] md:mt-[56px] pt-[32.4px] md:pt-[56px] pb-[32.4px] md:pb-[56px]"
-      style={{
-        fontFamily: "Gotham, sans-serif",
-      }}
+      style={{}}
     >
       {/* Background image — mobile */}
       <div className="absolute inset-0 z-[0] md:hidden">
@@ -397,7 +395,6 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
               color: "#ffffff",
               fontWeight: 400,
               margin: 0,
-              fontFamily: "Gotham, sans-serif",
             }}
           >
             {headingNormal}
@@ -425,7 +422,6 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
                       : "1px solid transparent",
                   borderRadius: idx === activeTabIndex ? "4px" : "0px",
                   padding: "4px 8px",
-                  fontFamily: "Gotham, sans-serif",
                   fontWeight: 500,
                   transition: "all 0.4s 0.1s",
                   whiteSpace: "nowrap",
@@ -485,7 +481,6 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
                 paddingTop: "6px",
                 paddingBottom: "6px",
                 borderRadius: "4px",
-                fontFamily: "Gotham, sans-serif",
                 fontWeight: 500,
                 transition: "all 0.2s",
                 gap: "8px",

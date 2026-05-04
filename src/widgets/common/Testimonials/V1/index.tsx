@@ -120,12 +120,12 @@ const TestimonialCard = memo(function TestimonialCard({
           style={{ backgroundColor: cardBackground }}
         >
           {/* Title */}
-          <h4 className="font-[700] text-[18px] mb-[8px] text-[#ffffff] font-[Gotham,sans-serif] m-0">
+          <h4 className="font-[700] text-[18px] mb-[8px] text-[#ffffff] m-0">
             {item.heading}
           </h4>
 
           {/* Description */}
-          <p className="text-[14px] md:text-[14px] leading-[22.5px] font-[400] mb-[20px] md:mb-[2.6rem] text-[#ffffff] font-[Gotham,sans-serif] m-0">
+          <p className="text-[14px] md:text-[14px] leading-[22.5px] font-[400] mb-[20px] md:mb-[2.6rem] text-[#ffffff] m-0">
             {item.reviewText}
           </p>
 
@@ -167,7 +167,7 @@ const TestimonialCard = memo(function TestimonialCard({
             loading="lazy"
           />
         </div>
-        <h3 className="font-[600] text-[14px] text-[#1d1d1d] font-[Gotham,sans-serif] m-0">
+        <h3 className="font-[600] text-[14px] text-[#1d1d1d] m-0">
           {item.authorName}
         </h3>
       </div>
@@ -231,7 +231,7 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
       <div className="mx-auto max-w-[1400px] pl-[15px] md:pl-[30px] pr-0 md:pr-[30px] xl:px-[50px]">
         {/* Section heading */}
         <div className="mt-[25px] md:mt-[56px] mb-[16px] md:mb-[30px] text-left md:text-center testimonials-animate-on-scroll">
-          <h2 className="text-[24px] xl:text-[28px] leading-[29px] lg:leading-[40px] font-[400] text-[#000000] font-[Gotham,sans-serif] m-0 md:inline-block md:text-left lg:block lg:text-center">
+          <h2 className="text-[24px] xl:text-[28px] leading-[29px] lg:leading-[40px] font-[400] text-[#000000] m-0 md:inline-block md:text-left lg:block lg:text-center">
             {headingRegular}{" "}
             <strong className="font-[700] block lg:inline">
               {headingBold}

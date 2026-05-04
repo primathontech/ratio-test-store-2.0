@@ -91,7 +91,7 @@ export const V1 = memo(function V1({
                     /* Current page -- bold span, no link */
                     <span
                       className={[
-                        "font-[Gotham,sans-serif]",
+                        "",
                         "text-[14px] leading-[22px]",
                         "font-[700]",
                         "text-[#545454]",
@@ -105,7 +105,7 @@ export const V1 = memo(function V1({
                     <Link
                       href={item.href}
                       className={[
-                        "font-[Gotham,sans-serif]",
+                        "",
                         "text-[14px] leading-[22px]",
                         "font-[400]",
                         "text-[#545454]",

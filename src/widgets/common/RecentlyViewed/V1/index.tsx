@@ -265,7 +265,6 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
       className="relative overflow-hidden"
       style={{
         backgroundColor: settings?.sectionBackgroundColor || "#ffffff",
-        fontFamily: "Gotham, sans-serif",
       }}
     >
       {/* Content overlay */}
@@ -278,7 +277,6 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
               color: settings?.sectionTextColor || "#000000",
               fontWeight: 700,
               margin: 0,
-              fontFamily: "Gotham, sans-serif",
             }}
           >
             {heading}

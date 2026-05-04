@@ -276,7 +276,6 @@ function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
                     <Link
                       href={item.href}
                       className="text-[14px] leading-[16.8px] font-[400] text-[#545454] no-underline transition-colors duration-200 hover:text-[#0089DD]"
-                      style={{ fontFamily: "'Gotham', sans-serif" }}
                     >
                       {item.label}
                     </Link>
@@ -377,7 +376,6 @@ function SearchInput({
         onClick={onClick}
         className="w-[255px] h-[35px] min-h-[35px] rounded-[4px] bg-transparent pl-[33px] pr-[60px] pt-[8px] pb-[8px] text-[14px] font-[500] text-[#1d1d1d] placeholder:text-surface outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
         style={{
-          fontFamily: "'Gotham', sans-serif",
           border: "1px solid #dddddd",
         }}
         onFocus={() => {
@@ -605,7 +603,6 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
       <header
         className={`sticky top-0 z-[20] ${className ?? ""}`}
         style={{
-          fontFamily: "'Gotham', sans-serif",
           background:
             backgroundColor === "#ffffff"
               ? "rgb(255 255 255 / .6)"
@@ -651,7 +648,6 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                   <Link
                     href={item.href}
                     className="relative flex items-center gap-[8px] text-[14px] leading-[16.8px] font-[700] text-[#000000] no-underline whitespace-nowrap after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[1px] after:bg-[#000000] after:origin-right after:scale-x-0 after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
-                    style={{ fontFamily: "'Gotham', sans-serif" }}
                   >
                     <span>{item.label}</span>
                     {item.dropdown && (
@@ -748,10 +744,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                 <CartBadge count={cartCount} />
               </span>
               {/* "Cart" text: visible on tablet (md: 768px+) */}
-              <span
-                className="hidden md:inline text-[14px] font-[400] text-[#1d1d1d]"
-                style={{ fontFamily: "'Gotham', sans-serif" }}
-              >
+              <span className="hidden md:inline text-[14px] font-[400] text-[#1d1d1d]">
                 Cart
               </span>
             </button>

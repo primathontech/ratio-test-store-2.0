@@ -126,7 +126,7 @@ const FAQAccordionItem = ({
       aria-expanded={isOpen}
       className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-[14px] px-0 text-left"
     >
-      <span className="font-[Gotham,sans-serif] text-[16px] leading-[22px] md:text-[18px] md:leading-[26px] font-[500] md:font-[700] text-[#1D1D1D] pr-[16px]">
+      <span className="text-[16px] leading-[22px] md:text-[18px] md:leading-[26px] font-[500] md:font-[700] text-[#1D1D1D] pr-[16px]">
         {item.question}
       </span>
       <span className="flex items-center justify-center shrink-0 text-[#000000]">
@@ -138,7 +138,7 @@ const FAQAccordionItem = ({
       className={`overflow-hidden transition-all duration-[400ms] ease-in-out ${isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}`}
     >
       <div className="pt-[24px] pb-[22px] px-0">
-        <p className="font-[Gotham,sans-serif] text-[12px] leading-[19px] md:text-[14px] md:leading-[22.4px] font-[400] text-[#545454] m-0">
+        <p className="text-[12px] leading-[19px] md:text-[14px] md:leading-[22.4px] font-[400] text-[#545454] m-0">
           {item.answer}
         </p>
       </div>
@@ -197,7 +197,7 @@ export const V1 = memo(function V1({
           aria-expanded={isSectionOpen}
           className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-[24px] md:py-[38px] text-left"
         >
-          <h5 className="font-[Gotham,sans-serif] text-[16px] md:text-[24px] leading-[29px] font-[400] md:font-[700] text-[#000000] m-0">
+          <h5 className="text-[16px] md:text-[24px] leading-[29px] font-[400] md:font-[700] text-[#000000] m-0">
             {title}
           </h5>
           <span className="flex items-center justify-center w-[18px] h-[18px] text-[#1d1d1d] shrink-0 ml-[16px]">

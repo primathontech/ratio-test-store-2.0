@@ -217,23 +217,21 @@ const config: Config = {
         // Next.js Google Fonts integration
         inter: ["var(--font-inter)", "Inter"],
         opensans: ["var(--font-opensans)", "Open Sans", "sans-serif"],
-        // Set Inter as default sans font
-        sans: ["var(--font-inter)", "Inter", "sans-serif"],
-        // Existing theme fonts (keeping for backward compatibility)
+        // Gotham — local font, primary brand body font
+        gotham: ["var(--font-gotham)", "system-ui", "sans-serif"],
+        // Set Gotham as default sans font (applies to most text by default)
+        sans: ["var(--font-gotham)", "system-ui", "sans-serif"],
+        // font-body is applied to <body> in globals.css and inherited everywhere
+        body: ["var(--font-gotham)", "system-ui", "sans-serif"],
+        // Heading font — falls back to Open Sans
         heading: [
-          "var(--headingfont)",
+          "var(--font-gotham)",
           "var(--font-opensans)",
           "Open Sans",
           "sans-serif",
         ],
-        body: ["var(--bodyFont)", "Open Sans", "sans-serif"],
-        accent: [
-          "var(--accentfont)",
-          "var(--font-opensans)",
-          "Open Sans",
-          "sans-serif",
-        ],
-        mono: ["var(--monofont)", "monospace"],
+        accent: ["var(--font-opensans)", "Open Sans", "sans-serif"],
+        mono: ["ui-monospace", "monospace"],
       },
 
       fontSize: {

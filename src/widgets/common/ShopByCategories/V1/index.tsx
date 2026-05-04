@@ -137,7 +137,6 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
       <h3
         className="text-start md:text-center mb-[16px] px-[16px] lg:mb-[30px] text-[24px] lg:text-[28px]"
         style={{
-          fontFamily: "Gotham, sans-serif",
           lineHeight: "34px",
           fontWeight: 400,
           color: "#1D1D1D",
@@ -208,7 +207,6 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
                   <div
                     className="sbc-cat-label mt-[8px] md:hidden text-[14px]"
                     style={{
-                      fontFamily: "Gotham, sans-serif",
                       lineHeight: "19px",
                       fontWeight: 500,
                       color: "#000000",

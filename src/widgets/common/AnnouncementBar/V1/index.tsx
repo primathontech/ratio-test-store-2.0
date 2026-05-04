@@ -168,7 +168,6 @@ export const V1 = memo(function V1({
             ref={marqueeRef}
             className="flex whitespace-nowrap will-change-transform"
             style={{
-              fontFamily: "'Gotham', sans-serif",
               fontSize: "12px",
               fontWeight: 600,
               lineHeight: "19px",

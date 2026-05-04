@@ -176,10 +176,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
 
   return (
     <div className={className}>
-      <p
-        className="text-[14px] font-[700] text-black mb-[8px] flex items-center tracking-[0.6px]"
-        style={{ fontFamily: "'Gotham', sans-serif" }}
-      >
+      <p className="text-[14px] font-[700] text-black mb-[8px] flex items-center tracking-[0.6px]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-[18px] h-[18px] mr-[7px]"
@@ -246,10 +243,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
               ))}
             </div>
           ) : isEmpty ? (
-            <div
-              className="py-[24px] text-center text-[13px] text-[#727272]"
-              style={{ fontFamily: "'Gotham', sans-serif" }}
-            >
+            <div className="py-[24px] text-center text-[13px] text-[#727272]">
               No recommendations available right now.
             </div>
           ) : (

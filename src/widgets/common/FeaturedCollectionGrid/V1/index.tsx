@@ -220,7 +220,6 @@ export const V1 = memo(function V1({
             className="text-[20px] md:text-[24px] lg:text-[28px] text-center"
             style={{
               color: "#ffffff",
-              fontFamily: "Gotham, sans-serif",
               fontWeight: 700,
               margin: 0,
               lineHeight: 1.3,

@@ -38,7 +38,7 @@ export const ServiceSections: React.FC<ServiceSectionsProps> = ({
                       />
                     )}
               </div>
-              <span className="text-[14px] text-white tracking-[0.08px] leading-[16.34px] font-[Gotham,sans-serif]">
+              <span className="text-[14px] text-white tracking-[0.08px] leading-[16.34px]">
                 {section.name}
               </span>
             </div>

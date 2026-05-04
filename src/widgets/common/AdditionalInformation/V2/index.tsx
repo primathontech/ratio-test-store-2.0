@@ -143,7 +143,7 @@ export const V2 = memo(function V2({
               "text-left",
             ].join(" ")}
           >
-            <span className="font-[Gotham,sans-serif] text-[22px] leading-[26px] md:text-[28px] md:leading-[34px] font-[700] text-[#1d1d1d]">
+            <span className="text-[22px] leading-[26px] md:text-[28px] md:leading-[34px] font-[700] text-[#1d1d1d]">
               {title}
             </span>
             <span className="flex items-center justify-center w-[18px] h-[18px] text-[#1d1d1d] shrink-0 ml-[16px]">
@@ -159,7 +159,7 @@ export const V2 = memo(function V2({
             ].join(" ")}
           >
             {proseBlocks.length > 0 ? (
-              <div className="font-[Gotham,sans-serif] text-[#1d1d1d] pt-[20px] pb-[20px]">
+              <div className="text-[#1d1d1d] pt-[20px] pb-[20px]">
                 <ProseRenderer blocks={proseBlocks} />
               </div>
             ) : null}

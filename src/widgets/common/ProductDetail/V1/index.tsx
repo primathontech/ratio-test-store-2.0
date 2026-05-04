@@ -77,10 +77,7 @@ export const V1 = memo(function V1({
   };
 
   return (
-    <section
-      className={`w-full bg-[#ffffff] ${className ?? ""}`}
-      style={{ fontFamily: "Gotham, sans-serif" }}
-    >
+    <section className={`w-full bg-[#ffffff] ${className ?? ""}`}>
       <div className="pt-0 pb-0 lg:pt-[47px] xl:pt-[56px] lg:pb-[27px] xl:pb-[32px]">
         <div className="px-[16px] md:px-[30px] xl:px-[77px] pt-[16px] md:pt-0">
           {/* Mobile — info stacks above gallery (gallery slot is rendered

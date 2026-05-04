@@ -103,10 +103,7 @@ export const MobileSearchOverlay: React.FC<MobileSearchOverlayProps> = ({
       aria-label="Search"
     >
       {/* Search bar */}
-      <div
-        className="flex items-center gap-[10px] px-[16px] py-[12px] border-b border-[#E5E5E5]"
-        style={{ fontFamily: "'Gotham', sans-serif" }}
-      >
+      <div className="flex items-center gap-[10px] px-[16px] py-[12px] border-b border-[#E5E5E5]">
         <svg
           width="18"
           height="18"
@@ -135,7 +132,6 @@ export const MobileSearchOverlay: React.FC<MobileSearchOverlayProps> = ({
           }}
           placeholder={placeholder}
           className="flex-1 min-w-0 h-[36px] text-[16px] text-[#1D1D1D] placeholder:text-[#727272] bg-transparent outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
-          style={{ fontFamily: "'Gotham', sans-serif" }}
         />
 
         <button

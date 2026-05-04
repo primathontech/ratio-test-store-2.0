@@ -52,7 +52,6 @@ export const V1 = memo(function V1({ settings }: CollectionHeadingProps) {
             <h1
               className="text-[20px] leading-[24px] md:text-[32px] md:leading-[38px] pb-0 md:pb-[32px]"
               style={{
-                fontFamily: "Gotham, sans-serif",
                 fontWeight: 700,
                 color: "#000000",
                 letterSpacing: 0,

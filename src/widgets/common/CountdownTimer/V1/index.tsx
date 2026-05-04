@@ -98,7 +98,9 @@ export const V1: React.FC<CountdownTimerProps> = ({ settings, className }) => {
     const raw = settings?.targetDate;
     if (raw) {
       const parsed = new Date(raw).getTime();
-      if (!Number.isNaN(parsed)) return parsed;
+      if (!Number.isNaN(parsed)) {
+        return parsed;
+      }
     }
     return new Date(getDefaultTargetDate()).getTime();
   }, [settings?.targetDate]);
@@ -131,11 +133,15 @@ export const V1: React.FC<CountdownTimerProps> = ({ settings, className }) => {
   useEffect(() => {
     // Run once immediately so we don't flash "00 00 00 00"
     const running = tick();
-    if (!running) return;
+    if (!running) {
+      return;
+    }
 
     const id = setInterval(() => {
       const keepGoing = tick();
-      if (!keepGoing) clearInterval(id);
+      if (!keepGoing) {
+        clearInterval(id);
+      }
     }, 1000);
 
     return () => clearInterval(id);
@@ -144,7 +150,6 @@ export const V1: React.FC<CountdownTimerProps> = ({ settings, className }) => {
   return (
     <section
       className={`text-center pt-[30px] pb-[39px] md:pt-[40px] md:pb-[52px] ${className ?? ""}`}
-      style={{ fontFamily: "Gotham, sans-serif" }}
     >
       {/* Hurry Up! heading with decorative SVGs */}
       <div className="inline-flex items-center justify-center">

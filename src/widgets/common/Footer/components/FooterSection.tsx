@@ -37,7 +37,7 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
         aria-expanded={isOpen}
         aria-controls={`footer-section-${title.replace(/\s+/g, "-").toLowerCase()}`}
       >
-        <h6 className="text-[16px] font-[800] text-white !leading-none md:leading-[25.92px] font-[Gotham,sans-serif]">
+        <h6 className="text-[16px] font-[800] text-white !leading-none md:leading-[25.92px]">
           {title}
         </h6>
         <AccordionToggleIcon isOpen={isOpen} />
@@ -54,7 +54,7 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
           <li key={index} className="basis-1/2 flex-shrink-0">
             <Link
               href={link.href}
-              className="text-[14px] max-w-[152px] text-[#E7E7E7] hover:text-[#0089DD] block font-normal font-[Gotham,sans-serif] leading-[22.4px]"
+              className="text-[14px] max-w-[152px] text-[#E7E7E7] hover:text-[#0089DD] block font-normal leading-[22.4px]"
             >
               {link.name}
             </Link>

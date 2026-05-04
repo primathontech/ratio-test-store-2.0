@@ -49,10 +49,7 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
 
   return (
     <div className={`mb-[5px] ${className}`}>
-      <p
-        className="text-[14px] font-[700] text-black mb-[8px] flex items-center tracking-[0.6px]"
-        style={{ fontFamily: "'Gotham', sans-serif" }}
-      >
+      <p className="text-[14px] font-[700] text-black mb-[8px] flex items-center tracking-[0.6px]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-[18px] h-[18px] mr-[7px]"
@@ -75,7 +72,6 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
               router.push(search.href);
             }}
             className="px-[10px] pt-[6px] pb-[4px] text-[14px] text-white bg-[#000000] transition-colors duration-200 text-center rounded-[4px] font-[500] whitespace-nowrap flex items-center mx-[5px] mb-[10px] leading-9"
-            style={{ fontFamily: "'Gotham', sans-serif" }}
           >
             {search.label}
             <svg

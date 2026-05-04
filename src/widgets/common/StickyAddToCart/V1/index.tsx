@@ -170,7 +170,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
             {/* Title */}
             <h3
               className={[
-                "font-[Gotham,sans-serif]",
+                "",
                 "text-[16px] leading-[19px]",
                 "font-[500]",
                 "text-[#000000]",
@@ -185,7 +185,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
             <div className="flex items-baseline gap-[5px]">
               <span
                 className={[
-                  "font-[Gotham,sans-serif]",
+                  "",
                   "text-[14px] leading-[14px]",
                   "font-[400]",
                   "text-[#a3a3a3]",
@@ -196,7 +196,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               </span>
               <span
                 className={[
-                  "font-[Gotham,sans-serif]",
+                  "",
                   "text-[20px] leading-[20px]",
                   "font-[700]",
                   "text-[#1d1d1d]",
@@ -220,7 +220,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
                 "bg-[#000000] text-[#ffffff]",
                 "rounded-[10px]",
                 "border border-[#000000]",
-                "font-[Gotham,sans-serif]",
+                "",
                 "text-[20px] leading-[24px]",
                 "font-[700]",
                 "text-center",
@@ -255,7 +255,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               "bg-[#000000] text-[#ffffff]",
               "rounded-[100px]",
               "border border-[#000000]",
-              "font-[Gotham,sans-serif]",
+              "",
               "text-[16px] leading-[16px]",
               "font-[500]",
               "text-center",
@@ -272,13 +272,13 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               <SpinnerIcon />
             ) : (
               <>
-                <span className="font-[Gotham,sans-serif] text-[16px] leading-[19px] font-[700]">
+                <span className="text-[16px] leading-[19px] font-[700]">
                   {buttonText}
                 </span>
-                <span className="font-[Gotham,sans-serif] text-[16px] leading-[16px] font-[700] mx-[4px]">
+                <span className="text-[16px] leading-[16px] font-[700] mx-[4px]">
                   -
                 </span>
-                <span className="font-[Gotham,sans-serif] text-[16px] leading-[19px] font-[700]">
+                <span className="text-[16px] leading-[19px] font-[700]">
                   {price}
                 </span>
               </>
@@ -300,7 +300,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
             </span>
             <span
               className={[
-                "font-[Gotham,sans-serif]",
+                "",
                 "text-[10px] leading-[12px]",
                 "font-[400]",
                 "text-[#1d1d1d]",

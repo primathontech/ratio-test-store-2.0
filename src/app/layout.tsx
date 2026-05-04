@@ -19,29 +19,13 @@ import { getMerchantName, getThemeName } from "@/utils";
 import { getMessages } from "next-intl/server";
 import dynamic from "next/dynamic";
 import Script from "next/script";
-import { Inter, Open_Sans } from "next/font/google";
 
 import { AppShell, AppHead } from "@shopkit/app-shell";
 import { AppCartInitializer } from "@/bootstrap/cart";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
-
-// =============================================================================
-// FONT CONFIGURATION
-// =============================================================================
-
-const inter = Inter({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-inter",
-});
-
-const openSans = Open_Sans({
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-opensans",
-});
+import { fontVariables } from "./fonts";
 
 // =============================================================================
 // DYNAMIC IMPORTS
@@ -91,7 +75,7 @@ export default async function RootLayout({
     process.env.NEXT_PUBLIC_KWIKCART_DISABLE === "true";
 
   return (
-    <html lang={locale} className={`${inter.variable} ${openSans.variable}`}>
+    <html lang={locale} className={fontVariables}>
       <head>
         {/* AppHead handles: A/B testing, favicon, DNS prefetch, Clarity */}
         <AppHead />

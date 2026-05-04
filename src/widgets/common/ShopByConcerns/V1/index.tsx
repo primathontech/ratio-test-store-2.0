@@ -193,7 +193,6 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
       <h3
         className="text-start md:text-center mb-[16px] md:mb-[30px] px-[16px] text-[24px] xl:text-[28px]"
         style={{
-          fontFamily: "Gotham, sans-serif",
           lineHeight: "34px",
           fontWeight: 400,
           color: "#1D1D1D",

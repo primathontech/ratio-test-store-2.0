@@ -47,7 +47,7 @@ function SafeHtmlContent({ html }: { html: string }) {
   return (
     <div
       ref={containerRef}
-      className="rich-text-content text-[14px] leading-[24.4px] font-[400] text-[#1d1d1d] [&_p]:mb-[16px] [&_p:last-child]:mb-0 [&_strong]:font-[700] [&_em]:italic [&_br]:block font-[Gotham,sans-serif]"
+      className="rich-text-content text-[14px] leading-[24.4px] font-[400] text-[#1d1d1d] [&_p]:mb-[16px] [&_p:last-child]:mb-0 [&_strong]:font-[700] [&_em]:italic [&_br]:block"
     />
   );
 }
@@ -65,7 +65,7 @@ const StepsContent = ({
   <div className="flex flex-col gap-[16px]">
     {steps.map((step, i) => (
       <div key={i} className="flex flex-col">
-        <span className="text-[14px] md:text-[16px] leading-[22px] font-[700] text-[#1d1d1d] font-[Gotham,sans-serif] ">
+        <span className="text-[14px] md:text-[16px] leading-[22px] font-[700] text-[#1d1d1d] ">
           {step.label} : <span className="font-[400]">{step.text}</span>
         </span>
       </div>
@@ -97,7 +97,7 @@ const IngredientsContent = ({
           <span className="text-[14px] leading-[22px] font-[700] text-[#0089dd]">
             {item.label}
           </span>
-          <span className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] mt-[4px] font-[Gotham,sans-serif] ">
+          <span className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] mt-[4px] ">
             {item.text}
           </span>
         </div>
@@ -112,7 +112,7 @@ const ListContent = ({ items }: { items: string[] }) => (
     {items.map((item, i) => (
       <p
         key={i}
-        className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] m-0 font-[Gotham,sans-serif]"
+        className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] m-0"
       >
         {item}
       </p>
@@ -132,7 +132,7 @@ const IngredientsListContent = ({
         <span className="text-[14px] leading-[22px] font-[700] text-[#1d1d1d] mb-[4px]">
           {listing.label}
         </span>
-        <p className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] m-0 font-[Gotham,sans-serif]">
+        <p className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] m-0">
           {listing.text}
         </p>
       </div>
@@ -164,7 +164,7 @@ const AccordionItem = ({
       >
         {/* Title text */}
         <span
-          className={`font-[Gotham,sans-serif] text-[16px] leading-[26px] md:text-[24px] md:leading-[38px] font-[400] md:font-[700] py-[24px] px-[16px] md:pt-[38px] xl:px-[24px] transition-colors duration-300 ${isOpen ? "md:pb-[16px]" : "md:pb-[38px]"} text-[#000000] group-hover:text-[#0089dd]`}
+          className={`text-[16px] leading-[26px] md:text-[24px] md:leading-[38px] font-[400] md:font-[700] py-[24px] px-[16px] md:pt-[38px] xl:px-[24px] transition-colors duration-300 ${isOpen ? "md:pb-[16px]" : "md:pb-[38px]"} text-[#000000] group-hover:text-[#0089dd]`}
         >
           {tab.title}
         </span>

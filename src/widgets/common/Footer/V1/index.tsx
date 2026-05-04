@@ -81,7 +81,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
               aria-controls="mobile-footer-content"
             >
               <h3
-                className="text-[14px] font-medium text-white !leading-none font-[Gotham,sans-serif]"
+                className="text-[14px] font-medium text-white !leading-none"
                 // eslint-disable-next-line no-restricted-syntax
                 dangerouslySetInnerHTML={{ __html: mobileFooterTagline }}
               />
@@ -137,7 +137,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
                 {/* Get the app */}
                 {showAppDownload && appDownloadText && (
                   <div className="py-[24px] border-b border-[#424242]">
-                    <h6 className="text-[18px] font-bold md:font-medium text-white !leading-none mb-[16px] font-[Gotham,sans-serif]">
+                    <h6 className="text-[18px] font-bold md:font-medium text-white !leading-none mb-[16px]">
                       {appDownloadText}
                     </h6>
                     <div className="flex gap-[16px] justify-between">
@@ -200,7 +200,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
                 {/* Copyright */}
                 {copyrightText && (
                   <div className="py-0 md:py-[36px]">
-                    <p className="text-[12px] text-[#727272] text-center font-[Gotham,sans-serif]">
+                    <p className="text-[12px] text-[#727272] text-center">
                       {copyrightText}
                     </p>
                   </div>
@@ -327,7 +327,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
             {/* Copyright */}
             {copyrightText && (
               <div>
-                <p className="text-[12px] text-[#727272] font-normal !leading-[24.62px] mb-0 xl:mb-0 font-[Gotham,sans-serif]">
+                <p className="text-[12px] text-[#727272] font-normal !leading-[24.62px] mb-0 xl:mb-0">
                   {copyrightText}
                 </p>
               </div>
@@ -336,7 +336,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
             <div className="flex flex-col items-start">
               {/* Payment Protection Text */}
               {paymentProtectionText && (
-                <div className="flex items-center gap-2 text-[16px] text-[#cecece] !leading-[21.28px] font-[400] font-[Gotham,sans-serif]">
+                <div className="flex items-center gap-2 text-[16px] text-[#cecece] !leading-[21.28px] font-[400]">
                   <span>
                     <svg
                       width="24"

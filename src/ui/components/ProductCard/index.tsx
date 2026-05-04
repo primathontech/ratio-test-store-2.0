@@ -51,14 +51,11 @@ const StarRating = ({
       </span>
       <span
         className="text-[12px] md:text-[10px] leading-[16px]"
-        style={{ color: textColor, fontFamily: "Gotham, sans-serif" }}
+        style={{ color: textColor }}
       >
         {rating.toFixed(1)}
       </span>
-      <span
-        className="text-[14px] leading-[16px]"
-        style={{ color: textColor, fontFamily: "Gotham, sans-serif" }}
-      >
+      <span className="text-[14px] leading-[16px]" style={{ color: textColor }}>
         {" | "}
         {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
       </span>
@@ -100,7 +97,6 @@ const QuantityPill = ({
       backgroundColor: "#FFFFFF",
       color: "#000000",
       borderRadius: buttonRadius,
-      fontFamily: "Gotham, sans-serif",
     }}
   >
     <button
@@ -339,7 +335,6 @@ export const ProductCard = memo(function ProductCard({
                   style={{
                     backgroundColor: badgeColor(product.badgeVariant),
                     color: "#ffffff",
-                    fontFamily: "Gotham, sans-serif",
                     clipPath:
                       "polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%)",
                   }}
@@ -357,7 +352,6 @@ export const ProductCard = memo(function ProductCard({
                   backgroundColor: t.weightBg,
                   color: t.weightColor,
                   borderRadius: "4px",
-                  fontFamily: "Gotham, sans-serif",
                   fontWeight: 600,
                 }}
               >
@@ -413,7 +407,6 @@ export const ProductCard = memo(function ProductCard({
                   backgroundColor: t.chipBg,
                   border: t.chipBorder,
                   borderRadius: "4px",
-                  fontFamily: "Gotham, sans-serif",
                 }}
               >
                 {product.category}
@@ -427,7 +420,6 @@ export const ProductCard = memo(function ProductCard({
             className={`text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2  min-h-[33px] md:min-h-[40px] ${titleClassName}`.trim()}
             style={{
               color: textPrimary,
-              fontFamily: "Gotham, sans-serif",
               fontWeight: 400,
               transition: "color 0.25s",
             }}
@@ -441,7 +433,6 @@ export const ProductCard = memo(function ProductCard({
               className="text-[12px] md:text-[13px] leading-[16px] line-clamp-2 min-h-[32px]"
               style={{
                 color: "#727272",
-                fontFamily: "Gotham, sans-serif",
                 fontWeight: 400,
               }}
             >
@@ -469,7 +460,6 @@ export const ProductCard = memo(function ProductCard({
               className="text-[14px] md:text-[16px]"
               style={{
                 color: textPrimary,
-                fontFamily: "Gotham, sans-serif",
                 fontWeight: 600,
               }}
             >
@@ -482,7 +472,6 @@ export const ProductCard = memo(function ProductCard({
                     className={`text-[12px] line-through ${compareAtPriceClassName}`.trim()}
                     style={{
                       color: t.textMuted,
-                      fontFamily: "Gotham, sans-serif",
                       fontWeight: 400,
                     }}
                   >
@@ -493,7 +482,6 @@ export const ProductCard = memo(function ProductCard({
                       className={`text-[12px] ${discountClassName}`.trim()}
                       style={{
                         color: t.discountColor,
-                        fontFamily: "Gotham, sans-serif",
                         fontWeight: 600,
                       }}
                     >
@@ -526,7 +514,6 @@ export const ProductCard = memo(function ProductCard({
                   color: buttonTextColor,
                   borderRadius: t.buttonRadius,
                   border: t.buttonBorder,
-                  fontFamily: "Gotham, sans-serif",
                   transition: "background-color 0.2s",
                 }}
                 aria-label={
