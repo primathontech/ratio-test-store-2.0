@@ -484,19 +484,13 @@ export class CustomCheckoutService {
         console.warn("Missing order ID or pincode for EDD creation");
         return;
       }
-
-      const eddResponse = await fetch("/api/v1/edd", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          orderNumber: orderId,
-          deliveryPincode: pincode,
-        }),
+      // Lazy-import the service so this file remains tree-shake-friendly
+      // and to avoid a static import cycle through @/services.
+      const { createEDDForOrder } = await import("@/services/order.service");
+      await createEDDForOrder({
+        orderNumber: orderId,
+        deliveryPincode: pincode,
       });
-
-      if (!eddResponse.ok) {
-        console.error("Failed to create EDD for order:", orderId);
-      }
     } catch (error) {
       console.error("Error creating EDD for order:", error);
     }

@@ -7,6 +7,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useAuth } from "@shopkit/core/context";
 
 import { EDDResponse, OrderApiResponse, ThankYouProps } from "../types";
+import { getOrderById, getOrderTracking } from "@/services/order.service";
 import {
   AddressSection,
   Footer,
@@ -34,12 +35,7 @@ export const V1: React.FC<ThankYouProps> = () => {
 
     setEddLoading(true);
     try {
-      // eslint-disable-next-line no-restricted-syntax
-      const res = await fetch(
-        `/api/v1/order-tracking/${orderId}?getHistory=true`
-      );
-      const data = await res.json();
-
+      const data = await getOrderTracking(orderId, { getHistory: true });
       if (data && data.edd) {
         setEddData(data);
       }
@@ -86,35 +82,18 @@ export const V1: React.FC<ThankYouProps> = () => {
           const guestData = GuestUserStorage.getGuestUserData();
           const phone = guestData?.phone || "";
 
-          const url = new URL(`/api/v1/order`, window.location.origin);
-          url.searchParams.set("orderId", orderId);
-          if (requestId) {
-            url.searchParams.set("requestId", requestId);
-          }
-          if (customerId) {
-            url.searchParams.set("customerId", customerId);
-          }
-          if (phone) {
-            url.searchParams.set("phone", phone);
-          }
+          const data = await getOrderById({
+            orderId,
+            requestId: requestId || undefined,
+            customerId: customerId || undefined,
+            phone: phone || undefined,
+            accessToken: token,
+          });
 
-          const headers: Record<string, string> = {};
-          const kwikToken =
-            typeof window !== "undefined"
-              ? localStorage.getItem("KWIKUSERTOKEN")
-              : null;
-          if (kwikToken || token) {
-            headers["gk-access-token"] = (kwikToken || token) as string;
-          }
-
-          // eslint-disable-next-line no-restricted-syntax
-          const res = await fetch(url.toString(), { headers });
-          const data = await res.json();
           if (data?.order) {
             setOrderData(data);
-            const order = data.order;
-            if (order.id) {
-              fetchOrderTracking(order.id);
+            if (data.order.id) {
+              fetchOrderTracking(data.order.id);
             }
           }
         } catch (err) {
@@ -156,33 +135,16 @@ export const V1: React.FC<ThankYouProps> = () => {
         const guestData = GuestUserStorage.getGuestUserData();
         const phone = guestData?.phone || "";
         const token = getToken();
-
-        const url = new URL(`/api/v1/order`, window.location.origin);
-        url.searchParams.set("orderId", orderId);
         const requestId = searchParams.get("requestId");
         const customerId = searchParams.get("customerId");
-        if (requestId) {
-          url.searchParams.set("requestId", requestId);
-        }
-        if (customerId) {
-          url.searchParams.set("customerId", customerId);
-        }
-        if (phone) {
-          url.searchParams.set("phone", phone);
-        }
 
-        const headers: Record<string, string> = {};
-        const kwikToken =
-          typeof window !== "undefined"
-            ? localStorage.getItem("KWIKUSERTOKEN")
-            : null;
-        if (kwikToken || token) {
-          headers["gk-access-token"] = (kwikToken || token) as string;
-        }
-
-        // eslint-disable-next-line no-restricted-syntax
-        const res = await fetch(url.toString(), { headers });
-        const data = await res.json();
+        const data = await getOrderById({
+          orderId,
+          requestId: requestId || undefined,
+          customerId: customerId || undefined,
+          phone: phone || undefined,
+          accessToken: token,
+        });
         if (data?.order?.external_order_name) {
           setOrderData((prev) => {
             if (!prev) {

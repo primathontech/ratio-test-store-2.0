@@ -34,4 +34,16 @@ export const variantRegistry = {
   [TEMPLATE_TYPES["about-us"]]: {
     default: () => import("./about-us/default").then((m) => m.template),
   },
+  [TEMPLATE_TYPES.account]: {
+    default: () => import("./account/default").then((m) => m.template),
+  },
+  [TEMPLATE_TYPES.addresses]: {
+    default: () => import("./addresses/default").then((m) => m.template),
+  },
+  [TEMPLATE_TYPES["order-details"]]: {
+    default: () => import("./order-details/default").then((m) => m.template),
+  },
+  [TEMPLATE_TYPES["order-history"]]: {
+    default: () => import("./order-history/default").then((m) => m.template),
+  },
 };

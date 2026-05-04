@@ -9,7 +9,7 @@ import { ThankYouVariants } from "./variants";
  *
  * Renders the order confirmation page after a successful checkout.
  * Reads orderId/requestId/customerId from URL search params and
- * fetches order details from /api/v1/order.
+ * fetches order details via the order service (`@/services/order.service`).
  */
 export function ThankYou({
   data,
