@@ -68,7 +68,7 @@ const WalletIcon = ({ className }: IconProps) => (
 
 const UserIcon = ({ className }: IconProps) => (
   <img
-    src="/dawn/images/static/user_icon.svg"
+    src="/bblunt-2/images/static/user_icon.svg"
     alt="User"
     width="19"
     height="22"
@@ -200,7 +200,7 @@ export const KwikPassLogo: React.FC<KwikPassLogoProps> = ({
 }) => {
   return (
     <img
-      src="/dawn/images/static/user_icon.svg"
+      src="/bblunt-2/images/static/user_icon.svg"
       alt="User"
       width={width}
       height={height}

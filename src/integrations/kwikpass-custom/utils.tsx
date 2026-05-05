@@ -51,7 +51,7 @@ export const KwikPassLogo: React.FC<KwikPassLogoProps> = ({
 }) => {
   return (
     <img
-      src="/dawn/images/static/user_icon.svg"
+      src="/bblunt-2/images/static/user_icon.svg"
       alt="User"
       width={width}
       height={height}
