@@ -47,15 +47,15 @@ const DesktopSortDropdown: React.FC<DesktopSortDropdownProps> = ({
             disabled={isLoading}
             className={
               showSortOnly
-                ? "flex items-center gap-2 px-[8px] py-[6px] border border-gray-300 rounded-[10px] bg-white"
-                : "w-full flex items-center justify-between pl-[18px] pr-[25px] py-[10px] border border-gray-300 bg-white transition-colors duration-200 disabled:opacity-50 text-left rounded-[10px] min-w-[217px] hover:border-black focus:border-black mt-2"
+                ? "flex items-center gap-2 px-2 py-1.5 border border-gray-300 rounded-[10px] bg-white"
+                : "w-full flex items-center justify-between pl-[18px] pr-[25px] py-2.5 border border-gray-300 bg-white transition-colors duration-200 disabled:opacity-50 text-left rounded-[10px] min-w-[217px] hover:border-black focus:border-black mt-2"
             }
           >
             <Text
               className={
                 showSortOnly
-                  ? "!text-[12px] !font-medium !text-black"
-                  : "!text-black font-normal !text-[14px]"
+                  ? "!text-xs !font-medium !text-black"
+                  : "!text-black font-normal !text-sm"
               }
             >
               {showSortOnly ? "Sort" : getCurrentSortLabel()}
@@ -91,8 +91,8 @@ const DesktopSortDropdown: React.FC<DesktopSortDropdownProps> = ({
                         <Text
                           className={
                             selectedSort === option.value
-                              ? "!text-white !text-[14px]"
-                              : "!text-black !text-[14px]"
+                              ? "!text-white !text-sm"
+                              : "!text-black !text-sm"
                           }
                         >
                           {option.label}

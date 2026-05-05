@@ -253,7 +253,7 @@ function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
 
   return (
     <div
-      className="absolute top-full left-1/2 -translate-x-1/2 z-[3] w-[268px] bg-[#ffffff] pt-[24px] pb-[33px] pl-[19px] pr-[20px] opacity-0 translate-y-[15px] pointer-events-none transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto"
+      className="absolute top-full left-1/2 -translate-x-1/2 z-[3] w-[268px] bg-secondary pt-6 pb-[33px] pl-[19px] pr-5 opacity-0 translate-y-[15px] pointer-events-none transition-all duration-300 ease-out group-hover:opacity-100 group-hover:translate-y-0 group-hover:pointer-events-auto"
       style={{
         boxShadow: "0px 0px 3px 0px rgba(0, 0, 0, 0.12)",
       }}
@@ -264,18 +264,18 @@ function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
             <DropdownAccordion
               key={gi}
               group={group}
-              className={gi > 0 ? "mt-[4px]" : ""}
+              className={gi > 0 ? "mt-1" : ""}
             />
           ))
         : /* Flat link list style (e.g. Product, Hair Colour, etc.) */
           groups.map((group, gi) => (
             <div key={gi}>
-              <ul className="list-none p-0 m-0 flex flex-col gap-[14px]">
+              <ul className="list-none p-0 m-0 flex flex-col gap-3.5">
                 {group.items.map((item, ii) => (
                   <li key={ii}>
                     <Link
                       href={item.href}
-                      className="text-[14px] leading-[16.8px] font-[400] text-[#545454] no-underline transition-colors duration-200 hover:text-[#0089DD]"
+                      className="text-sm leading-[16.8px] font-normal text-[#545454] no-underline transition-colors duration-200 hover:text-loading-blue"
                     >
                       {item.label}
                     </Link>
@@ -374,7 +374,7 @@ function SearchInput({
         value={value ?? ""}
         onChange={(e) => onChange?.(e.target.value)}
         onClick={onClick}
-        className="w-[255px] h-[35px] min-h-[35px] rounded-[4px] bg-transparent pl-[33px] pr-[60px] pt-[8px] pb-[8px] text-[14px] font-[500] text-[#1d1d1d] placeholder:text-surface outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
+        className="w-[255px] h-[35px] min-h-[35px] rounded bg-transparent pl-[33px] pr-[60px] pt-2 pb-2 text-sm font-medium text-primary placeholder:text-surface outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
         style={{
           border: "1px solid #dddddd",
         }}
@@ -388,7 +388,7 @@ function SearchInput({
       <button
         type="submit"
         aria-label="Search"
-        className="absolute left-[10px] top-1/2 -translate-y-1/2 cursor-pointer"
+        className="absolute left-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
       >
         <svg
           width="16"
@@ -613,11 +613,11 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
         }}
       >
         {/* Inner container: 60px height + 15px padding on mobile/tablet, 65px + 40px on desktop (≥1100px) */}
-        <div className="w-full max-w-full flex items-center h-[60px] px-[15px] min-[1100px]:h-[65px] min-[1100px]:px-[40px]">
+        <div className="w-full max-w-full flex items-center h-[60px] px-[15px] min-[1100px]:h-[65px] min-[1100px]:px-10">
           {/* ---- Mobile Hamburger (visible below 1100px) ---- */}
-          <div className="flex items-center mr-[12px] min-[1100px]:hidden">
+          <div className="flex items-center mr-3 min-[1100px]:hidden">
             <button
-              className="p-[4px] text-[#1d1d1d]"
+              className="p-1 text-primary"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open menu"
               aria-expanded={mobileMenuOpen}
@@ -634,7 +634,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                 alt={logoAlt}
                 width={136}
                 height={40}
-                className="w-[87px] h-[26px] md:w-[136px] md:h-[40px]"
+                className="w-[87px] h-[26px] md:w-[136px] md:h-10"
                 priority
               />
             </Link>
@@ -642,16 +642,16 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
 
           {/* ---- Desktop Navigation (visible from 1100px) ---- */}
           <nav className="hidden min-[1100px]:flex flex-1 h-full">
-            <ul className="list-none p-0 m-0 inline-flex items-stretch gap-[22px] min-[1450px]:gap-[32px] pl-[47px] h-full">
+            <ul className="list-none p-0 m-0 inline-flex items-stretch gap-[22px] min-[1450px]:gap-8 pl-[47px] h-full">
               {navigation.map((item, index) => (
                 <li key={index} className="relative group flex items-center">
                   <Link
                     href={item.href}
-                    className="relative flex items-center gap-[8px] text-[14px] leading-[16.8px] font-[700] text-[#000000] no-underline whitespace-nowrap after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-[1px] after:bg-[#000000] after:origin-right after:scale-x-0 after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
+                    className="relative flex items-center gap-2 text-sm leading-[16.8px] font-bold text-black no-underline whitespace-nowrap after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-px after:bg-black after:origin-right after:scale-x-0 after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
                   >
                     <span>{item.label}</span>
                     {item.dropdown && (
-                      <ChevronDownIcon className="w-[10px] h-[7px]" />
+                      <ChevronDownIcon className="w-2.5 h-[7px]" />
                     )}
                   </Link>
 
@@ -668,14 +668,14 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
           <div className="flex-1 min-[1100px]:hidden" />
 
           {/* ---- Right Side: Search / Cart / Account ---- */}
-          <div className="flex items-center gap-[14px] xl:gap-[19px]">
+          <div className="flex items-center gap-3.5 xl:gap-[19px]">
             {/* Get App - Only show on mobile, hide on tablet (md and up) */}
             <Link
               data-testid="header-get-app-button"
               href={getAppData?.app_url || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="md:hidden transition-all duration-200 ease-in-out flex items-center justify-center px-[6px] py-[3px] max-w-[65px] text-[12px] font-medium bg-black"
+              className="md:hidden transition-all duration-200 ease-in-out flex items-center justify-center px-1.5 py-[3px] max-w-[65px] text-xs font-medium bg-black"
               aria-label={getAppData?.button_text || "Get App"}
               style={{
                 color: "#ffffff",
@@ -702,7 +702,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                   setMobileSearchOpen(true);
                 }
               }}
-              className="text-[#000000] min-[1100px]:hidden"
+              className="text-black min-[1100px]:hidden"
               aria-label="Search"
             >
               <SearchIcon />
@@ -736,7 +736,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               onClick={() => {
                 void openCart();
               }}
-              className="relative flex items-center gap-[16px] text-[#000000] no-underline bg-transparent border-0 p-0 cursor-pointer"
+              className="relative flex items-center gap-4 text-black no-underline bg-transparent border-0 p-0 cursor-pointer"
               aria-label={`Cart with ${cartCount} items`}
             >
               <span className="relative">
@@ -744,7 +744,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                 <CartBadge count={cartCount} />
               </span>
               {/* "Cart" text: visible on tablet (md: 768px+) */}
-              <span className="hidden md:inline text-[14px] font-[400] text-[#1d1d1d]">
+              <span className="hidden md:inline text-sm font-normal text-primary">
                 Cart
               </span>
             </button>
@@ -881,7 +881,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               user hasn't started typing yet. */}
           {!overlayQuery.trim() && (
             <div
-              className="absolute left-0 right-0 top-[100px] bg-white z-[22101] overflow-y-auto py-[16px] px-[12px] shadow-[0_0_8px_rgba(0,0,0,0.15)]"
+              className="absolute left-0 right-0 top-[100px] bg-white z-[22101] overflow-y-auto py-4 px-3 shadow-[0_0_8px_rgba(0,0,0,0.15)]"
               style={{ maxHeight: "calc(100vh - 100px)" }}
             >
               <TrendingSearches onClose={closeSearchOverlay} />

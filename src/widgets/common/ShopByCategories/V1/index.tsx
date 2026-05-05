@@ -130,12 +130,12 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
 
   return (
     <section
-      className="relative mt-[25px] md:mt-[56px]"
+      className="relative mt-[25px] md:mt-14"
       aria-label="Shop by Categories"
     >
       {/* Section Heading */}
       <h3
-        className="text-start md:text-center mb-[16px] px-[16px] lg:mb-[30px] text-[24px] lg:text-[28px]"
+        className="text-start md:text-center mb-4 px-4 lg:mb-[30px] text-2xl lg:text-[28px]"
         style={{
           lineHeight: "34px",
           fontWeight: 400,
@@ -153,7 +153,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
           onClick={() => scrollBy("prev")}
           disabled={!canScrollLeft}
           aria-label="Previous"
-          className="hidden min-[768px]:flex min-[990px]:hidden absolute left-[2px] lg:left-[5px] top-[50%] -translate-y-[50%] z-[2] w-[40px] h-[40px] items-center justify-center text-[#1D1D1D]"
+          className="hidden min-[768px]:flex min-[990px]:hidden absolute left-0.5 lg:left-[5px] top-[50%] -translate-y-[50%] z-[2] w-10 h-10 items-center justify-center text-primary"
         >
           <span
             className="inline-flex transition-opacity duration-300"
@@ -166,7 +166,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
         {/* Scrollable viewport */}
         <div
           ref={viewportRef}
-          className="px-[10px] md:px-[30px] lg:px-[30px] xl:px-[70px] overflow-x-auto hide-scrollbar"
+          className="px-2.5 md:px-[30px] lg:px-[30px] xl:px-[70px] overflow-x-auto hide-scrollbar"
         >
           <div className="sbc-cat-container flex">
             {tiles.map((tile, i) => (
@@ -182,7 +182,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
                   style={{ color: "#000000", textDecoration: "none" }}
                 >
                   {/* Desktop image (>=768px) */}
-                  <div className="sbc-cat-img-desktop hidden md:flex justify-center items-center h-[120px]  pl-[4px] lg:pl-[15px]">
+                  <div className="sbc-cat-img-desktop hidden md:flex justify-center items-center h-[120px]  pl-1 lg:pl-[15px]">
                     <Image
                       src={tile.desktopImage}
                       alt={tile.label}
@@ -205,7 +205,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
                   </div>
                   {/* Label — visible only on mobile (<768px) */}
                   <div
-                    className="sbc-cat-label mt-[8px] md:hidden text-[14px]"
+                    className="sbc-cat-label mt-2 md:hidden text-sm"
                     style={{
                       lineHeight: "19px",
                       fontWeight: 500,
@@ -225,7 +225,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
           onClick={() => scrollBy("next")}
           disabled={!canScrollRight}
           aria-label="Next"
-          className="hidden min-[768px]:flex min-[990px]:hidden absolute right-[2px] lg:right-[5px] top-[50%] -translate-y-[50%] z-[2] w-[40px] h-[40px] items-center justify-center text-[#1D1D1D]"
+          className="hidden min-[768px]:flex min-[990px]:hidden absolute right-0.5 lg:right-[5px] top-[50%] -translate-y-[50%] z-[2] w-10 h-10 items-center justify-center text-primary"
         >
           <span
             className="inline-flex transition-opacity duration-300"

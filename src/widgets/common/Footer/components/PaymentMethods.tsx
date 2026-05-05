@@ -14,7 +14,7 @@ export const PaymentMethods: React.FC<PaymentMethodsProps> = ({
   }
 
   return (
-    <div className="flex items-center gap-[10px] md:mb-24 xl:mb-0">
+    <div className="flex items-center gap-2.5 md:mb-24 xl:mb-0">
       {paymentMethods.map((method, index) => (
         <div key={index}>
           <Image

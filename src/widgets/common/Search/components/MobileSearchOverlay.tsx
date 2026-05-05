@@ -103,7 +103,7 @@ export const MobileSearchOverlay: React.FC<MobileSearchOverlayProps> = ({
       aria-label="Search"
     >
       {/* Search bar */}
-      <div className="flex items-center gap-[10px] px-[16px] py-[12px] border-b border-[#E5E5E5]">
+      <div className="flex items-center gap-2.5 px-4 py-3 border-b border-[#E5E5E5]">
         <svg
           width="18"
           height="18"
@@ -131,14 +131,14 @@ export const MobileSearchOverlay: React.FC<MobileSearchOverlayProps> = ({
             }
           }}
           placeholder={placeholder}
-          className="flex-1 min-w-0 h-[36px] text-[16px] text-[#1D1D1D] placeholder:text-[#727272] bg-transparent outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
+          className="flex-1 min-w-0 h-9 text-base text-primary placeholder:text-surface bg-transparent outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
         />
 
         <button
           type="button"
           onClick={onClose}
           aria-label="Close search"
-          className="flex-shrink-0 w-[28px] h-[28px] flex items-center justify-center text-black"
+          className="flex-shrink-0 w-7 h-7 flex items-center justify-center text-black"
         >
           <svg
             width="18"
@@ -158,7 +158,7 @@ export const MobileSearchOverlay: React.FC<MobileSearchOverlayProps> = ({
       </div>
 
       {/* Body */}
-      <div className="flex-1 overflow-y-auto px-[16px] py-[16px]">
+      <div className="flex-1 overflow-y-auto px-4 py-4">
         {/* While the user is typing we hide the default sections — the typed
             flow belongs to the results page. */}
         {query.trim() ? null : (

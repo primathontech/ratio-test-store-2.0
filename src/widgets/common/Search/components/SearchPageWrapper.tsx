@@ -58,7 +58,7 @@ interface SearchPageWrapperProps {
 
 /** Responsive horizontal margin: 0 at <1400px, then 20–250px by viewport (1400–1900px) */
 const SEARCH_PAGE_CONTAINER_MARGIN_CLASS =
-  "mx-0 min-[1400px]:mx-[20px] min-[1455px]:mx-[27px] min-[1500px]:mx-[50px] min-[1600px]:mx-[100px] min-[1700px]:mx-[150px] min-[1800px]:mx-[200px] min-[1900px]:mx-[250px]";
+  "mx-0 min-[1400px]:mx-5 min-[1455px]:mx-[27px] min-[1500px]:mx-[50px] min-[1600px]:mx-[100px] min-[1700px]:mx-[150px] min-[1800px]:mx-[200px] min-[1900px]:mx-[250px]";
 
 const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
   const router = useRouter();
@@ -698,10 +698,10 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
                 {/* Filter Button */}
                 <button
                   onClick={() => setIsMobileFilterOpen(true)}
-                  className="flex items-center gap-2 px-[8px] py-[6px] border border-faq-border rounded-[10px] bg-white"
+                  className="flex items-center gap-2 px-2 py-1.5 border border-faq-border rounded-[10px] bg-white"
                 >
                   <svg
-                    className="w-[20] h-[20px] text-black"
+                    className="w-[20] h-5 text-black"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -713,7 +713,7 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
                     <line x1="6" y1="12" x2="18" y2="12" />
                     <line x1="10" y1="18" x2="14" y2="18" />
                   </svg>
-                  <Text className="!text-[12px] !font-medium !text-black">
+                  <Text className="!text-xs !font-medium !text-black">
                     {settings?.filterText || "FILTER"}
                   </Text>
                 </button>
@@ -727,7 +727,7 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
                 />
               </Flex>
               <Flex className="items-center justify-between mb-[15px]">
-                <Text className="!text-[14px] !text-black flex items-center justify-center">
+                <Text className="!text-sm !text-black flex items-center justify-center">
                   {settings?.showingText || "Showing"}{" "}
                   {searchResults?.totalHits || 0}{" "}
                   {settings?.resultsText || "Result(s)"}{" "}
@@ -774,8 +774,8 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
                 {/* Desktop Search Results Header */}
                 {searchResults && (
                   <div className="hidden min-[769px]:block">
-                    <Flex className="items-center !justify-between mb-[20px]">
-                      <Text className="!text-[14px] !text-black flex items-center justify-center">
+                    <Flex className="items-center !justify-between mb-5">
+                      <Text className="!text-sm !text-black flex items-center justify-center">
                         {settings?.showingText || "Showing"}{" "}
                         {searchResults.totalHits}{" "}
                         {settings?.resultsText || "Result(s)"}{" "}
@@ -833,7 +833,7 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
                       ? Array.from({ length: 6 }).map((_, index) => (
                           <ShimmerProductCard
                             key={`shimmer-${index}`}
-                            className="h-full rounded-none min-[769px]:rounded-[16px]"
+                            className="h-full rounded-none min-[769px]:rounded-2xl"
                             settings={{
                               cardLayoutSettings: {
                                 backgroundColor: "white",
@@ -859,7 +859,7 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
                   searchResults.products?.length > 0 &&
                   !hasMore && (
                     <div className="flex justify-center">
-                      <div className="bg-white text-black text-[14px] px-[10px] py-[7px] mb-[10px] font-medium mt-[20px] md:mt-0">
+                      <div className="bg-white text-black text-sm px-2.5 py-[7px] mb-2.5 font-medium mt-5 md:mt-0">
                         No More Results
                       </div>
                     </div>

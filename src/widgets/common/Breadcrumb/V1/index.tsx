@@ -10,7 +10,7 @@ import { BreadcrumbProps, BreadcrumbItem } from "../types";
 
 const ChevronSeparator = () => (
   <svg
-    className="inline-block mx-[8px] md:mx-[10px]"
+    className="inline-block mx-2 md:mx-2.5"
     xmlns="http://www.w3.org/2000/svg"
     width="5"
     height="8"
@@ -56,7 +56,7 @@ export const V1 = memo(function V1({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={["bg-[#ffffff]", className || ""].join(" ")}
+      className={["bg-secondary", className || ""].join(" ")}
     >
       {/* Outer wrapper with vertical padding */}
       <div className={["py-[11px]", "md:py-[13px]", "xl:py-[15px]"].join(" ")}>
@@ -73,7 +73,7 @@ export const V1 = memo(function V1({
           <ol
             className={[
               "inline-flex items-center flex-wrap",
-              "gap-[6px]",
+              "gap-1.5",
               "list-none m-0 p-0",
               "text-[#545454]",
               "max-w-full overflow-hidden",
@@ -92,8 +92,8 @@ export const V1 = memo(function V1({
                     <span
                       className={[
                         "",
-                        "text-[14px] leading-[22px]",
-                        "font-[700]",
+                        "text-sm leading-[22px]",
+                        "font-bold",
                         "text-[#545454]",
                         "inline",
                       ].join(" ")}
@@ -106,12 +106,12 @@ export const V1 = memo(function V1({
                       href={item.href}
                       className={[
                         "",
-                        "text-[14px] leading-[22px]",
-                        "font-[400]",
+                        "text-sm leading-[22px]",
+                        "font-normal",
                         "text-[#545454]",
                         "no-underline",
                         "transition-colors duration-300",
-                        "hover:text-[#0089dd]",
+                        "hover:text-loading-blue",
                         "inline-block",
                       ].join(" ")}
                     >

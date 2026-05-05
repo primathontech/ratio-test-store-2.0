@@ -59,12 +59,12 @@ export const LoadMore = ({
         ref={sentinelRef}
         data-testid="collection-load-more-sentinel"
         aria-hidden="true"
-        className="h-[1px]"
+        className="h-px"
       />
       {isLoading && (
         <div
           data-testid="collection-load-more-spinner"
-          className="flex items-center justify-center py-[24px] md:py-[32px]"
+          className="flex items-center justify-center py-6 md:py-8"
         >
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
         </div>

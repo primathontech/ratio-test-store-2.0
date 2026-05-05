@@ -16,14 +16,14 @@ const TimerDigit = ({ value, label }: { value: number; label: string }) => (
     <span className="text-[25px] text-black leading-none tabular-nums">
       {value.toString().padStart(2, "0")}
     </span>
-    <span className="text-[14px] text-primary">{label}</span>
+    <span className="text-sm text-primary">{label}</span>
   </div>
 );
 
 const DecorativeLines = ({ color }: { color: string }) => (
   <>
     <span
-      className="block h-[3px] w-[36px] rounded-full"
+      className="block h-[3px] w-9 rounded-full"
       style={{ backgroundColor: color }}
     />
     <span
@@ -31,7 +31,7 @@ const DecorativeLines = ({ color }: { color: string }) => (
       style={{ backgroundColor: color }}
     />
     <span
-      className="block h-[3px] w-[36px] rounded-full"
+      className="block h-[3px] w-9 rounded-full"
       style={{ backgroundColor: color }}
     />
   </>
@@ -135,7 +135,7 @@ export const V1 = memo(function CollectionTimerV1({
         </span>
 
         <h2
-          className="text-[24px] lg:text-[48px] font-bold leading-none"
+          className="text-2xl lg:text-5xl font-bold leading-none"
           style={{ color: urgencyColor }}
         >
           {urgencyText}

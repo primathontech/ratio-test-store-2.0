@@ -323,17 +323,17 @@ export const V1 = memo(function V1({
 
   return (
     <section
-      className="relative overflow-hidden pb-[32.4px] md:pb-[56px]"
+      className="relative overflow-hidden pb-[32.4px] md:pb-14"
       style={{
         backgroundColor: "#ffffff",
       }}
     >
       {/* Content overlay */}
-      <div className="relative z-[1] mx-auto xl:mx-[20px] px-[6px] md:px-[30px] xl:px-[50px]">
+      <div className="relative z-[1] mx-auto xl:mx-5 px-1.5 md:px-[30px] xl:px-[50px]">
         {/* Heading */}
-        <div className="flex flex-col items-start md:items-center text-center mb-[24px] md:mb-[30px] px-[15px]">
+        <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px]">
           <h4
-            className="text-[24px] xl:text-[28px] leading-[29px] md:leading-[34px]"
+            className="text-2xl xl:text-[28px] leading-[29px] md:leading-[34px]"
             style={{
               color: "#1D1D1D",
               fontWeight: 400,
@@ -346,7 +346,7 @@ export const V1 = memo(function V1({
         </div>
 
         {/* Carousel area */}
-        <div className="group xl:mx-auto xl:max-w-[1300px] md:border md:border-[#EBEBEB] md:rounded-[8px] overflow-hidden">
+        <div className="group xl:mx-auto xl:max-w-[1300px] md:border md:border-[#EBEBEB] md:rounded-lg overflow-hidden">
           <SwipeCarousel
             itemCount={products.length}
             breakpoints={CAROUSEL_BREAKPOINTS}
@@ -419,7 +419,7 @@ export const V1 = memo(function V1({
           <div className="flex justify-center mt-[17.4px] md:mt-[30px]">
             <Link
               href={`/collections/${handle}`}
-              className="inline-flex items-center no-underline text-[14px] md:text-[18px] pl-[16px] md:pl-[42px] pr-[16px] md:pr-[55px] w-full md:w-auto mx-[16px] md:mx-0 p-[6px] md:p-0 justify-center"
+              className="inline-flex items-center no-underline text-sm md:text-lg pl-4 md:pl-[42px] pr-4 md:pr-[55px] w-full md:w-auto mx-4 md:mx-0 p-1.5 md:p-0 justify-center"
               style={{
                 backgroundColor: "#F4F6F8",
                 color: "#1D1D1D",
@@ -438,7 +438,7 @@ export const V1 = memo(function V1({
                   return (
                     <span
                       key={p.id ?? i}
-                      className={`relative inline-flex overflow-hidden rounded-[6px] border border-[#dddddd] md:border-[3px] w-[20px] md:w-[32px] h-[20px] md:h-[32px] ${
+                      className={`relative inline-flex overflow-hidden rounded-md border border-[#dddddd] md:border-[3px] w-5 md:w-8 h-5 md:h-8 ${
                         i === 0 ? "mr-0" : "mr-[-12px]"
                       }`}
                       style={{
@@ -462,7 +462,7 @@ export const V1 = memo(function V1({
                   );
                 })}
               </span>
-              <span className="text-[#000000] font-[500]">
+              <span className="text-black font-medium">
                 View all {totalProducts} products
               </span>
               <ChevronRightIcon />

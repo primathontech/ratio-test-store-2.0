@@ -42,13 +42,13 @@ export const MobileSortDropdown = ({
         data-testid="mobile-sort-dropdown-toggle-button"
         onClick={onToggle}
         disabled={isLoading}
-        className={`flex items-center justify-between gap-[8px] p-[8px] rounded-[4px] transition-colors duration-200 text-left max-w-[82px] border ${
+        className={`flex items-center justify-between gap-2 p-2 rounded transition-colors duration-200 text-left max-w-[82px] border ${
           selectedSort && selectedSort !== "featured" && selectedSort !== ""
             ? "border-[#AFB7FF] bg-[#EBEDFF]"
             : "bg-white border-[#D9D9D980]"
         }`}
       >
-        <span className="text-[12px] text-primary whitespace-nowrap font-medium leading-none text-center">
+        <span className="text-xs text-primary whitespace-nowrap font-medium leading-none text-center">
           {sortDropdownText}
         </span>
         <svg
@@ -85,7 +85,7 @@ export const MobileSortDropdown = ({
           >
             <div
               data-testid="mobile-sort-dropdown-header"
-              className="flex items-center justify-center pt-4 pb-[24px]"
+              className="flex items-center justify-center pt-4 pb-6"
             >
               <button
                 data-testid="mobile-sort-dropdown-close-button"
@@ -129,7 +129,7 @@ export const MobileSortDropdown = ({
                     <label
                       key={option.id}
                       data-testid={`mobile-sort-dropdown-option-${option.id}`}
-                      className="flex items-center px-[20px] my-[13px] hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                      className="flex items-center px-5 my-[13px] hover:bg-gray-50 cursor-pointer transition-colors duration-150"
                     >
                       <div
                         data-testid={`mobile-sort-dropdown-option-content-${option.id}`}
@@ -144,18 +144,18 @@ export const MobileSortDropdown = ({
                         />
                         <div
                           data-testid={`mobile-sort-dropdown-radio-${option.id}`}
-                          className="size-[20px] rounded-full border border-black flex items-center justify-center transition-colors"
+                          className="size-5 rounded-full border border-black flex items-center justify-center transition-colors"
                         >
                           {isActiveSort && (
                             <div
                               data-testid={`mobile-sort-dropdown-radio-indicator-${option.id}`}
-                              className="size-[12px] bg-black rounded-full"
+                              className="size-3 bg-black rounded-full"
                             />
                           )}
                         </div>
                         <span
                           data-testid={`mobile-sort-dropdown-option-label-${option.id}`}
-                          className={`ml-3 text-[14px] leading-[30px] font-medium ${isActiveSort ? "text-black" : "text-[#545454]"}`}
+                          className={`ml-3 text-sm leading-[30px] font-medium ${isActiveSort ? "text-black" : "text-[#545454]"}`}
                         >
                           {option.label}
                         </span>

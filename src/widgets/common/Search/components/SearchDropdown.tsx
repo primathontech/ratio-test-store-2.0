@@ -98,7 +98,7 @@ export const SearchDropdown: React.FC<SearchDropdownProps> = ({
 
       {/* Mobile (full-width, fixed below header) */}
       <div
-        className={`md:hidden fixed left-0 right-0 bg-white border border-gray-200 shadow-[0_0_8px_rgba(0,0,0,0.15)] overflow-y-auto z-[22300] py-[16px] px-[12px] ${!hasSlid ? "search-mobile-slide" : ""} ${className}`}
+        className={`md:hidden fixed left-0 right-0 bg-white border border-gray-200 shadow-[0_0_8px_rgba(0,0,0,0.15)] overflow-y-auto z-[22300] py-4 px-3 ${!hasSlid ? "search-mobile-slide" : ""} ${className}`}
         style={{
           top: topPosition,
           maxHeight: "70vh",
@@ -118,7 +118,7 @@ export const SearchDropdown: React.FC<SearchDropdownProps> = ({
       {/* Desktop (anchored to trigger, right-aligned) */}
       {!isSearching && (
         <div className="hidden md:block absolute bg-white overflow-hidden min-w-[580px] xl:min-w-[920px] z-[22300] top-[calc(100%+2px)] max-h-[461px] min-h-[440px] shadow-[0_5px_20px_#8f959a99] right-[calc(10%-41px)]">
-          <div className="py-[16px] px-[12px] max-h-[461px]">
+          <div className="py-4 px-3 max-h-[461px]">
             <TrendingSearches
               trendingSearches={trendingSearches}
               onClose={onClose}

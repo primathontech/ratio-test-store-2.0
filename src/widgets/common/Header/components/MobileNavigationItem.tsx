@@ -44,7 +44,7 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
           aria-expanded={isExpanded}
           className="w-full flex items-center justify-between py-[9px] my-1 md:py-[9px] md:my-0 transition-colors duration-200"
         >
-          <p className="text-[14px] font-[500]">{item.label}</p>
+          <p className="text-sm font-medium">{item.label}</p>
           <svg
             width="16"
             height="16"
@@ -77,7 +77,7 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
         <Link
           href={item.href as string}
           onClick={onClose}
-          className="block py-2 my-1 px-4 text-[14px]"
+          className="block py-2 my-1 px-4 text-sm"
         >
           {item.label}
         </Link>
@@ -100,7 +100,7 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
                     key={subItem.key || index}
                     href={subItem.href || "#"}
                     onClick={onClose}
-                    className="block py-1 my-1 px-4 no-underline text-[14px]"
+                    className="block py-1 my-1 px-4 no-underline text-sm"
                   >
                     {subItem.label}
                   </Link>

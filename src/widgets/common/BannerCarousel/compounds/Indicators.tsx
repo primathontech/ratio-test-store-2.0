@@ -82,7 +82,7 @@ export const Indicators: React.FC<IndicatorsProps> = ({
               {/* Thumbnail Image / Video */}
               <div
                 data-testid={`banner-carousel-indicator-thumbnail-${index}`}
-                className={`relative h-16 md:h-[51px] border-2 md:border-[2.5px] border-black rounded-md overflow-hidden transition-[width] duration-[1200ms] ease-out ${isActive ? "w-16 md:w-[51px]" : "w-[20px]"}`}
+                className={`relative h-16 md:h-[51px] border-2 md:border-[2.5px] border-black rounded-md overflow-hidden transition-[width] duration-[1200ms] ease-out ${isActive ? "w-16 md:w-[51px]" : "w-5"}`}
               >
                 {item.type === MediaContentType.VIDEO ? (
                   // eslint-disable-next-line no-restricted-syntax
@@ -136,7 +136,7 @@ export const Indicators: React.FC<IndicatorsProps> = ({
                 {/* Arrow */}
                 <div
                   data-testid={`banner-carousel-indicator-arrow-${index}`}
-                  className="ml-[8px] w-[2.3rem] flex justify-center items-center rounded-md bg-white/15"
+                  className="ml-2 w-[2.3rem] flex justify-center items-center rounded-md bg-white/15"
                 >
                   <Image
                     src="/icons/hero-carousel-right-arrow.svg"
@@ -144,7 +144,7 @@ export const Indicators: React.FC<IndicatorsProps> = ({
                     width={8}
                     height={5}
                     loading="lazy"
-                    className="object-fill w-[8px] h-[5px]"
+                    className="object-fill w-2 h-[5px]"
                     unoptimized
                   />
                 </div>

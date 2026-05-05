@@ -106,7 +106,7 @@ export const MobileFilterDropdown = ({
         data-testid="mobile-filter-dropdown-toggle-button"
         onClick={onToggle}
         disabled={isLoading}
-        className={`flex items-center justify-between gap-[10px] p-[8px] rounded-[4px] transition-colors duration-200 border relative ${
+        className={`flex items-center justify-between gap-2.5 p-2 rounded transition-colors duration-200 border relative ${
           hasAppliedFilters
             ? "border-[#AFB7FF] bg-[#EBEDFF]"
             : "bg-white border-[#D9D9D980]"
@@ -115,12 +115,12 @@ export const MobileFilterDropdown = ({
         {appliedCount > 0 && (
           <span
             data-testid="mobile-filter-dropdown-count-badge"
-            className="bg-[#DB2C20] text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1"
+            className="bg-[#DB2C20] text-white text-[10px] font-bold rounded-full min-w-4 h-4 flex items-center justify-center px-1"
           >
             {appliedCount}
           </span>
         )}
-        <span className="text-[12px] text-primary font-bold leading-none text-center">
+        <span className="text-xs text-primary font-bold leading-none text-center">
           {filterTitle}
         </span>
         <div className="flex items-center gap-1">
@@ -159,7 +159,7 @@ export const MobileFilterDropdown = ({
           >
             <div
               data-testid="mobile-filter-dropdown-header"
-              className="flex items-center justify-center pt-[10px] pb-[24px] px-4"
+              className="flex items-center justify-center pt-2.5 pb-6 px-4"
             >
               <button
                 data-testid="mobile-filter-dropdown-close-button"
@@ -183,7 +183,7 @@ export const MobileFilterDropdown = ({
 
             <div
               data-testid="mobile-filter-dropdown-content"
-              className="flex-1 flex flex-col bg-white rounded-t-[4px] min-h-0"
+              className="flex-1 flex flex-col bg-white rounded-t min-h-0"
             >
               <div
                 data-testid="mobile-filter-dropdown-content-header"
@@ -191,7 +191,7 @@ export const MobileFilterDropdown = ({
               >
                 <h2
                   data-testid="mobile-filter-dropdown-content-title"
-                  className="text-[16px] text-primary leading-none p-[16px] pt-[24px] border-b border-[#DDD]"
+                  className="text-base text-primary leading-none p-4 pt-6 border-b border-[#DDD]"
                 >
                   Filters
                 </h2>
@@ -228,7 +228,7 @@ export const MobileFilterDropdown = ({
                           key={filter.id}
                           data-testid={`mobile-filter-dropdown-filter-name-${filter.id}`}
                           onClick={() => setSelectedFilterId(filter.id)}
-                          className={`w-full text-left py-[8px] px-[16px] border-b border-[#DDD] transition-colors text-[14px] text-primary leading-[18px] flex items-center justify-between ${
+                          className={`w-full text-left py-2 px-4 border-b border-[#DDD] transition-colors text-sm text-primary leading-[18px] flex items-center justify-between ${
                             selectedFilterId === filter.id
                               ? "bg-white font-bold"
                               : "bg-transparent font-normal"
@@ -257,11 +257,11 @@ export const MobileFilterDropdown = ({
                   >
                     <div
                       data-testid="mobile-filter-dropdown-options-wrapper"
-                      className="p-[16px]"
+                      className="p-4"
                     >
                       <div
                         data-testid="mobile-filter-dropdown-options-list"
-                        className="space-y-[16px]"
+                        className="space-y-4"
                       >
                         {filters
                           .find((filter) => filter.id === selectedFilterId)
@@ -287,7 +287,7 @@ export const MobileFilterDropdown = ({
                               />
                               <div
                                 data-testid={`mobile-filter-dropdown-option-checkbox-${selectedFilterId}-${index}`}
-                                className={`size-[18px] flex-shrink-0 border rounded-[2px] flex items-center justify-center transition-colors mr-[8px] ${
+                                className={`size-[18px] flex-shrink-0 border rounded-sm flex items-center justify-center transition-colors mr-2 ${
                                   isOptionSelected(
                                     selectedFilterId,
                                     value.value
@@ -302,7 +302,7 @@ export const MobileFilterDropdown = ({
                                 ) && (
                                   <svg
                                     data-testid={`mobile-filter-dropdown-option-checkmark-${selectedFilterId}-${index}`}
-                                    className="size-[14px] text-white"
+                                    className="size-3.5 text-white"
                                     fill="currentColor"
                                     viewBox="0 0 20 20"
                                   >
@@ -316,7 +316,7 @@ export const MobileFilterDropdown = ({
                               </div>
                               <span
                                 data-testid={`mobile-filter-dropdown-option-label-${selectedFilterId}-${index}`}
-                                className="text-[14px] text-primary leading-[18px]"
+                                className="text-sm text-primary leading-[18px]"
                               >
                                 {value.value}
                               </span>
@@ -330,13 +330,13 @@ export const MobileFilterDropdown = ({
 
               <div
                 data-testid="mobile-filter-dropdown-footer"
-                className="flex justify-between p-[16px] shadow-[0_-4px_8px_0_rgba(0,0,0,0.08)]"
+                className="flex justify-between p-4 shadow-[0_-4px_8px_0_rgba(0,0,0,0.08)]"
               >
                 <button
                   data-testid="mobile-filter-dropdown-clear-all-button"
                   onClick={handleClearAll}
                   disabled={!hasDraftFilters}
-                  className={`transition-colors tracking-[-0.194px] text-[16px] leading-none ${
+                  className={`transition-colors tracking-[-0.194px] text-base leading-none ${
                     hasDraftFilters
                       ? "text-primary font-bold"
                       : "text-[#A3A3A3] cursor-not-allowed font-normal"
@@ -347,7 +347,7 @@ export const MobileFilterDropdown = ({
                 <button
                   data-testid="mobile-filter-dropdown-show-results-button"
                   onClick={handleApplyAndClose}
-                  className="basis-[55%] flex justify-center items-center py-[14.5px] rounded-[4px] bg-primary text-white hover:bg-gray-800 transition-colors tracking-[-0.194px] text-[16px] leading-none font-bold"
+                  className="basis-[55%] flex justify-center items-center py-[14.5px] rounded bg-primary text-white hover:bg-gray-800 transition-colors tracking-[-0.194px] text-base leading-none font-bold"
                 >
                   Show {resultCount} results
                 </button>

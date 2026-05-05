@@ -30,34 +30,20 @@ const config: Config = {
           DEFAULT: "var(--color-primary)",
           light: "var(--color-primary-light)",
           lighter: "var(--color-primary-light-3)",
-          subtle: "var(--color-primary-light-2)",
-          lightest: "var(--color-primary-light-4)",
           dark: "var(--color-primary-dark)",
-          darker: "var(--color-primary-dark-2)",
-          darkest: "var(--color-primary-dark-3)",
         },
         secondary: {
           DEFAULT: "var(--color-secondary)",
-          light: "var(--color-secondary-light)",
-          lighter: "var(--color-secondary-light-2)",
-          lightest: "var(--color-on-secondary)",
           dark: "var(--color-secondary-dark)",
-          darker: "var(--color-secondary-dark-2)",
         },
         accent: {
           DEFAULT: "var(--color-accent)",
-          light: "var(--color-accent-light)",
           dark: "var(--color-accent-dark)",
         },
 
         // Surface colors
         background: {
           DEFAULT: "var(--color-background)",
-          2: "var(--color-background-2)",
-          3: "var(--color-background-3)",
-          4: "var(--color-background-4)",
-          5: "var(--color-background-5)",
-          primary: "var(--color-background-primary)",
         },
 
         surface: {
@@ -65,41 +51,21 @@ const config: Config = {
           2: "var(--color-surface-2)",
           3: "var(--color-surface-3)",
           4: "var(--color-surface-4)",
-          5: "var(--color-surface-5)",
-          6: "var(--color-surface-6)",
-          7: "var(--color-surface-7)",
-          8: "var(--color-surface-8)",
-          9: "var(--color-surface-9)",
-          10: "var(--color-surface-10)",
-          11: "var(--color-surface-11)",
-          12: "var(--color-surface-12)",
-          13: "var(--color-surface-13)",
-          14: "var(--color-surface-14)",
-          15: "var(--color-surface-15)",
-          16: " var(--color-surface-16)",
         },
 
         // Text colors
         text: {
           DEFAULT: "var(--color-text)",
           light: "var(--color-text-light)",
-          light2: "var(--color-text-light-2)",
           lighter: "var(--color-text-lighter)",
-          lightest: "var(--color-text-lightest)",
           subtle: "var(--color-text-subtle)",
-          dark: "var(--color-text-dark)",
-          darker1: "var(--color-text-dark-1)",
           darker: "var(--color-text-dark-2)",
-          darker2: "var(--color-text-dark-3)",
-          "dark-grayish-blue": "var(--color-dark-grayish-blue)",
         },
 
         // Semantic colors
         success: {
           DEFAULT: "var(--color-success)",
-          light: "var(--color-success-light)",
           dark: "var(--color-success-dark)",
-          darker: "var(--color-success-darker)",
         },
         warning: {
           DEFAULT: "var(--color-warning)",
@@ -111,11 +77,10 @@ const config: Config = {
         },
         info: {
           DEFAULT: "var(--color-info)",
-          light: "var(--color-info-light)",
           dark: "var(--color-info-dark)",
         },
 
-        // On-colors for contrast
+        // On-colors for contrast (used via @apply in globals.css for buttons/badges/alerts)
         "on-primary": "var(--color-on-primary)",
         "on-secondary": "var(--color-on-secondary)",
         "on-accent": "var(--color-on-accent)",
@@ -123,8 +88,7 @@ const config: Config = {
         "on-warning": "var(--color-on-warning)",
         "on-error": "var(--color-on-error)",
         "on-info": "var(--color-on-info)",
-        "faq-section-bg": "var(--color-faq-section-bg)",
-        "faq-header-bg": "var(--color-faq-header-bg)",
+
         "faq-border": "var(--color-faq-border)",
         "loading-blue": "var(--color-loading-blue)",
         "bg-gray": "var(--color-bg-gray)",
@@ -151,14 +115,17 @@ const config: Config = {
         "overlay-dark": "var(--color-overlay-dark)",
         "overlay-light": "var(--color-overlay-light)",
 
+        "filter-group": "var(--color-filter-group)",
         "cart-overlay-dark": "var(--color-cart-overlay-dark)",
+        "blue-50": "var(--color-blue-50)",
+        "blue-600": "var(--color-blue-600)",
+        "blue-700": "var(--color-blue-700)",
+        "red-600": "var(--color-red-600)",
         black: "var(--color-black)",
       },
 
       // Typography
       fontFamily: {
-        // Next.js Google Fonts integration
-        inter: ["var(--font-inter)", "Inter"],
         opensans: ["var(--font-opensans)", "Open Sans", "sans-serif"],
         // Gotham — local font, primary brand body font
         gotham: ["var(--font-gotham)", "system-ui", "sans-serif"],
@@ -166,65 +133,28 @@ const config: Config = {
         sans: ["var(--font-gotham)", "system-ui", "sans-serif"],
         // font-body is applied to <body> in globals.css and inherited everywhere
         body: ["var(--font-gotham)", "system-ui", "sans-serif"],
-        // Heading font — falls back to Open Sans
+        // Heading font — used via @apply in globals.css h1-h6 and section titles
         heading: [
           "var(--font-gotham)",
           "var(--font-opensans)",
           "Open Sans",
           "sans-serif",
         ],
-        accent: ["var(--font-opensans)", "Open Sans", "sans-serif"],
         mono: ["ui-monospace", "monospace"],
       },
 
       fontSize: {
-        "3xs": [
-          "var(--font-size-3xs)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
         xs: ["var(--font-size-xs)", { lineHeight: "var(--line-height-tight)" }],
-        "2xs": [
-          "var(--font-size-2xs)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
-        "4xs": [
-          "var(--font-size-4xs)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
         sm: ["var(--font-size-sm)", { lineHeight: "var(--line-height-base)" }],
         base: [
           "var(--font-size-base)",
           { lineHeight: "var(--line-height-base)" },
         ],
         md: ["var(--font-size-md)", { lineHeight: "var(--line-height-base)" }],
-        "md-2": [
-          "var(--font-size-md-2)",
-          { lineHeight: "var(--line-height-base)" },
-        ],
         lg: ["var(--font-size-lg)", { lineHeight: "var(--line-height-base)" }],
-        "lg-1": [
-          "var(--font-size-lg-1)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
-        "lg-2": [
-          "var(--font-size-lg-2)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
-        "lg-3": [
-          "var(--font-size-lg-3)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
         xl: ["var(--font-size-xl)", { lineHeight: "var(--line-height-tight)" }],
-        xxl: [
-          "var(--font-size-xxl)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
         "2xl": [
           "var(--font-size-2xl)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
-        "2xl-1": [
-          "var(--font-size-2xl-1)",
           { lineHeight: "var(--line-height-tight)" },
         ],
         "3xl": [
@@ -239,48 +169,8 @@ const config: Config = {
           "var(--font-size-5xl)",
           { lineHeight: "var(--line-height-tight)" },
         ],
-        "faq-question": [
-          "var(--font-baseFontSize)",
-          { lineHeight: "var(--line-height-base)" },
-        ],
-        "faq-question-md": [
-          "var(--font-size-xl)",
-          { lineHeight: "var(--line-height-base)" },
-        ],
-        "faq-answer": [
-          "var(--font-size-sm)",
-          { lineHeight: "var(--line-height-base)" },
-        ],
-        "faq-answer-md": [
-          "var(--font-size-base)",
-          { lineHeight: "var(--line-height-base)" },
-        ],
-        "faq-title": [
-          "var(--font-size-32)",
-          { lineHeight: "var(--line-height-base)" },
-        ],
-        "faq-title-md": [
-          "var(--font-size-56)",
-          { lineHeight: "var(--line-height-base)" },
-        ],
-        "18": [
-          "var(--font-size-18)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
-        medium: [
-          "var(--font-size-heading-5)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
         "body-small": [
           "var(--font-size-body-small)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
-        "20": [
-          "var(--font-size-heading-4)",
-          { lineHeight: "var(--line-height-tight)" },
-        ],
-        "30": [
-          "var(--font-size-30)",
           { lineHeight: "var(--line-height-tight)" },
         ],
       },
@@ -297,7 +187,6 @@ const config: Config = {
         tight: "var(--letter-spacing-tight)",
         normal: "var(--letter-spacing-normal)",
         wide: "var(--letter-spacing-wide)",
-        wider: "var(--letter-spacing-wider)",
       },
 
       fontWeight: {
@@ -307,29 +196,22 @@ const config: Config = {
         semibold: "var(--font-weight-semibold)",
         bold: "var(--font-weight-bold)",
         extrabold: "var(--font-weight-extrabold)",
-        "faq-question": "var(--font-weight-normal)",
-        "faq-answer": "var(--font-weight-normal)",
       },
 
       // Spacing
       spacing: {
-        unit: "var(--spacing-unit)",
         xs: "var(--spacing-xs)",
         sm: "var(--spacing-sm)",
         md: "var(--spacing-md)",
         lg: "var(--spacing-lg)",
         xl: "var(--spacing-xl)",
         "2xl": "var(--spacing-2xl)",
-        "3xl": "var(--spacing-3xl)",
         section: "var(--section-spacing)",
-        "faq-section": "var(--section-spacing)",
-        "spacing-350": "var(--spacing-350)",
       },
 
       // Container sizes
       maxWidth: {
         container: "var(--container-width)",
-        "container-xs": "var(--container-xs)",
         "container-sm": "var(--container-sm)",
         "container-md": "var(--container-md)",
         "container-lg": "var(--container-lg)",
@@ -339,7 +221,6 @@ const config: Config = {
       // Border radius
       borderRadius: {
         none: "var(--border-radius-none)",
-        xs: "var(--border-radius-xs)",
         sm: "var(--border-radius-sm)",
         DEFAULT: "var(--border-radius)",
         md: "var(--border-radius-md)",
@@ -347,31 +228,22 @@ const config: Config = {
         xl: "var(--border-radius-xl)",
         "2xl": "var(--border-radius-2xl)",
         "3xl": "var(--border-radius-3xl)",
-        "4xl": "var(--border-radius-4xl)",
         full: "var(--border-radius-full)",
       },
 
       // Box shadows
       boxShadow: {
-        none: "var(--shadow-none)",
-        xs: "var(--shadow-xs)",
         sm: "var(--shadow-sm)",
         DEFAULT: "var(--shadow)",
         md: "var(--shadow-md)",
         lg: "var(--shadow-lg)",
         xl: "var(--shadow-xl)",
-        inner: "var(--shadow-inner)",
-        outline: "var(--shadow-outline)",
-        soft: "var(--shadow-soft)",
-        elevated: "var(--shadow-elevated)",
       },
 
       // Transitions
       transitionDuration: {
         DEFAULT: "var(--transition-duration)",
         fast: "var(--transition-duration-fast)",
-        slow: "var(--transition-duration-slow)",
-        slower: "var(--transition-duration-slower)",
       },
 
       transitionTimingFunction: {
@@ -389,25 +261,12 @@ const config: Config = {
         "30": "var(--z-30)",
         "40": "var(--z-40)",
         "50": "var(--z-50)",
-        "999": "var(--z-999)",
-        "2100": "var(--z-2100)",
-        "2999": "var(--z-2999)",
-        "3999": "var(--z-3999)",
-        auto: "var(--z-auto)",
-        dropdown: "var(--z-dropdown)",
-        sticky: "var(--z-sticky)",
-        fixed: "var(--z-fixed)",
-        modal: "var(--z-modal)",
-        popover: "var(--z-popover)",
-        tooltip: "var(--z-tooltip)",
       },
 
       // Animations
       animation: {
         spin: "spin 1s linear infinite",
-        ping: "ping 1s cubic-bezier(0, 0, 0.2, 1) infinite",
         pulse: "pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite",
-        bounce: "bounce 1s infinite",
         "fade-in":
           "fadeIn var(--transition-duration-slow) var(--transition-timing-out)",
         "slide-up":
@@ -462,12 +321,6 @@ const config: Config = {
           "0%": { transform: "translateX(-100%)" },
           "100%": { transform: "translateX(100%)" },
         },
-      },
-
-      // Width
-      width: {
-        "230": "var(--width-230)",
-        "400": "var(--width-400)",
       },
     },
   },

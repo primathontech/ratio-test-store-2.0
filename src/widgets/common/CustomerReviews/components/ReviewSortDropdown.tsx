@@ -28,7 +28,7 @@ export const ReviewSortDropdown: React.FC<ReviewSortDropdownProps> = ({
       value={value}
       onChange={(e) => onChange(e.target.value)}
       aria-label="Sort reviews"
-      className="w-full rounded-md bg-white py-2 text-[14px] text-[#333333] focus:outline-none focus:ring-1 focus:ring-black/40 cursor-pointer max-w-[123px]"
+      className="w-full rounded-md bg-white py-2 text-sm text-[#333333] focus:outline-none focus:ring-1 focus:ring-black/40 cursor-pointer max-w-[123px]"
     >
       {options.map((opt) => (
         <option key={opt.key} value={opt.key}>

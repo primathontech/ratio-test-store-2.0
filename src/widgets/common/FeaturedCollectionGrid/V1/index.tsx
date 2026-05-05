@@ -205,19 +205,19 @@ export const V1 = memo(function V1({
     >
       {/* Container */}
       <div
-        className="mx-auto px-[16px] md:px-[40px] lg:px-[72px]"
+        className="mx-auto px-4 md:px-10 lg:px-[72px]"
         style={{ maxWidth: "1440px" }}
       >
         {/* Category title banner */}
         <div
-          className="flex items-center justify-center py-[10px] md:py-[12px] mb-[24px]"
+          className="flex items-center justify-center py-2.5 md:py-3 mb-6"
           style={{
             backgroundColor: "#000000",
             borderRadius: "0px",
           }}
         >
           <h3
-            className="text-[20px] md:text-[24px] lg:text-[28px] text-center"
+            className="text-xl md:text-2xl lg:text-[28px] text-center"
             style={{
               color: "#ffffff",
               fontWeight: 700,

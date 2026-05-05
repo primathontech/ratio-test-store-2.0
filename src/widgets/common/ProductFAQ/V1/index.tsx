@@ -79,7 +79,7 @@ const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
 
 const PlusMinusIcon = ({ isOpen }: { isOpen: boolean }) => (
   <span
-    className="relative inline-flex items-center justify-center w-[16px] h-[16px]"
+    className="relative inline-flex items-center justify-center w-4 h-4"
     aria-hidden="true"
   >
     <Image
@@ -118,18 +118,18 @@ const FAQAccordionItem = ({
 }) => (
   <div
     data-testid="product-faq-item"
-    className={`pb-[10px] mb-[10px] ${isFirst ? "" : "border-t border-[rgba(29,29,29,0.12)]"} ${isLast ? "border-b border-[rgba(29,29,29,0.12)]" : ""}`}
+    className={`pb-2.5 mb-2.5 ${isFirst ? "" : "border-t border-[rgba(29,29,29,0.12)]"} ${isLast ? "border-b border-[rgba(29,29,29,0.12)]" : ""}`}
   >
     <button
       type="button"
       onClick={onToggle}
       aria-expanded={isOpen}
-      className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-[14px] px-0 text-left"
+      className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-3.5 px-0 text-left"
     >
-      <span className="text-[16px] leading-[22px] md:text-[18px] md:leading-[26px] font-[500] md:font-[700] text-[#1D1D1D] pr-[16px]">
+      <span className="text-base leading-[22px] md:text-lg md:leading-[26px] font-medium md:font-bold text-primary pr-4">
         {item.question}
       </span>
-      <span className="flex items-center justify-center shrink-0 text-[#000000]">
+      <span className="flex items-center justify-center shrink-0 text-black">
         <PlusMinusIcon isOpen={isOpen} />
       </span>
     </button>
@@ -137,8 +137,8 @@ const FAQAccordionItem = ({
     <div
       className={`overflow-hidden transition-all duration-[400ms] ease-in-out ${isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}`}
     >
-      <div className="pt-[24px] pb-[22px] px-0">
-        <p className="text-[12px] leading-[19px] md:text-[14px] md:leading-[22.4px] font-[400] text-[#545454] m-0">
+      <div className="pt-6 pb-[22px] px-0">
+        <p className="text-xs leading-[19px] md:text-sm md:leading-[22.4px] font-normal text-[#545454] m-0">
           {item.answer}
         </p>
       </div>
@@ -190,17 +190,17 @@ export const V1 = memo(function V1({
       data-testid="product-faq-section-container"
       className={`bg-[#F4F6F8] xl:px-[30px] ${className || ""}`}
     >
-      <Box className="max-w-[1400px] mx-auto px-[16px] md:px-[24px] rounded-3xl bg-white border-b border-[#ECECEC]">
+      <Box className="max-w-[1400px] mx-auto px-4 md:px-6 rounded-3xl bg-white border-b border-faq-border">
         <button
           type="button"
           onClick={handleToggleSection}
           aria-expanded={isSectionOpen}
-          className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-[24px] md:py-[38px] text-left"
+          className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-6 md:py-[38px] text-left"
         >
-          <h5 className="text-[16px] md:text-[24px] leading-[29px] font-[400] md:font-[700] text-[#000000] m-0">
+          <h5 className="text-base md:text-2xl leading-[29px] font-normal md:font-bold text-black m-0">
             {title}
           </h5>
-          <span className="flex items-center justify-center w-[18px] h-[18px] text-[#1d1d1d] shrink-0 ml-[16px]">
+          <span className="flex items-center justify-center w-[18px] h-[18px] text-primary shrink-0 ml-4">
             <ChevronIcon isOpen={isSectionOpen} />
           </span>
         </button>

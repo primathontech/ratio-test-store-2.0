@@ -167,16 +167,16 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
     color: "#000",
     priceSectionClassName: "!mt-0",
     titleClassName:
-      "!font-body !font-normal !text-[14px] !leading-[16.9px] !line-clamp-2 !min-h-[32px]",
-    detailsClassName: "!gap-[6px]",
+      "!font-body !font-normal !text-sm !leading-[16.9px] !line-clamp-2 !min-h-8",
+    detailsClassName: "!gap-1.5",
     imageClassName: "!rounded-[10px]",
-    compareAtPriceClassName: "!text-[#000000] !opacity-55 !font-medium",
+    compareAtPriceClassName: "!text-black !opacity-55 !font-medium",
     isRecommendedProduct: true,
   };
 
   return (
     <div className={className}>
-      <p className="text-[14px] font-[700] text-black mb-[8px] flex items-center tracking-[0.6px]">
+      <p className="text-sm font-bold text-black mb-2 flex items-center tracking-[0.6px]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-[18px] h-[18px] mr-[7px]"
@@ -196,7 +196,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
               type="button"
               onClick={scrollBy("left")}
               onMouseDown={(e) => e.preventDefault()}
-              className="absolute left-[2px] md:left-2 z-[60] bg-[#000000] p-[10px] shadow-md transition-all duration-200 hover:shadow-lg rounded-[50%]"
+              className="absolute left-0.5 md:left-2 z-[60] bg-black p-2.5 shadow-md transition-all duration-200 hover:shadow-lg rounded-[50%]"
               style={{ top: "40%", transform: "translateY(-50%)" }}
               aria-label={settings.accessibility?.scrollLeft || "Scroll left"}
             >
@@ -217,7 +217,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
               type="button"
               onClick={scrollBy("right")}
               onMouseDown={(e) => e.preventDefault()}
-              className="absolute right-[2px] md:right-2 z-[60] bg-[#000000] p-[10px] shadow-md transition-all duration-200 hover:shadow-lg rounded-[50%]"
+              className="absolute right-0.5 md:right-2 z-[60] bg-black p-2.5 shadow-md transition-all duration-200 hover:shadow-lg rounded-[50%]"
               style={{ top: "40%", transform: "translateY(-50%)" }}
               aria-label={settings.accessibility?.scrollRight || "Scroll right"}
             >
@@ -234,7 +234,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
           )}
 
           {loading ? (
-            <div className="flex overflow-x-auto gap-[13px] md:gap-[24px] pb-20 md:pb-4 scrollbar-hide">
+            <div className="flex overflow-x-auto gap-[13px] md:gap-6 pb-20 md:pb-4 scrollbar-hide">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div
                   key={i}
@@ -243,19 +243,19 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
               ))}
             </div>
           ) : isEmpty ? (
-            <div className="py-[24px] text-center text-[13px] text-[#727272]">
+            <div className="py-6 text-center text-[13px] text-surface">
               No recommendations available right now.
             </div>
           ) : (
             <div
               ref={scrollRef}
               onScroll={updateArrows}
-              className="flex h-auto overflow-x-auto gap-[13px] md:gap-[16px] lg:gap-[24px] pb-20 md:pb-4 scrollbar-hide"
+              className="flex h-auto overflow-x-auto gap-[13px] md:gap-4 lg:gap-6 pb-20 md:pb-4 scrollbar-hide"
             >
               {transformed.map((product, idx) => (
                 <div
                   key={product.href + idx}
-                  className="flex-shrink-0 min-w-[48%] max-w-[48%] md:min-w-[22.5%] md:max-w-[22.5%] lg:min-w-[21.5%] lg:max-w-[21.5%] xl:min-w-[23%] xl:max-w-[23%] border border-[#ECECEC] rounded-[10px]"
+                  className="flex-shrink-0 min-w-[48%] max-w-[48%] md:min-w-[22.5%] md:max-w-[22.5%] lg:min-w-[21.5%] lg:max-w-[21.5%] xl:min-w-[23%] xl:max-w-[23%] border border-faq-border rounded-[10px]"
                 >
                   <ProductCard
                     product={product}

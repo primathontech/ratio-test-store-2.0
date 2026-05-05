@@ -65,10 +65,7 @@ const FilterSideBar: React.FC<FilterSideBarProps> = ({
     >
       <Box>
         <Flex className="items-center !justify-between mb-[15px] py-4">
-          <Heading
-            size="2xl"
-            className="!text-[12px] !text-black !font-semibold"
-          >
+          <Heading size="2xl" className="!text-xs !text-black !font-semibold">
             {settings.filterByText || "FILTER"}
           </Heading>
           {hasActiveFilters && (
@@ -76,9 +73,9 @@ const FilterSideBar: React.FC<FilterSideBarProps> = ({
               type="button"
               onClick={clearAllFilters}
               aria-label={settings.clearAllText || "Remove all filters"}
-              className="group relative inline-flex items-center text-white py-[3px] bg-[#000000] rounded-[15px] pl-[25px] pr-[15px] text-[14px] font-medium transition-colors duration-500 hover:bg-[#1a1a1a]"
+              className="group relative inline-flex items-center text-white py-[3px] bg-black rounded-[15px] pl-[25px] pr-[15px] text-sm font-medium transition-colors duration-500 hover:bg-[#1a1a1a]"
             >
-              <span className="absolute left-[10px] top-1/2 -translate-y-1/2 leading-none text-[16px] font-semibold">
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 leading-none text-base font-semibold">
                 <span className="block transition-opacity duration-300 group-hover:opacity-0 font-extrabold">
                   ×
                 </span>
@@ -97,9 +94,9 @@ const FilterSideBar: React.FC<FilterSideBarProps> = ({
             <Box key={filter.id} className="pb-5 border-b border-faq-border">
               <button
                 onClick={() => toggleSection(filter.id)}
-                className="w-full flex items-center justify-between pt-[20px]"
+                className="w-full flex items-center justify-between pt-5"
               >
-                <Text weight="normal" className="!text-black !text-[20px]">
+                <Text weight="normal" className="!text-black !text-xl">
                   {filter.label}
                 </Text>
                 {collapsedSections[filter.id] ? (
@@ -148,14 +145,14 @@ const FilterSideBar: React.FC<FilterSideBarProps> = ({
                                     option
                                   )
                                 }
-                                className="mr-[12px] !w-[16px] !h-[16px] !border !border-faq-border data-[state=checked]:!bg-loading-blue data-[state=checked]:!border-faq-border data-[state=checked]:!text-white pointer-events-none [&>span>svg]:!w-[14px] [&>span>svg]:!h-[14px]"
+                                className="mr-3 !w-4 !h-4 !border !border-faq-border data-[state=checked]:!bg-loading-blue data-[state=checked]:!border-faq-border data-[state=checked]:!text-white pointer-events-none [&>span>svg]:!w-3.5 [&>span>svg]:!h-3.5"
                               />
-                              <Text className="!text-black pointer-events-none !text-[14px] !font-medium">
+                              <Text className="!text-black pointer-events-none !text-sm !font-medium">
                                 {option.label}
                               </Text>
                             </Flex>
                             {filter.id !== "availability" && (
-                              <Text className="!text-black !text-[14px] pointer-events-none !font-medium">
+                              <Text className="!text-black !text-sm pointer-events-none !font-medium">
                                 ({option.count})
                               </Text>
                             )}

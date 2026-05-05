@@ -479,12 +479,12 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
     >
       <div
         data-testid="collection-page-content"
-        className="px-[15px] md:px-12 lg:px-20 xl:px-[80px] pb-[5.25rem] md:pb-24 lg:pb-28 xl3:px-0"
+        className="px-[15px] md:px-12 lg:px-20 xl:px-20 pb-[5.25rem] md:pb-24 lg:pb-28 xl3:px-0"
       >
         {collection?.title && (
           <h1
             data-testid="collection-page-title"
-            className="text-left xl2:text-center text-primary leading-none text-[20px] md:text-[32px] font-bold md:border-b md:border-[#D9D9D9] pb-[14px] md:pb-[26px] lg:pb-[32px] pt-[40px] md:pt-[46px] lg:pt-[56px]"
+            className="text-left xl2:text-center text-primary leading-none text-xl md:text-[32px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
           >
             {collection.title}
           </h1>
@@ -493,21 +493,21 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
         <div
           data-testid="collection-page-sentinel"
           ref={sentinelRef}
-          className="h-[1px]"
+          className="h-px"
         />
 
         {showFilterAndSort && (
           <div
-            className={`md:hidden ${isFixed ? "w-full h-[32px] mb-[25px]" : ""}`}
+            className={`md:hidden ${isFixed ? "w-full h-8 mb-[25px]" : ""}`}
           />
         )}
         {showFilterAndSort && (
           <div
             data-testid="collection-page-mobile-filters-container"
             ref={filterChipsContainerRef}
-            className={`flex items-center gap-[8px] overflow-auto hide-scrollbar md:hidden transition-all duration-200 ${
+            className={`flex items-center gap-2 overflow-auto hide-scrollbar md:hidden transition-all duration-200 ${
               isFixed
-                ? "fixed top-[58px] left-0 right-0 z-[1200] bg-white shadow-md mb-0 py-[10px]"
+                ? "fixed top-[58px] left-0 right-0 z-[1200] bg-white shadow-md mb-0 py-2.5"
                 : "relative mb-[25px]"
             }`}
           >
@@ -570,7 +570,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                       }
                     }}
                     className={`
-                    flex items-center justify-between gap-[10px] p-[8px] rounded-[4px] transition-colors duration-200 border
+                    flex items-center justify-between gap-2.5 p-2 rounded transition-colors duration-200 border
                     ${
                       filter.isActive
                         ? "border-[#AFB7FF] bg-[#EBEDFF]"
@@ -579,7 +579,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                   `}
                   >
                     <span
-                      className={`whitespace-nowrap text-[12px] text-primary leading-none text-center ${filter.isActive ? "font-bold" : "font-medium"}`}
+                      className={`whitespace-nowrap text-xs text-primary leading-none text-center ${filter.isActive ? "font-bold" : "font-medium"}`}
                     >
                       {filter.label}
                     </span>
@@ -606,12 +606,12 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
 
         <div
           data-testid="collection-page-main-layout"
-          className="flex gap-[28px] md:pt-[26px] xl2:pt-[32px]"
+          className="flex gap-7 md:pt-[26px] xl2:pt-8"
         >
           {showFilterAndSort && (
             <aside
               data-testid="collection-page-desktop-sidebar"
-              className="md:flex-shrink-0 md:w-[calc(21%-(16px/2))] md:pr-[12px] hidden xl2:block"
+              className="md:flex-shrink-0 md:w-[calc(21%-(16px/2))] md:pr-3 hidden xl2:block"
             >
               <FilterSectionDesktop
                 filterTitle={filterTitle}
@@ -638,11 +638,11 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
             >
               <div
                 data-testid="collection-page-products-header"
-                className="flex justify-between items-center pb-[25px] lg:pb-[32px]"
+                className="flex justify-between items-center pb-[25px] lg:pb-8"
               >
                 <p
                   data-testid="collection-page-products-count"
-                  className="text-primary text-[12px] md:text-[16px] leading-none"
+                  className="text-primary text-xs md:text-base leading-none"
                 >
                   {totalProducts > 0 ? totalProducts : "No"} products found for
                   you
@@ -674,7 +674,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
               <div
                 ref={gridRef}
                 data-testid="collection-page-products-grid"
-                className="product-grid-container grid grid-cols-2 md:grid-cols-3 xl2:grid-cols-4 gap-[16px]"
+                className="product-grid-container grid grid-cols-2 md:grid-cols-3 xl2:grid-cols-4 gap-4"
               >
                 {products.map((product, index) => {
                   const cardProduct = transformProductForCard(product);
@@ -700,7 +700,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                         cartItem={cartLine}
                         isQuantityLoading={isCardLoading}
                         settings={{ showAddToCartToast: true }}
-                        className="md:border md:rounded-[8px] md:border-[#DDD]"
+                        className="md:border md:rounded-lg md:border-[#DDD]"
                       />
                     </div>
                   );

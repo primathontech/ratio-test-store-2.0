@@ -131,7 +131,7 @@ export const V1 = memo(function V1({
         return (
           <div
             key={`${setIndex}-${i}`}
-            className="relative inline-flex items-center pr-[40px] mr-[20px] lg:pr-[46px] lg:mr-[23px]"
+            className="relative inline-flex items-center pr-10 mr-5 lg:pr-[46px] lg:mr-[23px]"
           >
             <p className="py-[11px] mb-0">
               <Link
@@ -145,7 +145,7 @@ export const V1 = memo(function V1({
             </p>
             {/* Separator line (::after equivalent) */}
             <span
-              className="absolute top-0 right-0 bottom-0 my-auto h-[1px] w-[22px]"
+              className="absolute top-0 right-0 bottom-0 my-auto h-px w-[22px]"
               style={{ backgroundColor: textColor }}
               aria-hidden="true"
             />

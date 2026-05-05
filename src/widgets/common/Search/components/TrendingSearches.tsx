@@ -49,7 +49,7 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
 
   return (
     <div className={`mb-[5px] ${className}`}>
-      <p className="text-[14px] font-[700] text-black mb-[8px] flex items-center tracking-[0.6px]">
+      <p className="text-sm font-bold text-black mb-2 flex items-center tracking-[0.6px]">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="w-[18px] h-[18px] mr-[7px]"
@@ -62,7 +62,7 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
         </svg>
         {settings.title || "POPULAR CHOICES"}
       </p>
-      <div className="flex flex-wrap ml-[6px]">
+      <div className="flex flex-wrap ml-1.5">
         {display.map((search) => (
           <button
             key={search.id}
@@ -71,7 +71,7 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
               onClose();
               router.push(search.href);
             }}
-            className="px-[10px] pt-[6px] pb-[4px] text-[14px] text-white bg-[#000000] transition-colors duration-200 text-center rounded-[4px] font-[500] whitespace-nowrap flex items-center mx-[5px] mb-[10px] leading-9"
+            className="px-2.5 pt-1.5 pb-1 text-sm text-white bg-black transition-colors duration-200 text-center rounded font-medium whitespace-nowrap flex items-center mx-[5px] mb-2.5 leading-9"
           >
             {search.label}
             <svg
@@ -79,7 +79,7 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
               width="16"
               height="16"
               fill="white"
-              className="ml-[10px]"
+              className="ml-2.5"
               aria-hidden="true"
             >
               <path

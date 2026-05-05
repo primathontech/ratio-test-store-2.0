@@ -251,7 +251,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
             <h2 className="text-text-sm font-bold font-Poppins text-[#636E6E] mb-4">
               Review Submitted!
             </h2>
-            <p className="text-[12px] text-[#636E6E] font-Poppins mb-6">
+            <p className="text-xs text-[#636E6E] font-Poppins mb-6">
               Thank you! Please refresh the page in a few moments to see your
               review. You can remove or edit your review by logging into{" "}
               <a
@@ -273,7 +273,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 : "p-8 rounded-2xl w-full mx-auto mt-4 bg-white shadow-[0px_4px_16px_rgba(0,0,0,0.1)]"
             }
           >
-            <h2 className="text-[12px] font-bold font-Poppins text-[#1c1d1d] text-center mb-6">
+            <h2 className="text-xs font-bold font-Poppins text-[#1c1d1d] text-center mb-6">
               Write a review
             </h2>
 
@@ -330,7 +330,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                   {touched.rating && errors.rating && (
                     <div
                       data-testid="review-form-rating-error"
-                      className="w-full md:w-[568px] mx-auto bg-[#F2847D1A] border border-[#f2847d] text-[#1C1D1D] font-Poppins text-[12px] mt-3 p-[8px] rounded-lg flex items-center justify-start"
+                      className="w-full md:w-[568px] mx-auto bg-[#F2847D1A] border border-[#f2847d] text-[#1C1D1D] font-Poppins text-xs mt-3 p-2 rounded-lg flex items-center justify-start"
                     >
                       <svg
                         className="mr-1 w-8 h-8 text-red-500 flex-shrink-0"
@@ -367,7 +367,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 {title.length > 100 && (
                   <div
                     data-testid="review-form-title-error"
-                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#f2847d] text-[#1C1D1D] font-Poppins text-[12px] mt-3 p-[8px] rounded-lg flex items-center"
+                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#f2847d] text-[#1C1D1D] font-Poppins text-xs mt-3 p-2 rounded-lg flex items-center"
                   >
                     <svg
                       className="mr-1 w-8 h-8 text-red-500 flex-shrink-0"
@@ -405,7 +405,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 {touched.comment && errors.comment && (
                   <div
                     data-testid="review-form-comment-error"
-                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#f2847d] text-[#1C1D1D] font-Poppins text-[12px] mt-3 p-[8px] rounded-lg flex items-center"
+                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#f2847d] text-[#1C1D1D] font-Poppins text-xs mt-3 p-2 rounded-lg flex items-center"
                   >
                     <svg
                       className="mr-1 w-8 h-8 text-red-500 flex-shrink-0"
@@ -461,7 +461,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 {touched.name && errors.name && (
                   <div
                     data-testid="review-form-name-error"
-                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#f2847d] text-[#1C1D1D] font-Poppins text-[12px] mt-3 p-[8px] rounded-lg flex items-center"
+                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#f2847d] text-[#1C1D1D] font-Poppins text-xs mt-3 p-2 rounded-lg flex items-center"
                   >
                     <svg
                       className="mr-1 w-8 h-8 text-red-500 flex-shrink-0"
@@ -498,7 +498,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 {touched.email && errors.email && (
                   <div
                     data-testid="review-form-email-error"
-                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#f2847d] text-[#1C1D1D] font-Poppins text-[12px] mt-3 p-[8px] rounded-lg flex items-center"
+                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#f2847d] text-[#1C1D1D] font-Poppins text-xs mt-3 p-2 rounded-lg flex items-center"
                   >
                     <svg
                       className="mr-1 w-8 h-8 text-red-500 flex-shrink-0"
@@ -538,7 +538,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 </div>
               )}
 
-              <p className="text-[12px] text-[#1c1d1d] text-center mb-6 mx-auto md:w-[568px]">
+              <p className="text-xs text-[#1c1d1d] text-center mb-6 mx-auto md:w-[568px]">
                 How we use your data: We&apos;ll only contact you about the
                 review you left, and only if necessary. By submitting your
                 review, you agree to Judge.me&apos;s{" "}
@@ -580,13 +580,13 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                   aria-label="cancel-review"
                   type="button"
                   onClick={handleClose}
-                  className="w-full md:w-[128px] md:h-[36px] text-text-sm px-6 py-3 md:py-0 rounded-3xl border-2 border-[#636E6E] text-[#636E6E] font-medium hover:opacity-80 transition-colors"
+                  className="w-full md:w-32 md:h-9 text-text-sm px-6 py-3 md:py-0 rounded-3xl border-2 border-[#636E6E] text-[#636E6E] font-medium hover:opacity-80 transition-colors"
                 >
                   Cancel review
                 </button>
                 <button
                   type="submit"
-                  className={`w-full md:w-[128px] md:h-[36px] text-text-sm px-6 py-3 md:py-0 rounded-3xl bg-[#636E6E] text-white font-medium transition-colors ${
+                  className={`w-full md:w-32 md:h-9 text-text-sm px-6 py-3 md:py-0 rounded-3xl bg-[#636E6E] text-white font-medium transition-colors ${
                     isSubmitting ? "opacity-70 cursor-not-allowed" : ""
                   }`}
                   disabled={isSubmitting}

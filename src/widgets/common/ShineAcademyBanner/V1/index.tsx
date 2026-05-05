@@ -74,7 +74,7 @@ export const V1 = memo(function V1({
         {/* Inner newsletter container -- max-width 1300px centered */}
         <div className="mx-auto max-w-[1300px] flex flex-col">
           {/* ---- Text column: logo + tagline ---- */}
-          <div className="sab-animate-on-scroll flex flex-col items-center justify-center px-[15px] md:px-[40px]">
+          <div className="sab-animate-on-scroll flex flex-col items-center justify-center px-[15px] md:px-10">
             {/* Shine Academy logo */}
             <div className="relative w-[175px] h-[89.5px] md:w-[336px] md:h-[172px] xl:w-[336px] xl:h-[172.7px]">
               <Image
@@ -87,7 +87,7 @@ export const V1 = memo(function V1({
             </div>
 
             {/* Tagline */}
-            <p className="text-[12px] md:text-[24px] font-[500] text-[#545454] text-center mb-[18px] md:mb-0 mt-[18px] md:mt-[18px] max-w-[700px] m-0 leading-[13px] md:leading-[26.4px] px-[20px] md:px-0">
+            <p className="text-xs md:text-2xl font-medium text-[#545454] text-center mb-[18px] md:mb-0 mt-[18px] md:mt-[18px] max-w-[700px] m-0 leading-[13px] md:leading-[26.4px] px-5 md:px-0">
               {tagline}
             </p>
           </div>

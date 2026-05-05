@@ -268,11 +268,11 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
       }}
     >
       {/* Content overlay */}
-      <div className="relative z-[1] mx-auto xl:mx-[20px] px-[6px] md:px-[30px] xl:px-[50px]">
+      <div className="relative z-[1] mx-auto xl:mx-5 px-1.5 md:px-[30px] xl:px-[50px]">
         {/* Heading */}
-        <div className="flex flex-col items-start text-center mb-[16px] md:mb-[30px] px-[15px]">
+        <div className="flex flex-col items-start text-center mb-4 md:mb-[30px] px-[15px]">
           <h4
-            className="text-[24px] leading-[29px] md:leading-[34px]"
+            className="text-2xl leading-[29px] md:leading-[34px]"
             style={{
               color: settings?.sectionTextColor || "#000000",
               fontWeight: 700,
@@ -284,7 +284,7 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
         </div>
 
         {/* Carousel area */}
-        <div className="group xl:mx-auto xl:max-w-[1300px] md:border md:border-[#EBEBEB] md:rounded-[8px] overflow-hidden">
+        <div className="group xl:mx-auto xl:max-w-[1300px] md:border md:border-[#EBEBEB] md:rounded-lg overflow-hidden">
           <SwipeCarousel
             itemCount={products.length}
             breakpoints={CAROUSEL_BREAKPOINTS}

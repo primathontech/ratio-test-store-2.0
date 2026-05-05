@@ -46,9 +46,9 @@ export const V1 = memo(function AboutUsValuesV1({
 
   return (
     <section className={className || ""}>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-[20px] lg:gap-[30px] p-[30px] text-center">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5 lg:gap-[30px] p-[30px] text-center">
         {items.map((item, index) => (
-          <div key={index} className="p-[20px]">
+          <div key={index} className="p-5">
             {/* Icon */}
             <Image
               src={item.iconSrc}
@@ -60,7 +60,7 @@ export const V1 = memo(function AboutUsValuesV1({
 
             {/* Heading */}
             <div
-              className="mt-[15px] text-center text-[22px] font-[700] leading-[35px]"
+              className="mt-[15px] text-center text-[22px] font-bold leading-[35px]"
               style={{ color: headingColor }}
             >
               {item.heading}
@@ -68,7 +68,7 @@ export const V1 = memo(function AboutUsValuesV1({
 
             {/* Body text */}
             <div
-              className="mt-[10px] mb-[30px] px-[15px] lg:px-[30px] text-center text-[16px] lg:text-[18px] leading-[26px] lg:leading-[29px] font-[400]"
+              className="mt-2.5 mb-[30px] px-[15px] lg:px-[30px] text-center text-base lg:text-lg leading-[26px] lg:leading-[29px] font-normal"
               style={{ color: bodyColor }}
             >
               {item.body}

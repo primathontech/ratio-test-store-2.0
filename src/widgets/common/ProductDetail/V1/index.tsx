@@ -77,9 +77,9 @@ export const V1 = memo(function V1({
   };
 
   return (
-    <section className={`w-full bg-[#ffffff] ${className ?? ""}`}>
-      <div className="pt-0 pb-0 lg:pt-[47px] xl:pt-[56px] lg:pb-[27px] xl:pb-[32px]">
-        <div className="px-[16px] md:px-[30px] xl:px-[77px] pt-[16px] md:pt-0">
+    <section className={`w-full bg-secondary ${className ?? ""}`}>
+      <div className="pt-0 pb-0 lg:pt-[47px] xl:pt-14 lg:pb-[27px] xl:pb-8">
+        <div className="px-4 md:px-[30px] xl:px-[77px] pt-4 md:pt-0">
           {/* Mobile — info stacks above gallery (gallery slot is rendered
               inside BbluntProductInfo via `renderGallery`). */}
           <div className="block md:hidden">
@@ -93,7 +93,7 @@ export const V1 = memo(function V1({
           </div>
 
           {/* Desktop — two-column layout. */}
-          <div className="hidden md:flex gap-[16px] pt-0 pb-0 md:pt-[47px] lg:pt-0 md:pb-[27px] lg:pb-0">
+          <div className="hidden md:flex gap-4 pt-0 pb-0 md:pt-[47px] lg:pt-0 md:pb-[27px] lg:pb-0">
             <div className="flex-1 min-w-0">
               <div className="sticky top-[30px]">
                 <ProductGallery images={images} productLabel={productLabel} />

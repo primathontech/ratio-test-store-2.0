@@ -176,12 +176,12 @@ export const V1: React.FC<Props> = ({ settings }) => {
             // Different slide widths for simple indicator type on mobile
             const mobileSlideClass =
               indicatorType === "simple"
-                ? `${bannerCarousel?.length > 1 ? "flex-[0_0_81.7%] mx-[8px]" : "flex-[0_0_100%]"}` // Show multiple slides on mobile with spacing
+                ? `${bannerCarousel?.length > 1 ? "flex-[0_0_81.7%] mx-2" : "flex-[0_0_100%]"}` // Show multiple slides on mobile with spacing
                 : "flex-[0_0_100%]"; // Full width for media indicators
 
             const desktopSlideClass =
               bannerCarousel?.length > 1
-                ? "md:flex-[0_0_100%] md:mx-0 min-[1150px]:flex-[0_0_88%] min-[1150px]:mx-[10px]"
+                ? "md:flex-[0_0_100%] md:mx-0 min-[1150px]:flex-[0_0_88%] min-[1150px]:mx-2.5"
                 : "md:flex-[0_0_100%] md:mx-0";
 
             const slideClassName = `embla__slide ${mobileSlideClass} ${desktopSlideClass} min-w-0`;
@@ -215,7 +215,7 @@ export const V1: React.FC<Props> = ({ settings }) => {
         <button
           data-testid="banner-carousel-prev-button"
           onClick={() => emblaApi?.scrollPrev()}
-          className="absolute left-[40px] top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[4.8rem] bg-[#000000]/50 hover:bg-[#000000]/70 rounded-[50%] transition-all duration-200"
+          className="absolute left-10 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[4.8rem] bg-black/50 hover:bg-black/70 rounded-[50%] transition-all duration-200"
           aria-label="Previous slide"
         >
           <Image
@@ -234,7 +234,7 @@ export const V1: React.FC<Props> = ({ settings }) => {
         <button
           data-testid="banner-carousel-next-button"
           onClick={() => emblaApi?.scrollNext()}
-          className="absolute right-[40px] top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[4.8rem] bg-[#000000]/50 hover:bg-[#000000]/70 rounded-[50%] transition-all duration-200"
+          className="absolute right-10 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[4.8rem] bg-black/50 hover:bg-black/70 rounded-[50%] transition-all duration-200"
           aria-label="Next slide"
         >
           <Image

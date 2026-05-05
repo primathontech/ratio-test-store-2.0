@@ -88,10 +88,10 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
       <Box
         className={`fixed inset-0 bg-white flex flex-col min-[769px]:hidden z-[9600] ${className}`}
       >
-        <Flex className="items-center !justify-between py-[16px] px-[15px] bg-[#F2F2F2]">
+        <Flex className="items-center !justify-between py-4 px-[15px] bg-surface-4">
           <div className="flex">
             <svg
-              className="w-[20px] h-[18px] !text-black mr-[10px] font-medium"
+              className="w-5 h-[18px] !text-black mr-2.5 font-medium"
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
@@ -103,7 +103,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
               <line x1="6" y1="12" x2="18" y2="12" />
               <line x1="10" y1="18" x2="14" y2="18" />
             </svg>
-            <Heading className="!text-black !tracking-[1px] !font-medium !text-[12px] flex items-center justify-center">
+            <Heading className="!text-black !tracking-[1px] !font-medium !text-xs flex items-center justify-center">
               {settings.filterText || "FILTER"}
             </Heading>
           </div>
@@ -113,9 +113,9 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
               type="button"
               onClick={clearAllFilters}
               aria-label={settings.clearAllText || "Remove all filters"}
-              className="group relative inline-flex items-center text-[#000000] py-[3px] bg-black rounded-[15px] pl-[25px] pr-[15px] text-[14px] font-medium transition-colors duration-500 hover:bg-[#1a1a1a]"
+              className="group relative inline-flex items-center text-black py-[3px] bg-black rounded-[15px] pl-[25px] pr-[15px] text-sm font-medium transition-colors duration-500 hover:bg-[#1a1a1a]"
             >
-              <span className="absolute left-[10px] top-1/2 -translate-y-1/2 leading-none text-[16px] font-semibold">
+              <span className="absolute left-2.5 top-1/2 -translate-y-1/2 leading-none text-base font-semibold">
                 <span className="block transition-opacity duration-300 group-hover:opacity-0 font-extrabold">
                   ×
                 </span>
@@ -129,7 +129,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
         </Flex>
 
         <Box className="flex-1 overflow-y-auto">
-          <Box className="pl-[16px] pr-[6px] pb-[150px]">
+          <Box className="pl-4 pr-1.5 pb-[150px]">
             {dynamicFilters
               .filter((filter) => filter.values && filter.values.length > 0)
               .map((filter) => (
@@ -139,9 +139,9 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
                 >
                   <button
                     onClick={() => toggleSection(filter.id)}
-                    className="w-full flex items-center justify-between text-left pt-[20px] focus:outline-none mb-[20px]"
+                    className="w-full flex items-center justify-between text-left pt-5 focus:outline-none mb-5"
                   >
-                    <Text className="!text-black !text-[16px] !font-medium">
+                    <Text className="!text-black !text-base !font-medium">
                       {filter.label}
                     </Text>
                     {collapsedSections[filter.id] ? (
@@ -150,7 +150,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
                         width="12"
                         height="12"
                         fill="#000"
-                        className="mr-[10px]"
+                        className="mr-2.5"
                       >
                         <path d="m275.565 361.679-223.897-223.896h-51.668l275.565 275.565 275.565-275.565h-51.668z" />
                       </svg>
@@ -160,7 +160,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
                         width="12"
                         height="12"
                         fill="#000"
-                        className="mr-[10px]"
+                        className="mr-2.5"
                       >
                         <path d="m275.565 189.451 223.897 223.897h51.668l-275.565-275.565-275.565 275.565h51.668z" />
                       </svg>
@@ -168,7 +168,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
                   </button>
 
                   {!collapsedSections[filter.id] && (
-                    <Box className="my-[10px] pr-2.5">
+                    <Box className="my-2.5 pr-2.5">
                       {filter.values.length > 0 ? (
                         <div
                           className="max-h-[200px] overflow-y-auto space-y-3"
@@ -191,7 +191,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
                                   )
                                 }
                               >
-                                <Flex className="flex-1 gap-2 justify-center items-center py-[8px] leading-[16px]">
+                                <Flex className="flex-1 gap-2 justify-center items-center py-2 leading-[16px]">
                                   <Checkbox
                                     checked={
                                       selectedFilters[option.id] || false
@@ -204,7 +204,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
                                         option
                                       )
                                     }
-                                    className="mt-0.5 mr-[12px] !border !border-faq-border !w-6 !h-6 data-[state=checked]:!bg-loading-blue data-[state=checked]:!text-white pointer-events-none [&>span>svg]:!w-6 [&>span>svg]:!h-6"
+                                    className="mt-0.5 mr-3 !border !border-faq-border !w-6 !h-6 data-[state=checked]:!bg-loading-blue data-[state=checked]:!text-white pointer-events-none [&>span>svg]:!w-6 [&>span>svg]:!h-6"
                                   />
                                   <Text className="!text-[17px] !text-black !font-medium flex-1 leading-5 pointer-events-none">
                                     {option.label}
@@ -235,13 +235,13 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
           <Flex className="gap-3">
             <Button
               onClick={onClose}
-              className="flex-1 !rounded-none !text-[14px] !bg-[#ff5b6f] !text-white !font-normal py-[7px]"
+              className="flex-1 !rounded-none !text-sm !bg-[#ff5b6f] !text-white !font-normal py-[7px]"
             >
               {settings.applyText || "Apply"}
             </Button>
             <Button
               onClick={onApply}
-              className="flex-1 !rounded-none !text-[14px] !bg-[#000000] text-white !font-normal py-[7px]"
+              className="flex-1 !rounded-none !text-sm !bg-black text-white !font-normal py-[7px]"
             >
               {settings.closeText || "Close"}
             </Button>

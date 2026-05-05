@@ -61,12 +61,12 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
   } = settings;
 
   return (
-    <footer className="w-full rounded-t-[4px]" style={{ backgroundColor }}>
+    <footer className="w-full rounded-t" style={{ backgroundColor }}>
       <div className="mx-auto">
         {/* Main Footer Content */}
         <div
-          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[22px] md:px-0 md:pt-[40px] transition-all duration-300 pb-[30px] max-w-[1300px] ${
-            isMobileAccordionOpen ? "pb-[100px]" : "pb-[120px] md:pb-[40px]"
+          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[22px] md:px-0 md:pt-10 transition-all duration-300 pb-[30px] max-w-[1300px] ${
+            isMobileAccordionOpen ? "pb-[100px]" : "pb-[120px] md:pb-10"
           }`}
         >
           {/* Mobile Layout */}
@@ -81,7 +81,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
               aria-controls="mobile-footer-content"
             >
               <h3
-                className="text-[14px] font-medium text-white !leading-none"
+                className="text-sm font-medium text-white !leading-none"
                 // eslint-disable-next-line no-restricted-syntax
                 dangerouslySetInnerHTML={{ __html: mobileFooterTagline }}
               />
@@ -97,7 +97,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
                   : "max-h-0 opacity-0 ease-linear"
               }`}
             >
-              <div className="pt-[20px] md:pt-0">
+              <div className="pt-5 md:pt-0">
                 {aboutTitle && (
                   <FooterSection
                     title={aboutTitle}
@@ -136,11 +136,11 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
 
                 {/* Get the app */}
                 {showAppDownload && appDownloadText && (
-                  <div className="py-[24px] border-b border-[#424242]">
-                    <h6 className="text-[18px] font-bold md:font-medium text-white !leading-none mb-[16px]">
+                  <div className="py-6 border-b border-[#424242]">
+                    <h6 className="text-lg font-bold md:font-medium text-white !leading-none mb-4">
                       {appDownloadText}
                     </h6>
-                    <div className="flex gap-[16px] justify-between">
+                    <div className="flex gap-4 justify-between">
                       {appStoreUrl && appStoreImage && (
                         <Link
                           href={appStoreUrl}
@@ -184,23 +184,20 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
 
                 {/* Payment Methods */}
                 {showPaymentMethods && (
-                  <div className="pb-[24px] border-b border-[#424242]">
+                  <div className="pb-6 border-b border-[#424242]">
                     <PaymentMethods paymentMethods={paymentMethods} />
                   </div>
                 )}
 
                 {/* Social Links */}
                 {showSocialLinks && (
-                  <SocialLinks
-                    socialLinks={socialLinks}
-                    className="py-[24px]"
-                  />
+                  <SocialLinks socialLinks={socialLinks} className="py-6" />
                 )}
 
                 {/* Copyright */}
                 {copyrightText && (
-                  <div className="py-0 md:py-[36px]">
-                    <p className="text-[12px] text-[#727272] text-center">
+                  <div className="py-0 md:py-9">
+                    <p className="text-xs text-surface text-center">
                       {copyrightText}
                     </p>
                   </div>
@@ -214,7 +211,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
             {/* Tablet Layout (768px-1024px) */}
             <div className="xl:hidden grid grid-cols-2 gap-8">
               {/* Left column: Logo + social, Useful Links, Categories */}
-              <div className="flex flex-col gap-[32px]">
+              <div className="flex flex-col gap-8">
                 <div className="flex flex-col items-start">
                   {logoUrl && (
                     <div>
@@ -224,7 +221,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
                         width={180}
                         height={53}
                         loading="lazy"
-                        className="object-cover mb-[20px] md:mb-[30px]"
+                        className="object-cover mb-5 md:mb-[30px]"
                       />
                     </div>
                   )}
@@ -242,7 +239,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
               </div>
 
               {/* Right column: About Us, Our Salons, My Account */}
-              <div className="flex flex-col gap-[32px]">
+              <div className="flex flex-col gap-8">
                 {aboutTitle && (
                   <FooterSection title={aboutTitle} links={aboutLinks} />
                 )}
@@ -273,7 +270,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
                         width={180}
                         height={53}
                         loading="lazy"
-                        className="object-cover mb-[20px] md:mb-[30px]"
+                        className="object-cover mb-5 md:mb-[30px]"
                       />
                     </div>
                   )}
@@ -327,7 +324,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
             {/* Copyright */}
             {copyrightText && (
               <div>
-                <p className="text-[12px] text-[#727272] font-normal !leading-[24.62px] mb-0 xl:mb-0">
+                <p className="text-xs text-surface font-normal !leading-[24.62px] mb-0 xl:mb-0">
                   {copyrightText}
                 </p>
               </div>
@@ -336,7 +333,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
             <div className="flex flex-col items-start">
               {/* Payment Protection Text */}
               {paymentProtectionText && (
-                <div className="flex items-center gap-2 text-[16px] text-[#cecece] !leading-[21.28px] font-[400]">
+                <div className="flex items-center gap-2 text-base text-[#cecece] !leading-[21.28px] font-normal">
                   <span>
                     <svg
                       width="24"

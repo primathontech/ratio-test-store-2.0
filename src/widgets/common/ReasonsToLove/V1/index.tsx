@@ -58,7 +58,7 @@ function ReasonToLoveCard({
     >
       <div
         data-testid={`reason-to-love-card-image-${index}`}
-        className="flex-shrink-0 rounded-full border-[8px] border-[#D8D8D8] w-[216px] h-[216px]"
+        className="flex-shrink-0 rounded-full border-8 border-[#D8D8D8] w-[216px] h-[216px]"
       >
         <Image
           src={card.imageUrl}
@@ -67,20 +67,20 @@ function ReasonToLoveCard({
           height={200}
           unoptimized
           loading="lazy"
-          className="rounded-full border-[8px] border-[#BEBEBE] bg-[#CFE5F8] mix-blend-multiply w-[200px] h-[200px] object-cover"
+          className="rounded-full border-8 border-[#BEBEBE] bg-[#CFE5F8] mix-blend-multiply w-[200px] h-[200px] object-cover"
         />
       </div>
       <div
         data-testid={`reason-to-love-card-text-${index}`}
-        className="flex-1 flex flex-col items-center text-center lg:items-start lg:text-left px-[19.7px] md:px-[35.4px] lg:px-[48px] xl:px-[65px]"
+        className="flex-1 flex flex-col items-center text-center lg:items-start lg:text-left px-[19.7px] md:px-[35.4px] lg:px-12 xl:px-[65px]"
       >
         {card.title && (
-          <p className="text-[22px] md:text-[24px] xl:text-[28px] font-normal text-black leading-[33.6px]">
+          <p className="text-[22px] md:text-2xl xl:text-[28px] font-normal text-black leading-[33.6px]">
             {card.title}
           </p>
         )}
         {card.content && (
-          <p className="text-[14px] font-normal text-black leading-[23px]">
+          <p className="text-sm font-normal text-black leading-[23px]">
             {card.content}
           </p>
         )}
@@ -120,13 +120,13 @@ export const V1 = memo(function V1({
     >
       <div
         data-testid="reason-to-love-section-inner-container"
-        className="flex flex-col w-full px-[15px] md:px-[30px] lg:px-0 md:mb-[32px]"
+        className="flex flex-col w-full px-[15px] md:px-[30px] lg:px-0 md:mb-8"
       >
         <div
           data-testid="reason-to-love-section-content-wrapper"
           className="w-full flex flex-col justify-center"
         >
-          <p className="text-left text-[16px] md:text-[22px] md:mt-8 lg:mt-[30px] lg:text-[24px] font-[700] text-black mb-8">
+          <p className="text-left text-base md:text-[22px] md:mt-8 lg:mt-[30px] lg:text-2xl font-bold text-black mb-8">
             {sectionTitle}
           </p>
 

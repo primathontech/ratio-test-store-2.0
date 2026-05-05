@@ -205,7 +205,7 @@ export const CartItem: React.FC<CartItemProps> = ({
               closeCart();
             }
           }}
-          className="cart-item-title text-sm md:text-base text-black hover:text-[#0089DD] line-clamp-1 cursor-pointer !leading-none transition-colors duration-300"
+          className="cart-item-title text-sm md:text-base text-black hover:text-loading-blue line-clamp-1 cursor-pointer !leading-none transition-colors duration-300"
           data-testid={`bblunt-cart-item-title-${item.id}`}
         >
           {item.title}
@@ -237,11 +237,11 @@ export const CartItem: React.FC<CartItemProps> = ({
             data-testid={`bblunt-cart-item-actions-${item.id}`}
           >
             <Flex
-              className="cart-item-quantity flex gap-2 items-center bg-[#f2f2f2] rounded-[10px] border border-primary/10 h-[30px] px-2.5 font-body"
+              className="cart-item-quantity flex gap-2 items-center bg-surface-4 rounded-[10px] border border-primary/10 h-[30px] px-2.5 font-body"
               data-testid={`bblunt-cart-item-quantity-controls-${item.id}`}
             >
               <button
-                className={`h-full text-sm text-black hover:text-[#0089DD] font-normal flex items-center justify-center ${
+                className={`h-full text-sm text-black hover:text-loading-blue font-normal flex items-center justify-center ${
                   isDecrementDisabled
                     ? "cursor-not-allowed opacity-50"
                     : "cursor-pointer"
@@ -271,7 +271,7 @@ export const CartItem: React.FC<CartItemProps> = ({
                 data-testid={`bblunt-cart-item-quantity-input-${item.id}`}
               />
               <button
-                className={`h-full text-sm text-black hover:text-[#0089DD] font-normal flex items-center justify-center ${
+                className={`h-full text-sm text-black hover:text-loading-blue font-normal flex items-center justify-center ${
                   isIncrementDisabled
                     ? "cursor-not-allowed opacity-50"
                     : "cursor-pointer"
@@ -298,7 +298,7 @@ export const CartItem: React.FC<CartItemProps> = ({
               aria-label="Remove item"
               data-testid={`bblunt-cart-item-remove-${item.id}`}
             >
-              <span className="underline text-xs text-[#545454] hover:text-[#0089DD] font-normal">
+              <span className="underline text-xs text-[#545454] hover:text-loading-blue font-normal">
                 Remove
               </span>
             </button>

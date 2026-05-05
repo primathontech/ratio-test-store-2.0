@@ -76,14 +76,14 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({
               onFilterRemove(filterData.filterId, filterData.optionId)
             }
             key={`${filterData.filterId}-${filterData.optionId}-${index}`}
-            className="group inline-flex items-center gap-2 py-1 text-sm flex-shrink-0 border-l border-r border-faq-border mr-[10px] md:mb-[15px] px-[15px] cursor-pointer"
+            className="group inline-flex items-center gap-2 py-1 text-sm flex-shrink-0 border-l border-r border-faq-border mr-2.5 md:mb-[15px] px-[15px] cursor-pointer"
           >
             <button
               type="button"
               className="flex items-center justify-center text-black md:group-hover:text-loading-blue transition-colors duration-400 w-7 h-7 rounded-full md:hover:bg-gray-100 font-extrabold"
               aria-label={`Remove ${filterData.optionLabel} filter`}
             >
-              <span className="leading-none text-[16px] relative">
+              <span className="leading-none text-base relative">
                 <span className="md:group-hover:opacity-0 transition-opacity duration-300">
                   ×
                 </span>
@@ -92,7 +92,7 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({
                 </span>
               </span>
             </button>
-            <Text className="!text-[14px] !text-black md:group-hover:!text-loading-blue whitespace-nowrap transition-colors duration-200">
+            <Text className="!text-sm !text-black md:group-hover:!text-loading-blue whitespace-nowrap transition-colors duration-200">
               {filterData.optionLabel.replace(
                 /^(collections?-|product-type-|product-|discount-)/i,
                 ""
@@ -105,9 +105,9 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({
           type="button"
           onClick={onClearAll}
           aria-label={clearAllLabel}
-          className="group relative inline-flex items-center text-white py-[3px] bg-black rounded-[15px] pl-[25px] pr-[15px] text-[14px] font-medium transition-colors duration-500 hover:bg-[#1a1a1a] flex-shrink-0 md:mb-[15px]"
+          className="group relative inline-flex items-center text-white py-[3px] bg-black rounded-[15px] pl-[25px] pr-[15px] text-sm font-medium transition-colors duration-500 hover:bg-[#1a1a1a] flex-shrink-0 md:mb-[15px]"
         >
-          <span className="absolute left-[10px] top-1/2 -translate-y-1/2 leading-none text-[16px] font-semibold">
+          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 leading-none text-base font-semibold">
             <span className="block transition-opacity duration-300 group-hover:opacity-0 font-extrabold">
               ×
             </span>

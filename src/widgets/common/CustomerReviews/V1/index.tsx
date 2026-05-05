@@ -192,9 +192,9 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
       >
         <div
           data-testid="review-section-summary-card"
-          className="rounded-2xl bg-white px-[16px] py-8 w-full max-w-full shadow-[0px_4px_16px_rgba(0,0,0,0.1)]"
+          className="rounded-2xl bg-white px-4 py-8 w-full max-w-full shadow-[0px_4px_16px_rgba(0,0,0,0.1)]"
         >
-          <h2 className="text-center text-[14px] font-normal text-[#222222] mb-4 md:mb-6">
+          <h2 className="text-center text-sm font-normal text-[#222222] mb-4 md:mb-6">
             {title}
           </h2>
 
@@ -229,7 +229,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                                 viewBox="0 0 25 25"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="shrink-0 w-[16px] h-[11px] md:w-[12px] md:h-[12px]"
+                                className="shrink-0 w-4 h-[11px] md:w-3 md:h-3"
                               >
                                 <path d={starPath} fill="#FBC210" />
                               </svg>
@@ -239,13 +239,13 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                             return (
                               <div
                                 key={i}
-                                className="relative shrink-0 w-[16px] h-[11px] md:w-[12px] md:h-[12px]"
+                                className="relative shrink-0 w-4 h-[11px] md:w-3 md:h-3"
                               >
                                 <svg
                                   viewBox="0 0 25 25"
                                   fill="none"
                                   xmlns="http://www.w3.org/2000/svg"
-                                  className="absolute inset-0 w-[12px] h-[11px]"
+                                  className="absolute inset-0 w-3 h-[11px]"
                                 >
                                   <path d={starPath} fill="#E5E5E5" />
                                 </svg>
@@ -253,7 +253,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                                   viewBox="0 0 25 25"
                                   fill="none"
                                   xmlns="http://www.w3.org/2000/svg"
-                                  className="absolute inset-0 overflow-visible w-[12px] h-[11px]"
+                                  className="absolute inset-0 overflow-visible w-3 h-[11px]"
                                   style={{
                                     clipPath: `inset(0 ${100 - partial * 100}% 0 0)`,
                                   }}
@@ -269,7 +269,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                               viewBox="0 0 25 25"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
-                              className="shrink-0 w-[12px] h-[11px]"
+                              className="shrink-0 w-3 h-[11px]"
                             >
                               <path d={starPath} fill="#E5E5E5" />
                             </svg>
@@ -300,7 +300,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                     id="write-review"
                     aria-label="Write a review"
                     onClick={toggleReviewForm}
-                    className="w-full h-[36px] lg:w-[240px] lg:h-[36px] py-[10px] lg:py-0 px-[20px] rounded-[30px] bg-black text-white text-text-sm font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
+                    className="w-full h-9 lg:w-60 lg:h-9 py-2.5 lg:py-0 px-5 rounded-[30px] bg-black text-white text-text-sm font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
                   >
                     {reviewSubmitted
                       ? "Refresh page"

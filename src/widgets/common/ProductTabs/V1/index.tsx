@@ -19,7 +19,7 @@ const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
     viewBox="0 0 14 8"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={`w-3 h-2 md:w-4 md:h-[10px] transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"}`}
+    className={`w-3 h-2 md:w-4 md:h-2.5 transition-transform duration-300 ${isOpen ? "rotate-180" : "rotate-0"}`}
   >
     <path
       d="M1 1L7 7L13 1"
@@ -47,7 +47,7 @@ function SafeHtmlContent({ html }: { html: string }) {
   return (
     <div
       ref={containerRef}
-      className="rich-text-content text-[14px] leading-[24.4px] font-[400] text-[#1d1d1d] [&_p]:mb-[16px] [&_p:last-child]:mb-0 [&_strong]:font-[700] [&_em]:italic [&_br]:block"
+      className="rich-text-content text-sm leading-[24.4px] font-normal text-primary [&_p]:mb-4 [&_p:last-child]:mb-0 [&_strong]:font-bold [&_em]:italic [&_br]:block"
     />
   );
 }
@@ -62,11 +62,11 @@ const StepsContent = ({
 }: {
   steps: { label: string; text: string }[];
 }) => (
-  <div className="flex flex-col gap-[16px]">
+  <div className="flex flex-col gap-4">
     {steps.map((step, i) => (
       <div key={i} className="flex flex-col">
-        <span className="text-[14px] md:text-[16px] leading-[22px] font-[700] text-[#1d1d1d] ">
-          {step.label} : <span className="font-[400]">{step.text}</span>
+        <span className="text-sm md:text-base leading-[22px] font-bold text-primary ">
+          {step.label} : <span className="font-normal">{step.text}</span>
         </span>
       </div>
     ))}
@@ -79,9 +79,9 @@ const IngredientsContent = ({
 }: {
   ingredients: { image: string; label: string; text: string }[];
 }) => (
-  <div className="flex flex-col gap-[24px]">
+  <div className="flex flex-col gap-6">
     {ingredients.map((item, i) => (
-      <div key={i} className="flex items-center gap-[16px]">
+      <div key={i} className="flex items-center gap-4">
         {item.image && (
           <div className="shrink-0 w-[58px] md:w-[108px] h-[58px] md:h-[108px] relative">
             <Image
@@ -94,10 +94,10 @@ const IngredientsContent = ({
           </div>
         )}
         <div className="flex flex-col">
-          <span className="text-[14px] leading-[22px] font-[700] text-[#0089dd]">
+          <span className="text-sm leading-[22px] font-bold text-loading-blue">
             {item.label}
           </span>
-          <span className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] mt-[4px] ">
+          <span className="text-sm md:text-base leading-[22px] font-normal text-primary mt-1 ">
             {item.text}
           </span>
         </div>
@@ -108,11 +108,11 @@ const IngredientsContent = ({
 
 /** List content renderer (Suitable For tab) */
 const ListContent = ({ items }: { items: string[] }) => (
-  <div className="flex flex-col gap-[12px]">
+  <div className="flex flex-col gap-3">
     {items.map((item, i) => (
       <p
         key={i}
-        className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] m-0"
+        className="text-sm md:text-base leading-[22px] font-normal text-primary m-0"
       >
         {item}
       </p>
@@ -126,13 +126,13 @@ const IngredientsListContent = ({
 }: {
   listings: { label: string; text: string }[];
 }) => (
-  <div className="flex flex-col gap-[16px]">
+  <div className="flex flex-col gap-4">
     {listings.map((listing, i) => (
       <div key={i} className="flex flex-col">
-        <span className="text-[14px] leading-[22px] font-[700] text-[#1d1d1d] mb-[4px]">
+        <span className="text-sm leading-[22px] font-bold text-primary mb-1">
           {listing.label}
         </span>
-        <p className="text-[14px] md:text-[16px] leading-[22px] font-[400] text-[#1d1d1d] m-0">
+        <p className="text-sm md:text-base leading-[22px] font-normal text-primary m-0">
           {listing.text}
         </p>
       </div>
@@ -154,33 +154,31 @@ const AccordionItem = ({
   onToggle: () => void;
 }) => {
   return (
-    <div className="bg-[#ffffff] rounded-[15px] mb-[8px] md:mb-[16px] overflow-hidden">
+    <div className="bg-secondary rounded-[15px] mb-2 md:mb-4 overflow-hidden">
       {/* Summary / Header row */}
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
-        className="group w-full flex items-center justify-between cursor-pointer bg-[#ffffff] rounded-[15px] border-0 outline-none transition-colors duration-300"
+        className="group w-full flex items-center justify-between cursor-pointer bg-secondary rounded-[15px] border-0 outline-none transition-colors duration-300"
       >
         {/* Title text */}
         <span
-          className={`text-[16px] leading-[26px] md:text-[24px] md:leading-[38px] font-[400] md:font-[700] py-[24px] px-[16px] md:pt-[38px] xl:px-[24px] transition-colors duration-300 ${isOpen ? "md:pb-[16px]" : "md:pb-[38px]"} text-[#000000] group-hover:text-[#0089dd]`}
+          className={`text-base leading-[26px] md:text-2xl md:leading-[38px] font-normal md:font-bold py-6 px-4 md:pt-[38px] xl:px-6 transition-colors duration-300 ${isOpen ? "md:pb-4" : "md:pb-[38px]"} text-black group-hover:text-loading-blue`}
         >
           {tab.title}
         </span>
 
         {/* Chevron icon */}
-        <span className="flex items-center justify-center w-[54px] h-[20px] mr-[16px] xl:mr-[24px] text-[rgba(0,0,0,0.8)] group-hover:text-[#0089dd] transition-colors duration-300">
+        <span className="flex items-center justify-center w-[54px] h-5 mr-4 xl:mr-6 text-[rgba(0,0,0,0.8)] group-hover:text-loading-blue transition-colors duration-300">
           <ChevronIcon isOpen={isOpen} />
         </span>
       </button>
 
       {/* Content panel */}
       <div
-        className={`px-[20px] overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen
-            ? "max-h-[2000px] opacity-100 pb-[20px]"
-            : "max-h-0 opacity-0 pb-0"
+        className={`px-5 overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? "max-h-[2000px] opacity-100 pb-5" : "max-h-0 opacity-0 pb-0"
         }`}
       >
         {tab.type === ProductTabType.HTML && tab.contentHTML && (
@@ -315,7 +313,7 @@ export const V1 = memo(function V1({
   }
 
   return (
-    <section className={`bg-[#f4f6f8] pt-[10px] pb-[1px] ${className || ""}`}>
+    <section className={`bg-[#f4f6f8] pt-2.5 pb-px ${className || ""}`}>
       {/* Container — max-width 1400px, centered */}
       <div className="mx-auto max-w-[1400px]">
         {/* Accordion items */}

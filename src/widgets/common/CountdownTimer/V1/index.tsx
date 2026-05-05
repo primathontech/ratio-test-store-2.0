@@ -60,10 +60,10 @@ const CountdownUnit = ({ value, label }: CountdownUnitProps) => (
     className="flex flex-col items-center justify-center w-[60px] h-[60px] rounded-[50%] p-[7px]"
     style={{ border: "2px solid rgba(128, 128, 128, 0.33)" }}
   >
-    <span className="block text-[25px] leading-[19px] font-[400] text-center text-[#1d1d1d]">
+    <span className="block text-[25px] leading-[19px] font-normal text-center text-primary">
       {value}
     </span>
-    <div className="text-[14px] leading-[22px] font-[400] text-center text-[#1d1d1d]">
+    <div className="text-sm leading-[22px] font-normal text-center text-primary">
       {label}
     </div>
   </div>
@@ -149,24 +149,24 @@ export const V1: React.FC<CountdownTimerProps> = ({ settings, className }) => {
 
   return (
     <section
-      className={`text-center pt-[30px] pb-[39px] md:pt-[40px] md:pb-[52px] ${className ?? ""}`}
+      className={`text-center pt-[30px] pb-[39px] md:pt-10 md:pb-[52px] ${className ?? ""}`}
     >
       {/* Hurry Up! heading with decorative SVGs */}
       <div className="inline-flex items-center justify-center">
         <DecorativeLines mirror />
-        <div className="text-[24px] md:text-[48px] font-[700] leading-[1.6] text-[#ff0000]">
+        <div className="text-2xl md:text-5xl font-bold leading-[1.6] text-[#ff0000]">
           {heading}
         </div>
         <DecorativeLines />
       </div>
 
       {/* Sub-heading / expired text */}
-      <div className="text-[28px] md:text-[38px] font-[600] leading-[1.6] text-[#1d1d1d] text-center">
+      <div className="text-[28px] md:text-[38px] font-semibold leading-[1.6] text-primary text-center">
         {expired ? expiredText : subheading}
       </div>
 
       {/* Countdown circles */}
-      <div className="flex justify-center gap-[10px] mt-[0px]">
+      <div className="flex justify-center gap-2.5 mt-0">
         <CountdownUnit value={days} label="Days" />
         <CountdownUnit value={hours} label="Hr" />
         <CountdownUnit value={minutes} label="Min" />

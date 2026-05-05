@@ -22,7 +22,7 @@ export const SimpleIndicators: React.FC<SimpleIndicatorsProps> = ({
   return (
     <div
       data-testid="banner-carousel-simple-indicators"
-      className="flex items-center justify-center gap-[4px] md:gap-[8px] mt-[16px] md:mt-[24px]"
+      className="flex items-center justify-center gap-1 md:gap-2 mt-4 md:mt-6"
     >
       {items.map((_, index) => {
         const isActive = index === currentIndex;
@@ -35,8 +35,8 @@ export const SimpleIndicators: React.FC<SimpleIndicatorsProps> = ({
             className={`overflow-hidden transition-all duration-300 ease-in-out
               ${
                 isActive
-                  ? "w-[12px] h-[4px] md:w-[24px] md:h-[8px] bg-black"
-                  : "size-[4px] md:size-[8px] bg-[#DDDDDD] md:bg-black/30 hover:bg-black/50"
+                  ? "w-3 h-1 md:w-6 md:h-2 bg-black"
+                  : "size-1 md:size-2 bg-[#DDDDDD] md:bg-black/30 hover:bg-black/50"
               }
             `}
             aria-label={`Go to slide ${index + 1}`}

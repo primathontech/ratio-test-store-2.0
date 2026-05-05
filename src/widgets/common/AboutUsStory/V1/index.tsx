@@ -110,21 +110,21 @@ export const V1 = memo(function AboutUsStoryV1({
   return (
     <section className={className || ""}>
       <div
-        className="mx-auto w-[90%] py-[20px] text-center"
+        className="mx-auto w-[90%] py-5 text-center"
         style={{ color: textColor }}
       >
         {blocks.map((block, index) => (
           <div key={index}>
             {/* Heading block: h2 + ornamental divider */}
-            <div className="mt-[30px] mb-[20px] text-center">
-              <h2 className="mx-0 my-[20px] text-center text-[24px] font-normal leading-[29px]">
+            <div className="mt-[30px] mb-5 text-center">
+              <h2 className="mx-0 my-5 text-center text-2xl font-normal leading-[29px]">
                 {block.heading}
               </h2>
               <OrnamentalDivider color={dividerColor} />
             </div>
 
             {/* Content paragraph */}
-            <div className="mx-auto mb-[30px] px-[30px] text-center text-[16px] leading-[26px]">
+            <div className="mx-auto mb-[30px] px-[30px] text-center text-base leading-[26px]">
               {block.body}
             </div>
           </div>

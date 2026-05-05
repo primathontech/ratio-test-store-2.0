@@ -248,7 +248,7 @@ export const ZoomModal: React.FC<ZoomModalProps> = ({
       </div>
 
       <div
-        className="absolute top-4 left-4 text-[14px] font-[500] z-10"
+        className="absolute top-4 left-4 text-sm font-medium z-10"
         style={{ color: zoomIconColor }}
       >
         {currentIndex + 1} / {images.length}

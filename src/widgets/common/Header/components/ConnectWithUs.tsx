@@ -28,7 +28,7 @@ export const ConnectWithUs: React.FC<ConnectWithUsProps> = ({
         isChatItem(item.key) ? (
           <div
             key={item.key}
-            className="text-[14px] font-[700] md:font-normal block cursor-pointer text-[#1d1d1d]"
+            className="text-sm font-bold md:font-normal block cursor-pointer text-primary"
             role="button"
             tabIndex={0}
           >
@@ -39,7 +39,7 @@ export const ConnectWithUs: React.FC<ConnectWithUsProps> = ({
             key={item.key}
             type="button"
             onClick={onTrackOrderClick}
-            className={`text-[14px] font-[700] block cursor-pointer text-black text-left bg-transparent border-none p-0
+            className={`text-sm font-bold block cursor-pointer text-black text-left bg-transparent border-none p-0
               ${index === items.length - 1 ? "border-b border-current inline-block font-normal" : ""}
             `}
           >
@@ -49,8 +49,8 @@ export const ConnectWithUs: React.FC<ConnectWithUsProps> = ({
           <Link
             key={item.key}
             href={item.href}
-            className={`text-[14px] font-[700] md:font-normal block
-              ${index === items.length - 1 ? "border-b border-current inline-block text-[#000000] font-medium" : ""}
+            className={`text-sm font-bold md:font-normal block
+              ${index === items.length - 1 ? "border-b border-current inline-block text-black font-medium" : ""}
             `}
           >
             {item.label}

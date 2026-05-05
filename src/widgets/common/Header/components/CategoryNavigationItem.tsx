@@ -39,7 +39,7 @@ const CategoryNavigationItem: React.FC<{
         aria-expanded={isExpanded}
         className="w-full flex items-center justify-between py-2 pl-4"
       >
-        <p className="text-[14px]">{item.label}</p>
+        <p className="text-sm">{item.label}</p>
         {isExpanded ? (
           <svg
             width="14"
@@ -87,7 +87,7 @@ const CategoryNavigationItem: React.FC<{
                 key={nestedItem.key || nestedIndex}
                 href={nestedItem.href || "#"}
                 onClick={onClose}
-                className="block py-1 my-1 px-4 no-underline text-[14px] transition-opacity duration-300"
+                className="block py-1 my-1 px-4 no-underline text-sm transition-opacity duration-300"
                 style={{
                   opacity: isExpanded ? 1 : 0,
                 }}

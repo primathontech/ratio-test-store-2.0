@@ -30,20 +30,20 @@ export const MyAccountFooterSection: React.FC<MyAccountFooterSectionProps> = ({
     <div className={className}>
       <button
         onClick={toggleAccordion}
-        className="w-full text-left flex justify-between items-center md:pointer-events-none md:cursor-default pt-[24px] md:pt-0 pb-[24px] md:pb-[30px]"
+        className="w-full text-left flex justify-between items-center md:pointer-events-none md:cursor-default pt-6 md:pt-0 pb-6 md:pb-[30px]"
         aria-expanded={isOpen}
         aria-controls={`footer-section-${title.replace(/\s+/g, "-").toLowerCase()}`}
       >
-        <h6 className="text-[16px] font-[800] text-white !leading-none md:leading-[25.92px]">
+        <h6 className="text-base font-extrabold text-white !leading-none md:leading-[25.92px]">
           {title}
         </h6>
         <AccordionToggleIcon isOpen={isOpen} />
       </button>
       <ul
         id={`footer-section-${title.replace(/\s+/g, "-").toLowerCase()}`}
-        className={`overflow-hidden transition-all duration-[250ms] flex md:flex-col flex-wrap gap-y-[4px] md:gap-[10px] list-none p-0 m-0 ${
+        className={`overflow-hidden transition-all duration-[250ms] flex md:flex-col flex-wrap gap-y-1 md:gap-2.5 list-none p-0 m-0 ${
           isOpen
-            ? "max-h-96 opacity-100 ease-in-out pb-[24px]"
+            ? "max-h-96 opacity-100 ease-in-out pb-6"
             : "max-h-0 opacity-0 md:max-h-none md:opacity-100 ease-out"
         }`}
       >
@@ -51,7 +51,7 @@ export const MyAccountFooterSection: React.FC<MyAccountFooterSectionProps> = ({
           <li key={index} className="basis-1/2 flex-shrink-0">
             <Link
               href={link.href}
-              className="text-[14px] max-w-[152px] text-[#E7E7E7] hover:text-[#0089DD] block font-normal cursor-pointer"
+              className="text-sm max-w-[152px] text-[#E7E7E7] hover:text-loading-blue block font-normal cursor-pointer"
             >
               {link.name}
             </Link>

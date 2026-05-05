@@ -357,7 +357,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
   return (
     <section
-      className="relative overflow-hidden mt-[25px] md:mt-[56px] pt-[32.4px] md:pt-[56px] pb-[32.4px] md:pb-[56px]"
+      className="relative overflow-hidden mt-[25px] md:mt-14 pt-[32.4px] md:pt-14 pb-[32.4px] md:pb-14"
       style={{}}
     >
       {/* Background image — mobile */}
@@ -373,7 +373,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       </div>
 
       {/* Background image — desktop */}
-      <div className="absolute inset-0 z-[0] hidden md:block mb-[32.4px] md:mb-[56px]">
+      <div className="absolute inset-0 z-[0] hidden md:block mb-[32.4px] md:mb-14">
         <Image
           src={backgroundImage}
           alt=""
@@ -385,12 +385,12 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       </div>
 
       {/* Content overlay */}
-      <div className="relative z-[1] mx-auto xl:mx-[20px] px-[6px] md:px-[30px] xl:px-[50px] mb-[32px] md:mb-[56px]">
+      <div className="relative z-[1] mx-auto xl:mx-5 px-1.5 md:px-[30px] xl:px-[50px] mb-8 md:mb-14">
         {/* Tabs head: heading + tab buttons */}
-        <div className="flex flex-col items-start md:items-center text-center mb-[24px] md:mb-[30px] px-[15px] gap-[15px] md:gap-[30px]">
+        <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px] gap-[15px] md:gap-[30px]">
           {/* Heading */}
           <h4
-            className="text-[24px] xl:text-[28px] leading-[29px] md:leading-[34px]"
+            className="text-2xl xl:text-[28px] leading-[29px] md:leading-[34px]"
             style={{
               color: "#ffffff",
               fontWeight: 400,
@@ -412,7 +412,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
                 key={tab.handle}
                 type="button"
                 onClick={() => handleTabClick(idx)}
-                className="flex-shrink-0 cursor-pointer text-[14px] md:text-[16px]"
+                className="flex-shrink-0 cursor-pointer text-sm md:text-base"
                 style={{
                   color: "#ffffff",
                   backgroundColor: "transparent",
@@ -436,7 +436,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
         {/* Carousel area */}
         <div
-          className={`xl:mx-auto xl:max-w-[1300px] ${outerBorderClass} md:rounded-[8px] overflow-hidden`}
+          className={`xl:mx-auto xl:max-w-[1300px] ${outerBorderClass} md:rounded-lg overflow-hidden`}
         >
           <SwipeCarousel
             itemCount={products.length}
@@ -474,7 +474,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
           <div className="flex justify-center mt-[17.4px] md:mt-[30px]">
             <Link
               href={`/collections/${activeTab.handle}`}
-              className="inline-flex items-center no-underline text-[14px] md:text-[18px] pl-[16px] md:pl-[42px] pr-[16px] md:pr-[55px] w-full md:w-auto mx-[16px] md:mx-0 p-[6px] md:p-0 justify-center"
+              className="inline-flex items-center no-underline text-sm md:text-lg pl-4 md:pl-[42px] pr-4 md:pr-[55px] w-full md:w-auto mx-4 md:mx-0 p-1.5 md:p-0 justify-center"
               style={{
                 backgroundColor: "rgb(29, 29, 29)",
                 color: "#ffffff",
@@ -493,7 +493,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
                   return (
                     <span
                       key={p.id ?? i}
-                      className={`relative inline-flex overflow-hidden rounded-[6px] border border-[#dddddd] md:border-[3px] w-[20px] md:w-[32px] h-[20px] md:h-[32px] ${
+                      className={`relative inline-flex overflow-hidden rounded-md border border-[#dddddd] md:border-[3px] w-5 md:w-8 h-5 md:h-8 ${
                         i === 0 ? "mr-0" : "mr-[-12px]"
                       }`}
                       style={{

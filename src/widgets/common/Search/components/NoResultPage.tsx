@@ -221,15 +221,15 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
 
   return (
     <Box
-      className={`w-full mt-0 md:mt-[30px] mb-[50px] px-[6px] min-[769px]:px-[30px] ${className}`}
+      className={`w-full mt-0 md:mt-[30px] mb-[50px] px-1.5 min-[769px]:px-[30px] ${className}`}
     >
       {/* No Results Message */}
-      <Box className="text-center justify-center mb-[10px] md:mb-[20px]">
-        <Text className="!text-[20px] md:!text-[25px] lg:!text-[30px] !text-center font-medium !text-black mb-[20px] !break-words !tracking-[-1px]">
+      <Box className="text-center justify-center mb-2.5 md:mb-5">
+        <Text className="!text-xl md:!text-[25px] lg:!text-3xl !text-center font-medium !text-black mb-5 !break-words !tracking-[-1px]">
           {settings.noResultsMessage || "We're sorry. There are no results for"}{" "}
           <span className="block md:inline">'{query}'</span>
         </Text>
-        <Text className="!text-black !text-[12px] uppercase tracking-wide !text-center mb-[20px]">
+        <Text className="!text-black !text-xs uppercase tracking-wide !text-center mb-5">
           {settings.suggestionMessage ||
             "PLEASE CHECK THE SPELLING OR TRY AGAIN WITH A LESS SPECIFIC OR DIFFERENT TERM."}
         </Text>
@@ -240,20 +240,20 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
         <div>
           <div>
             {/* Section Title */}
-            <div className="my-[10px] lg:!text-center pb-[5px]">
+            <div className="my-2.5 lg:!text-center pb-[5px]">
               <div className="flex items-center justify-center gap-4">
-                <div className="flex-1 h-0.5 bg-[#000000] hidden lg:block" />
-                <Text className="!text-[17px] lg:!text-[20px] !font-semibold !text-black md:whitespace-nowrap tracking-[-1px] !text-center">
+                <div className="flex-1 h-0.5 bg-black hidden lg:block" />
+                <Text className="!text-[17px] lg:!text-xl !font-semibold !text-black md:whitespace-nowrap tracking-[-1px] !text-center">
                   {settings.bestsellingProductsTitle ||
                     "HERE ARE SOME OF OUR BESTSELLING PRODUCTS"}
                 </Text>
-                <div className="flex-1 h-0.5 bg-[#000000] hidden lg:block" />
+                <div className="flex-1 h-0.5 bg-black hidden lg:block" />
               </div>
             </div>
 
             {/* Products Grid - show shimmer while loading, then products */}
             {isLoading ? (
-              <div className="grid grid-cols-2 min-[768px]:grid-cols-3 min-[1024px]:grid-cols-4 gap-[12px] md:gap-[30px]">
+              <div className="grid grid-cols-2 min-[768px]:grid-cols-3 min-[1024px]:grid-cols-4 gap-3 md:gap-[30px]">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <ShimmerProductCard
                     key={`shimmer-${index}`}
@@ -270,7 +270,7 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
                 ))}
               </div>
             ) : transformedProducts.length > 0 ? (
-              <div className="grid grid-cols-2 min-[768px]:grid-cols-3 min-[1024px]:grid-cols-4 gap-[12px] md:gap-[30px]">
+              <div className="grid grid-cols-2 min-[768px]:grid-cols-3 min-[1024px]:grid-cols-4 gap-3 md:gap-[30px]">
                 {transformedProducts.map((product, index) => {
                   const cardProduct = toCardProduct(product);
                   const productAddToCart = () => handleAddToCart(product);
@@ -300,16 +300,16 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
                         color: "#000",
                         actionButtonTextColor: "#ffffff",
                         actionButtonClassName:
-                          "min-h-[32px] min-[767px]:min-h-[42px] !mt-0 !rounded-[10px] min-[769px]:!rounded-[4px] !text-[16px]",
+                          "min-h-8 min-[767px]:min-h-[42px] !mt-0 !rounded-[10px] min-[769px]:!rounded !text-base",
                         titleClassName:
-                          "!font-normal !text-[14px] !line-clamp-2 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] !min-h-[36px]",
+                          "!font-normal !text-sm !line-clamp-2 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] !min-h-9",
                         priceSectionClassName:
-                          "!font-semibold [&_span]:!font-medium !text-[14px] md:!text-[16px]",
-                        detailsClassName: "!gap-[13px] mt-[8px]",
-                        ratingClassName: "!text-[12px]",
+                          "!font-semibold [&_span]:!font-medium !text-sm md:!text-base",
+                        detailsClassName: "!gap-[13px] mt-2",
+                        ratingClassName: "!text-xs",
                         imageClassName: "!rounded-[10px]",
                       }}
-                      className="!border-0 min-[769px]:!border border-faq-border rounded-[10px] px-0 md:px-[8px]"
+                      className="!border-0 min-[769px]:!border border-faq-border rounded-[10px] px-0 md:px-2"
                       showProductType={false}
                     />
                   );

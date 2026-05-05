@@ -252,7 +252,7 @@ export const ProductGallery: React.FC<ProductGalleryProps> = React.memo(
 
             <div
               ref={galleryState.thumbnailContainerRef}
-              className={`max-h-[459px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-auto md:pt-[10px] ${
+              className={`max-h-[459px] [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] overflow-auto md:pt-2.5 ${
                 galleryState.isHoverPreviewVisible &&
                 settings.enableHoverPreview
                   ? "opacity-50"

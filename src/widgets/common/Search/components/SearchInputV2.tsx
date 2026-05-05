@@ -302,8 +302,8 @@ export const SearchInputV2: React.FC<SearchInputV2Props> = ({
             w-full outline-none transition-all duration-300 ease-in-out
             ${
               isMobile
-                ? "text-[#000000] font-medium text-[15px] pr-16 rounded"
-                : "pt-[8px] pr-[60px] pb-[8px] h-[36px] rounded"
+                ? "text-black font-medium text-[15px] pr-16 rounded"
+                : "pt-2 pr-[60px] pb-2 h-9 rounded"
             }
             ${isSearchDropdownOpen ? "bg-white/20" : "!bg-transparent hover:!bg-white/20"}
             placeholder:text-lightest-gray text-[15px]
@@ -349,7 +349,7 @@ export const SearchInputV2: React.FC<SearchInputV2Props> = ({
       <div
         className={`
           absolute top-1/2 -translate-y-1/2 pointer-events-none text-[15px]
-          ${isMobile ? "left-[54px]" : "left-[32px]"}
+          ${isMobile ? "left-[54px]" : "left-8"}
           ${searchQuery ? "opacity-0 invisible" : "opacity-100 visible"}
         `.trim()}
       >

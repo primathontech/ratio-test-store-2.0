@@ -127,24 +127,24 @@ const SearchProductCard: React.FC<SearchProductCardProps> = ({
       color: "#000000",
       actionButtonTextColor: "#ffffff",
       titleClassName:
-        "!font-normal !text-[14px] !line-clamp-2 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical]",
+        "!font-normal !text-sm !line-clamp-2 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical]",
       imageClassName: "!rounded-[10px]",
-      detailsClassName: "!gap-[10px]",
+      detailsClassName: "!gap-2.5",
       priceSectionClassName:
-        "!font-semibold [&_span]:!font-medium !text-[14px] md:!text-[16px]",
+        "!font-semibold [&_span]:!font-medium !text-sm md:!text-base",
       actionButtonClassName:
-        "min-h-[32px] min-[769px]:min-h-[42px] !mt-0 !rounded-[10px] md:!rounded-[10px] !text-[16px]",
-      linkClassName: "px-[6px] md:px-[15px] mb-[12px] md:mb-[20px]",
+        "min-h-8 min-[769px]:min-h-[42px] !mt-0 !rounded-[10px] md:!rounded-[10px] !text-base",
+      linkClassName: "px-1.5 md:px-[15px] mb-3 md:mb-5",
       compareAtPriceClassName:
-        "!text-[14px] md:!text-[16px] !text-[#0000008C] !font-medium",
-      discountClassName: "!text-[14px] !text-[#F04438]",
-      ratingClassName: "!text-[12px]",
+        "!text-sm md:!text-base !text-[#0000008C] !font-medium",
+      discountClassName: "!text-sm !text-[#F04438]",
+      ratingClassName: "!text-xs",
       searchProductCard,
     }}
     showProductType={true}
     showNetContent={false}
     showSubtitle={false}
-    className="!border border-white md:!border-[#ECECEC] !rounded-[10px] w-full h-full px-0 md:px-[6px] "
+    className="!border border-white md:!border-faq-border !rounded-[10px] w-full h-full px-0 md:px-1.5 "
   />
 );
 

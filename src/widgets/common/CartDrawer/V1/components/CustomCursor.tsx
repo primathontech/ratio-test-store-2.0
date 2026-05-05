@@ -67,7 +67,7 @@ export const CustomCursor: React.FC<CustomCursorProps> = ({ isVisible }) => {
         opacity: isVisible ? 1 : 0,
       }}
     >
-      <div className="w-[48px] h-[48px] bg-white rounded-full shadow-lg flex items-center justify-center border border-gray-200 p-4">
+      <div className="w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center border border-gray-200 p-4">
         <svg
           width="12"
           height="12"

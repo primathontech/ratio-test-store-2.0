@@ -32,32 +32,32 @@ export function DropdownAccordion({
 
   return (
     <div className={className}>
-      <div className="group/row flex items-center justify-between py-[4px] text-[#545454] hover:text-[#0089DD] transition-colors duration-200 cursor-pointer">
+      <div className="group/row flex items-center justify-between py-1 text-[#545454] hover:text-loading-blue transition-colors duration-200 cursor-pointer">
         <Link
           href={group.items[0]?.href ?? "#"}
-          className="text-[14px] leading-[22.4px] font-[400] text-inherit no-underline"
+          className="text-sm leading-[22.4px] font-normal text-inherit no-underline"
         >
           {group.heading}
         </Link>
         <button
           type="button"
-          className="p-[4px] text-inherit"
+          className="p-1 text-inherit"
           onClick={() => setOpen((v) => !v)}
           aria-expanded={open}
           aria-label={`Toggle ${group.heading}`}
         >
           <ChevronDownIcon
-            className={`w-[10px] h-[7px] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
+            className={`w-2.5 h-[7px] transition-transform duration-200 ${open ? "rotate-180" : ""}`}
           />
         </button>
       </div>
       {open && (
-        <ul className="list-none p-0 m-0 pl-[19px] flex flex-col gap-[14px] ml-[2px] border-l border-[#e0e0e0] my-[15px]">
+        <ul className="list-none p-0 m-0 pl-[19px] flex flex-col gap-3.5 ml-0.5 border-l border-[#e0e0e0] my-[15px]">
           {group.items.map((item, ii) => (
             <li key={ii}>
               <Link
                 href={item.href}
-                className="text-[14px] leading-[16.8px] font-[400] text-[#545454] hover:text-[#0089DD] no-underline transition-colors duration-200"
+                className="text-sm leading-[16.8px] font-normal text-[#545454] hover:text-loading-blue no-underline transition-colors duration-200"
               >
                 {item.label}
               </Link>

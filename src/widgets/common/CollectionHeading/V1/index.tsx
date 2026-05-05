@@ -9,10 +9,10 @@ import { CollectionHeadingProps } from "../types";
  * Simple collection title with a horizontal divider (border-bottom).
  *
  * Layout by breakpoint:
- * - 360px (mobile):  pt-[25px] pb-[14px], px-[15px], left-aligned, 20px/24px font, no visible divider
- * - 768px (tablet):  pt-[48px] pb-[27px], px-[30px], left-aligned, 32px/38px font, 1px divider
- * - 1024px (desktop): pt-[48px] pb-[27px], px-[30px], left-aligned, 32px/38px font, 1px divider
- * - 1440px (desktop): pt-[56px] pb-[32px], px-[50px], centered, 32px/38px font, 1px divider
+ * - 360px (mobile):  pt-[25px] pb-3.5, px-[15px], left-aligned, 20px/24px font, no visible divider
+ * - 768px (tablet):  pt-12 pb-[27px], px-[30px], left-aligned, 32px/38px font, 1px divider
+ * - 1024px (desktop): pt-12 pb-[27px], px-[30px], left-aligned, 32px/38px font, 1px divider
+ * - 1440px (desktop): pt-14 pb-8, px-[50px], centered, 32px/38px font, 1px divider
  *
  * Container: max-width 1400px at 1440px, auto-centered
  */
@@ -29,7 +29,7 @@ export const V1 = memo(function V1({ settings }: CollectionHeadingProps) {
     >
       {/* Outer wrapper — section vertical padding */}
       <div
-        className="pt-[25px] pb-[14px] md:pt-[48px] md:pb-[27px] xl:pt-[56px] xl:pb-[32px]"
+        className="pt-[25px] pb-3.5 md:pt-12 md:pb-[27px] xl:pt-14 xl:pb-8"
         style={{ backgroundColor: "#ffffff" }}
       >
         {/* Container — horizontal padding + max-width + auto center */}
@@ -39,7 +39,7 @@ export const V1 = memo(function V1({ settings }: CollectionHeadingProps) {
         >
           {/* Content flex column — left-aligned by default, centered at xl */}
           <div
-            className={`flex flex-col items-start xl:items-center gap-[10px]${
+            className={`flex flex-col items-start xl:items-center gap-2.5${
               showDivider ? "" : ""
             }`}
             style={{
@@ -50,7 +50,7 @@ export const V1 = memo(function V1({ settings }: CollectionHeadingProps) {
           >
             {/* H1 — the collection title */}
             <h1
-              className="text-[20px] leading-[24px] md:text-[32px] md:leading-[38px] pb-0 md:pb-[32px]"
+              className="text-xl leading-[24px] md:text-[32px] md:leading-[38px] pb-0 md:pb-8"
               style={{
                 fontWeight: 700,
                 color: "#000000",

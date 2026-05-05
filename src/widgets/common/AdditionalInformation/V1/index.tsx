@@ -70,11 +70,11 @@ export const V1 = memo(function V1({
           onClick={toggleExpanded}
           aria-expanded={isExpanded}
           data-testid="product-additional-info-section-header"
-          className="w-full flex items-center justify-between cursor-pointer select-none py-[24px] md:py-[27px] xl:py-[32px] bg-transparent border-0 outline-none text-left"
+          className="w-full flex items-center justify-between cursor-pointer select-none py-6 md:py-[27px] xl:py-8 bg-transparent border-0 outline-none text-left"
         >
           <h3
             data-testid="product-additional-info-section-title"
-            className="text-[16px] md:text-[26px] font-bold text-black"
+            className="text-base md:text-[26px] font-bold text-black"
           >
             {sectionTitle}
           </h3>
@@ -112,13 +112,13 @@ export const V1 = memo(function V1({
               >
                 <h4
                   data-testid={`product-additional-info-section-item-label-${index}`}
-                  className="text-[12px] font-bold text-[#1d1d1d] uppercase tracking-normal"
+                  className="text-xs font-bold text-primary uppercase tracking-normal"
                 >
                   {item.label}
                 </h4>
                 <p
                   data-testid={`product-additional-info-section-item-value-${index}`}
-                  className="text-[12px] font-normal text-[#1d1d1d] leading-balanced"
+                  className="text-xs font-normal text-primary leading-balanced"
                 >
                   {item.value}
                 </p>

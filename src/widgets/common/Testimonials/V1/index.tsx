@@ -116,21 +116,21 @@ const TestimonialCard = memo(function TestimonialCard({
       <div className="relative">
         {/* Dark card body */}
         <div
-          className="relative w-full pl-[1.6rem] md:pl-[2.4rem] pt-[1.6rem] md:pt-[2.4rem] pr-[1.6rem] md:pr-[2.4rem] rounded-[4px] rounded-bl-none min-h-[217px]"
+          className="relative w-full pl-[1.6rem] md:pl-[2.4rem] pt-[1.6rem] md:pt-[2.4rem] pr-[1.6rem] md:pr-[2.4rem] rounded rounded-bl-none min-h-[217px]"
           style={{ backgroundColor: cardBackground }}
         >
           {/* Title */}
-          <h4 className="font-[700] text-[18px] mb-[8px] text-[#ffffff] m-0">
+          <h4 className="font-bold text-lg mb-2 text-secondary m-0">
             {item.heading}
           </h4>
 
           {/* Description */}
-          <p className="text-[14px] md:text-[14px] leading-[22.5px] font-[400] mb-[20px] md:mb-[2.6rem] text-[#ffffff] m-0">
+          <p className="text-sm md:text-sm leading-[22.5px] font-normal mb-5 md:mb-[2.6rem] text-secondary m-0">
             {item.reviewText}
           </p>
 
           {/* Star rating (bottom-left) */}
-          <div className="w-fit pt-[1px]">
+          <div className="w-fit pt-px">
             <StarRating
               count={item.stars}
               starColor={starColor}
@@ -139,7 +139,7 @@ const TestimonialCard = memo(function TestimonialCard({
           </div>
 
           {/* Decorative quote mark (bottom-right) */}
-          <div className="absolute -z-0 bottom-[16px] right-[16px] md:bottom-[24px] md:right-[24px]">
+          <div className="absolute -z-0 bottom-4 right-4 md:bottom-6 md:right-6">
             <QuoteMarkMobile />
             <QuoteMark />
           </div>
@@ -147,7 +147,7 @@ const TestimonialCard = memo(function TestimonialCard({
 
         {/* Speech bubble tail */}
         <div
-          className="absolute -bottom-[28px] md:-bottom-[35px] left-0 size-[36px] md:size-[47px] rounded"
+          className="absolute -bottom-7 md:-bottom-[35px] left-0 size-9 md:size-[47px] rounded"
           style={{
             backgroundColor: cardBackground,
             clipPath: "polygon(0 0, 100% 0, 0 94%)",
@@ -156,7 +156,7 @@ const TestimonialCard = memo(function TestimonialCard({
       </div>
 
       {/* Author row */}
-      <div className="flex items-center gap-[1.6rem] ml-[18px] pt-[8px]">
+      <div className="flex items-center gap-[1.6rem] ml-[18px] pt-2">
         <div className="relative w-[60px] h-[60px] rounded-[50%] overflow-hidden flex-shrink-0">
           <Image
             src={item.avatarSrc}
@@ -167,7 +167,7 @@ const TestimonialCard = memo(function TestimonialCard({
             loading="lazy"
           />
         </div>
-        <h3 className="font-[600] text-[14px] text-[#1d1d1d] m-0">
+        <h3 className="font-semibold text-sm text-primary m-0">
           {item.authorName}
         </h3>
       </div>
@@ -225,17 +225,15 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
   return (
     <section
       ref={sectionRef}
-      className="w-full pb-[24.6px] md:pb-[46.7px] xl:pb-[56px] pt-0"
+      className="w-full pb-[24.6px] md:pb-[46.7px] xl:pb-14 pt-0"
       aria-label="Customer testimonials"
     >
       <div className="mx-auto max-w-[1400px] pl-[15px] md:pl-[30px] pr-0 md:pr-[30px] xl:px-[50px]">
         {/* Section heading */}
-        <div className="mt-[25px] md:mt-[56px] mb-[16px] md:mb-[30px] text-left md:text-center testimonials-animate-on-scroll">
-          <h2 className="text-[24px] xl:text-[28px] leading-[29px] lg:leading-[40px] font-[400] text-[#000000] m-0 md:inline-block md:text-left lg:block lg:text-center">
+        <div className="mt-[25px] md:mt-14 mb-4 md:mb-[30px] text-left md:text-center testimonials-animate-on-scroll">
+          <h2 className="text-2xl xl:text-[28px] leading-[29px] lg:leading-[40px] font-normal text-black m-0 md:inline-block md:text-left lg:block lg:text-center">
             {headingRegular}{" "}
-            <strong className="font-[700] block lg:inline">
-              {headingBold}
-            </strong>
+            <strong className="font-bold block lg:inline">{headingBold}</strong>
           </h2>
         </div>
 
@@ -251,7 +249,7 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
           {testimonials.map((item, idx) => (
             <div
               key={idx}
-              className="testimonials-slide shrink-0 w-[75%] md:w-[calc((100%-22px)/2)] min-[1150px]:w-[calc((100%-44px)/3)]"
+              className="testimonials-slide shrink-0 w-3/4 md:w-[calc((100%-22px)/2)] min-[1150px]:w-[calc((100%-44px)/3)]"
               style={{ scrollSnapAlign: "start" }}
             >
               <TestimonialCard

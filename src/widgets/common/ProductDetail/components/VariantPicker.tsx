@@ -193,13 +193,13 @@ export function VariantPicker({
   return (
     <div data-testid="variant-picker-container" className="flex flex-col">
       {selectSizeText && (
-        <p className="text-[16px] font-[700] leading-[25.6px] text-[#000000] m-0">
+        <p className="text-base font-bold leading-[25.6px] text-black m-0">
           {selectSizeText}
         </p>
       )}
       <div
         data-testid="variant-picker-list"
-        className="flex gap-[16px] overflow-x-auto pt-[14px] pr-[12px] [&::-webkit-scrollbar]:hidden mb-[24px]"
+        className="flex gap-4 overflow-x-auto pt-3.5 pr-3 [&::-webkit-scrollbar]:hidden mb-6"
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -260,16 +260,16 @@ export function VariantPicker({
               key={variant.id}
               data-testid={`variant-card-${variant.id}`}
               onClick={() => onVariantSelect?.(variant)}
-              className={`relative flex flex-row cursor-pointer p-0 rounded-[4px] transition-colors flex-shrink-0 min-w-[168px] md:min-w-[175px] overflow-visible max-w-[224px] ${
+              className={`relative flex flex-row cursor-pointer p-0 rounded transition-colors flex-shrink-0 min-w-[168px] md:min-w-[175px] overflow-visible max-w-56 ${
                 matchesRoute
-                  ? "border-[1.6px] border-solid border-[#1D1D1D]"
+                  ? "border-[1.6px] border-solid border-primary"
                   : "border-[0.8px] border-solid border-[rgba(0,0,0,0.1)]"
               }`}
             >
               {matchesRoute && (
                 <div
                   data-testid={`variant-selected-icon-${variant.id}`}
-                  className="absolute -top-[12px] -right-[8px] z-[10] w-[20px] h-[20px] rounded-[50%] bg-[#1D1D1D] flex items-center justify-center"
+                  className="absolute -top-3 -right-2 z-[10] w-5 h-5 rounded-[50%] bg-primary flex items-center justify-center"
                 >
                   <svg
                     width="12"
@@ -292,7 +292,7 @@ export function VariantPicker({
 
               <div
                 data-testid={`variant-swatch-wrapper-${variant.id}`}
-                className="rounded-md overflow-hidden flex-shrink-0 m-[4px]"
+                className="rounded-md overflow-hidden flex-shrink-0 m-1"
               >
                 <Image
                   src={swatchImage || variantImageUrl || fallbackImageUrl}
@@ -308,27 +308,27 @@ export function VariantPicker({
                 data-testid={`variant-content-wrapper-${variant.id}`}
                 className="leading-none flex-1 flex flex-col justify-between min-w-[83px] md:min-w-[90px] max-w-[150px]"
               >
-                <div className="px-[8px]">
+                <div className="px-2">
                   <div
                     data-testid={`variant-name-${variant.id}`}
-                    className="text-[14px] md:text-[12px] leading-[22.4px] md:leading-[19.2px] font-[400] text-[#000000] mt-[5px]"
+                    className="text-sm md:text-xs leading-[22.4px] md:leading-[19.2px] font-normal text-black mt-[5px]"
                   >
                     {name}
                   </div>
                   <div
                     data-testid={`variant-price-section-${variant.id}`}
-                    className="flex items-center gap-[4px] flex-nowrap text-left mr-3 md:mr-4"
+                    className="flex items-center gap-1 flex-nowrap text-left mr-3 md:mr-4"
                   >
-                    <span className="text-[16px] font-[700] leading-[25.6px] text-[#1D1D1D] whitespace-nowrap">
+                    <span className="text-base font-bold leading-[25.6px] text-primary whitespace-nowrap">
                       ₹{priceInRupees}
                     </span>
                     {variantHasDiscount && (
                       <>
-                        <span className="text-[12px] font-[400] leading-[19.2px] text-[#727272] line-through whitespace-nowrap mt-[2px]">
+                        <span className="text-xs font-normal leading-[19.2px] text-surface line-through whitespace-nowrap mt-0.5">
                           {rupeeSymbol}
                           {comparedPriceInRupees}
                         </span>
-                        <span className="text-[12px] font-[500] leading-[19.2px] text-[#D6322C] whitespace-nowrap mt-[2px]">
+                        <span className="text-xs font-medium leading-[19.2px] text-[#D6322C] whitespace-nowrap mt-0.5">
                           {variantDiscountPercentage}
                           {discount}
                         </span>
@@ -340,7 +340,7 @@ export function VariantPicker({
                 {variantUnitWithPrice && (
                   <div
                     data-testid={`variant-unit-price-${variant.id}`}
-                    className="text-left text-[12px] font-[700] leading-[19.2px] text-[#000000] p-[8px]"
+                    className="text-left text-xs font-bold leading-[19.2px] text-black p-2"
                   >
                     ({rupeeSymbol}
                     {variantUnitWithPrice})

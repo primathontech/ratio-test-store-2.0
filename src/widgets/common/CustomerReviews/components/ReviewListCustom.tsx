@@ -83,7 +83,7 @@ function ReviewAvatar({
   return (
     <div
       data-testid={`review-avatar-${reviewId}`}
-      className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-[4px] bg-[#F0F0F0]"
+      className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded bg-[#F0F0F0]"
     >
       {imageUrl ? (
         <Image
@@ -305,7 +305,7 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                           <span
                             key={star}
                             data-testid={`review-star-${review.id || index}-${star}`}
-                            className={`jdgm-star shrink-0 inline-block ${isFilled ? "jdgm--on" : ""} w-[16px] h-[11px] md:w-[12px] md:h-[11px]`}
+                            className={`jdgm-star shrink-0 inline-block ${isFilled ? "jdgm--on" : ""} w-4 h-[11px] md:w-3 md:h-[11px]`}
                             style={{
                               ...jdgmStarStyle,
                             }}
@@ -349,7 +349,7 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                     </div>
                     <span
                       data-testid={`review-date-${review.id}`}
-                      className="text-[12px] text-[#666666] shrink-0"
+                      className="text-xs text-[#666666] shrink-0"
                     >
                       {formatDate(review.date)}
                     </span>
@@ -363,14 +363,14 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                     />
                     <span
                       data-testid={`review-user-name-${review.id}`}
-                      className="font-medium text-[12px] text-[#333333]"
+                      className="font-medium text-xs text-[#333333]"
                     >
                       {displayName}
                     </span>
                     {review.verifiedBuyer && (
                       <span
                         data-testid={`review-verified-badge-${review.id}`}
-                        className="inline-flex items-center justify-center gap-1 w-[58px] h-[16px] rounded-[4px] bg-[#333333] text-white text-[12px] font-medium"
+                        className="inline-flex items-center justify-center gap-1 w-[58px] h-4 rounded bg-[#333333] text-white text-xs font-medium"
                       >
                         Verified
                       </span>
@@ -379,14 +379,14 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                   {(review.title ?? "").trim() !== "" && (
                     <h3
                       data-testid={`review-title-${review.id}`}
-                      className="font-bold text-[12px] text-[#222222] mb-2"
+                      className="font-bold text-xs text-[#222222] mb-2"
                     >
                       {review.title}
                     </h3>
                   )}
                   <div
                     data-testid={`review-text-${review.id}`}
-                    className={`text-[12px] text-[#222222] leading-relaxed ${
+                    className={`text-xs text-[#222222] leading-relaxed ${
                       isLong && !isExpanded ? "md:line-clamp-2" : ""
                     }`}
                   >
@@ -396,7 +396,7 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                     <button
                       type="button"
                       onClick={() => setExpandedReviewId(review.id)}
-                      className="text-[12px] text-[#222222] hover:underline font-normal mt-1"
+                      className="text-xs text-[#222222] hover:underline font-normal mt-1"
                     >
                       Read more
                     </button>
@@ -405,7 +405,7 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                     <button
                       type="button"
                       onClick={() => setExpandedReviewId(null)}
-                      className="text-[12px] text-[#222222] hover:underline font-normal mt-1"
+                      className="text-xs text-[#222222] hover:underline font-normal mt-1"
                     >
                       Show less
                     </button>

@@ -133,7 +133,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
       className={[
         "fixed bottom-0 left-0 right-0",
         "z-[100]",
-        "bg-[#ffffff]",
+        "bg-secondary",
         "shadow-[0_-4px_10px_rgba(0,0,0,0.05)]",
         "transition-transform duration-500",
         isVisible ? "translate-y-0" : "translate-y-full",
@@ -155,26 +155,26 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
       >
         <div className="flex items-center h-[85px] relative">
           {/* Product thumbnail -- positioned to extend above the bar */}
-          <div className="relative w-[120px] min-w-[120px] h-[120px] -mt-[44px] mr-[15px]">
+          <div className="relative w-[120px] min-w-[120px] h-[120px] -mt-11 mr-[15px]">
             <Image
               src={productImage}
               alt={productImageAlt}
               width={120}
               height={120}
-              className="w-[120px] h-[120px] rounded-[24px] object-cover"
+              className="w-[120px] h-[120px] rounded-3xl object-cover"
             />
           </div>
 
           {/* Product info */}
-          <div className="flex-1 min-w-0 py-[10px] pl-[15px]">
+          <div className="flex-1 min-w-0 py-2.5 pl-[15px]">
             {/* Title */}
             <h3
               className={[
                 "",
-                "text-[16px] leading-[19px]",
-                "font-[500]",
-                "text-[#000000]",
-                "mb-[8px]",
+                "text-base leading-[19px]",
+                "font-medium",
+                "text-black",
+                "mb-2",
                 "truncate",
               ].join(" ")}
             >
@@ -186,8 +186,8 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               <span
                 className={[
                   "",
-                  "text-[14px] leading-[14px]",
-                  "font-[400]",
+                  "text-sm leading-[14px]",
+                  "font-normal",
                   "text-[#a3a3a3]",
                   "tracking-[1px]",
                 ].join(" ")}
@@ -197,9 +197,9 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               <span
                 className={[
                   "",
-                  "text-[20px] leading-[20px]",
-                  "font-[700]",
-                  "text-[#1d1d1d]",
+                  "text-xl leading-[20px]",
+                  "font-bold",
+                  "text-primary",
                   "tracking-[1px]",
                 ].join(" ")}
               >
@@ -216,13 +216,13 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               disabled={isLoading}
               className={[
                 "flex items-center justify-center",
-                "w-[256px] h-[53px]",
-                "bg-[#000000] text-[#ffffff]",
+                "w-64 h-[53px]",
+                "bg-black text-secondary",
                 "rounded-[10px]",
-                "border border-[#000000]",
+                "border border-black",
                 "",
-                "text-[20px] leading-[24px]",
-                "font-[700]",
+                "text-xl leading-[24px]",
+                "font-bold",
                 "text-center",
                 "cursor-pointer",
                 "transition-[background-color,color,border] duration-[250ms] ease-in-out",
@@ -241,8 +241,8 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
       {/* ============================================ */}
       {/* MOBILE LAYOUT (<lg): "Add to cart - ₹399" + cart icon */}
       {/* ============================================ */}
-      <div className="lg:hidden px-[15px] py-[8px]">
-        <div className="flex items-center gap-[8px]">
+      <div className="lg:hidden px-[15px] py-2">
+        <div className="flex items-center gap-2">
           {/* ATC button -- mobile: full-width pill with "Add to cart - ₹399" */}
           <button
             type="button"
@@ -252,19 +252,19 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               "flex-1",
               "flex items-center justify-center",
               "h-[59px]",
-              "bg-[#000000] text-[#ffffff]",
+              "bg-black text-secondary",
               "rounded-[100px]",
-              "border border-[#000000]",
+              "border border-black",
               "",
-              "text-[16px] leading-[16px]",
-              "font-[500]",
+              "text-base leading-[16px]",
+              "font-medium",
               "text-center",
               "cursor-pointer",
               "transition-[background-color,color,border] duration-[250ms] ease-in-out",
               "hover:bg-[#222222]",
               "disabled:opacity-70 disabled:cursor-not-allowed",
-              "gap-[4px]",
-              "px-[10px] py-[20px]",
+              "gap-1",
+              "px-2.5 py-5",
             ].join(" ")}
             aria-label={`${buttonText} ${price}`}
           >
@@ -272,13 +272,13 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               <SpinnerIcon />
             ) : (
               <>
-                <span className="text-[16px] leading-[19px] font-[700]">
+                <span className="text-base leading-[19px] font-bold">
                   {buttonText}
                 </span>
-                <span className="text-[16px] leading-[16px] font-[700] mx-[4px]">
+                <span className="text-base leading-[16px] font-bold mx-1">
                   -
                 </span>
-                <span className="text-[16px] leading-[19px] font-[700]">
+                <span className="text-base leading-[19px] font-bold">
                   {price}
                 </span>
               </>
@@ -295,16 +295,16 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
             ].join(" ")}
             aria-label="Cart"
           >
-            <span className="relative w-[24px] h-[24px] text-[#1d1d1d]">
+            <span className="relative w-6 h-6 text-primary">
               <CartIcon />
             </span>
             <span
               className={[
                 "",
                 "text-[10px] leading-[12px]",
-                "font-[400]",
-                "text-[#1d1d1d]",
-                "mt-[2px]",
+                "font-normal",
+                "text-primary",
+                "mt-0.5",
               ].join(" ")}
             >
               Cart

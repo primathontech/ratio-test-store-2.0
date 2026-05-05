@@ -227,7 +227,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
           paint above a z-20 ribbon. */}
       {productLabel && (
         <div
-          className="absolute z-[30] font-[500] text-white pointer-events-none"
+          className="absolute z-[30] font-medium text-white pointer-events-none"
           style={{
             fontSize: "12px",
             ...(isMobile
@@ -242,10 +242,10 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
         >
           <div className="relative inline-block">
             <div
-              className={`pl-[8px] ${
+              className={`pl-2 ${
                 isMobile
-                  ? "text-[12px] leading-none py-[3px] px-0"
-                  : "text-[14px] px-1 pr-[12px]"
+                  ? "text-xs leading-none py-[3px] px-0"
+                  : "text-sm px-1 pr-3"
               }`}
               style={{
                 backgroundColor: productLabel.background || "#82c341",
@@ -597,7 +597,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
 
       {/* Mobile pagination row — small bars (active = wide black, idle = small grey) */}
       {isMobile && images.length > 1 && (
-        <div className="py-[10px] flex items-center justify-center gap-2">
+        <div className="py-2.5 flex items-center justify-center gap-2">
           {images.map((image, index) => {
             const isActive = index === currentIndex;
             return (
@@ -615,8 +615,8 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
                 <span
                   className={`block transition-colors duration-150 ${
                     isActive
-                      ? "bg-black h-[4px] w-[12px] rounded-sm"
-                      : "bg-gray-300 h-[4px] w-[4px] rounded-sm"
+                      ? "bg-black h-1 w-3 rounded-sm"
+                      : "bg-gray-300 h-1 w-1 rounded-sm"
                   }`}
                 />
               </button>

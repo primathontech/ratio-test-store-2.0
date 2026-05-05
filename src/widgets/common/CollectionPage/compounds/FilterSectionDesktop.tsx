@@ -95,13 +95,11 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
 
   return (
     <div className="w-full">
-      <h2 className="text-[24px] font-bold text-black mb-[56px]">
-        {filterTitle}
-      </h2>
+      <h2 className="text-2xl font-bold text-black mb-14">{filterTitle}</h2>
 
       <div
         data-testid="filter-section-desktop-filters-list"
-        className="space-y-[32px]"
+        className="space-y-8"
       >
         {filters.map((filter) => {
           const isExpanded = filterState.expanded.has(filter.id);
@@ -111,7 +109,7 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
             <div
               key={filter.id}
               data-testid={`filter-section-desktop-filter-${filter.id}`}
-              className="border-b border-gray-200 pb-[32px]"
+              className="border-b border-gray-200 pb-8"
             >
               <div
                 data-testid={`filter-section-desktop-filter-header-${filter.id}`}
@@ -124,14 +122,14 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
                 >
                   <h3
                     data-testid={`filter-section-desktop-filter-label-${filter.id}`}
-                    className="text-[16px] font-medium text-black"
+                    className="text-base font-medium text-black"
                   >
                     {filter.filter_label}
                   </h3>
                   {selectedCount > 0 && (
                     <span
                       data-testid={`filter-section-desktop-filter-count-${filter.id}`}
-                      className="bg-black text-white text-[10px] rounded-full size-[16px] flex items-center justify-center font-bold"
+                      className="bg-black text-white text-[10px] rounded-full size-4 flex items-center justify-center font-bold"
                     >
                       {selectedCount}
                     </span>
@@ -158,13 +156,13 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
                 data-testid={`filter-section-desktop-filter-options-container-${filter.id}`}
                 className={`overflow-hidden transition-all duration-300 ease-linear ${
                   isExpanded
-                    ? "max-h-fit opacity-100 mt-[32px]"
+                    ? "max-h-fit opacity-100 mt-8"
                     : "max-h-0 opacity-0"
                 }`}
               >
                 <div
                   data-testid={`filter-section-desktop-filter-options-list-${filter.id}`}
-                  className="space-y-[16px] pt-1 max-h-[unset]"
+                  className="space-y-4 pt-1 max-h-[unset]"
                 >
                   {filter.values.map((value, index) => {
                     const optionId = `${filter.id}_${index}`;
@@ -235,7 +233,7 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
                         </div>
                         <span
                           data-testid={`filter-section-desktop-filter-option-label-${optionId}`}
-                          className="text-[14px] font-medium text-black group-hover:text-gray-700"
+                          className="text-sm font-medium text-black group-hover:text-gray-700"
                         >
                           {value.value}
                         </span>

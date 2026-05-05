@@ -23,7 +23,7 @@ export function ShimmerProductCard({
 }: ShimmerProductCardProps) {
   return (
     <div
-      className={`h-full rounded-none md:rounded-[16px] bg-white overflow-hidden relative flex flex-col p-4 border border-gray-200 ${className || ""}`}
+      className={`h-full rounded-none md:rounded-2xl bg-white overflow-hidden relative flex flex-col p-4 border border-gray-200 ${className || ""}`}
       style={{
         border: settings?.cardLayoutSettings?.border || "1px solid #e5e7eb",
         borderRadius: settings?.cardLayoutSettings?.borderRadius || "16px",

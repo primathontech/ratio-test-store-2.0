@@ -96,7 +96,7 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
       {/* Drawer */}
       <Box
         className={`
-          mobile-nav-drawer fixed top-0 left-0 h-full min-w-[320px] max-w-[350px] w-80 md:w-[367px] md:max-w-[367px] z-[9999] flex flex-col
+          mobile-nav-drawer fixed top-0 left-0 h-full min-w-80 max-w-[350px] w-80 md:w-[367px] md:max-w-[367px] z-[9999] flex flex-col
           transform transition-transform duration-300 ease-in-out shadow-2xl bg-white text-black
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
         `}
@@ -173,7 +173,7 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
               <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
-            <p className="text-[14px] text-[#1d1d1d]">
+            <p className="text-sm text-primary">
               {isLoggedIn ? "My Account" : "Login"}
             </p>
           </button>

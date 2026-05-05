@@ -108,7 +108,7 @@ export const VideoSlide: React.FC<VideoSlideProps> = ({
             src={posterSrc}
             alt={alt || `Banner ${index + 1}`}
             fill
-            className={`object-cover object-[center_20%] rounded-[4px] ${isVideoReady && shouldLoadVideo ? "opacity-0" : "opacity-100"} transition-opacity duration-300`}
+            className={`object-cover object-[center_20%] rounded ${isVideoReady && shouldLoadVideo ? "opacity-0" : "opacity-100"} transition-opacity duration-300`}
             priority={index === 0}
             sizes="100vw"
           />
@@ -121,7 +121,7 @@ export const VideoSlide: React.FC<VideoSlideProps> = ({
             ref={mobileVideoRef}
             src={mobileSrc}
             style={{ aspectRatio: mobileAspectRatio }}
-            className="object-cover object-[center_20%] w-full h-full rounded-[4px] absolute inset-0"
+            className="object-cover object-[center_20%] w-full h-full rounded absolute inset-0"
             muted
             loop
             playsInline
