@@ -68,12 +68,12 @@ export function configureAppTheme(): void {
  * 2. Loads the theme from the file system
  * 3. Returns the theme configuration
  *
- * @param themeName - The theme name (e.g., "dawn")
+ * @param themeName - The theme name (e.g., "bblunt-2")
  * @returns The theme configuration
  *
  * @example
  * ```typescript
- * const theme = await getTheme("dawn");
+ * const theme = await getTheme("bblunt-2");
  * // theme.config contains colors, typography, etc.
  * ```
  */

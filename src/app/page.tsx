@@ -1,5 +1,5 @@
-// app/page.tsx
-import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
+// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
+import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getSEOConfig } from "@/config";
 import { MetaTagGenerator } from "@shopkit/seo";

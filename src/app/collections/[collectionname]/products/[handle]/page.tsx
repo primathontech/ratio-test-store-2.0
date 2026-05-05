@@ -1,4 +1,5 @@
-import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
+// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
+import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
 import { MetaTagGenerator, SEOFactory } from "@shopkit/seo";

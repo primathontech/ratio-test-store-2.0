@@ -1,4 +1,4 @@
-import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
+import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
