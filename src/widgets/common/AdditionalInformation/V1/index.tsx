@@ -4,6 +4,7 @@ import React, { memo, useMemo, useState, useCallback } from "react";
 import Image from "next/image";
 import { Box } from "@/ui/atomic";
 import { AdditionalInformationProps } from "../types";
+import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 import {
   DEFAULT_ADDITIONAL_INFO_SETTINGS,
   getAdditionalInfoItems,
@@ -20,7 +21,7 @@ export const V1 = memo(function V1({
   settings,
   className,
 }: AdditionalInformationProps) {
-  const product = data?.success ? data.data : null;
+  const product = data?.success ? (data.data as ApiProduct | null) : null;
 
   const sectionTitle =
     settings?.sectionTitle || settings?.title || "Additional Information";

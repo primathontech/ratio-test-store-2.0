@@ -1,170 +1,136 @@
 "use client";
 
-import React, { memo, useState, useCallback } from "react";
-import { FaqAccordionProps, FaqItem } from "../types";
+import { useState } from "react";
+import {
+  ensureArray,
+  getFirstValue,
+} from "@/widgets/common/AdditionalInformation/utils/getAdditionalInfoItems";
+import { FaqAccordionProps } from "../types";
 
-/* ------------------------------------------------------------------ */
-/*  Inline SVG -- Chevron icon (draws an UP arrow)                     */
-/*  In collapsed state: rotated 180deg (points DOWN)                   */
-/*  In expanded state: identity (points UP)                            */
-/* ------------------------------------------------------------------ */
+export const COLLECTION_FAQ_METAFIELD_KEY = "collection_faq";
 
-const ChevronIcon = ({ isOpen }: { isOpen: boolean }) => (
-  <svg
-    className={[
-      "transition-transform duration-[400ms] delay-[100ms]",
-      isOpen ? "rotate-0" : "rotate-180",
-    ].join(" ")}
-    xmlns="http://www.w3.org/2000/svg"
-    width="11"
-    height="7"
-    viewBox="0 0 11 7"
-    fill="none"
-    aria-hidden="true"
-  >
-    <path
-      d="M-2.40413e-07 5.5L5.5 -2.40413e-07L11 5.5L10.0237 6.47625L5.5 1.9525L0.976249 6.47625L-2.40413e-07 5.5Z"
-      fill="currentColor"
-    />
-  </svg>
-);
+interface FAQItemData {
+  id: string;
+  question: string;
+  answer: string;
+}
 
-/* ------------------------------------------------------------------ */
-/*  Single FAQ Accordion Item                                          */
-/* ------------------------------------------------------------------ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function transformCollectionFaqData(faqField?: unknown): FAQItemData[] {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nodes = ensureArray<any>(faqField);
+  if (nodes.length === 0) {
+    return [];
+  }
 
-const FaqAccordionItem = ({
+  return nodes.map((item, index) => {
+    const title = (getFirstValue(item?.fields?.title?.value) || "").trim();
+    const description = (
+      getFirstValue(item?.fields?.description?.value) || ""
+    ).trim();
+
+    const id =
+      typeof item?.id === "string" && item.id.trim() !== ""
+        ? item.id.trim()
+        : `faq-${index}`;
+
+    return { id, question: title, answer: description };
+  });
+}
+
+function FAQItem({
   item,
-  isOpen,
+  isActive,
   onToggle,
-  isFirst,
-  isLast,
 }: {
-  item: FaqItem;
-  isOpen: boolean;
+  item: FAQItemData;
+  isActive: boolean;
   onToggle: () => void;
-  isFirst: boolean;
-  isLast: boolean;
-}) => {
+}) {
   return (
-    <div
-      className={[
-        isFirst ? "" : "border-t border-[rgba(29,29,29,0.12)]",
-        isLast ? "border-b border-[rgba(29,29,29,0.12)]" : "",
-      ].join(" ")}
-    >
-      {/* Question row -- summary */}
+    <div>
       <button
-        type="button"
         onClick={onToggle}
-        aria-expanded={isOpen}
-        className={[
-          "w-full flex items-left justify-between",
-          "cursor-pointer",
-          "bg-transparent border-0 outline-none",
-          "py-[14px] px-0",
-          "text-left",
-          "list-none",
-          "[&::-webkit-details-marker]:hidden",
-        ].join(" ")}
+        className="flex w-full items-center justify-between border-b border-[#ebebeb] py-[15px] md:py-5 text-left cursor-pointer"
+        aria-expanded={isActive}
       >
-        <span
-          className={[
-            "",
-            "text-[14px] leading-[22px] md:text-[16px] md:leading-[26px]",
-            "font-[500]",
-            "text-[#000000]",
-            "pr-[16px]",
-          ].join(" ")}
-        >
+        <span className="text-[16px] leading-[1.2] font-medium text-black pr-2">
           {item.question}
         </span>
-        <span
-          className={[
-            "flex items-center justify-center",
-            "shrink-0",
-            "text-[#000000]",
-          ].join(" ")}
+        <svg
+          className={`flex-shrink-0 transition-transform duration-300 ${
+            isActive ? "" : "rotate-180"
+          }`}
+          xmlns="http://www.w3.org/2000/svg"
+          width="11"
+          height="7"
+          viewBox="0 0 11 7"
+          fill="none"
         >
-          <ChevronIcon isOpen={isOpen} />
-        </span>
+          <path
+            d="M-2.40413e-07 5.5L5.5 -2.40413e-07L11 5.5L10.0237 6.47625L5.5 1.9525L0.976249 6.47625L-2.40413e-07 5.5Z"
+            fill="currentColor"
+          ></path>
+        </svg>
       </button>
 
-      {/* Answer panel */}
       <div
-        className={[
-          "overflow-hidden",
-          "transition-all duration-[400ms] ease-in-out",
-          isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0",
-        ].join(" ")}
+        className={`grid transition-all duration-400 ease-in-out ${
+          isActive ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+        }`}
       >
-        <div className="pt-[24px] pb-[22px] px-0">
-          <p
-            className={[
-              "",
-              "text-[12px] leading-[19px] md:text-[14px] md:leading-[22.4px]",
-              "font-[400]",
-              "text-[#545454]",
-              "m-0",
-            ].join(" ")}
-          >
-            {item.answer}
-          </p>
+        <div className="overflow-hidden">
+          <div className="py-[20px]">
+            <p className="text-[14px] leading-[1.6] text-[#545454]">
+              {item.answer}
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
-};
+}
 
-/* ------------------------------------------------------------------ */
-/*  V1 -- FaqAccordion (Collection-page FAQ section)                   */
-/*  Heading "FAQ" centered + flat accordion list, one-open-at-a-time   */
-/* ------------------------------------------------------------------ */
+export function V1({ data, settings, className }: FaqAccordionProps) {
+  const [activeIds, setActiveIds] = useState<string[]>([]);
 
-export const V1 = memo(function V1({ settings, className }: FaqAccordionProps) {
+  const collectionData = data?.data?.data;
+  const metadata = collectionData?.collectionByHandle?.metadata;
+  const faqField = metadata?.[COLLECTION_FAQ_METAFIELD_KEY]?.value;
+  const faqItems = transformCollectionFaqData(faqField);
+
+  if (!faqItems.length) {
+    return null;
+  }
+
   const title = settings?.title || "FAQ";
-  const items = settings?.items || [];
 
-  /* Only one item open at a time -- null means all collapsed */
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-
-  const handleToggleItem = useCallback((index: number) => {
-    setOpenIndex((prev) => (prev === index ? null : index));
-  }, []);
+  const toggle = (id: string) => {
+    setActiveIds((prev) =>
+      prev.includes(id) ? prev.filter((i) => i !== id) : [...prev, id]
+    );
+  };
 
   return (
-    <section className={["bg-[#ffffff]", className || ""].join(" ")}>
-      {/* Container -- max-width 1400px, centered, horizontal padding */}
-      <div
-        className={[
-          "mx-auto max-w-[1400px]",
-          "px-[15px] py-[24px]",
-          "md:px-[50px] md:py-[24px]",
-        ].join(" ")}
-      >
-        {/* Section heading */}
-        <h5
-          className={[
-            "text-[18px] leading-[22px] md:text-[22px] md:leading-[26px] font-[400] text-[#000000]",
-          ].join(" ")}
-        >
-          {title}
-        </h5>
+    <section
+      className={`mb-[25px] px-[15px] md:px-[30px] md:mb-[56px] xl:max-w-[1400px] mx-auto xl:px-[50px] ${
+        className || ""
+      }`}
+    >
+      <h2 className="text-center text-black text-[22px] md:text-[28px] font-normal mb-[15px] xl:mb-[24px]">
+        {title}
+      </h2>
 
-        {/* Accordion list */}
-        <div>
-          {items.map((item, index) => (
-            <FaqAccordionItem
-              key={index}
-              item={item}
-              isOpen={openIndex === index}
-              onToggle={() => handleToggleItem(index)}
-              isFirst={index === 0}
-              isLast={index === items.length - 1}
-            />
-          ))}
-        </div>
+      <div>
+        {faqItems.map((item) => (
+          <FAQItem
+            key={item.id}
+            item={item}
+            isActive={activeIds.includes(item.id)}
+            onToggle={() => toggle(item.id)}
+          />
+        ))}
       </div>
     </section>
   );
-});
+}

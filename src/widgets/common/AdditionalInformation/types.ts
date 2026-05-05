@@ -12,19 +12,6 @@ export interface InfoBlock {
 }
 
 /**
- * A single content block for the SEO prose accordion (V2).
- * Supports headings, paragraphs, and ordered/unordered lists.
- */
-export interface ProseBlock {
-  /** Block type */
-  type: "h1" | "h2" | "h3" | "p" | "ol" | "ul";
-  /** Text content (for h1/h2/h3/p). May include inline markup via segments. */
-  text?: string;
-  /** List items (for ol/ul). Each item is a string. */
-  items?: string[];
-}
-
-/**
  * AdditionalInformation widget settings
  */
 export interface AdditionalInformationSettings {
@@ -38,8 +25,6 @@ export interface AdditionalInformationSettings {
   items?: InfoBlock[];
   /** Whether the accordion starts expanded */
   defaultExpanded?: boolean;
-  /** Structured prose content blocks for SEO accordion (V2) */
-  proseBlocks?: ProseBlock[];
   /** "Marketed By" address shown in V1 grid (V1) */
   marketedBy?: string;
   /** "Country of Origin" shown in V1 grid (V1) */
@@ -49,11 +34,22 @@ export interface AdditionalInformationSettings {
 }
 
 /**
- * AdditionalInformation widget data — IResponse from DATA_SOURCE_TYPES.PRODUCT
+ * AdditionalInformation widget data
+ *  - V1 (product detail): IResponse from DATA_SOURCE_TYPES.PRODUCT
+ *  - V2 (collection page): IResponse from DATA_SOURCE_TYPES.COLLECTION
  */
 export interface AdditionalInformationData {
   success?: boolean;
-  data?: ApiProduct | null;
+  data?:
+    | ApiProduct
+    | {
+        data?: {
+          collectionByHandle?: {
+            description?: string;
+          };
+        };
+      }
+    | null;
 }
 
 /**

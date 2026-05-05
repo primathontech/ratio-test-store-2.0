@@ -5,7 +5,6 @@ import {
   SECTION_LAYOUT_OPTIONS,
   DATA_SOURCE_TYPES,
 } from "@shopkit/builder";
-import { additionalInfoProseBlocks } from "./additional-info-content";
 
 /**
  * Collection Page Template for dawn
@@ -166,42 +165,10 @@ export const template: PageConfig = {
           id: "faq-accordion-widget",
           name: "FAQ Accordion",
           type: WIDGET_TYPES.FaqAccordion,
+          dataSourceKey: "collectionData",
           settings: {
             variant: "v1",
             title: "FAQ",
-            items: [
-              {
-                question: "Which is the best shampoo for hair?",
-                answer:
-                  "Your hair type and particular requirements will determine which shampoo suits you. Look for moisturising shampoos that contain shea butter or argan oil for dry hair. To remove extra oil from you hair, use clarifying shampoos that contain lemon tea tree oil or charcoal. To maintain the color of your color-treated hair, use sulfate-free substitutes. Smoothening shampoos can tame hair that frizzes easily and is difficult to manage. Consulting with a hair care expert can help you select the ideal shampoo for your hair type. This premium shampoo is designed especially for Indian hair types, a sulfur-free, and has a colour-protecting formula.",
-              },
-              {
-                question: "Which shampoo is best for hair growth?",
-                answer:
-                  "For hair growth, look for shampoos containing biotin, caffeine, ketoconazole, or saw palmetto. These ingredients help stimulate follicles, improve blood circulation to the scalp, and reduce hair thinning. BBlunt's hair growth shampoos are formulated with salon-grade ingredients to nourish your scalp and promote healthier, thicker hair.",
-              },
-              {
-                question:
-                  "Which shampoo is best for hair growth and thickness?",
-                answer:
-                  "Shampoos with biotin, collagen, keratin, and natural extracts like amla or bhringraj are excellent for both hair growth and thickness. They strengthen hair strands from root to tip while encouraging new growth. BBlunt offers specially formulated shampoos that address both growth and volume concerns.",
-              },
-              {
-                question: "Which shampoo is good for hair?",
-                answer:
-                  "A good shampoo depends on your hair type. For oily hair, use clarifying formulas. For dry hair, choose moisturizing shampoos with argan oil or shea butter. For colour-treated hair, sulfate-free options are best. BBlunt shampoos are crafted with premium ingredients suited for Indian hair conditions.",
-              },
-              {
-                question: "Which shampoo is best for hair growth in India?",
-                answer:
-                  "In India, shampoos with natural ingredients like bhringraj, amla, hibiscus, and onion are popular for hair growth. Combined with modern actives like biotin and caffeine, these formulations address common Indian hair concerns like hard water damage, pollution, and humidity. BBlunt's range is specifically designed for Indian hair types and conditions.",
-              },
-              {
-                question: "Which is the best hair growth shampoo for women?",
-                answer:
-                  "The best hair growth shampoo for women combines gentle cleansing with growth-stimulating ingredients. Look for formulas with biotin, keratin, and natural botanical extracts. BBlunt's women-focused hair care line offers salon-quality shampoos that promote growth while keeping hair soft, manageable, and healthy-looking.",
-              },
-            ],
           },
         },
       ],
@@ -321,10 +288,10 @@ export const template: PageConfig = {
           id: "additional-info-accordion-widget",
           name: "Additional Information Accordion",
           type: WIDGET_TYPES.AdditionalInformation,
+          dataSourceKey: "collectionData",
           settings: {
             variant: "v2",
             title: "Additional Information",
-            proseBlocks: additionalInfoProseBlocks,
           },
         },
       ],
