@@ -6,7 +6,7 @@
  * Celebration confetti when bar completes (cart reaches 3).
  */
 
-import { useCartTotalQuantity } from "@shopkit/cart";
+import { useCartStore, useCartTotalQuantity } from "@shopkit/cart";
 import { useEffect, useId, useRef, useState } from "react";
 
 function OfferBadgeIcon({ clipId }: { clipId: string }) {
@@ -36,18 +36,36 @@ function OfferBadgeIcon({ clipId }: { clipId: string }) {
 export function ContextualMessageBar({
   message,
   thresholdProductCount,
+  thresholdValue = 0,
+  cartValue = 0,
   dataTestId,
 }: {
   message: string;
   thresholdProductCount: number;
+  thresholdValue?: number;
+  cartValue?: number;
   dataTestId?: string;
 }) {
   const cartCount = useCartTotalQuantity();
+  // Subscribe to cart hydration so we don't fire confetti on the async
+  // jump from "" → real cart loaded from server.
+  const isCartInitialized = useCartStore((state) => state.isInitialized);
   const clipId = useId();
   const prevCartCountRef = useRef<number | null>(null);
   const prevThresholdRef = useRef(thresholdProductCount);
+  const prevCartValueRef = useRef<number | null>(null);
+  const prevThresholdValueRef = useRef(thresholdValue);
   const confettiTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
+
+  // Fill ratio: prefer product-count threshold (existing behavior),
+  // fall back to value-based threshold when product count is not configured.
+  const fillRatio =
+    thresholdProductCount > 0
+      ? Math.min(cartCount, thresholdProductCount) / thresholdProductCount
+      : thresholdValue > 0
+        ? Math.min(cartValue, thresholdValue) / thresholdValue
+        : 0;
 
   const CONFETTI_PREFIX = "confetti_shown_";
 
@@ -81,47 +99,95 @@ export function ContextualMessageBar({
     };
   }, []);
 
-  // Track cart count & threshold changes — clear on empty, trigger confetti on crossing
+  // Track cart & threshold changes — clear on empty, trigger confetti on crossing.
+  // Supports BOTH product-count thresholds (existing) and value-based thresholds (new).
   useEffect(() => {
-    // Skip initial mount — just record current values
-    if (prevCartCountRef.current === null) {
+    // Wait for cart hydration. Without this, an async jump from items=[]
+    // to items=[…persisted items] would cross the threshold in one step
+    // and fire confetti before the user has actually added anything.
+    if (!isCartInitialized) {
+      return;
+    }
+
+    // First run AFTER hydration — record the post-hydration baseline so
+    // confetti only fires on user-driven crossings, not on the hydration jump.
+    if (
+      prevCartCountRef.current === null ||
+      prevCartValueRef.current === null
+    ) {
       prevCartCountRef.current = cartCount;
       prevThresholdRef.current = thresholdProductCount;
+      prevCartValueRef.current = cartValue;
+      prevThresholdValueRef.current = thresholdValue;
       return;
     }
 
     const prevCount = prevCartCountRef.current;
     const prevThreshold = prevThresholdRef.current;
+    const prevCartValue = prevCartValueRef.current;
+    const prevThresholdValue = prevThresholdValueRef.current;
 
-    // Clear confetti keys when cart count decreases (items removed)
+    // Clear confetti keys when cart shrinks (items removed OR value drops)
     // so re-crossing a threshold triggers confetti again
-    if (cartCount < prevCount) {
+    if (cartCount < prevCount || cartValue < prevCartValue) {
       clearAllConfettiKeys();
       setShowConfetti(false);
     }
 
-    // Intermediate threshold crossed: thresholdProductCount jumped up
-    if (
-      cartCount > prevCount &&
-      thresholdProductCount > prevThreshold &&
-      prevThreshold > 0
-    ) {
-      triggerConfetti(prevThreshold);
-    }
+    // === Product-count based confetti (existing behavior, preserved) ===
+    if (thresholdProductCount > 0) {
+      // Intermediate threshold crossed: thresholdProductCount jumped up
+      if (
+        cartCount > prevCount &&
+        thresholdProductCount > prevThreshold &&
+        prevThreshold > 0
+      ) {
+        triggerConfetti(prevThreshold);
+      }
 
-    // Final threshold crossed: cart count reached the threshold
-    if (
-      thresholdProductCount === prevThreshold &&
-      thresholdProductCount > 0 &&
-      prevCount < thresholdProductCount &&
-      cartCount >= thresholdProductCount
-    ) {
-      triggerConfetti(thresholdProductCount);
+      // Final threshold crossed: cart count reached the threshold
+      if (
+        thresholdProductCount === prevThreshold &&
+        prevCount < thresholdProductCount &&
+        cartCount >= thresholdProductCount
+      ) {
+        triggerConfetti(thresholdProductCount);
+      }
+    } else if (thresholdValue > 0) {
+      // === Value-based confetti (new) ===
+      // Only runs when no product-count threshold is configured, so the two
+      // paths never double-fire confetti for the same crossing.
+
+      // Intermediate threshold crossed: thresholdValue jumped up to next tier
+      if (
+        cartValue > prevCartValue &&
+        thresholdValue > prevThresholdValue &&
+        prevThresholdValue > 0
+      ) {
+        triggerConfetti(prevThresholdValue);
+      }
+
+      // Final threshold crossed: cart value reached the threshold
+      if (
+        thresholdValue === prevThresholdValue &&
+        prevCartValue < thresholdValue &&
+        cartValue >= thresholdValue
+      ) {
+        triggerConfetti(thresholdValue);
+      }
     }
 
     prevCartCountRef.current = cartCount;
     prevThresholdRef.current = thresholdProductCount;
-  }, [cartCount, thresholdProductCount]);
+    prevCartValueRef.current = cartValue;
+    prevThresholdValueRef.current = thresholdValue;
+  }, [
+    cartCount,
+    thresholdProductCount,
+    cartValue,
+    thresholdValue,
+    isCartInitialized,
+  ]);
 
   return (
     <div className="relative px-[15px] py-[6px]">
@@ -147,14 +213,12 @@ export function ContextualMessageBar({
           background: "#dad6ffb2",
         }}
       >
-        {/* Animated teal fill — grows from 0% to 100% as cart goes 0→3 */}
+        {/* Animated teal fill — grows from 0% to 100% as cart progresses
+            toward whichever threshold is configured (product count or value). */}
         <div
           className="absolute left-0 top-0 h-full"
           style={{
-            width:
-              thresholdProductCount > 0
-                ? `${(Math.min(cartCount, thresholdProductCount) / thresholdProductCount) * 100}%`
-                : "0%",
+            width: `${fillRatio * 100}%`,
             backgroundColor: "#C1FF8380",
             transition: "width 600ms ease",
           }}

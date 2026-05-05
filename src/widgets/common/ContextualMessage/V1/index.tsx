@@ -51,13 +51,16 @@ export const V1: React.FC<Props> = ({
   // Delay before switching from congrats to next offer (in milliseconds)
   const MESSAGE_SWITCH_DELAY = 3000; // 3 seconds
 
-  // Calculate cart total and product count from items
+  // Calculate cart total in RUPEES (env thresholds are in rupees, e.g. "499").
+  // The cart API returns `price.amount` in paise (smallest currency unit), so
+  // we divide by 100 to bring it into the same unit as the threshold env vars.
   const cartValue = useMemo(() => {
-    return items.reduce((total, item) => {
+    const totalInPaise = items.reduce((total, item) => {
       const itemPrice =
         typeof item.price === "number" ? item.price : item.price.amount;
       return total + itemPrice * item.quantity;
     }, 0);
+    return totalInPaise / 100;
   }, [items]);
 
   const productCount = useMemo(() => {
@@ -164,6 +167,8 @@ export const V1: React.FC<Props> = ({
         message={currentMessage}
         thresholdProductCount={messageResult.thresholdProductCount}
         dataTestId="aqualogica-contextual-message-text"
+        thresholdValue={messageResult.thresholdValue}
+        cartValue={cartValue}
       />
     </div>
   );

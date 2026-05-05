@@ -46,6 +46,7 @@ export interface ContextualMessageResult {
   congratsMessage?: string; // Message to show first (when threshold is crossed)
   nextOfferMessage?: string; // Message to show after delay (next offer's "add more")
   thresholdProductCount: number; // Product count threshold for the active condition
+  thresholdValue: number; // Cart value threshold for the active condition
 }
 
 /**
@@ -240,6 +241,7 @@ export function calculateContextualMessage(
       offerType: null,
       hasAlternatingMessages: false,
       thresholdProductCount: 0,
+      thresholdValue: 0,
     };
   }
 
@@ -265,6 +267,7 @@ export function calculateContextualMessage(
         offerType,
         hasAlternatingMessages: false,
         thresholdProductCount: config.thresholdProductCount,
+        thresholdValue: config.thresholdValue,
       };
     }
 
@@ -292,6 +295,7 @@ export function calculateContextualMessage(
           congratsMessage: congratsMessage,
           nextOfferMessage: nextOfferMessage,
           thresholdProductCount: nextConfig.thresholdProductCount,
+          thresholdValue: nextConfig.thresholdValue,
         };
       }
       // If next threshold is also met, continue to next iteration
@@ -307,6 +311,7 @@ export function calculateContextualMessage(
       offerType,
       hasAlternatingMessages: false,
       thresholdProductCount: config.thresholdProductCount,
+      thresholdValue: config.thresholdValue,
     };
   }
 
@@ -320,6 +325,7 @@ export function calculateContextualMessage(
     offerType: finalConfig.offerType,
     hasAlternatingMessages: false,
     thresholdProductCount: finalConfig.thresholdProductCount,
+    thresholdValue: finalConfig.thresholdValue,
   };
 }
 
