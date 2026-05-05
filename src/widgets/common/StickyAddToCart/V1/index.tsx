@@ -2,7 +2,6 @@
 
 import React, { memo, useState, useEffect, useCallback } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { StickyAddToCartProps } from "../types";
 
 /* ------------------------------------------------------------------ */
@@ -235,81 +234,6 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               {isLoading ? <SpinnerIcon /> : <span>{buttonText}</span>}
             </button>
           </div>
-        </div>
-      </div>
-
-      {/* ============================================ */}
-      {/* MOBILE LAYOUT (<lg): "Add to cart - ₹399" + cart icon */}
-      {/* ============================================ */}
-      <div className="lg:hidden px-[15px] py-2">
-        <div className="flex items-center gap-2">
-          {/* ATC button -- mobile: full-width pill with "Add to cart - ₹399" */}
-          <button
-            type="button"
-            onClick={handleAddToCart}
-            disabled={isLoading}
-            className={[
-              "flex-1",
-              "flex items-center justify-center",
-              "h-[59px]",
-              "bg-black text-secondary",
-              "rounded-[100px]",
-              "border border-black",
-              "",
-              "text-base leading-[16px]",
-              "font-medium",
-              "text-center",
-              "cursor-pointer",
-              "transition-[background-color,color,border] duration-[250ms] ease-in-out",
-              "hover:bg-[#222222]",
-              "disabled:opacity-70 disabled:cursor-not-allowed",
-              "gap-1",
-              "px-2.5 py-5",
-            ].join(" ")}
-            aria-label={`${buttonText} ${price}`}
-          >
-            {isLoading ? (
-              <SpinnerIcon />
-            ) : (
-              <>
-                <span className="text-base leading-[19px] font-bold">
-                  {buttonText}
-                </span>
-                <span className="text-base leading-[16px] font-bold mx-1">
-                  -
-                </span>
-                <span className="text-base leading-[19px] font-bold">
-                  {price}
-                </span>
-              </>
-            )}
-          </button>
-
-          {/* Cart icon link */}
-          <Link
-            href={cartHref}
-            className={[
-              "flex flex-col items-center justify-center",
-              "w-[59px] h-[59px]",
-              "shrink-0",
-            ].join(" ")}
-            aria-label="Cart"
-          >
-            <span className="relative w-6 h-6 text-primary">
-              <CartIcon />
-            </span>
-            <span
-              className={[
-                "",
-                "text-[10px] leading-[12px]",
-                "font-normal",
-                "text-primary",
-                "mt-0.5",
-              ].join(" ")}
-            >
-              Cart
-            </span>
-          </Link>
         </div>
       </div>
     </div>

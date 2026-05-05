@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { memo, useState } from "react";
 
+import { ContextualMessage } from "@/widgets/common/ContextualMessage";
 import {
   AccordionToggleIcon,
   FooterSection,
@@ -11,6 +12,7 @@ import {
   PaymentMethods,
   ServiceSections,
   SocialLinks,
+  StickyFooter,
 } from "../components";
 import {
   DEFAULT_ABOUT_LINKS,
@@ -22,6 +24,7 @@ import {
   DEFAULT_SOCIAL_LINKS,
   DEFAULT_USEFUL_LINKS,
   FOOTER_CONSTANTS,
+  MOBILE_NAVIGATION_ITEMS,
 } from "../constants";
 import { FooterProps } from "../types";
 
@@ -65,8 +68,8 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
       <div className="mx-auto">
         {/* Main Footer Content */}
         <div
-          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[22px] md:px-0 md:pt-10 transition-all duration-300 pb-[30px] max-w-[1300px] ${
-            isMobileAccordionOpen ? "pb-[100px]" : "pb-[120px] md:pb-10"
+          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[22px] md:px-0 md:pt-[40px] transition-all duration-300 pb-0 md:pb-[30px] max-w-[1300px] ${
+            isMobileAccordionOpen ? "pb-[100px]" : "pb-[100px] md:pb-[40px]"
           }`}
         >
           {/* Mobile Layout */}
@@ -74,8 +77,8 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
             {/* Main Accordion Header */}
             <button
               onClick={() => setIsMobileAccordionOpen(!isMobileAccordionOpen)}
-              className={`w-full text-left flex justify-between items-center transition-all duration-300 ${
-                isMobileAccordionOpen ? "my-[15px]" : "mb-4"
+              className={`w-full text-left flex justify-between items-center transition-all duration-300 leading-[16.8px] ${
+                isMobileAccordionOpen ? "my-[15px]" : "mb-0"
               }`}
               aria-expanded={isMobileAccordionOpen}
               aria-controls="mobile-footer-content"
@@ -365,6 +368,12 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
             </div>
           </div>
         </div>
+      </div>
+
+      <ContextualMessage data={{}} settings={{ variant: "v1" }} />
+
+      <div className="fixed bottom-[16px] left-[16px] right-[16px] z-[50] block md:hidden">
+        <StickyFooter items={MOBILE_NAVIGATION_ITEMS} />
       </div>
     </footer>
   );

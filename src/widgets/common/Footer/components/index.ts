@@ -5,3 +5,4 @@ export { PaymentMethods } from "./PaymentMethods";
 export { ServiceSections } from "./ServiceSections";
 export { SocialIcon } from "./SocialIcon";
 export { SocialLinks } from "./SocialLinks";
+export { StickyFooter } from "./StickyFooter";

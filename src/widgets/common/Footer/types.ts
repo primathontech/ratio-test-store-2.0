@@ -1,3 +1,4 @@
+import React from "react";
 import { WidgetProps } from "@/widgets/types";
 
 export interface FooterLink {
@@ -20,6 +21,13 @@ export interface PaymentMethod {
 export interface ServiceIconItem {
   name: string;
   image: string;
+}
+
+export interface MobileNavigationItem {
+  id: string;
+  label: string;
+  icon: React.ReactNode;
+  path: string;
 }
 
 /**
