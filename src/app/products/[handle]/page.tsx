@@ -1,16 +1,16 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
-import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
+import { getStaticLocale } from "@/bootstrap/i18n";
 import { MetaTagGenerator, SEOFactory } from "@shopkit/seo";
-import { getThemeName } from "@/utils";
+import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-export const revalidate = 3600;
+export const revalidate = 30;
 export const dynamicParams = true;
 
 const seoSystem = SEOFactory.createForEnvironment(
@@ -166,21 +166,27 @@ export default async function ProductPage({
 
     // Get locale first, then run other operations in parallel
     const locale = getStaticLocale();
-    const [messages, product] = await Promise.all([
-      loadMessages(locale as "en", "products"),
-      fetchProduct(params.handle),
-    ]);
-
-    if (!product) {
-      notFound();
-    }
 
     const routeContext = {
       templateName: TEMPLATE_TYPES.products,
       path: `/products/${params.handle}`,
       params,
       query: {},
+      fetchAPITemplate: true,
     };
+
+    const [messages, product] = await Promise.all([
+      getRouteTranslations({
+        themeName,
+        routeContext,
+        language: locale,
+      }),
+      fetchProduct(params.handle),
+    ]);
+
+    if (!product) {
+      notFound();
+    }
 
     // Get the page builder with widget manifest
     const pageBuilder = getPageBuilder();
