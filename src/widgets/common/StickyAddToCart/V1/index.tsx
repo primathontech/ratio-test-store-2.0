@@ -1,8 +1,39 @@
 "use client";
 
-import React, { memo, useState, useEffect, useCallback } from "react";
+import React, { memo, useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
+import { ProductCardToast } from "@/ui/components/ProductCard/Toast";
+import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 import { StickyAddToCartProps } from "../types";
+
+/**
+ * Build the cart item shape expected by `@shopkit/cart`'s `addItem`.
+ * Mirrors the helper used in `BbluntProductInfo` so behaviour matches PDP.
+ */
+function buildCartItem(product: ApiProduct, variantId?: string): CartItem {
+  const lineId = variantId ?? product.id;
+  const defaultVariant =
+    product.variants?.find((v) => v.title === "Default Title") ||
+    product.variants?.[0];
+  const priceInPaise = defaultVariant?.price ?? product.price ?? 0;
+  const compareAtPriceInPaise = product.compare_at_price;
+
+  return {
+    id: lineId,
+    productId: product.id,
+    variantId: variantId || defaultVariant?.id,
+    sku: defaultVariant?.sku,
+    title: product.title,
+    price: { amount: priceInPaise, currencyCode: "INR" },
+    compareAtPrice: compareAtPriceInPaise
+      ? { amount: compareAtPriceInPaise, currencyCode: "INR" }
+      : undefined,
+    quantity: 1,
+    image: product.image?.url || product.images?.[0]?.url,
+    product_type: product.product_type,
+  };
+}
 
 /* ------------------------------------------------------------------ */
 /*  Inline SVG Icons                                                    */
@@ -96,7 +127,52 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
   const cartHref = settings?.cartHref || "/cart";
 
   const [isVisible, setIsVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [showToast, setShowToast] = useState(false);
+
+  const addItem = useCartStore((s) => s.addItem);
+  const loadingItems = useCartStore((s) => s.loadingItems);
+  const isCartOpen = useCartStore((s) => s.isOpen);
+  const items = useCartItems();
+  const isLoading = Boolean(product?.id && loadingItems[product.id]);
+
+  const cartLine = product
+    ? items.find((i) => (i.productId ?? i.product_id) === product.id)
+    : undefined;
+  const currentQuantity = cartLine?.quantity ?? 0;
+  const isInCart = !!cartLine;
+
+  const pendingAddRef = useRef<{
+    prevQuantity: number;
+    prevInCart: boolean;
+  } | null>(null);
+  const pendingTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    const pending = pendingAddRef.current;
+    if (!pending) {
+      return;
+    }
+    const becameInCart = isInCart && !pending.prevInCart;
+    const quantityIncreased =
+      isInCart && currentQuantity > pending.prevQuantity;
+    if (becameInCart || quantityIncreased) {
+      setShowToast(true);
+      pendingAddRef.current = null;
+      if (pendingTimeoutRef.current) {
+        clearTimeout(pendingTimeoutRef.current);
+        pendingTimeoutRef.current = null;
+      }
+    }
+  }, [isInCart, currentQuantity]);
+
+  useEffect(
+    () => () => {
+      if (pendingTimeoutRef.current) {
+        clearTimeout(pendingTimeoutRef.current);
+      }
+    },
+    []
+  );
 
   /* Show/hide bar on scroll -- appears after scrolling past ~500px */
   useEffect(() => {
@@ -114,13 +190,29 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  const handleAddToCart = useCallback(() => {
-    setIsLoading(true);
-    /* Simulate add-to-cart -- in production, connect to useCart hook */
-    setTimeout(() => {
-      setIsLoading(false);
-    }, 1500);
-  }, []);
+  const handleAddToCart = useCallback(async () => {
+    if (!product) {
+      return;
+    }
+    pendingAddRef.current = {
+      prevQuantity: currentQuantity,
+      prevInCart: isInCart,
+    };
+    if (pendingTimeoutRef.current) {
+      clearTimeout(pendingTimeoutRef.current);
+    }
+    pendingTimeoutRef.current = setTimeout(() => {
+      pendingAddRef.current = null;
+      pendingTimeoutRef.current = null;
+    }, 5000);
+
+    try {
+      await addItem(buildCartItem(product));
+    } catch (error) {
+      // eslint-disable-next-line no-console
+      console.error("[StickyAddToCart] addItem failed:", error);
+    }
+  }, [product, addItem, currentQuantity, isInCart]);
 
   // Hide widget when no product data and no settings fallback
   if (!product && !settings?.productTitle) {
@@ -135,7 +227,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
         "bg-secondary",
         "shadow-[0_-4px_10px_rgba(0,0,0,0.05)]",
         "transition-transform duration-500",
-        isVisible ? "translate-y-0" : "translate-y-full",
+        isVisible ? "translate-y-0" : "translate-y-[calc(100%+44px)]",
       ].join(" ")}
       style={{
         transitionTimingFunction: "cubic-bezier(0.19, 1, 0.22, 1)",
@@ -236,6 +328,12 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
           </div>
         </div>
       </div>
+
+      <ProductCardToast
+        show={showToast && !isCartOpen}
+        onClose={() => setShowToast(false)}
+        title="Item added to your cart"
+      />
     </div>
   );
 });

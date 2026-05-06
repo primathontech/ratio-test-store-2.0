@@ -113,7 +113,7 @@ export const template: PageConfig = {
             netContentText: "Net content",
             inclusiveOfAllTaxesText: "Incl. of all taxes",
             reviewsText: "reviews",
-            mrp: "MRP:",
+            mrp: "M.R.P.",
             usp: "USP",
             discount: "% off",
             selectSizeText: "Select size",
@@ -369,30 +369,30 @@ export const template: PageConfig = {
     },
 
     // Breadcrumb Section
-    {
-      id: "breadcrumb-section",
-      name: "Breadcrumb",
-      type: SECTION_TYPES.CONTENT_SECTION,
-      settings: {
-        layout: SECTION_LAYOUT_OPTIONS.FULL,
-        responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-        },
-      },
-      widgets: [
-        {
-          id: "bblunt-2-breadcrumb",
-          name: "Breadcrumb",
-          type: WIDGET_TYPES.Breadcrumb,
-          dataSourceKey: "productData",
-          settings: {
-            variant: "v1",
-          },
-        },
-      ],
-    },
+    // {
+    //   id: "breadcrumb-section",
+    //   name: "Breadcrumb",
+    //   type: SECTION_TYPES.CONTENT_SECTION,
+    //   settings: {
+    //     layout: SECTION_LAYOUT_OPTIONS.FULL,
+    //     responsive: {
+    //       mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //       tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //       desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //     },
+    //   },
+    //   widgets: [
+    //     {
+    //       id: "bblunt-2-breadcrumb",
+    //       name: "Breadcrumb",
+    //       type: WIDGET_TYPES.Breadcrumb,
+    //       dataSourceKey: "productData",
+    //       settings: {
+    //         variant: "v1",
+    //       },
+    //     },
+    //   ],
+    // },
 
     // Footer Section
     {

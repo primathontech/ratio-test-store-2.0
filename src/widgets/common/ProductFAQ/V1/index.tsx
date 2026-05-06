@@ -1,7 +1,6 @@
 "use client";
 
 import React, { memo, useState, useCallback } from "react";
-import Image from "next/image";
 import { Box } from "@/ui/atomic";
 import { ProductFAQProps, FAQItem } from "../types";
 import {
@@ -82,20 +81,42 @@ const PlusMinusIcon = ({ isOpen }: { isOpen: boolean }) => (
     className="relative inline-flex items-center justify-center w-4 h-4"
     aria-hidden="true"
   >
-    <Image
-      src="/svg/plus_icon.svg"
-      alt=""
-      width={14}
-      height={14}
+    <svg
       className={`absolute inset-0 m-auto transition-all duration-[400ms] ease-in-out ${isOpen ? "opacity-0 rotate-90" : "opacity-100 rotate-0"}`}
-    />
-    <Image
-      src="/svg/minus_icon.svg"
-      alt=""
-      width={14}
-      height={7}
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="14"
+      viewBox="0 0 14 14"
+      fill="none"
+    >
+      <path
+        d="M7 2V12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+      <path
+        d="M2 7H12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
+    <svg
       className={`absolute inset-0 m-auto transition-all duration-[400ms] ease-in-out ${isOpen ? "opacity-100 rotate-0" : "opacity-0 -rotate-90"}`}
-    />
+      xmlns="http://www.w3.org/2000/svg"
+      width="14"
+      height="7"
+      viewBox="0 0 14 7"
+      fill="none"
+    >
+      <path
+        d="M2 3.5H12"
+        stroke="currentColor"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+      />
+    </svg>
   </span>
 );
 
@@ -118,13 +139,13 @@ const FAQAccordionItem = ({
 }) => (
   <div
     data-testid="product-faq-item"
-    className={`pb-2.5 mb-2.5 ${isFirst ? "" : "border-t border-[rgba(29,29,29,0.12)]"} ${isLast ? "border-b border-[rgba(29,29,29,0.12)]" : ""}`}
+    className={`pb-2.5 mb-2.5 ${isFirst ? "" : "border-t border-[rgba(29,29,29,0.12)]"} ${isLast ? "border-b border-[rgba(29,29,29,0.12)] !mb-0" : ""}`}
   >
     <button
       type="button"
       onClick={onToggle}
       aria-expanded={isOpen}
-      className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-3.5 px-0 text-left"
+      className={`w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none pb-3.5 px-0 text-left ${isFirst ? "pt-0" : "pt-3.5"}`}
     >
       <span className="text-base leading-[22px] md:text-lg md:leading-[26px] font-medium md:font-bold text-primary pr-4">
         {item.question}
@@ -138,7 +159,7 @@ const FAQAccordionItem = ({
       className={`overflow-hidden transition-all duration-[400ms] ease-in-out ${isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}`}
     >
       <div className="pt-6 pb-[22px] px-0">
-        <p className="text-xs leading-[19px] md:text-sm md:leading-[22.4px] font-normal text-[#545454] m-0">
+        <p className="leading-[19px] text-sm md:leading-[22.4px] font-normal text-[#555555] m-0">
           {item.answer}
         </p>
       </div>
@@ -157,9 +178,9 @@ export const V1 = memo(function V1({
   settings,
   className,
 }: ProductFAQProps) {
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openItems, setOpenItems] = useState<Record<number, boolean>>({});
   const handleToggleItem = useCallback((index: number) => {
-    setOpenIndex((prev) => (prev === index ? null : index));
+    setOpenItems((prev) => ({ ...prev, [index]: !prev[index] }));
   }, []);
 
   const [isSectionOpen, setIsSectionOpen] = useState<boolean>(
@@ -190,17 +211,17 @@ export const V1 = memo(function V1({
       data-testid="product-faq-section-container"
       className={`bg-[#F4F6F8] xl:px-[30px] ${className || ""}`}
     >
-      <Box className="max-w-[1400px] mx-auto px-4 md:px-6 rounded-3xl bg-white border-b border-faq-border">
+      <Box className="max-w-[1400px] mx-auto px-4 md:px-6 rounded-[15px] bg-white border-b border-faq-border">
         <button
           type="button"
           onClick={handleToggleSection}
           aria-expanded={isSectionOpen}
           className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-6 md:py-[38px] text-left"
         >
-          <h5 className="text-base md:text-2xl leading-[29px] font-normal md:font-bold text-black m-0">
+          <h5 className="text-base md:text-2xl leading-[19.2px] md:leading-[29px] font-normal md:font-bold text-black m-0 ">
             {title}
           </h5>
-          <span className="flex items-center justify-center w-[18px] h-[18px] text-primary shrink-0 ml-4">
+          <span className="flex items-center justify-center w-[12px] md:w-[18px] h-[12px] md:h-[18px] text-primary shrink-0 ml-4">
             <ChevronIcon isOpen={isSectionOpen} />
           </span>
         </button>
@@ -212,7 +233,7 @@ export const V1 = memo(function V1({
             <FAQAccordionItem
               key={index}
               item={item}
-              isOpen={openIndex === index}
+              isOpen={Boolean(openItems[index])}
               onToggle={() => handleToggleItem(index)}
               isFirst={index === 0}
               isLast={index === items.length - 1}

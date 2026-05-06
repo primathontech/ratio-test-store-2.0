@@ -106,7 +106,7 @@ export function BbluntProductInfo({
   netContentText = "Net content",
   inclusiveOfAllTaxesText = "Incl. of all taxes",
   reviewsText = "reviews",
-  mrp = "MRP:",
+  mrp = "M.R.P.",
   discount = "% off",
   usp = "USP",
   rupeeSymbol = "₹",
@@ -326,8 +326,8 @@ export function BbluntProductInfo({
       data-testid="bblunt-product-all-details-rating-section"
     >
       <svg
-        className="w-4 h-4 flex-shrink-0"
-        fill="#E6B30D"
+        className="w-[20px] h-[20px] flex-shrink-0 pr-0.5"
+        fill="#FBC210"
         viewBox="0 0 16 16"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -348,7 +348,7 @@ export function BbluntProductInfo({
       >
         {reviews?.average ?? "—"}
       </span>
-      <span className="text-sm md:text-base font-medium mx-1 text-primary">
+      <span className="text-sm md:text-base font-medium mx-[2px] text-primary">
         ┃
       </span>
       <span
@@ -393,7 +393,7 @@ export function BbluntProductInfo({
           <div
             key={index}
             data-testid={`product-tag-${index}`}
-            className="flex items-center gap-3 rounded md:rounded-[7px] border-[0.5px] border-[#DDDDDD] py-0 md:py-[3px] px-[13px]"
+            className="flex items-center gap-[8px] md:gap-3 rounded md:rounded-[7px] border-[0.5px] border-[#DDDDDD] py-0 md:py-[3px] px-[8px] md:px-[13px]"
             style={{ backgroundColor: "#f4f6f8" }}
           >
             <Image
@@ -438,7 +438,7 @@ export function BbluntProductInfo({
   };
 
   const priceSection = () => (
-    <div data-testid="price-section-container" className="mb-6">
+    <div data-testid="price-section-container" className="mb-7">
       <div
         data-testid="price-section-content"
         className="flex flex-col md:gap-2 gap-4"
@@ -502,12 +502,12 @@ export function BbluntProductInfo({
         ) : (
           <div
             data-testid="price-no-discount-line"
-            className="flex flex-wrap items-baseline gap-2 mt-4"
+            className="flex flex-wrap items-baseline gap-1"
           >
-            <span className="text-sm font-normal text-[#a3a3a3] leading-[14px] mt-2">
+            <span className="text-sm font-normal text-[#a3a3a3] leading-[20px] mt-2">
               {mrp}
             </span>
-            <span className="text-[22px] md:text-[26px] font-bold text-primary leading-[1em] mt-2">
+            <span className="text-[22px] md:text-[26px] font-bold text-primary leading-[1em]">
               {rupeeSymbol}
               {currentPrice}
             </span>
@@ -527,58 +527,45 @@ export function BbluntProductInfo({
     >
       {showMobileLikeLayout && (
         <div data-testid="mobile-layout-container">
-          {productTitle}
-          {ratingSection}
-          {productTagsSection()}
+          <div className="px-[16px] md:px-0">
+            {productTitle}
+            {ratingSection}
+            {productTagsSection()}
+          </div>
           {renderGallery && (
             <div
               data-testid="mobile-gallery-wrapper"
-              className="mb-4 md:hidden"
+              className="mb-2 md:hidden"
             >
               {renderGallery}
             </div>
           )}
-          {netContentSection()}
-          {priceSection()}
-          {showProductMarquee && productMarqueeText && (
-            <ProductMarquee
-              text={productMarqueeText}
-              couponCode={productMarqueeCouponCode}
-              speed={productMarqueeSpeed}
-              href={productMarqueeHref}
-            />
-          )}
-          {productVariants && (
-            <VariantPicker
-              data={productVariants}
-              selectSizeText={selectSizeText}
-              fallbackImageUrl={data?.images?.[0]?.url ?? ""}
-              selectedVariantId={selectedVariantId}
-              compareAtPrice={compareAtPrice || 0}
-              currentPrice={currentPrice}
-              discount={discount}
-              rupeeSymbol={rupeeSymbol}
-              onVariantSelect={handleVariantSelect}
-            />
-          )}
+          <div className="px-[16px] md:px-0">
+            {netContentSection()}
+            {priceSection()}
 
-          {/* Mobile Add to Cart Button */}
-          <button
-            data-testid="cart-item-add-to-cart-mobile"
-            className="flex md:hidden w-full h-12 bg-primary text-white rounded-[10px] font-bold text-lg leading-[1.2em] items-center justify-center mt-6 transition-opacity hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-            onClick={handleAddToCart}
-            disabled={isLoading || !data?.availableForSale || !cartToken}
-          >
-            {isLoading ? (
-              <div className="flex items-center justify-center">
-                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-              </div>
-            ) : !data?.availableForSale ? (
-              soldOutText
-            ) : (
-              addToCartText
+            {showProductMarquee && productMarqueeText && (
+              <ProductMarquee
+                text={productMarqueeText}
+                couponCode={productMarqueeCouponCode}
+                speed={productMarqueeSpeed}
+                href={productMarqueeHref}
+              />
             )}
-          </button>
+            {productVariants && (
+              <VariantPicker
+                data={productVariants}
+                selectSizeText={selectSizeText}
+                fallbackImageUrl={data?.images?.[0]?.url ?? ""}
+                selectedVariantId={selectedVariantId}
+                compareAtPrice={compareAtPrice || 0}
+                currentPrice={currentPrice}
+                discount={discount}
+                rupeeSymbol={rupeeSymbol}
+                onVariantSelect={handleVariantSelect}
+              />
+            )}
+          </div>
         </div>
       )}
 
@@ -620,7 +607,7 @@ export function BbluntProductInfo({
       {/* Desktop Add to Cart Button */}
       <button
         data-testid="cart-item-add-to-cart"
-        className="hidden md:flex w-full h-12 bg-black text-white rounded-[10px] font-bold text-[22px] leading-[1.2em] items-center justify-center mt-6 transition-opacity shine-link-button disabled:opacity-50 disabled:cursor-not-allowed"
+        className="hidden md:flex w-full h-12 bg-black text-white rounded-[10px] font-bold text-[22px] leading-[1.2em] items-center justify-center transition-opacity shine-link-button disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={handleAddToCart}
         disabled={isLoading || !data?.availableForSale || !cartToken}
       >

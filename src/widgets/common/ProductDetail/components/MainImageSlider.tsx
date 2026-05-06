@@ -297,7 +297,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
           }}
         >
           <div
-            className="embla__container flex gap-6 md:gap-0"
+            className="embla__container flex gap-6 md:gap-0 pl-[10px] md:pl-0"
             style={{
               ...(isMobile ? { gap: `${MOBILE_GAP}px` } : {}),
               willChange: "transform",
@@ -391,8 +391,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
                           ? {
                               position: "relative",
                               height: "100%",
-                              width: "calc(100% - 10px)",
-                              marginLeft: "10px",
+                              width: "100%",
                               overflow: "hidden",
                             }
                           : {
@@ -406,7 +405,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
                         src={image.url}
                         alt={image.altText || "Product image"}
                         fill
-                        className="object-cover"
+                        className="object-cover max-w-[330.4px] max-h-[330.4px] md:max-w-none md:max-h-none"
                         sizes={isMobile ? `${maxMobileWidth}px` : "642px"}
                         priority={index === 0}
                         loading={index === 0 ? "eager" : "lazy"}
@@ -533,10 +532,10 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
         </button>
       )}
 
-      {/* Desktop navigation arrows (hidden on small screens — mobile uses
-          the thumbnail dots row below). */}
+      {/* Navigation arrows — hidden at every viewport ≤1024px (mobile,
+          tablet, md, and lg). Visible only above 1024px. */}
       {showNavigationArrows && isSliderReady && images.length > 1 && (
-        <div className="hidden lg:block">
+        <div className="hidden min-[1025px]:block">
           <div
             className="absolute z-10"
             style={{
@@ -597,7 +596,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
 
       {/* Mobile pagination row — small bars (active = wide black, idle = small grey) */}
       {isMobile && images.length > 1 && (
-        <div className="py-2.5 flex items-center justify-center gap-2">
+        <div className="py-2.5 flex items-center justify-center gap-1">
           {images.map((image, index) => {
             const isActive = index === currentIndex;
             return (

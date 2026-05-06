@@ -170,7 +170,7 @@ const AccordionItem = ({
         </span>
 
         {/* Chevron icon */}
-        <span className="flex items-center justify-center w-[54px] h-5 mr-4 xl:mr-6 text-[rgba(0,0,0,0.8)] group-hover:text-loading-blue transition-colors duration-300">
+        <span className="flex items-center justify-center w-[10px] md:w-[54px] h-2 md:h-5 mr-6 xl:mr-6 text-[rgba(0,0,0,0.8)] group-hover:text-loading-blue transition-colors duration-300">
           <ChevronIcon isOpen={isOpen} />
         </span>
       </button>
