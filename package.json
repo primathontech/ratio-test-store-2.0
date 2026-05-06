@@ -55,7 +55,7 @@
     "@radix-ui/themes": "^3.2.1",
     "@shopify/hydrogen-react": "^2025.5.0",
     "@shopify/storefront-api-client": "^1.0.8",
-    "@shopkit/events": "^0.9.0",
+    "@shopkit/events": "^0.9.1",
     "@shopkit/app-shell": "^1.0.1",
     "@shopkit/asset-cache": "^1.0.0",
     "@shopkit/builder": "^0.1.3",
