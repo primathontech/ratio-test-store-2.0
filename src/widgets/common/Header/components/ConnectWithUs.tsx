@@ -4,6 +4,12 @@ import { Box } from "@/ui/atomic";
 import Link from "next/link";
 import React from "react";
 
+declare global {
+  interface Window {
+    $chatwoot?: { toggle: () => void };
+  }
+}
+
 interface ConnectWithUsItem {
   key: string;
   label: string;
@@ -29,6 +35,19 @@ export const ConnectWithUs: React.FC<ConnectWithUsProps> = ({
           <div
             key={item.key}
             className="text-sm font-bold md:font-normal block cursor-pointer text-primary"
+            onClick={() => {
+              if (typeof window !== "undefined" && window.$chatwoot) {
+                window.$chatwoot.toggle();
+              }
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                if (typeof window !== "undefined" && window.$chatwoot) {
+                  window.$chatwoot.toggle();
+                }
+              }
+            }}
             role="button"
             tabIndex={0}
           >

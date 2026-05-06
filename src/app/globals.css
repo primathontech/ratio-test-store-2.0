@@ -11,6 +11,10 @@
   }
 }
 
+.route-loader .progress-bar {
+  background: #0089dd !important;
+}
+
 @layer base {
   /* Base styles that use CSS variables from theme */
   body {
