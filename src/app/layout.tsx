@@ -26,6 +26,7 @@ import { AppCartInitializer } from "@/bootstrap/cart";
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
 import { fontVariables } from "./fonts";
+import LimeChatScript from "./LimeChatScript";
 
 // =============================================================================
 // DYNAMIC IMPORTS
@@ -117,6 +118,7 @@ export default async function RootLayout({
           src="/scripts/google-ads-pixel-sdk.js"
           strategy="afterInteractive"
         />
+        <LimeChatScript />
       </body>
     </html>
   );
