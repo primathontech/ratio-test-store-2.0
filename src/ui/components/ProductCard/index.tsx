@@ -34,11 +34,15 @@ const StarRating = ({
   reviewCount,
   textColor,
   className = "",
+  valueClassName = "",
+  reviewCountClassName = "",
 }: {
   rating: number;
   reviewCount: number;
   textColor: string;
   className?: string;
+  valueClassName?: string;
+  reviewCountClassName?: string;
 }) => {
   return (
     <div className={`flex items-center gap-[4px] ${className}`.trim()}>
@@ -50,12 +54,15 @@ const StarRating = ({
         <StarIcon filled={rating > 0} />
       </span>
       <span
-        className="text-[12px] md:text-[10px] leading-[16px]"
+        className={`text-[12px] md:text-[10px] leading-[16px] ${valueClassName}`.trim()}
         style={{ color: textColor }}
       >
         {rating.toFixed(1)}
       </span>
-      <span className="text-[14px] leading-[16px]" style={{ color: textColor }}>
+      <span
+        className={`text-[14px] leading-[16px] ${reviewCountClassName}`.trim()}
+        style={{ color: textColor }}
+      >
         {" | "}
         {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
       </span>
@@ -248,10 +255,15 @@ export const ProductCard = memo(function ProductCard({
     searchProductCard = false,
     linkClassName = "",
     imageClassName = "",
+    productImageClassName = "",
     detailsClassName = "",
     titleClassName = "",
     ratingClassName = "",
+    ratingValueClassName = "",
+    reviewCountClassName = "",
+    categoryChipClassName = "",
     priceSectionClassName = "",
+    salePriceClassName = "",
     compareAtPriceClassName = "",
     discountClassName = "",
     actionButtonClassName = "",
@@ -295,7 +307,7 @@ export const ProductCard = memo(function ProductCard({
       className={`block ${searchProductCard ? "" : "h-full"} ${linkClassName}`.trim()}
     >
       <div
-        className={`flex flex-col ${searchProductCard ? "h-auto" : "h-full"} pl-[12px] lg:pl-0 ${className}`.trim()}
+        className={`flex flex-col ${searchProductCard ? "h-auto !pl-0" : "h-full pl-[10px]"} ${className}`.trim()}
         style={{
           backgroundColor: cardBg,
           borderRadius: t.cardRadius,
@@ -366,7 +378,7 @@ export const ProductCard = memo(function ProductCard({
               width={360}
               height={360}
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover rounded-[2px]"
+              className={`absolute inset-0 w-full h-full object-cover rounded-[2px] ${productImageClassName}`.trim()}
               style={{
                 opacity: isHovered && product.hoverImage ? 0 : 1,
                 transition: "opacity 0.5s",
@@ -381,7 +393,7 @@ export const ProductCard = memo(function ProductCard({
                 width={360}
                 height={360}
                 loading="lazy"
-                className="absolute inset-0 w-full h-full object-cover rounded-[2px]"
+                className={`absolute inset-0 w-full h-full object-cover rounded-[2px] ${productImageClassName}`.trim()}
                 style={{
                   opacity: isHovered ? 1 : 0,
                   transform: isHovered ? "scale(1.045)" : "scale(1)",
@@ -401,7 +413,7 @@ export const ProductCard = memo(function ProductCard({
           {showProductType && product.category && (
             <div>
               <span
-                className="inline-flex p-[4.5px] md:p-[8px] text-[12px] md:text-[14px] font-[600] leading-[14px]"
+                className={`inline-flex p-[4.5px] md:p-[8px] text-[12px] md:text-[14px] font-[600] leading-[14px] ${categoryChipClassName}`.trim()}
                 style={{
                   color: t.chipColor,
                   backgroundColor: t.chipBg,
@@ -448,6 +460,8 @@ export const ProductCard = memo(function ProductCard({
                 reviewCount={product.reviewCount}
                 textColor={textPrimary}
                 className={ratingClassName}
+                valueClassName={ratingValueClassName}
+                reviewCountClassName={reviewCountClassName}
               />
             </div>
           )}
@@ -457,7 +471,7 @@ export const ProductCard = memo(function ProductCard({
             className={`flex items-center gap-[6px] flex-wrap mt-auto ${priceSectionClassName}`.trim()}
           >
             <span
-              className="text-[14px] md:text-[16px]"
+              className={`text-[14px] md:text-[16px] ${salePriceClassName}`.trim()}
               style={{
                 color: textPrimary,
                 fontWeight: 600,

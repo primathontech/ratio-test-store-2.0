@@ -1,12 +1,33 @@
 "use client";
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Box, Text } from "@/ui/atomic";
 import { ProductCard } from "@/ui/components/ProductCard";
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
 import { ProductResponse, ProductVariant } from "../types";
 import { getMostLovedProductsForComponent } from "../services/search-api";
 import { ShimmerProductCard } from "./ShimmerProductCard";
+import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
+
+function buildCartItem(product: ProductResponse): CartItem {
+  return {
+    id: product.variant?.id ?? product.id,
+    productId: product.id,
+    variantId: product.variant?.id,
+    title: product.title,
+    price: { amount: product.price ?? 0, currencyCode: "INR" },
+    compareAtPrice:
+      typeof product.compare_at_price === "number"
+        ? {
+            amount: product.compare_at_price,
+            currencyCode: "INR",
+          }
+        : undefined,
+    quantity: 1,
+    image: product.image_url,
+    product_type: product.productType,
+  };
+}
 
 /** Inlined badge tag keys (was @/widgets/bblunt/ProductGrid/constant). */
 const BADGE_TAG_KEYS = new Set([
@@ -109,20 +130,80 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
   const [mostLovedProducts, setMostLovedProducts] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  // Cart wiring temporarily disabled — no-ops matching the previous hook
-  // shape. To re-enable, restore the `@/lib/hooks` import + destructure.
-  const addToCart = async (_product?: unknown, _variantId?: string) => {
-    /* no-op */
-  };
-  const incrementQuantity = async (_product?: unknown) => {
-    /* no-op */
-  };
-  const decrementQuantity = async (_product?: unknown) => {
-    /* no-op */
-  };
-  const isInCart = (_product?: unknown) => false;
-  const getCartItem = (_product?: unknown) => undefined;
-  const isProductLoading = (_product?: unknown) => false;
+  const items = useCartItems();
+  const loadingItems = useCartStore((s) => s.loadingItems);
+  const addItem = useCartStore((s) => s.addItem);
+  const incrementItem = useCartStore((s) => s.incrementItem);
+  const decrementItem = useCartStore((s) => s.decrementItem);
+
+  const findCartLine = useCallback(
+    (product: ProductResponse) => {
+      const productId = product.id;
+      const variantId = product.variant?.id;
+
+      return items.find((item) => {
+        const lineProductId = item.productId ?? item.product_id;
+        const lineVariantId = item.variantId ?? item.variant_id;
+
+        return variantId
+          ? lineProductId === productId && lineVariantId === variantId
+          : lineProductId === productId;
+      });
+    },
+    [items]
+  );
+
+  const incrementQuantity = useCallback(
+    async (product: ProductResponse) => {
+      const line = findCartLine(product);
+      if (!line) {
+        return;
+      }
+      try {
+        await incrementItem(line.id, product.variant?.id);
+      } catch (error) {
+        console.error("[NoResult] incrementItem failed:", error);
+      }
+    },
+    [findCartLine, incrementItem]
+  );
+
+  const decrementQuantity = useCallback(
+    async (product: ProductResponse) => {
+      const line = findCartLine(product);
+      if (!line) {
+        return;
+      }
+      try {
+        await decrementItem(line.id, product.variant?.id);
+      } catch (error) {
+        console.error("[NoResult] decrementItem failed:", error);
+      }
+    },
+    [decrementItem, findCartLine]
+  );
+
+  const isInCart = useCallback(
+    (product: ProductResponse) => !!findCartLine(product),
+    [findCartLine]
+  );
+
+  const getCartItem = useCallback(
+    (product: ProductResponse) => findCartLine(product),
+    [findCartLine]
+  );
+
+  const isProductLoading = useCallback(
+    (product: ProductResponse) => {
+      const cartLine = findCartLine(product);
+      const variantId = product.variant?.id;
+      return (
+        (variantId ? !!loadingItems[variantId] : false) ||
+        (cartLine?.id ? !!loadingItems[cartLine.id] : false)
+      );
+    },
+    [findCartLine, loadingItems]
+  );
 
   // Fetch most loved products on component mount (no shimmer - smooth load)
   useEffect(() => {
@@ -206,14 +287,8 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
   }, [mostLovedProducts]);
 
   const handleAddToCart = async (product: ProductResponse) => {
-    const payload = {
-      ...product,
-      quantity: 1,
-      variants: product?.variant ? [product.variant] : undefined,
-    } as ProductResponse & { variants?: Array<{ id: string; price?: number }> };
-    const variantIdArg = product?.variant?.id;
     try {
-      await addToCart(payload, variantIdArg);
+      await addItem(buildCartItem(product));
     } catch (error) {
       console.error("[NoResult] addToCart failed:", error);
     }
@@ -221,7 +296,7 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
 
   return (
     <Box
-      className={`w-full mt-0 md:mt-[30px] mb-[50px] px-1.5 min-[769px]:px-[30px] ${className}`}
+      className={`w-full mt-0 md:mt-[30px] mb-[50px] px-1.5 min-[769px]:px-[10px] ${className}`}
     >
       {/* No Results Message */}
       <Box className="text-center justify-center mb-2.5 md:mb-5">
@@ -229,7 +304,7 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
           {settings.noResultsMessage || "We're sorry. There are no results for"}{" "}
           <span className="block md:inline">'{query}'</span>
         </Text>
-        <Text className="!text-black !text-xs uppercase tracking-wide !text-center mb-5">
+        <Text className="!text-black !text-xs uppercase tracking-wide !text-center mb-[35px]">
           {settings.suggestionMessage ||
             "PLEASE CHECK THE SPELLING OR TRY AGAIN WITH A LESS SPECIFIC OR DIFFERENT TERM."}
         </Text>
@@ -241,19 +316,19 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
           <div>
             {/* Section Title */}
             <div className="my-2.5 lg:!text-center pb-[5px]">
-              <div className="flex items-center justify-center gap-4">
-                <div className="flex-1 h-0.5 bg-black hidden lg:block" />
-                <Text className="!text-[17px] lg:!text-xl !font-semibold !text-black md:whitespace-nowrap tracking-[-1px] !text-center">
+              <div className="flex items-center justify-center gap-4 max-w-[1375px]">
+                <div className="flex-1 h-[2.4px] bg-black hidden lg:block mt-[10px]" />
+                <Text className="!text-[17px] lg:!text-xl !font-semibold !text-black md:whitespace-nowrap tracking-[-1px] !text-center mt-[10px]">
                   {settings.bestsellingProductsTitle ||
                     "HERE ARE SOME OF OUR BESTSELLING PRODUCTS"}
                 </Text>
-                <div className="flex-1 h-0.5 bg-black hidden lg:block" />
+                <div className="flex-1 h-[2.4px] bg-black hidden lg:block mt-[10px]" />
               </div>
             </div>
 
             {/* Products Grid - show shimmer while loading, then products */}
             {isLoading ? (
-              <div className="grid grid-cols-2 min-[768px]:grid-cols-3 min-[1024px]:grid-cols-4 gap-3 md:gap-[30px]">
+              <div className="grid grid-cols-2 min-[768px]:grid-cols-3 min-[1024px]:grid-cols-4">
                 {Array.from({ length: 6 }).map((_, index) => (
                   <ShimmerProductCard
                     key={`shimmer-${index}`}
@@ -270,7 +345,7 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
                 ))}
               </div>
             ) : transformedProducts.length > 0 ? (
-              <div className="grid grid-cols-2 min-[768px]:grid-cols-3 min-[1024px]:grid-cols-4 gap-3 md:gap-[30px]">
+              <div className="grid grid-cols-2 min-[768px]:grid-cols-3 min-[1024px]:grid-cols-4">
                 {transformedProducts.map((product, index) => {
                   const cardProduct = toCardProduct(product);
                   const productAddToCart = () => handleAddToCart(product);
@@ -290,6 +365,7 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
                       settings={{
                         showActionButton: true,
                         showQuantitySelector: false,
+                        showAddToCartToast: true,
                         actionButtonText: "Add to cart",
                         actionButtonTextMobile: "Add to cart",
                         showBadge: true,
@@ -297,20 +373,33 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
                         soldOutText: "View Product",
                         soldOutTextMobile: "View Product",
                         backgroundColor: "white",
-                        color: "#000",
+                        color: "#000000",
                         actionButtonTextColor: "#ffffff",
-                        actionButtonClassName:
-                          "min-h-8 min-[767px]:min-h-[42px] !mt-0 !rounded-[10px] min-[769px]:!rounded !text-base",
                         titleClassName:
-                          "!font-normal !text-sm !line-clamp-2 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] !min-h-9",
-                        priceSectionClassName:
-                          "!font-semibold [&_span]:!font-medium !text-sm md:!text-base",
-                        detailsClassName: "!gap-[13px] mt-2",
-                        ratingClassName: "!text-xs",
+                          "!font-normal !text-sm !line-clamp-2 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] !leading-[16px] !min-h-[30px] md:!min-h-[34px]",
                         imageClassName: "!rounded-[10px]",
+                        detailsClassName: "!gap-[10px] md:!gap-[8px]",
+                        priceSectionClassName:
+                          "!font-semibold [&_span]:!font-medium !text-sm md:!text-base max-h-[16px] md:max-h-[30px]",
+                        salePriceClassName: "leading-[16px] md:leading-[29px]",
+                        actionButtonClassName:
+                          "min-h-8 min-[769px]:min-h-[42px] !mt-0 !rounded-[10px] md:!rounded-[10px] !text-base tracking-[1px]",
+                        linkClassName:
+                          "px-1.5 md:px-[8px] lg:px-[15px] mb-3 md:mb-5",
+                        compareAtPriceClassName:
+                          "!text-sm md:!text-base !text-[#0000008C] !font-medium",
+                        discountClassName: "!text-sm !text-[#F04438]",
+                        ratingClassName: "!text-xs min-h-[19px]",
+                        ratingValueClassName: "!text-[12px]",
+                        reviewCountClassName: "!text-[12px]",
+                        categoryChipClassName:
+                          "!text-[#000000] !text-[14px] p-[8px]",
+                        searchProductCard: true,
                       }}
-                      className="!border-0 min-[769px]:!border border-faq-border rounded-[10px] px-0 md:px-2"
-                      showProductType={false}
+                      showProductType={true}
+                      showNetContent={false}
+                      showSubtitle={false}
+                      className="!border border-white md:!border-faq-border !rounded-[10px] w-full h-full px-0 md:px-1.5 !pr-0"
                     />
                   );
                 })}

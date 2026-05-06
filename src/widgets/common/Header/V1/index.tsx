@@ -17,7 +17,6 @@ import { CartBadge } from "../components/CartBadge";
 import { MobileNavigationDrawer } from "../components/MobileDrawer";
 import { DropdownAccordion } from "../components/DropdownAccordion";
 import { KwikpassLoginCustom } from "@/integrations/kwikpass-custom";
-import { SearchDropdown } from "@/widgets/common/Search/components/SearchDropdown";
 import { MobileSearchOverlay } from "@/widgets/common/Search/components/MobileSearchOverlay";
 import { SearchInputV2 } from "@/widgets/common/Search/components/SearchInputV2";
 import { TrendingSearches } from "@/widgets/common/Search/components/TrendingSearches";
@@ -374,7 +373,7 @@ function SearchInput({
         value={value ?? ""}
         onChange={(e) => onChange?.(e.target.value)}
         onClick={onClick}
-        className="w-[255px] h-[35px] min-h-[35px] rounded bg-transparent pl-[33px] pr-[60px] pt-2 pb-2 text-sm font-medium text-primary placeholder:text-surface outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
+        className="w-[255px] h-[35px] min-h-[35px] rounded bg-transparent pl-[33px] pr-[60px] pt-2 pb-2 text-sm font-medium text-[#727272] placeholder:text-surface outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
         style={{
           border: "1px solid #dddddd",
         }}
@@ -388,7 +387,7 @@ function SearchInput({
       <button
         type="submit"
         aria-label="Search"
-        className="absolute left-2.5 top-1/2 -translate-y-1/2 cursor-pointer"
+        className="absolute left-[12px] top-1/2 -translate-y-1/2 cursor-pointer"
       >
         <svg
           width="16"
@@ -429,53 +428,39 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     setSearchQuery(urlQuery);
   }, [urlQuery]);
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
-  const searchTriggerRef = useRef<HTMLDivElement>(null);
   const desktopSearchInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
   /* ────── Mobile fullscreen search overlay (ported from V2 reference) ────── */
 
-  // Initial open-state honours sessionStorage flags set by SearchInputV2 when
-  // the user clears the search input (cross-page handshake), and otherwise
-  // defaults to open on the search results route.
-  const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(() => {
+  // Always start `false` on the server to keep SSR/CSR markup in sync.
+  // The real open-state (sessionStorage handshake from SearchInputV2 when the
+  // user clears the input, or the `/pages/search` default) is resolved in the
+  // post-mount effect below.
+  const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
+
+  // After hydration, reconcile with sessionStorage flags + the search route.
+  useEffect(() => {
     if (typeof window === "undefined") {
-      return false;
+      return;
     }
     try {
       const preventOverlay = sessionStorage.getItem("preventSearchOverlayOpen");
       if (preventOverlay === "true") {
         sessionStorage.removeItem("preventSearchOverlayOpen");
-        return false;
+        return;
       }
-      const openOnRedirect = sessionStorage.getItem("openMobileSearchOverlay");
-      if (openOnRedirect === "true") {
-        sessionStorage.removeItem("openMobileSearchOverlay");
-        return true;
-      }
-    } catch {
-      /* ignore */
-    }
-    return pathname?.includes(SEARCH_RESULTS_ROUTE) || false;
-  });
-
-  // After a navigation away from the search route, consume any pending
-  // `openMobileSearchOverlay` flag and pop the overlay open.
-  useEffect(() => {
-    if (typeof window === "undefined") {
-      return;
-    }
-    if (pathname?.includes(SEARCH_RESULTS_ROUTE)) {
-      return;
-    }
-    try {
       if (sessionStorage.getItem("openMobileSearchOverlay") === "true") {
         sessionStorage.removeItem("openMobileSearchOverlay");
         setIsSearchOverlayOpen(true);
+        return;
       }
     } catch {
       /* ignore */
+    }
+    if (pathname?.includes(SEARCH_RESULTS_ROUTE)) {
+      setIsSearchOverlayOpen(true);
     }
   }, [pathname]);
 
@@ -708,25 +693,12 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               <SearchIcon />
             </button>
 
-            {/* Desktop search input (visible from 1100px) */}
-            <div
-              ref={searchTriggerRef}
-              className="hidden min-[1100px]:block relative"
-            >
-              <SearchInput
-                focused={searchFocused}
-                onFocusChange={setSearchFocused}
-                value={searchQuery}
-                onChange={setSearchQuery}
-                onClick={() => setSearchOpen(true)}
-                onSubmit={handleSearchSubmit}
-                inputRef={desktopSearchInputRef}
-              />
-              <SearchDropdown
-                isOpen={searchOpen && !isSearchOverlayOpen}
-                onClose={() => setSearchOpen(false)}
-                searchQuery={searchQuery}
-                triggerRef={searchTriggerRef}
+            {/* Desktop search input (visible from 1100px).
+            <div className="hidden min-[1100px]:block w-[255px]">
+              <SearchInputV2
+                searchPlaceholder={SEARCH_SUGGESTIONS}
+                isMobile={false}
+                dropdownTopPosition="48px"
               />
             </div>
 
@@ -825,7 +797,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
 
           {/* Top white panel with input + close button (centered, max 600px) */}
           <div className="absolute top-0 left-1/2 transform -translate-x-1/2 bg-white w-full max-w-[600px] z-[22101]">
-            <div className="flex items-center justify-center px-4 h-[100px]">
+            <div className="flex items-center justify-center px-2.5 pt-4 pb-0 h-[100px]">
               <div className="w-full relative">
                 <Suspense
                   fallback={
@@ -844,7 +816,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                       "Search for Conditioner",
                       "Search for Salon Treatment",
                     ]}
-                    className="w-full pl-9 pr-16 py-2 border border-black rounded-md focus:outline-none focus:border-black"
+                    className="w-full border border-[#DDDDDD] bg-white focus:outline-none focus:border-[#DDDDDD]"
                     isMobile={true}
                     onClose={closeSearchOverlay}
                     onQueryChange={setOverlayQuery}
@@ -856,11 +828,11 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                 <button
                   type="button"
                   onClick={closeSearchOverlay}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-black flex items-center z-10"
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-black flex items-center z-10"
                   aria-label="Close search"
                 >
                   <svg
-                    className="w-8 h-8"
+                    className="w-[16px] h-[16px]"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -868,7 +840,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                     <path
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={1.5}
+                      strokeWidth={2}
                       d="M6 18L18 6M6 6l12 12"
                     />
                   </svg>
@@ -881,7 +853,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               user hasn't started typing yet. */}
           {!overlayQuery.trim() && (
             <div
-              className="absolute left-0 right-0 top-[100px] bg-white z-[22101] overflow-y-auto py-4 px-3 shadow-[0_0_8px_rgba(0,0,0,0.15)]"
+              className="absolute left-0 right-0 top-[81px] bg-white z-[22101] overflow-y-auto py-4 px-3 shadow-[0_0_8px_rgba(0,0,0,0.15)]"
               style={{ maxHeight: "calc(100vh - 100px)" }}
             >
               <TrendingSearches onClose={closeSearchOverlay} />

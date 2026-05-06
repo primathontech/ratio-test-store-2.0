@@ -40,21 +40,21 @@ const DesktopSortDropdown: React.FC<DesktopSortDropdownProps> = ({
 
   return (
     <Box className={`relative ${className}`}>
-      <Flex className="items-center gap-4">
+      <Flex className="items-center gap-4 pr-0 xl:pr-[15px]">
         <div className={showSortOnly ? "relative" : "relative min-w-[200px]"}>
           <button
             onClick={onToggle}
             disabled={isLoading}
             className={
               showSortOnly
-                ? "flex items-center gap-2 px-2 py-1.5 border border-gray-300 rounded-[10px] bg-white"
-                : "w-full flex items-center justify-between pl-[18px] pr-[25px] py-2.5 border border-gray-300 bg-white transition-colors duration-200 disabled:opacity-50 text-left rounded-[10px] min-w-[217px] hover:border-black focus:border-black mt-2"
+                ? "flex items-center gap-2 px-2 py-1.5 border border-faq-border rounded-[10px] bg-white"
+                : "w-full flex items-center justify-between pl-[18px] pr-[18px] py-2.5 border border-faq-border bg-white transition-colors duration-200 disabled:opacity-50 text-left rounded-[10px] min-w-[217px] hover:border-black focus:border-black"
             }
           >
             <Text
               className={
                 showSortOnly
-                  ? "!text-xs !font-medium !text-black"
+                  ? "!text-sm !font-medium !text-primary"
                   : "!text-black font-normal !text-sm"
               }
             >

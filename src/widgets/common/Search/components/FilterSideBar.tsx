@@ -64,7 +64,7 @@ const FilterSideBar: React.FC<FilterSideBarProps> = ({
       className={`w-auto min-w-0 xl:min-w-[280px] bg-white h-full overflow-y-auto pr-[30px] ${className}`}
     >
       <Box>
-        <Flex className="items-center !justify-between mb-[15px] py-4">
+        <Flex className="items-center !justify-between py-[14.5px]">
           <Heading size="2xl" className="!text-xs !text-black !font-semibold">
             {settings.filterByText || "FILTER"}
           </Heading>
@@ -73,7 +73,7 @@ const FilterSideBar: React.FC<FilterSideBarProps> = ({
               type="button"
               onClick={clearAllFilters}
               aria-label={settings.clearAllText || "Remove all filters"}
-              className="group relative inline-flex items-center text-white py-[3px] bg-black rounded-[15px] pl-[25px] pr-[15px] text-sm font-medium transition-colors duration-500 hover:bg-[#1a1a1a]"
+              className="group relative inline-flex items-center text-white py-0 lg:py-[3px] bg-black rounded-[15px] pl-[25px] pr-[15px] text-[11px] lg:text-sm font-medium transition-colors duration-500 hover:bg-[#1a1a1a] max-h-[22.4px]"
             >
               <span className="absolute left-2.5 top-1/2 -translate-y-1/2 leading-none text-base font-semibold">
                 <span className="block transition-opacity duration-300 group-hover:opacity-0 font-extrabold">
@@ -91,10 +91,10 @@ const FilterSideBar: React.FC<FilterSideBarProps> = ({
         {dynamicFilters
           .filter((filter) => filter.values && filter.values.length > 0)
           .map((filter) => (
-            <Box key={filter.id} className="pb-5 border-b border-faq-border">
+            <Box key={filter.id} className="border-b border-faq-border">
               <button
                 onClick={() => toggleSection(filter.id)}
-                className="w-full flex items-center justify-between pt-5"
+                className={`w-full flex items-center justify-between pt-5 ${collapsedSections[filter.id] ? "pb-5" : "pb-[6px]"}`}
               >
                 <Text weight="normal" className="!text-black !text-xl">
                   {filter.label}
@@ -118,7 +118,7 @@ const FilterSideBar: React.FC<FilterSideBarProps> = ({
               >
                 <Box className="my-[7px]">
                   {filter.values.length > 0 && (
-                    <div className="max-h-[200px] overflow-y-auto pr-[7px] [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-loading-blue [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-400">
+                    <div className="max-h-[200px] my-[10px] overflow-y-auto pr-[7px] [&::-webkit-scrollbar]:w-[3px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-loading-blue [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb:hover]:bg-gray-400">
                       {filter.values
                         .filter((option: any) => isDisplayableOption(option))
                         .map((option: any) => (

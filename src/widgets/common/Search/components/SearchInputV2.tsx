@@ -284,7 +284,7 @@ export const SearchInputV2: React.FC<SearchInputV2Props> = ({
         <input
           data-testid="header-search-input-container"
           ref={inputRef}
-          type="text"
+          type="search"
           value={searchQuery}
           onChange={handleSearchChange}
           onFocus={handleSearchFocus}
@@ -295,85 +295,98 @@ export const SearchInputV2: React.FC<SearchInputV2Props> = ({
               handleSearchSubmit(e);
             }
           }}
-          placeholder=" "
+          placeholder={isMobile ? " " : animatedPlaceholder}
           aria-label="Search"
           autoComplete="off"
           className={`
             w-full outline-none transition-all duration-300 ease-in-out
+            [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden
             ${
               isMobile
-                ? "text-black font-medium text-[15px] pr-16 rounded"
-                : "pt-2 pr-[60px] pb-2 h-9 rounded"
+                ? "h-10 rounded-[4px] text-[16px] font-bold pl-12 pr-14 placeholder:text-lightest-gray placeholder:font-normal"
+                : "h-[35px] min-h-[35px] rounded text-sm font-bold pt-2 pb-2 pl-[33px] pr-[60px] text-[#727272] placeholder:text-surface placeholder:font-medium border border-[#dddddd]"
             }
             ${isSearchDropdownOpen ? "bg-white/20" : "!bg-transparent hover:!bg-white/20"}
-            placeholder:text-lightest-gray text-[15px]
             ${className}
           `.trim()}
-          style={{
-            color: "#727272",
-            fontWeight: 500,
-            paddingLeft: isMobile ? "42px" : "32px",
-            paddingRight: searchQuery
-              ? isMobile
-                ? "80px"
-                : "50px"
-              : isMobile
-                ? "50px"
-                : "40px",
-          }}
+          style={
+            isMobile
+              ? {
+                  color: "#727272",
+                  borderColor: "#DDDDDD",
+                }
+              : undefined
+          }
         />
         <button
           data-testid="header-search-button"
           type="submit"
-          className="absolute left-3 top-1/2 transform -translate-y-1/2"
+          className={`absolute top-1/2 transform -translate-y-1/2 text-black ${isMobile ? "left-4" : "left-[12px]"}`}
           aria-label="Search"
         >
-          <svg
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            className="w-8 h-8 text-black"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={1.5}
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
+          {isMobile ? (
+            <svg
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              className="h-[20px] w-[20px]"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={1.75}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          ) : (
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 16 16"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden="true"
+            >
+              <path
+                d="M12.1012 12.2113L14.9997 15.0189M14.065 7.53199C14.065 11.15 11.1357 14.083 7.52225 14.083C3.90879 14.083 0.979492 11.15 0.979492 7.53199C0.979492 3.91395 3.90879 0.980957 7.52225 0.980957C11.1357 0.980957 14.065 3.91395 14.065 7.53199Z"
+                stroke="#000000"
+                strokeWidth="1.6"
+                strokeLinecap="round"
+              />
+            </svg>
+          )}
         </button>
       </form>
 
-      {/* Custom placeholder overlay — shows the typewriter words OR the last
-          submitted query as a hint when the input is empty. */}
-      <div
-        className={`
-          absolute top-1/2 -translate-y-1/2 pointer-events-none text-[15px]
-          ${isMobile ? "left-[54px]" : "left-8"}
-          ${searchQuery ? "opacity-0 invisible" : "opacity-100 visible"}
-        `.trim()}
-      >
-        {lastSearchQuery ? (
-          <span className="font-bold text-lightest-gray">
-            "{lastSearchQuery}"
-          </span>
-        ) : animatedPlaceholder ? (
-          (() => {
-            const match = animatedPlaceholder.match(/Search for (.+)/);
-            if (match) {
-              return (
-                <>
-                  Search for{" "}
-                  <span className="font-bold !text-lightest-gray">
-                    "{match[1]}"
-                  </span>
-                </>
-              );
-            }
-            return animatedPlaceholder;
-          })()
-        ) : null}
-      </div>
+      {/* Custom placeholder overlay (mobile only) — shows the typewriter words
+          OR the last submitted query as a hint when the input is empty. The
+          desktop variant uses the native `placeholder` attribute instead. */}
+      {isMobile && (
+        <div
+          className={`
+            absolute top-1/2 -translate-y-1/2 pointer-events-none text-[16px]
+            left-12
+            ${searchQuery ? "opacity-0 invisible" : "opacity-100 visible"}
+          `.trim()}
+          style={{ color: "#727272" }}
+        >
+          {lastSearchQuery ? (
+            <span className="font-normal">"{lastSearchQuery}"</span>
+          ) : animatedPlaceholder ? (
+            (() => {
+              const match = animatedPlaceholder.match(/Search for (.+)/);
+              if (match) {
+                return (
+                  <>
+                    Search for <span className="font-normal">"{match[1]}"</span>
+                  </>
+                );
+              }
+              return animatedPlaceholder;
+            })()
+          ) : null}
+        </div>
+      )}
 
       {renderDropdown && (
         <SearchDropdown

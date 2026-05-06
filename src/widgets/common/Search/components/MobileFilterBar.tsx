@@ -88,8 +88,8 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
       <Box
         className={`fixed inset-0 bg-white flex flex-col min-[769px]:hidden z-[9600] ${className}`}
       >
-        <Flex className="items-center !justify-between py-4 px-[15px] bg-surface-4">
-          <div className="flex">
+        <Flex className="items-center !justify-between py-4 px-[20px] bg-surface-4">
+          <div className="flex items-center justify-center">
             <svg
               className="w-5 h-[18px] !text-black mr-2.5 font-medium"
               viewBox="0 0 24 24"
@@ -113,7 +113,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
               type="button"
               onClick={clearAllFilters}
               aria-label={settings.clearAllText || "Remove all filters"}
-              className="group relative inline-flex items-center text-black py-[3px] bg-black rounded-[15px] pl-[25px] pr-[15px] text-sm font-medium transition-colors duration-500 hover:bg-[#1a1a1a]"
+              className="group relative inline-flex items-center text-black py-[3px] rounded-[15px] pl-[25px] pr-[15px] text-sm font-normal transition-colors duration-500 hover:bg-[#1a1a1a]"
             >
               <span className="absolute left-2.5 top-1/2 -translate-y-1/2 leading-none text-base font-semibold">
                 <span className="block transition-opacity duration-300 group-hover:opacity-0 font-extrabold">
@@ -139,7 +139,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
                 >
                   <button
                     onClick={() => toggleSection(filter.id)}
-                    className="w-full flex items-center justify-between text-left pt-5 focus:outline-none mb-5"
+                    className="w-full flex items-center justify-between text-left pt-4 focus:outline-none mb-5"
                   >
                     <Text className="!text-black !text-base !font-medium">
                       {filter.label}
@@ -171,7 +171,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
                     <Box className="my-2.5 pr-2.5">
                       {filter.values.length > 0 ? (
                         <div
-                          className="max-h-[200px] overflow-y-auto space-y-3"
+                          className="max-h-[200px] overflow-y-auto"
                           style={{ scrollbarWidth: "none" }}
                         >
                           {filter.values
@@ -204,7 +204,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
                                         option
                                       )
                                     }
-                                    className="mt-0.5 mr-3 !border !border-faq-border !w-6 !h-6 data-[state=checked]:!bg-loading-blue data-[state=checked]:!text-white pointer-events-none [&>span>svg]:!w-6 [&>span>svg]:!h-6"
+                                    className="mt-0.5 mr-3 !border !border-faq-border !w-4 md:!w-6 !h-4 md:!h-6 data-[state=checked]:!bg-loading-blue data-[state=checked]:!text-white pointer-events-none [&>span>svg]:!w-6 [&>span>svg]:!h-6"
                                   />
                                   <Text className="!text-[17px] !text-black !font-medium flex-1 leading-5 pointer-events-none">
                                     {option.label}

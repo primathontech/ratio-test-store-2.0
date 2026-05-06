@@ -117,8 +117,8 @@ export const SearchDropdown: React.FC<SearchDropdownProps> = ({
 
       {/* Desktop (anchored to trigger, right-aligned) */}
       {!isSearching && (
-        <div className="hidden md:block absolute bg-white overflow-hidden min-w-[580px] xl:min-w-[920px] z-[22300] top-[calc(100%+2px)] max-h-[461px] min-h-[440px] shadow-[0_5px_20px_#8f959a99] right-[calc(10%-41px)]">
-          <div className="py-4 px-3 max-h-[461px]">
+        <div className="hidden md:block absolute bg-white overflow-hidden min-w-[580px] xl:min-w-[920px] z-[200] top-[calc(100%+2px)] max-h-[560px] min-h-[440px] shadow-[0_5px_20px_#8f959a99] right-[calc(10%-41px)]">
+          <div className="py-4 px-3 max-h-[560px] overflow-y-auto">
             <TrendingSearches
               trendingSearches={trendingSearches}
               onClose={onClose}
