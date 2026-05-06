@@ -10,6 +10,7 @@ interface SearchProductCardSettings {
   actionButtonTextMobile?: string;
   soldOutText?: string;
   soldOutTextMobile?: string;
+  showAddToCartToast?: boolean;
 }
 
 interface SearchProductCardProps {
@@ -116,7 +117,8 @@ const SearchProductCard: React.FC<SearchProductCardProps> = ({
     isQuantityLoading={isQuantityLoading}
     settings={{
       showActionButton: true,
-      showQuantitySelector: true,
+      showQuantitySelector: false,
+      showAddToCartToast: settings?.showAddToCartToast ?? false,
       actionButtonText: settings?.actionButtonText || "Add to cart",
       actionButtonTextMobile: settings?.actionButtonTextMobile || "Add to cart",
       showBadge: true,
@@ -127,24 +129,28 @@ const SearchProductCard: React.FC<SearchProductCardProps> = ({
       color: "#000000",
       actionButtonTextColor: "#ffffff",
       titleClassName:
-        "!font-normal !text-sm !line-clamp-2 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical]",
+        "!font-normal !text-sm !line-clamp-2 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical] !leading-[16px] !min-h-[30px] md:!min-h-[34px]",
       imageClassName: "!rounded-[10px]",
-      detailsClassName: "!gap-2.5",
+      detailsClassName: "!gap-[10px] md:!gap-[8px]",
       priceSectionClassName:
-        "!font-semibold [&_span]:!font-medium !text-sm md:!text-base",
+        "!font-semibold [&_span]:!font-medium !text-sm md:!text-base max-h-[16px] md:max-h-[30px]",
+      salePriceClassName: "leading-[16px] md:leading-[29px]",
       actionButtonClassName:
-        "min-h-8 min-[769px]:min-h-[42px] !mt-0 !rounded-[10px] md:!rounded-[10px] !text-base",
-      linkClassName: "px-1.5 md:px-[15px] mb-3 md:mb-5",
+        "min-h-8 min-[769px]:min-h-[42px] !mt-0 !rounded-[10px] md:!rounded-[10px] !text-base tracking-[1px]",
+      linkClassName: "px-1.5 md:px-[8px] lg:px-[15px] mb-3 md:mb-5",
       compareAtPriceClassName:
         "!text-sm md:!text-base !text-[#0000008C] !font-medium",
       discountClassName: "!text-sm !text-[#F04438]",
-      ratingClassName: "!text-xs",
+      ratingClassName: "!text-xs min-h-[19px]",
+      ratingValueClassName: "!text-[12px]",
+      reviewCountClassName: "!text-[12px]",
+      categoryChipClassName: "!text-[#000000] !text-[14px] p-[8px]",
       searchProductCard,
     }}
     showProductType={true}
     showNetContent={false}
     showSubtitle={false}
-    className="!border border-white md:!border-faq-border !rounded-[10px] w-full h-full px-0 md:px-1.5 "
+    className="!border border-white lg:!border-faq-border !rounded-[10px] w-full h-full px-0 md:px-1.5 !pr-0"
   />
 );
 

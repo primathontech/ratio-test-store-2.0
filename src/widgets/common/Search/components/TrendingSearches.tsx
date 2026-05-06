@@ -71,7 +71,7 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
               onClose();
               router.push(search.href);
             }}
-            className="px-2.5 pt-1.5 pb-1 text-sm text-white bg-black transition-colors duration-200 text-center rounded font-medium whitespace-nowrap flex items-center mx-[5px] mb-2.5 leading-9"
+            className="px-2.5 pt-1.5 pb-1 text-sm text-white bg-black transition-colors duration-200 text-center rounded font-medium whitespace-nowrap flex items-center mx-[5px] mb-2.5 leading-[22.4px]"
           >
             {search.label}
             <svg

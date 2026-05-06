@@ -25,6 +25,7 @@ import {
   createProductCartHandlers,
   mapSearchProductToProductResponse,
 } from "../utils/ProductMapper";
+import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
 import DesktopSortDropdown from "./DesktopSortDropdown";
 import FilterSideBar from "./FilterSideBar";
 import MobileFilterBar from "./MobileFilterBar";
@@ -58,29 +59,110 @@ interface SearchPageWrapperProps {
 
 /** Responsive horizontal margin: 0 at <1400px, then 20–250px by viewport (1400–1900px) */
 const SEARCH_PAGE_CONTAINER_MARGIN_CLASS =
-  "mx-0 min-[1400px]:mx-5 min-[1455px]:mx-[27px] min-[1500px]:mx-[50px] min-[1600px]:mx-[100px] min-[1700px]:mx-[150px] min-[1800px]:mx-[200px] min-[1900px]:mx-[250px]";
+  "mx-0 min-[1400px]:ml-5 min-[1400px]:mr-[7px] min-[1455px]:mx-[27px] min-[1500px]:mx-[50px] min-[1600px]:mx-[100px] min-[1700px]:mx-[150px] min-[1800px]:mx-[200px] min-[1900px]:mx-[250px]";
+
+function buildCartItem(product: ProductResponse): CartItem {
+  return {
+    id: product.variant?.id ?? product.id,
+    productId: product.id,
+    variantId: product.variant?.id,
+    title: product.title,
+    price: { amount: product.price ?? 0, currencyCode: "INR" },
+    compareAtPrice:
+      typeof product.compare_at_price === "number"
+        ? {
+            amount: product.compare_at_price,
+            currencyCode: "INR",
+          }
+        : undefined,
+    quantity: 1,
+    image: product.image_url,
+    product_type: product.productType,
+  };
+}
 
 const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Cart wiring temporarily disabled — no-ops with the same shape as the
-  // previous `useAddToCart` / `useCartQuantity` hooks. To re-enable, restore
-  // `import { useAddToCart, useCartQuantity } from "@/lib/hooks";` and the
-  // original destructure.
-  const addToCart = async (_product?: unknown, _variantId?: string) => {
-    /* no-op */
-  };
-  const incrementQuantity = async (_product?: unknown) => {
-    /* no-op */
-  };
-  const decrementQuantity = async (_product?: unknown) => {
-    /* no-op */
-  };
-  const isInCart = (_product?: unknown) => false;
-  const getCartItem = (_product?: unknown) => undefined;
-  const isProductLoading = (_product?: unknown) => false;
+  const items = useCartItems();
+  const loadingItems = useCartStore((s) => s.loadingItems);
+  const addItem = useCartStore((s) => s.addItem);
+  const incrementItem = useCartStore((s) => s.incrementItem);
+  const decrementItem = useCartStore((s) => s.decrementItem);
+
+  const findCartLine = useCallback(
+    (product: ProductResponse) => {
+      const productId = product.id;
+      const variantId = product.variant?.id;
+
+      return items.find((item) => {
+        const lineProductId = item.productId ?? item.product_id;
+        const lineVariantId = item.variantId ?? item.variant_id;
+
+        return variantId
+          ? lineProductId === productId && lineVariantId === variantId
+          : lineProductId === productId;
+      });
+    },
+    [items]
+  );
+
+  const incrementQuantity = useCallback(
+    async (product: ProductResponse) => {
+      const line = findCartLine(product);
+      if (!line) {
+        return;
+      }
+
+      try {
+        await incrementItem(line.id, product.variant?.id);
+      } catch (error) {
+        console.error("[Search] incrementItem failed:", error);
+      }
+    },
+    [findCartLine, incrementItem]
+  );
+
+  const decrementQuantity = useCallback(
+    async (product: ProductResponse) => {
+      const line = findCartLine(product);
+      if (!line) {
+        return;
+      }
+
+      try {
+        await decrementItem(line.id, product.variant?.id);
+      } catch (error) {
+        console.error("[Search] decrementItem failed:", error);
+      }
+    },
+    [decrementItem, findCartLine]
+  );
+
+  const isInCart = useCallback(
+    (product: ProductResponse) => !!findCartLine(product),
+    [findCartLine]
+  );
+
+  const getCartItem = useCallback(
+    (product: ProductResponse) => findCartLine(product),
+    [findCartLine]
+  );
+
+  const isProductLoading = useCallback(
+    (product: ProductResponse) => {
+      const cartLine = findCartLine(product);
+      const variantId = product.variant?.id;
+
+      return (
+        (variantId ? !!loadingItems[variantId] : false) ||
+        (cartLine?.id ? !!loadingItems[cartLine.id] : false)
+      );
+    },
+    [findCartLine, loadingItems]
+  );
 
   const searchQuery = searchParams.get("q") || "";
   const collectionsFromUrl = searchParams.getAll("collection");
@@ -193,14 +275,8 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
   }, [searchKey]);
 
   const handleAddToCart = async (product: ProductResponse) => {
-    const payload = {
-      ...product,
-      quantity: 1,
-      variants: product?.variant ? [product.variant] : undefined,
-    } as ProductResponse & { variants?: Array<{ id: string; price?: number }> };
-    const variantIdArg = product?.variant?.id;
     try {
-      await addToCart(payload, variantIdArg);
+      await addItem(buildCartItem(product));
     } catch (error) {
       console.error("[Search] addToCart failed:", error);
     }
@@ -693,8 +769,8 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
         ) : (
           <>
             {/* Mobile Filter and Sort Bar */}
-            <div className="min-[769px]:hidden mb-4 min-[768px]:max-[768px]:px-[9px]">
-              <Flex className="items-center !justify-between mb-[15px] py-[4.5px]">
+            <div className="min-[769px]:hidden mb-4 min-[769px]:max-[769px]:px-[9px]">
+              <Flex className="items-center !justify-between mb-[15px] px-0 lg:px-[7px]">
                 {/* Filter Button */}
                 <button
                   onClick={() => setIsMobileFilterOpen(true)}
@@ -726,19 +802,11 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
                   showSortOnly={true}
                 />
               </Flex>
-              <Flex className="items-center justify-between mb-[15px]">
-                <Text className="!text-sm !text-black flex items-center justify-center">
-                  {settings?.showingText || "Showing"}{" "}
-                  {searchResults?.totalHits || 0}{" "}
-                  {settings?.resultsText || "Result(s)"}{" "}
-                  {settings?.forText || "for"} "{searchQuery}"
-                </Text>
-              </Flex>
             </div>
 
-            <Flex className="gap-[15px] lg:gap-8">
+            <Flex className="gap-[15px] lg:gap-0 xl:gap-[15px]">
               {/* Desktop Filter Sidebar: shimmer only during whole-page (initial) load */}
-              <div className="hidden min-[769px]:block w-[260px] flex-shrink-0">
+              <div className="hidden min-[769px]:block lg:w-[204px] xl:w-[260px] flex-shrink-0">
                 {isSearchLoading &&
                 (searchResults?.products?.length ?? 0) === 0 ? (
                   <ShimmerFilterSideBar />
@@ -771,10 +839,24 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
                   />
                 )}
 
+                {/* Mobile Search Results Count — sits below SelectedFilters */}
+                {searchResults && (
+                  <div className="min-[769px]:hidden">
+                    <Flex className="items-center justify-between mb-[15px] px-[7px] md:px-0">
+                      <Text className="!text-sm !text-black flex items-center justify-center">
+                        {settings?.showingText || "Showing"}{" "}
+                        {searchResults?.totalHits || 0}{" "}
+                        {settings?.resultsText || "Result(s)"}{" "}
+                        {settings?.forText || "for"} "{searchQuery}"
+                      </Text>
+                    </Flex>
+                  </div>
+                )}
+
                 {/* Desktop Search Results Header */}
                 {searchResults && (
                   <div className="hidden min-[769px]:block">
-                    <Flex className="items-center !justify-between mb-5">
+                    <Flex className="items-center !justify-between mb-5 pl-[19px]">
                       <Text className="!text-sm !text-black flex items-center justify-center">
                         {settings?.showingText || "Showing"}{" "}
                         {searchResults.totalHits}{" "}
@@ -819,6 +901,7 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
                             cartItem={getCartItem(mappedProduct)}
                             isQuantityLoading={isProductLoading(mappedProduct)}
                             settings={{
+                              showAddToCartToast: true,
                               actionButtonText: settings?.actionButtonText,
                               actionButtonTextMobile:
                                 settings?.actionButtonTextMobile,

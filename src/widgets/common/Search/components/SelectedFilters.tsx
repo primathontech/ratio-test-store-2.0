@@ -26,8 +26,6 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({
   selectedFilters,
   dynamicFilters,
   onFilterRemove,
-  onClearAll,
-  clearAllLabel = "Remove all",
   className = "",
 }) => {
   const selectedValues = Object.entries(selectedFilters)
@@ -69,14 +67,14 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({
 
   return (
     <div className={`selected-filters w-full min-w-0 max-w-full ${className}`}>
-      <Flex className="flex-nowrap md:!flex-wrap items-center gap-2 mb-4 w-full min-w-0 max-w-full overflow-x-auto md:overflow-visible pb-1">
+      <Flex className="flex-nowrap md:!flex-wrap items-center gap-0 mb-2 md:mb-3 w-full min-w-0 max-w-full overflow-x-auto md:overflow-visible pb-1 max-h-[37px] pl-0 lg:pl-[19px]">
         {selectedValues.map((filterData, index) => (
           <div
             onClick={() =>
               onFilterRemove(filterData.filterId, filterData.optionId)
             }
             key={`${filterData.filterId}-${filterData.optionId}-${index}`}
-            className="group inline-flex items-center gap-2 py-1 text-sm flex-shrink-0 border-l border-r border-faq-border mr-2.5 md:mb-[15px] px-[15px] cursor-pointer"
+            className="group inline-flex items-center py-1 text-sm flex-shrink-0 border-r border-faq-border mr-2.5 md:mb-[12px] pr-[15px] cursor-pointer"
           >
             <button
               type="button"
@@ -100,23 +98,6 @@ export const SelectedFilters: React.FC<SelectedFiltersProps> = ({
             </Text>
           </div>
         ))}
-
-        <button
-          type="button"
-          onClick={onClearAll}
-          aria-label={clearAllLabel}
-          className="group relative inline-flex items-center text-white py-[3px] bg-black rounded-[15px] pl-[25px] pr-[15px] text-sm font-medium transition-colors duration-500 hover:bg-[#1a1a1a] flex-shrink-0 md:mb-[15px]"
-        >
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 leading-none text-base font-semibold">
-            <span className="block transition-opacity duration-300 group-hover:opacity-0 font-extrabold">
-              ×
-            </span>
-            <span className="absolute inset-0 block opacity-0 transition-opacity duration-500 group-hover:opacity-100">
-              −
-            </span>
-          </span>
-          {clearAllLabel}
-        </button>
       </Flex>
     </div>
   );

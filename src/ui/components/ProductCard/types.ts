@@ -95,14 +95,24 @@ export interface ProductCardSettings {
   linkClassName?: string;
   /** Classes appended to the image area Link */
   imageClassName?: string;
+  /** Classes appended to the main + hover product <Image> elements */
+  productImageClassName?: string;
   /** Classes appended to the info/details container */
   detailsClassName?: string;
   /** Classes appended to the title Link */
   titleClassName?: string;
   /** Classes appended to the rating wrapper */
   ratingClassName?: string;
+  /** Classes appended to the rating value (e.g. "4.8") span */
+  ratingValueClassName?: string;
+  /** Classes appended to the review count (e.g. "| 12 reviews") span */
+  reviewCountClassName?: string;
+  /** Classes appended to the category chip */
+  categoryChipClassName?: string;
   /** Classes appended to the price row */
   priceSectionClassName?: string;
+  /** Classes appended to the sale price text */
+  salePriceClassName?: string;
   /** Classes appended to the original (compare-at) price */
   compareAtPriceClassName?: string;
   /** Classes appended to the discount label */
