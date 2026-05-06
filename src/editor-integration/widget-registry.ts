@@ -49,6 +49,20 @@ const commonWidgetSchemas = {
 // =============================================================================
 
 const merchantWidgetSchemas = {
+  [WIDGET_TYPES.AnnouncementBar]: {
+    type: WIDGET_TYPES.AnnouncementBar,
+    name: "Announcement Bar",
+    description:
+      "Marquee announcement strip displayed at the top of every page",
+    settingsSchema: {
+      items: {
+        type: "objectArray" as const,
+        label: "Announcements",
+        fields: ["id", "text", "href"],
+        default: [],
+      },
+    },
+  },
   // [WIDGET_TYPES.Header]: {
   //   type: WIDGET_TYPES.Header,
   //   name: "Header",

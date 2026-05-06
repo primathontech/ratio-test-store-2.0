@@ -48,16 +48,7 @@ export const template: PageConfig = {
             textColor: "#ffffff",
             speed: 35,
             pauseOnHover: true,
-            items: [
-              {
-                text: "Buy 3 Products at ₹799 | Use code : <strong>FLAT3</strong>",
-                href: "/pages/flat3",
-              },
-              {
-                text: "Shop for ₹499 & Get 2 Best Sellers FREE | Code : <strong>FREEIM</strong>",
-                href: "/pages/shine-squad-weekly-offer",
-              },
-            ],
+            items: "t:common.announcement_bar__rich",
           },
         },
       ],

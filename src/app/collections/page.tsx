@@ -3,7 +3,7 @@ import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getSEOConfig } from "@/config";
 import { MetaTagGenerator } from "@shopkit/seo";
-import { getMerchantName, getThemeName, getRouteTranslations } from "@/utils";
+import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
 
@@ -26,7 +26,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function CollectionsPage() {
   try {
-    const merchantName = getMerchantName();
     const themeName = getThemeName();
     const locale = getStaticLocale();
 

@@ -37,12 +37,7 @@ export const template: PageConfig = {
             textColor: "#ffffff",
             speed: 35,
             pauseOnHover: true,
-            items: [
-              {
-                text: "Buy 3 Products at ₹999 | Use code : <strong>GET999</strong>",
-                href: "/pages/flat3",
-              },
-            ],
+            items: "t:common.announcement_bar__rich",
           },
         },
       ],

@@ -97,6 +97,19 @@ export const themeRegistry = {
       },
     },
 
+    [TEMPLATE_TYPES["collection-list"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/collection-list/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/collection-list",
+        routeContext: {
+          templateName: "collection-list",
+          path: "/collections",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
     [TEMPLATE_TYPES.orders]: {
       default: {
         templatePath: "/themes/bblunt-2/templates/orders/default.ts",

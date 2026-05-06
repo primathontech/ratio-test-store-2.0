@@ -130,6 +130,25 @@
       ]
     },
     {
+      "name": "Collection List",
+      "templates": [
+        {
+          "id": "bblunt-2_collection-list_default",
+          "name": "Collection List (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "collection-list",
+            "path": "/collections",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
       "name": "Orders",
       "templates": [
         {
