@@ -42,7 +42,6 @@ export const ThumbnailPreview = forwardRef<
     isActive,
     onClick,
     size = 80,
-    radius = 4,
     activeBorderColor = "#000000",
     activeBorderWidth = 4,
     className = "",
@@ -65,7 +64,7 @@ export const ThumbnailPreview = forwardRef<
         style={{
           width: typeof size === "number" ? `${size}px` : size,
           aspectRatio: "1/1",
-          borderRadius: `${radius}px`,
+          borderRadius: `2px`,
           border: `${activeBorderWidth}px solid transparent`,
         }}
       />
@@ -84,7 +83,7 @@ export const ThumbnailPreview = forwardRef<
       style={{
         width: typeof size === "number" ? `${size}px` : size,
         aspectRatio: "1/1",
-        borderRadius: `${radius}px`,
+        borderRadius: isActive ? `4px` : `2px`,
         border: isActive
           ? `${activeBorderWidth}px solid ${activeBorderColor}`
           : `0px solid transparent`,

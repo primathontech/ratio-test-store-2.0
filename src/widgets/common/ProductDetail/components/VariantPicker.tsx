@@ -199,7 +199,7 @@ export function VariantPicker({
       )}
       <div
         data-testid="variant-picker-list"
-        className="flex gap-4 overflow-x-auto pt-3.5 pr-3 [&::-webkit-scrollbar]:hidden mb-6"
+        className="flex items-stretch gap-4 overflow-x-auto pt-3.5 pr-3 [&::-webkit-scrollbar]:hidden mb-6"
         style={{
           scrollbarWidth: "none",
           msOverflowStyle: "none",
@@ -260,7 +260,7 @@ export function VariantPicker({
               key={variant.id}
               data-testid={`variant-card-${variant.id}`}
               onClick={() => onVariantSelect?.(variant)}
-              className={`relative flex flex-row cursor-pointer p-0 rounded transition-colors flex-shrink-0 min-w-[168px] md:min-w-[175px] overflow-visible max-w-56 ${
+              className={`relative flex flex-row cursor-pointer p-0 rounded transition-colors flex-shrink-0 overflow-visible ${
                 matchesRoute
                   ? "border-[1.6px] border-solid border-primary"
                   : "border-[0.8px] border-solid border-[rgba(0,0,0,0.1)]"
@@ -292,14 +292,14 @@ export function VariantPicker({
 
               <div
                 data-testid={`variant-swatch-wrapper-${variant.id}`}
-                className="rounded-md overflow-hidden flex-shrink-0 m-1"
+                className="rounded-[3px] overflow-hidden flex-shrink-0 m-1"
               >
                 <Image
                   src={swatchImage || variantImageUrl || fallbackImageUrl}
                   alt={name || "Color swatch"}
                   width={75}
                   height={83}
-                  className="object-cover w-[75px] h-[83px] md:w-[75px] md:h-[83px] border-[1.21px]"
+                  className="object-cover h-full border-[1.21px]"
                   style={{ borderRadius: "4px" }}
                 />
               </div>
@@ -311,7 +311,7 @@ export function VariantPicker({
                 <div className="px-2">
                   <div
                     data-testid={`variant-name-${variant.id}`}
-                    className="text-sm md:text-xs leading-[22.4px] md:leading-[19.2px] font-normal text-black mt-[5px]"
+                    className="text-sm md:text-xs leading-[22.4px] md:leading-[19.2px] font-normal text-black mt-[5px] line-clamp-2 overflow-hidden [display:-webkit-box] [-webkit-box-orient:vertical]"
                   >
                     {name}
                   </div>

@@ -120,13 +120,13 @@ export const V1 = memo(function V1({
     >
       <div
         data-testid="reason-to-love-section-inner-container"
-        className="flex flex-col w-full px-[15px] md:px-[30px] lg:px-0 md:mb-8"
+        className="flex flex-col w-full px-[15px] md:px-[30px] lg:px-0 mb-6 md:mb-8"
       >
         <div
           data-testid="reason-to-love-section-content-wrapper"
           className="w-full flex flex-col justify-center"
         >
-          <p className="text-left text-base md:text-[22px] md:mt-8 lg:mt-[30px] lg:text-2xl font-bold text-black mb-8">
+          <p className="text-left text-base md:text-[22px] mt-6 md:mt-8 lg:mt-[30px] lg:text-2xl font-bold text-black mb-8">
             {sectionTitle}
           </p>
 

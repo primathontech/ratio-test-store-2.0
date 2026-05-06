@@ -184,7 +184,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
   return (
     <div
       data-testid="review-section-container"
-      className="w-full max-w-[1200px] mx-auto px-[31px] md:px-[45px] xl:px-0"
+      className="w-full mx-auto px-[31px] md:px-[45px] xl:px-0 max-w-[1168px]"
     >
       <div
         data-testid="review-section-inner-container"
@@ -192,9 +192,9 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
       >
         <div
           data-testid="review-section-summary-card"
-          className="rounded-2xl bg-white px-4 py-8 w-full max-w-full shadow-[0px_4px_16px_rgba(0,0,0,0.1)]"
+          className="rounded-2xl bg-white px-4 pt-6 pb-4 w-full max-w-full shadow-[0px_4px_16px_rgba(0,0,0,0.1)]"
         >
-          <h2 className="text-center text-sm font-normal text-[#222222] mb-4 md:mb-6">
+          <h2 className="text-center text-sm font-normal text-[#333333] mb-4 md:mb-6">
             {title}
           </h2>
 
@@ -284,7 +284,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                       </p>
                     </>
                   ) : (
-                    <p className="text-text-sm text-[#333333] text-center">
+                    <p className="text-sm text-[#333333] text-center">
                       Be the first to write a review
                     </p>
                   )}
@@ -300,7 +300,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                     id="write-review"
                     aria-label="Write a review"
                     onClick={toggleReviewForm}
-                    className="w-full h-9 lg:w-60 lg:h-9 py-2.5 lg:py-0 px-5 rounded-[30px] bg-black text-white text-text-sm font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
+                    className="w-full lg:w-60 py-2.5 px-5 rounded-[30px] bg-black text-white text-sm font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
                   >
                     {reviewSubmitted
                       ? "Refresh page"
@@ -352,12 +352,12 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                 : "grid-rows-[0fr] opacity-0"
             }`}
           >
-            <div className="overflow-hidden">
+            {/* <div className="overflow-hidden">
               <div
                 className="border-t border-[#E0E0E0] mx-2 mt-8 md:mt-10"
                 aria-hidden
               />
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

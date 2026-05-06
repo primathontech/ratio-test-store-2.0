@@ -693,7 +693,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               <SearchIcon />
             </button>
 
-            {/* Desktop search input (visible from 1100px).
+            {/* Desktop search input (visible from 1100px). */}
             <div className="hidden min-[1100px]:block w-[255px]">
               <SearchInputV2
                 searchPlaceholder={SEARCH_SUGGESTIONS}
