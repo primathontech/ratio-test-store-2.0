@@ -261,7 +261,7 @@ const FeaturedCarouselCard = memo(function FeaturedCarouselCard({
 /*  Carousel breakpoints                                               */
 /* ------------------------------------------------------------------ */
 
-const CAROUSEL_BREAKPOINTS = [
+const DEFAULT_CAROUSEL_BREAKPOINTS = [
   { minWidth: 0, cards: 2.3, gap: 0 },
   { minWidth: 768, cards: 3, gap: 0 },
   { minWidth: 1024, cards: 4, gap: 0 },
@@ -279,6 +279,10 @@ export const V1 = memo(function V1({
   const headingRich = settings?.heading || "";
   const actionButtonText = settings?.actionButtonText;
   const soldOutText = settings?.soldOutText;
+  const carouselBreakpoints =
+    settings?.carouselBreakpoints && settings.carouselBreakpoints.length > 0
+      ? settings.carouselBreakpoints
+      : DEFAULT_CAROUSEL_BREAKPOINTS;
 
   const extracted = useMemo(() => extractFromData(data), [data]);
 
@@ -343,7 +347,7 @@ export const V1 = memo(function V1({
         <div className="group xl:mx-auto xl:max-w-[1300px] md:border md:border-[#EBEBEB] md:rounded-lg overflow-hidden">
           <SwipeCarousel
             itemCount={products.length}
-            breakpoints={CAROUSEL_BREAKPOINTS}
+            breakpoints={carouselBreakpoints}
             renderItem={renderProduct}
             renderPrev={(onClick, disabled) => (
               <button

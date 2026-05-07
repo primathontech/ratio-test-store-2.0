@@ -7,6 +7,25 @@ import {
 } from "@shopkit/builder";
 
 /* ------------------------------------------------------------------ */
+/*  Shared carousel breakpoints                                         */
+/* ------------------------------------------------------------------ */
+// Tuned per viewport bucket. SwipeCarousel resolves the active entry
+// from useResponsive's flags. Widgets fall back to their own built-in
+// defaults when this setting is omitted.
+const FEATURED_CAROUSEL_BREAKPOINTS = [
+  { minWidth: 0, cards: 2.3, gap: 0 },
+  { minWidth: 768, cards: 3, gap: 0 },
+  { minWidth: 1024, cards: 4, gap: 0 },
+  { minWidth: 1440, cards: 5, gap: 0 },
+];
+
+const HAIR_CARE_BFFS_CAROUSEL_BREAKPOINTS = [
+  { minWidth: 0, cards: 2.15, gap: 0 },
+  { minWidth: 1024, cards: 5, gap: 0 },
+  { minWidth: 1440, cards: 5, gap: 0 },
+];
+
+/* ------------------------------------------------------------------ */
 /*  Helper: section config for a FeaturedCollectionCarousel widget      */
 /* ------------------------------------------------------------------ */
 
@@ -51,6 +70,7 @@ function carouselSection(
           heading: headingRich,
           actionButtonText: "t:common.product_card.add_to_cart",
           soldOutText: "t:common.product_card.sold_out",
+          carouselBreakpoints: FEATURED_CAROUSEL_BREAKPOINTS,
           ...(viewAllCollectionHandle ? { viewAllCollectionHandle } : {}),
         },
       },
@@ -288,6 +308,7 @@ export const template: PageConfig = {
             actionButtonText: "t:common.product_card.add_to_cart",
             soldOutText: "t:common.product_card.sold_out",
             collections: "t:bblunt-2_home_default.hair_care_bffs.collections",
+            carouselBreakpoints: HAIR_CARE_BFFS_CAROUSEL_BREAKPOINTS,
           },
         },
       ],

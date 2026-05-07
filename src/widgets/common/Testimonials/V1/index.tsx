@@ -1,8 +1,22 @@
 "use client";
 
-import React, { memo, useRef, useEffect } from "react";
+import React, { memo, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
 import { TestimonialsProps, TestimonialItem } from "../types";
+import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
+
+/* ------------------------------------------------------------------ */
+/*  Default carousel breakpoints                                       */
+/* ------------------------------------------------------------------ */
+// Mirrors the previous CSS-only layout exactly:
+//   mobile (<768)        : ~1.33 cards visible (75% width — w-3/4 peek), 15px gap
+//   tablet (768–1149)    : 2 cards, 22px gap   (was w-[calc((100% - 22px)/2)])
+//   desktop (≥1150)      : 3 cards, 22px gap   (was w-[calc((100% - 44px)/3)])
+const DEFAULT_TESTIMONIALS_BREAKPOINTS = [
+  { minWidth: 0, cards: 4 / 3, gap: 15 },
+  { minWidth: 768, cards: 2, gap: 22 },
+  { minWidth: 1150, cards: 3, gap: 22 },
+];
 
 /* ------------------------------------------------------------------ */
 /*  Star SVG icon                                                      */
@@ -186,9 +200,31 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
   const starColor = settings?.starColor ?? "#FFC300";
   const starEmptyColor = "#4A4A4A";
   const testimonials = settings?.testimonials ?? [];
+  const carouselBreakpoints =
+    settings?.carouselBreakpoints && settings.carouselBreakpoints.length > 0
+      ? settings.carouselBreakpoints
+      : DEFAULT_TESTIMONIALS_BREAKPOINTS;
 
-  const scrollRef = useRef<HTMLDivElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
+
+  /* SwipeCarousel renderItem — pulls the matching testimonial by index. */
+  const renderItem = useCallback(
+    (idx: number) => {
+      const item = testimonials[idx];
+      if (!item) {
+        return null;
+      }
+      return (
+        <TestimonialCard
+          item={item}
+          cardBackground={cardBackground}
+          starColor={starColor}
+          starEmptyColor={starEmptyColor}
+        />
+      );
+    },
+    [testimonials, cardBackground, starColor, starEmptyColor]
+  );
 
   /* Scroll reveal animation */
   useEffect(() => {
@@ -238,29 +274,15 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
           />
         </div>
 
-        {/* Carousel */}
-        <div
-          ref={scrollRef}
-          className="testimonials-carousel flex overflow-x-auto gap-[15px] md:gap-[22px] scroll-smooth hide-scrollbar testimonials-animate-on-scroll"
-          style={{
-            scrollSnapType: "x mandatory",
-            WebkitOverflowScrolling: "touch",
-          }}
-        >
-          {testimonials.map((item, idx) => (
-            <div
-              key={idx}
-              className="testimonials-slide shrink-0 w-3/4 md:w-[calc((100%-22px)/2)] min-[1150px]:w-[calc((100%-44px)/3)]"
-              style={{ scrollSnapAlign: "start" }}
-            >
-              <TestimonialCard
-                item={item}
-                cardBackground={cardBackground}
-                starColor={starColor}
-                starEmptyColor={starEmptyColor}
-              />
-            </div>
-          ))}
+        {/* Carousel — SwipeCarousel handles breakpoint resolution +
+            touch / mouse-drag swipe. No arrows, matching the original
+            scroll-snap UI. */}
+        <div className="testimonials-animate-on-scroll">
+          <SwipeCarousel
+            itemCount={testimonials.length}
+            breakpoints={carouselBreakpoints}
+            renderItem={renderItem}
+          />
         </div>
       </div>
     </section>
