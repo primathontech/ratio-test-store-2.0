@@ -1,4 +1,6 @@
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
+import { getProductLabel } from "@/ui/components/ProductCard/badgeUtils";
+import { getCommerceClient } from "@/config/commerce";
 
 /* ------------------------------------------------------------------ */
 /*  localStorage — viewed products history                             */
@@ -103,16 +105,41 @@ export interface ApiRecentProduct {
   variants?: ApiVariantLite[];
   variant?: ApiVariantLite;
   metadata?: Record<string, { value: unknown } | unknown> | null;
+  /**
+   * Tags — used as fallback for badge resolution. The GoKwik backend ships
+   * tags as `{ id, name }` objects on this endpoint; older / Shopify shapes
+   * are plain strings. Both are accepted; `normalizeTags` flattens them.
+   */
+  tags?: Array<string | { id?: string; name?: string }>;
   average_rating?: string | number;
   rating_count?: string | number;
 }
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_CUSTOM_API_PRODUCT_URL;
-const MERCHANT_ID = process.env.NEXT_PUBLIC_MERCHANT_ID || "";
+/**
+ * Unwrap getProduct's response — typically `{ success, data: {...product} }`,
+ * sometimes the product fields are at the top level. Tolerates both shapes.
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function unwrapProduct(payload: any): ApiRecentProduct | null {
+  if (!payload || typeof payload !== "object") {
+    return null;
+  }
+  // Standard shape: { success, data: {...product} }
+  if (payload.data && typeof payload.data === "object" && payload.data.id) {
+    return payload.data as ApiRecentProduct;
+  }
+  // Already the product
+  if (payload.id) {
+    return payload as ApiRecentProduct;
+  }
+  return null;
+}
 
 /**
- * POST /api/v1/product/details — returns product details for the given IDs.
- * Returns an empty array on any error.
+ * Fetch product details for the given IDs via `commerceClient.getProduct`.
+ * Calls run in parallel (`Promise.all`); failures for individual IDs are
+ * swallowed so a single bad ID doesn't break the rail. Same input/output
+ * contract as the previous raw-fetch implementation — V1 keeps working.
  */
 export async function fetchProductDetails(
   productIds: string[]
@@ -121,32 +148,22 @@ export async function fetchProductDetails(
     return [];
   }
   try {
-    // eslint-disable-next-line no-restricted-syntax
-    const response = await fetch(`${API_BASE_URL}/api/v1/product/details`, {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "gk-merchant-id": MERCHANT_ID,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ productIds }),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const data = await response.json();
-    if (Array.isArray(data?.products)) {
-      return data.products;
-    }
-    if (Array.isArray(data)) {
-      return data;
-    }
-    if (Array.isArray(data?.data)) {
-      return data.data;
-    }
-    return [];
+    const commerceClient = getCommerceClient();
+    const results = await Promise.all(
+      productIds.map(async (id) => {
+        try {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          const result: any = await commerceClient.getProduct({
+            id,
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          } as any);
+          return unwrapProduct(result);
+        } catch {
+          return null;
+        }
+      })
+    );
+    return results.filter((p): p is ApiRecentProduct => p !== null);
   } catch (error) {
     console.error("RecentlyViewed: fetchProductDetails failed", error);
     return [];
@@ -219,6 +236,19 @@ export function transformApiProductToCardProduct(
   const reviewNum =
     product.rating_count != null ? Number(product.rating_count) : 0;
 
+  // Resolve badge: metafield first, tag fallback (matches HairCareBFFs /
+  // FeaturedCollectionCarousel logic). Returns both label AND background color.
+  const productLabelsRaw = (
+    product.metadata as Record<string, { value?: unknown } | undefined> | null
+  )?.product_labels?.value;
+  // Normalize tags to plain strings — GoKwik returns `{id, name}` objects on
+  // this endpoint while other surfaces ship strings. `getProductLabel`
+  // expects strings, so flatten here.
+  const tagStrings = (product.tags || [])
+    .map((t) => (typeof t === "string" ? t : (t?.name ?? "")))
+    .filter((s): s is string => !!s);
+  const resolvedBadge = getProductLabel(productLabelsRaw, tagStrings);
+
   return {
     id: product.id,
     productId: product.id,
@@ -230,7 +260,8 @@ export function transformApiProductToCardProduct(
     mainImage: mainImg,
     hoverImage: hoverImg,
     category: product.productType || product.product_type || "",
-    badge: readMetadataValue(product.metadata, "product_labels"),
+    badge: resolvedBadge?.label,
+    badgeBackground: resolvedBadge?.background,
     rating: Number.isFinite(ratingNum) ? ratingNum : 0,
     reviewCount: Number.isFinite(reviewNum) ? reviewNum : 0,
     salePrice,
