@@ -1,5 +1,12 @@
 # storefront-starter-app
 
+## 0.1.10
+
+### Bug Fixes
+
+- **Meta Pixel SPA PageViews** — `meta-pixel-sdk.js` now sets `fbq.disablePushState = true` and `fbq.allowDuplicatePageViews = true` before `fbq('init')`. Without these flags, fbevents.js auto-fired an extra un-deduplicated PageView on every SPA navigation (pushState patch), and then silently dropped all subsequent manual PageView calls due to its internal dedup cache (`ca[pixelId]`).
+- Bump `@shopkit/events` to `^0.9.3`
+
 ## 0.1.9
 
 ### Enhancements
