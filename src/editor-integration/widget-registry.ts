@@ -63,6 +63,24 @@ const merchantWidgetSchemas = {
       },
     },
   },
+  [WIDGET_TYPES.SEOMetadata]: {
+    type: WIDGET_TYPES.SEOMetadata,
+    name: "SEO Metadata",
+    description:
+      "Page-level SEO metadata widget for title, description, canonical, and Open Graph image.",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Page Title",
+        default: "",
+      },
+      description: {
+        type: "text" as const,
+        label: "Meta Description",
+        default: "",
+      },
+    },
+  },
   [WIDGET_TYPES.HairCareBFFs]: {
     type: WIDGET_TYPES.HairCareBFFs,
     name: "Hair Care BFFs",
