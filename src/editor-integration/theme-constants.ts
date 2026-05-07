@@ -1,6 +1,6 @@
 export const THEMES = {
-  DAWN: {
-    id: "dawn",
+  BBLUNT_2: {
+    id: "bblunt-2",
     static_templates: {
       ABOUT_US: "about-us",
       // Add more static template IDs here as needed, e.g.:

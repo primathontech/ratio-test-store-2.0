@@ -1,4 +1,5 @@
-import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
+// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
+import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
 import { MetaTagGenerator, SEOFactory } from "@shopkit/seo";
@@ -48,11 +49,11 @@ export async function generateMetadata({
 
     if (!collection) {
       return {
-        title: "Collection Not Found | Wellevrsed",
+        title: "Collection Not Found | BBlunt",
         description: "The requested collection could not be found.",
         alternates: {
           canonical: `${
-            process.env.NEXT_PUBLIC_BASE_URL || "https://wellversed.in"
+            process.env.NEXT_PUBLIC_BASE_URL || "https://bblunt.com"
           }/collections/${params.collectionname}`,
         },
       };
@@ -76,7 +77,7 @@ export async function generateMetadata({
       description: seoDescription,
       type: "website" as "website",
       canonical: `${
-        process.env.NEXT_PUBLIC_BASE_URL || "https://wellversed.in"
+        process.env.NEXT_PUBLIC_BASE_URL || "https://bblunt.com"
       }/collections/${params.collectionname}`,
       image: collection.image
         ? {
@@ -87,11 +88,11 @@ export async function generateMetadata({
             height: collection.image.height || 800,
           }
         : {
-            id: "wellversed-default",
-            url: "/images/logo/wellversed-logo.svg",
+            id: "bblunt-default",
+            url: "/bblunt-2/images/bblunt-logo.avif",
             altText: collection.title,
-            width: 2048,
-            height: 2048,
+            width: 1200,
+            height: 630,
           },
     });
 
@@ -121,8 +122,8 @@ export async function generateMetadata({
   } catch (error) {
     console.error("Error generating metadata for collection:", error);
     return {
-      title: "Collection | Wellevrsed",
-      description: "Shop our amazing collections at Wellevrsed",
+      title: "Collection | BBlunt",
+      description: "Shop our amazing collections at BBlunt",
     };
   }
 }

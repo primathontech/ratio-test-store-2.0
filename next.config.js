@@ -23,6 +23,26 @@ module.exports = createNextConfig({
         port: "",
         pathname: "/**",
       },
+      // Gokwik product image S3 buckets (per-merchant, region-suffixed)
+      {
+        protocol: "https",
+        hostname: "gkwk-dev-os-resources.s3.ap-south-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "os-resources.gokwik.co",
+
+        port: "",
+        pathname: "/**",
+      },
+      {
+        protocol: "https",
+        hostname: "**.s3.ap-south-1.amazonaws.com",
+        port: "",
+        pathname: "/**",
+      },
     ],
   },
 

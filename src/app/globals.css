@@ -2,36 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
+@keyframes indicatorProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+.route-loader .progress-bar {
+  background: #0089dd !important;
+}
+
 @layer base {
   /* Base styles that use CSS variables from theme */
-  html {
-    @apply antialiased text-[62.5%];
-  }
-
   body {
     @apply bg-background text-text font-body min-h-screen;
-  }
-
-  /* FBT font size overrides (rem base is 62.5%) */
-  #fbt-container-shopify .text-xs {
-    font-size: 1.2rem;
-  }
-  #fbt-container-shopify .text-sm {
-    font-size: 1.4rem;
-  }
-  #fbt-container-shopify .text-base {
-    font-size: 1.6rem;
-  }
-  #fbt-container-shopify .text-lg {
-    font-size: 1.8rem;
-  }
-  #fbt-container-shopify .text-xl {
-    font-size: 2rem;
-  }
-  @media (min-width: 768px) {
-    #fbt-container-shopify .md\:text-xl {
-      font-size: 2rem;
-    }
   }
 
   /* Typography defaults */
@@ -70,42 +57,6 @@
   code,
   pre {
     @apply font-mono;
-  }
-
-  @font-face {
-    font-family: "Gotham";
-    src: url("/dawn/fonts/Gotham-Light.woff2") format("woff2");
-    font-weight: 300;
-    font-style: normal;
-    font-display: swap;
-  }
-  @font-face {
-    font-family: "Gotham";
-    src: url("/dawn/fonts/Gotham-Book.woff2") format("woff2");
-    font-weight: 400;
-    font-style: normal;
-    font-display: swap;
-  }
-  @font-face {
-    font-family: "Gotham";
-    src: url("/dawn/fonts/Gotham-Medium.woff2") format("woff2");
-    font-weight: 500;
-    font-style: normal;
-    font-display: swap;
-  }
-  @font-face {
-    font-family: "Gotham";
-    src: url("/dawn/fonts/Gotham-Medium-Extra-Bold.woff2") format("woff2");
-    font-weight: 600;
-    font-style: normal;
-    font-display: swap;
-  }
-  @font-face {
-    font-family: "Gotham";
-    src: url("/dawn/fonts/Gotham-Bold.woff2") format("woff2");
-    font-weight: 700;
-    font-style: normal;
-    font-display: swap;
   }
 
   /* Form elements */
@@ -427,41 +378,6 @@
   display: none;
 }
 
-.shine-link-button {
-  position: relative;
-  overflow: hidden;
-}
-
-.shine-link-button::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 150%;
-  width: 200%;
-  background-image: linear-gradient(
-    90deg,
-    transparent,
-    var(--light_skew-color, rgba(255, 255, 255, 0.3)),
-    transparent
-  );
-  transform: skew(-20deg);
-}
-
-.shine-link-button:hover::before {
-  left: -150%;
-  transition: left 0.6s ease-out;
-}
-
-@keyframes indicatorProgress {
-  from {
-    width: 0%;
-  }
-  to {
-    width: 100%;
-  }
-}
-
 /* Responsive section visibility — mobile-first, min-width only */
 
 /* hidden-mobile: hide on mobile, restore on tablet+ */
@@ -491,4 +407,284 @@
   .hidden-desktop {
     display: none;
   }
+}
+/* === PeopleAlsoBought Carousel === */
+.pab-slider-viewport {
+  --pab-cards: 1.5;
+  --pab-gap: 16px;
+  --pab-pad: 16px;
+}
+@media (min-width: 768px) {
+  .pab-slider-viewport {
+    --pab-cards: 2.3;
+  }
+}
+@media (min-width: 1024px) {
+  .pab-slider-viewport {
+    --pab-cards: 3;
+    --pab-pad: 72px;
+  }
+}
+@media (min-width: 1440px) {
+  .pab-slider-viewport {
+    --pab-cards: 5;
+  }
+}
+.pab-slide {
+  width: calc(
+    (100% - var(--pab-pad) * 2 - (var(--pab-cards) - 1) * var(--pab-gap)) /
+      var(--pab-cards)
+  );
+  min-width: calc(
+    (100% - var(--pab-pad) * 2 - (var(--pab-cards) - 1) * var(--pab-gap)) /
+      var(--pab-cards)
+  );
+}
+
+/* === CollectionGrid Section === */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* === ShineAcademyBanner Section === */
+.sab-animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+.sab-animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === Testimonials Section === */
+.testimonials-animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s ease;
+}
+.testimonials-animate-in {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* === AdditionalInfoAccordion SEO Prose === */
+.additional-info-prose {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+  color: #1d1d1d;
+}
+.additional-info-prose h1 {
+  font-size: 22px;
+  line-height: 28px;
+  font-weight: 700;
+  margin: 0 0 10px;
+}
+.additional-info-prose h2 {
+  font-size: 18px;
+  line-height: 24px;
+  font-weight: 700;
+  margin: 20px 0 10px;
+}
+.additional-info-prose h3 {
+  font-size: 16px;
+  line-height: 22px;
+  font-weight: 700;
+  margin: 16px 0 8px;
+}
+.additional-info-prose p {
+  font-size: 14px;
+  line-height: 22px;
+  font-weight: 400;
+  margin: 0 0 10px;
+}
+.additional-info-prose ol,
+.additional-info-prose ul {
+  list-style: revert;
+  margin: 0 0 10px;
+  padding-left: 24px;
+}
+.additional-info-prose li {
+  list-style: revert;
+  margin-bottom: 8px;
+  font-size: 14px;
+  line-height: 22px;
+}
+.additional-info-prose a {
+  color: #1d1d1d;
+  text-decoration: underline;
+}
+.additional-info-prose strong {
+  font-weight: 700;
+}
+@media (min-width: 768px) {
+  .additional-info-prose h1 {
+    font-size: 28px;
+    line-height: 34px;
+  }
+  .additional-info-prose h2 {
+    font-size: 22px;
+    line-height: 28px;
+  }
+  .additional-info-prose h3 {
+    font-size: 18px;
+    line-height: 24px;
+  }
+}
+
+/* Testimonials carousel slide widths — responsive */
+.testimonials-slide {
+  /* Mobile: ~1.5 cards visible (full + half peek) */
+  width: 71.3%;
+  min-width: 71.3%;
+}
+@media (min-width: 768px) {
+  .testimonials-slide {
+    /* Tablet: 2 cards visible */
+    width: calc((100% - 22px) / 2);
+    min-width: calc((100% - 22px) / 2);
+  }
+}
+@media (min-width: 1024px) {
+  .testimonials-slide {
+    /* Desktop: 3 cards visible */
+    width: calc((100% - 44px) / 3);
+    min-width: calc((100% - 44px) / 3);
+  }
+}
+
+/* === ShopByCategories Carousel === */
+/* Nav buttons: visible only on tablet (768px–991px), hidden on mobile and desktop */
+.sbc-cat-nav-btn {
+  display: none;
+}
+@media (min-width: 768px) and (max-width: 991px) {
+  .sbc-cat-nav-btn {
+    display: inline-flex;
+  }
+}
+
+/* Viewport padding: desktop uses container padding, mobile uses 12px left inset */
+.sbc-cat-viewport {
+  padding: 0 50px;
+}
+@media (max-width: 991px) {
+  .sbc-cat-viewport {
+    padding: 0 0 0 12px;
+  }
+}
+
+/* Container: desktop max-width 1400px centered, flex layout */
+.sbc-cat-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+@media (max-width: 991px) {
+  .sbc-cat-container {
+    gap: 4px;
+    max-width: none;
+  }
+}
+
+/* Slide sizing: desktop 1/5 of container, mobile 1/4.25 */
+.sbc-cat-slide {
+  width: calc((100% - 4 * 15px) / 5);
+  min-width: calc((100% - 4 * 15px) / 5);
+}
+@media (max-width: 991px) {
+  .sbc-cat-slide {
+    width: calc((100% - 3 * 4px) / 4.25);
+    min-width: calc((100% - 3 * 4px) / 4.25);
+  }
+}
+
+/* === ShopByConcerns Carousel === */
+/* Mobile (default): 2 tiles + half-peek visible (2.5 tiles) */
+.sbc-slide {
+  width: calc((100% - 2 * 15px) / 2.5);
+  min-width: calc((100% - 2 * 15px) / 2.5);
+}
+/* Tablet 768px: ~3 tiles visible */
+@media (min-width: 768px) {
+  .sbc-slide {
+    width: calc((100% - 2 * 15px) / 3);
+    min-width: calc((100% - 2 * 15px) / 3);
+  }
+}
+/* Tablet 1024px: 4 tiles visible */
+@media (min-width: 1024px) {
+  .sbc-slide {
+    width: calc((100% - 3 * 15px) / 4);
+    min-width: calc((100% - 3 * 15px) / 4);
+  }
+}
+/* Desktop 1440px: 5 tiles visible */
+@media (min-width: 1440px) {
+  .sbc-slide {
+    width: calc((100% - 4 * 15px) / 5);
+    min-width: calc((100% - 4 * 15px) / 5);
+  }
+}
+
+/* === HairCareBFFs Carousel === */
+/* Mobile (default): 1.5 cards visible */
+.hcb-slide {
+  width: calc(100% / 1.5);
+  min-width: calc(100% / 1.5);
+}
+/* Tablet 768px: 2.5 cards visible */
+@media (min-width: 768px) {
+  .hcb-slide {
+    width: calc(100% / 2.5);
+    min-width: calc(100% / 2.5);
+  }
+}
+/* Desktop 1024px: 4 cards visible */
+@media (min-width: 1024px) {
+  .hcb-slide {
+    width: calc(100% / 4);
+    min-width: calc(100% / 4);
+  }
+}
+/* Large desktop 1440px: 5 cards visible */
+@media (min-width: 1440px) {
+  .hcb-slide {
+    width: calc(100% / 5);
+    min-width: calc(100% / 5);
+  }
+}
+
+.shine-link-button {
+  position: relative;
+  overflow: hidden;
+}
+
+.shine-link-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 150%;
+  width: 200%;
+  background-image: linear-gradient(
+    90deg,
+    transparent,
+    var(--light_skew-color, rgba(255, 255, 255, 0.3)),
+    transparent
+  );
+  transform: skew(-20deg);
+}
+
+.shine-link-button:hover::before {
+  left: -150%;
+  transition: left 0.6s ease-out;
 }

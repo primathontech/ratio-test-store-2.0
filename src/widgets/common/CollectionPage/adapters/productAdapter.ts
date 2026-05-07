@@ -1,0 +1,54 @@
+import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
+import type { TransformedProduct } from "../api/types";
+
+/**
+ * Convert TransformedProduct (v2 collection API shape) into the
+ * ProductCardProduct shape that the shared `@/ui/components/ProductCard`
+ * expects. Handles paise→rupee conversion, discount derivation,
+ * main/hover image extraction, and badge/category mapping.
+ */
+export function transformProductForCard(
+  product: TransformedProduct
+): ProductCardProduct {
+  const mainImg =
+    product.images.find((img) => img.is_main)?.url ||
+    product.images[0]?.url ||
+    "";
+  const hoverImg = product.images.find((img) => !img.is_main)?.url || mainImg;
+  const alt =
+    product.images.find((img) => img.is_main)?.alt ||
+    product.title ||
+    "Product image";
+
+  const salePrice = product.price ? product.price / 100 : 0;
+  const originalPrice = product.compareAtPrice
+    ? product.compareAtPrice / 100
+    : undefined;
+
+  let discount: string | undefined;
+  if (originalPrice && originalPrice > salePrice && salePrice > 0) {
+    const pct = Math.round(((originalPrice - salePrice) / originalPrice) * 100);
+    discount = `${pct}% off`;
+  }
+
+  return {
+    id: product.id,
+    productId: product.id,
+    variantId: product.variant?.id,
+    availableForSale: product.availableForSale,
+    href: `/products/${product.handle}`,
+    title: product.title,
+    alt,
+    mainImage: mainImg,
+    hoverImage: hoverImg,
+    category: product.productType || "",
+    badge: product.labels[0],
+    rating: Number(product.average_rating) || 0,
+    reviewCount: Number(product.rating_count) || 0,
+    salePrice,
+    originalPrice,
+    discount,
+    weight: product.netContent || undefined,
+    description: product.subtitle || undefined,
+  };
+}
