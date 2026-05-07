@@ -194,7 +194,14 @@
           "name": "About Us (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"]
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "about-us",
+            "path": "/pages/about-us",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
         }
       ]
     }

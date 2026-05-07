@@ -1,13 +1,7 @@
 "use client";
 
 import React from "react";
-import {
-  FooterLink,
-  MobileNavigationItem,
-  PaymentMethod,
-  ServiceIconItem,
-  SocialLink,
-} from "./types";
+import { MobileNavigationItem } from "./types";
 
 export const FOOTER_CONSTANTS = {
   DEFAULT_SETTINGS: {
@@ -104,100 +98,6 @@ export const SOCIAL_ICONS = {
     </svg>
   ),
 } as const;
-
-export const DEFAULT_SOCIAL_LINKS: SocialLink[] = [
-  {
-    name: "Facebook",
-    href: "https://www.facebook.com/bbluntindia",
-    icon: "facebook",
-  },
-  {
-    name: "Twitter",
-    href: "https://twitter.com/bbluntindia",
-    icon: "twitter",
-  },
-  {
-    name: "Instagram",
-    href: "https://www.instagram.com/bbluntindia",
-    icon: "instagram",
-  },
-  {
-    name: "YouTube",
-    href: "https://www.youtube.com/c/BBLUNTIndia/videos",
-    icon: "youtube",
-  },
-  {
-    name: "Email",
-    href: "mailto:care@BBLUNT.com",
-    icon: "email",
-  },
-];
-
-export const DEFAULT_ABOUT_LINKS: FooterLink[] = [
-  { name: "Our Story", href: "/pages/about-us" },
-  { name: "Blogs", href: "/blogs/news" },
-];
-
-export const DEFAULT_USEFUL_LINKS: FooterLink[] = [
-  { name: "Privacy Policy", href: "/pages/privacy-policy" },
-  { name: "Return Policy", href: "/pages/return-policy" },
-  { name: "Terms & Conditions", href: "/pages/terms-and-conditions" },
-  { name: "Contact Us", href: "https://support.bblunt.com/support/home" },
-  {
-    name: "Request Replacement/Returns",
-    href: "https://bblunt.com/apps/return_prime",
-  },
-];
-
-export const DEFAULT_OUR_SALONS_LINKS: FooterLink[] = [
-  { name: "Mumbai", href: "https://bbluntsalons.co.in/salon-locator/" },
-  { name: "Hyderabad", href: "https://bbluntsalons.co.in/salon-locator/" },
-  { name: "Bangalore", href: "https://bbluntsalons.co.in/salon-locator/" },
-  { name: "Gurugram", href: "https://bbluntsalons.co.in/salon-locator/" },
-  { name: "Guwahati", href: "https://bbluntsalons.co.in/salon-locator/" },
-  { name: "Kolkata", href: "https://bbluntsalons.co.in/salon-locator/" },
-];
-
-export const DEFAULT_CATEGORIES_LINKS: FooterLink[] = [
-  { name: "All Products", href: "/collections/all" },
-  { name: "Hair Styling", href: "/collections/hair-styling" },
-  { name: "Hair Colour", href: "/collections/hair-colour" },
-  { name: "Hair Care", href: "/collections/hair-care" },
-];
-
-export const DEFAULT_MY_ACCOUNT_LINKS: FooterLink[] = [
-  { name: "Profile", href: "/account" },
-  { name: "Orders", href: "/pages/orders" },
-  { name: "Addresses", href: "https://shop.bblunt.com/account/addresses" },
-];
-
-export const DEFAULT_PAYMENT_METHODS: PaymentMethod[] = [
-  { name: "Visa", icon: "visa", image: "/Footer/icons/visa.svg" },
-  { name: "Mastercard", icon: "master", image: "/Footer/icons/master.svg" },
-  {
-    name: "American Express",
-    icon: "amex",
-    image: "/Footer/icons/american_express.svg",
-  },
-  { name: "RuPay", icon: "rupay", image: "/Footer/icons/rupay.svg" },
-  {
-    name: "Net Banking",
-    icon: "netbanking",
-    image: "/Footer/icons/netbanking.svg",
-  },
-  {
-    name: "Google Pay",
-    icon: "gpay",
-    image: "/Footer/icons/google_pay.svg",
-  },
-  { name: "Paytm", icon: "paytm", image: "/Footer/icons/paytm.svg" },
-];
-
-export const DEFAULT_SERVICE_ICONS: ServiceIconItem[] = [
-  { name: "Free Shipping", image: "" },
-  { name: "Easy Return", image: "" },
-  { name: "COD Available", image: "" },
-];
 
 // Navigation tab icons
 export const NAVIGATION_ICONS = {

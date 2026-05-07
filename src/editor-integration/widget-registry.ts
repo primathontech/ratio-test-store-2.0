@@ -288,22 +288,284 @@ const merchantWidgetSchemas = {
       },
     },
   },
-  // [WIDGET_TYPES.Header]: {
-  //   type: WIDGET_TYPES.Header,
-  //   name: "Header",
-  //   description: "Site header with logo, navigation, and cart icon",
-  //   settingsSchema: {
-  //     variant: {
-  //       type: "select",
-  //       label: "Widget Variant",
-  //       options: [
-  //         { value: "v1", label: "Version 1 (Classic)" },
-  //         { value: "v2", label: "Version 2 (Enhanced)" },
-  //       ],
-  //       default: "",
-  //     },
-  //   },
-  // },
+  [WIDGET_TYPES.Footer]: {
+    type: WIDGET_TYPES.Footer,
+    name: "Footer",
+    description:
+      "Site footer with link sections, social icons, payment methods, and app download",
+    settingsSchema: {
+      mobileFooterTagline: {
+        type: "richtext" as const,
+        label: "Mobile Footer Tagline (rich text)",
+        default: "",
+      },
+      logoUrl: { type: "image" as const, label: "Logo Image", default: "" },
+      logoAlt: { type: "text" as const, label: "Logo Alt Text", default: "" },
+
+      appDownloadText: {
+        type: "text" as const,
+        label: "App Download Text",
+        default: "",
+      },
+      googlePlayUrl: {
+        type: "text" as const,
+        label: "Google Play URL",
+        default: "",
+      },
+      appStoreUrl: {
+        type: "text" as const,
+        label: "App Store URL",
+        default: "",
+      },
+      googlePlayImage: {
+        type: "image" as const,
+        label: "Google Play Badge Image",
+        default: "",
+      },
+      googlePlayAlt: {
+        type: "text" as const,
+        label: "Google Play Image Alt Text",
+        default: "",
+      },
+      appStoreImage: {
+        type: "image" as const,
+        label: "App Store Badge Image",
+        default: "",
+      },
+      appStoreAlt: {
+        type: "text" as const,
+        label: "App Store Image Alt Text",
+        default: "",
+      },
+
+      serviceSectionsIcons: {
+        type: "objectArray" as const,
+        label: "Service Icons (Free Shipping, etc.)",
+        fields: ["name", "image"],
+        fieldTypes: { image: "image" },
+        default: [],
+      },
+
+      aboutTitle: {
+        type: "text" as const,
+        label: "About Section Title",
+        default: "",
+      },
+      aboutLinks: {
+        type: "objectArray" as const,
+        label: "About Links",
+        fields: ["name", "href"],
+        default: [],
+      },
+
+      usefulLinksTitle: {
+        type: "text" as const,
+        label: "Useful Links Section Title",
+        default: "",
+      },
+      usefulLinks: {
+        type: "objectArray" as const,
+        label: "Useful Links",
+        fields: ["name", "href"],
+        default: [],
+      },
+
+      ourSalonsTitle: {
+        type: "text" as const,
+        label: "Our Salons Section Title",
+        default: "",
+      },
+      ourSalonsLinks: {
+        type: "objectArray" as const,
+        label: "Our Salons Links",
+        fields: ["name", "href"],
+        default: [],
+      },
+
+      categoriesTitle: {
+        type: "text" as const,
+        label: "Categories Section Title",
+        default: "",
+      },
+      categoriesLinks: {
+        type: "objectArray" as const,
+        label: "Categories Links",
+        fields: ["name", "href"],
+        default: [],
+      },
+
+      myAccountTitle: {
+        type: "text" as const,
+        label: "My Account Section Title",
+        default: "",
+      },
+      myAccountLinks: {
+        type: "objectArray" as const,
+        label: "My Account Links",
+        fields: ["name", "href"],
+        default: [],
+      },
+
+      socialLinks: {
+        type: "objectArray" as const,
+        label: "Social Links",
+        fields: ["name", "href", "icon"],
+        default: [],
+      },
+
+      paymentProtectionText: {
+        type: "text" as const,
+        label: "Payment Protection Text",
+        default: "",
+      },
+      copyrightText: {
+        type: "text" as const,
+        label: "Copyright Text",
+        default: "",
+      },
+      paymentMethods: {
+        type: "objectArray" as const,
+        label: "Payment Methods",
+        fields: ["name", "icon", "image"],
+        fieldTypes: { image: "image" },
+        default: [],
+      },
+    },
+  },
+  [WIDGET_TYPES.Header]: {
+    type: WIDGET_TYPES.Header,
+    name: "Header",
+    description: "Site header with logo, navigation, search, and cart",
+    settingsSchema: {
+      logoSrc: { type: "image" as const, label: "Logo Image", default: "" },
+      searchPlaceholder: {
+        type: "text" as const,
+        label: "Search Placeholder",
+        default: "",
+      },
+      searchSuggestions: {
+        type: "array" as const,
+        label: "Search Suggestions (rotating animation)",
+        default: [],
+      },
+
+      // Product menu
+      product_label: {
+        type: "text" as const,
+        label: "Product Menu Label",
+        default: "",
+      },
+      product_href: {
+        type: "text" as const,
+        label: "Product Menu Link",
+        default: "",
+      },
+      product_items: {
+        type: "objectArray" as const,
+        label: "Product Dropdown Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+
+      // Hair Care menu
+      hair_care_label: {
+        type: "text" as const,
+        label: "Hair Care Menu Label",
+        default: "",
+      },
+      hair_care_href: {
+        type: "text" as const,
+        label: "Hair Care Menu Link",
+        default: "",
+      },
+      hair_care_type_label: {
+        type: "text" as const,
+        label: "Hair Care: Product Type Category Label",
+        default: "",
+      },
+      hair_care_type_href: {
+        type: "text" as const,
+        label: "Hair Care: Product Type Category Link",
+        default: "",
+      },
+      hair_care_type_items: {
+        type: "objectArray" as const,
+        label: "Hair Care: Product Type Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+      hair_care_concern_label: {
+        type: "text" as const,
+        label: "Hair Care: Shop By Concern Category Label",
+        default: "",
+      },
+      hair_care_concern_href: {
+        type: "text" as const,
+        label: "Hair Care: Shop By Concern Category Link",
+        default: "",
+      },
+      hair_care_concern_items: {
+        type: "objectArray" as const,
+        label: "Hair Care: Shop By Concern Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+
+      // Hair Colour menu
+      hair_colour_label: {
+        type: "text" as const,
+        label: "Hair Colour Menu Label",
+        default: "",
+      },
+      hair_colour_href: {
+        type: "text" as const,
+        label: "Hair Colour Menu Link",
+        default: "",
+      },
+      hair_colour_items: {
+        type: "objectArray" as const,
+        label: "Hair Colour Dropdown Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+
+      // Hair Styling menu
+      hair_styling_label: {
+        type: "text" as const,
+        label: "Hair Styling Menu Label",
+        default: "",
+      },
+      hair_styling_href: {
+        type: "text" as const,
+        label: "Hair Styling Menu Link",
+        default: "",
+      },
+      hair_styling_items: {
+        type: "objectArray" as const,
+        label: "Hair Styling Dropdown Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+
+      // Salon menu
+      salon_label: {
+        type: "text" as const,
+        label: "Salon Menu Label",
+        default: "",
+      },
+      salon_href: {
+        type: "text" as const,
+        label: "Salon Menu Link",
+        default: "",
+      },
+      salon_items: {
+        type: "objectArray" as const,
+        label: "Salon Dropdown Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+    },
+  },
   // [WIDGET_TYPES.Footer]: {
   //   type: WIDGET_TYPES.Footer,
   //   name: "Footer",
