@@ -381,6 +381,24 @@
     register: function (analytics, config) {
       log("Init", "register() called with pixelId:", config.pixelId);
 
+      // ── SPA PageView flags (must be set BEFORE fbq('init')) ──────────────
+      //
+      // disablePushState: fbevents.js wraps history.pushState/replaceState and
+      // auto-fires PageView on every SPA navigation. Our SDK fires PageView
+      // explicitly (with event_id for CAPI deduplication), so the auto-fire
+      // would cause un-deduplicated double PageViews in Meta. Setting this flag
+      // to true prevents fbevents.js from attaching those history listeners.
+      //
+      // allowDuplicatePageViews: fbevents.js maintains an internal per-pixel
+      // deduplication cache (ca[pixelId]). After the FIRST fbq('track','PageView')
+      // fires it sets ca[pixelId]=true and silently drops every subsequent manual
+      // call (via a `continue` in the dispatch loop). The auto-pushState fires
+      // bypass this cache internally via allowDuplicatePageViews:true. Manual
+      // calls do not — so without this flag, only the home-page PageView fires
+      // in the browser pixel; all SPA navigation PageViews are silently dropped.
+      fbq.disablePushState = true;
+      fbq.allowDuplicatePageViews = true;
+
       // Initialize Meta Pixel with merchant's pixel ID
       fbq("init", config.pixelId);
       log("Init", "fbq('init', '" + config.pixelId + "') — pixel initialized");
