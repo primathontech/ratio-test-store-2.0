@@ -184,6 +184,8 @@ const LIGHT_THEME = {
   buttonColor: "#ffffff",
   buttonBorder: "2px solid #000000",
   buttonHoverBg: "rgb(56,56,56)",
+  buttonHoverColor: "#ffffff",
+  buttonHoverBorder: "2px solid #000000",
   discountColor: "rgb(0, 160, 0)",
   imageRadius: "10px",
   buttonRadius: "4px",
@@ -206,8 +208,10 @@ const DARK_THEME = {
   weightColor: "#1D1D1D",
   buttonBg: "#ffffff",
   buttonColor: "rgb(29, 29, 29)",
-  buttonBorder: "2px solid #000000",
-  buttonHoverBg: "rgb(230,230,230)",
+  buttonBorder: "2px solid #ffffff",
+  buttonHoverBg: "rgb(56,56,56)",
+  buttonHoverColor: "#ffffff",
+  buttonHoverBorder: "2px solid #000000",
   discountColor: "rgb(0, 200, 0)",
   imageRadius: "10px",
   buttonRadius: "4px",
@@ -234,6 +238,7 @@ export const ProductCard = memo(function ProductCard({
   isSoldOut: isSoldOutProp,
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [isButtonHovered, setIsButtonHovered] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const isCartOpen = useCartStore((s) => s.isOpen);
@@ -246,9 +251,7 @@ export const ProductCard = memo(function ProductCard({
     showAddToCartToast = false,
     addToCartToastTitle = "Item added to your cart",
     actionButtonText = "Add to cart",
-    actionButtonTextMobile,
-    soldOutText = "Sold Out",
-    soldOutTextMobile,
+    soldOutText = "View",
     backgroundColor: bgOverride,
     color: colorOverride,
     actionButtonTextColor,
@@ -339,13 +342,16 @@ export const ProductCard = memo(function ProductCard({
               </>
             )}
 
-            {/* Promo badge */}
+            {/* Promo badge — `badgeBackground` (resolved via getProductLabel)
+                takes precedence over the legacy `badgeVariant` mapping. */}
             {showBadge && product.badge && (
               <div className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2]">
                 <div
                   className="relative inline-flex items-center leading-[18px] md:leading-[21px] text-[12px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px]"
                   style={{
-                    backgroundColor: badgeColor(product.badgeVariant),
+                    backgroundColor:
+                      product.badgeBackground ??
+                      badgeColor(product.badgeVariant),
                     color: "#ffffff",
                     clipPath:
                       "polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%)",
@@ -380,8 +386,7 @@ export const ProductCard = memo(function ProductCard({
               loading="lazy"
               className={`absolute inset-0 w-full h-full object-cover rounded-[2px] ${productImageClassName}`.trim()}
               style={{
-                opacity: isHovered && product.hoverImage ? 0 : 1,
-                transition: "opacity 0.5s",
+                opacity: 1,
               }}
             />
 
@@ -396,7 +401,7 @@ export const ProductCard = memo(function ProductCard({
                 className={`absolute inset-0 w-full h-full object-cover rounded-[2px] ${productImageClassName}`.trim()}
                 style={{
                   opacity: isHovered ? 1 : 0,
-                  transform: isHovered ? "scale(1.045)" : "scale(1)",
+                  transform: isHovered ? "scale(1.09)" : "scale(1)",
                   transition:
                     "opacity 0.5s, transform 2s cubic-bezier(0, 0, 0.44, 1.18)",
                 }}
@@ -506,7 +511,7 @@ export const ProductCard = memo(function ProductCard({
               )}
           </div>
 
-          {/* Add to cart / quantity pill / sold-out fallback */}
+          {/* Add to cart / quantity pill / sold-out (links to PDP) */}
           {showActionButton &&
             (showInCartPill && !isSoldOut ? (
               <QuantityPill
@@ -517,41 +522,55 @@ export const ProductCard = memo(function ProductCard({
                 className={actionButtonClassName}
                 buttonRadius={t.buttonRadius}
               />
+            ) : isSoldOut ? (
+              // Sold-out: render as a Link to the PDP — clicking redirects.
+              <Link
+                href={product.href}
+                onMouseEnter={() => setIsButtonHovered(true)}
+                onMouseLeave={() => setIsButtonHovered(false)}
+                className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] ${actionButtonClassName}`.trim()}
+                style={{
+                  backgroundColor: isButtonHovered
+                    ? t.buttonHoverBg
+                    : t.buttonBg,
+                  color: isButtonHovered ? t.buttonHoverColor : buttonTextColor,
+                  borderRadius: t.buttonRadius,
+                  border: isButtonHovered
+                    ? t.buttonHoverBorder
+                    : t.buttonBorder,
+                  transition:
+                    "background-color 0.2s, color 0.2s, border-color 0.2s",
+                }}
+                aria-label={`${soldOutText} - ${product.title}`}
+              >
+                {soldOutText}
+              </Link>
             ) : (
               <button
                 type="button"
                 onClick={handleAddToCartClick}
                 disabled={isQuantityLoading || isLoading}
+                onMouseEnter={() => setIsButtonHovered(true)}
+                onMouseLeave={() => setIsButtonHovered(false)}
                 className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] disabled:cursor-not-allowed ${actionButtonClassName}`.trim()}
                 style={{
-                  backgroundColor: t.buttonBg,
-                  color: buttonTextColor,
+                  backgroundColor: isButtonHovered
+                    ? t.buttonHoverBg
+                    : t.buttonBg,
+                  color: isButtonHovered ? t.buttonHoverColor : buttonTextColor,
                   borderRadius: t.buttonRadius,
-                  border: t.buttonBorder,
-                  transition: "background-color 0.2s",
+                  border: isButtonHovered
+                    ? t.buttonHoverBorder
+                    : t.buttonBorder,
+                  transition:
+                    "background-color 0.2s, color 0.2s, border-color 0.2s",
                 }}
-                aria-label={
-                  isSoldOut
-                    ? `${soldOutText} - ${product.title}`
-                    : `${actionButtonText} - ${product.title}`
-                }
+                aria-label={`${actionButtonText} - ${product.title}`}
               >
                 {isQuantityLoading || isLoading ? (
                   <InlineButtonLoader color={buttonTextColor} />
-                ) : isSoldOut ? (
-                  <>
-                    <span className="hidden md:inline">{soldOutText}</span>
-                    <span className="inline md:hidden">
-                      {soldOutTextMobile ?? soldOutText}
-                    </span>
-                  </>
                 ) : (
-                  <>
-                    <span className="hidden md:inline">{actionButtonText}</span>
-                    <span className="inline md:hidden">
-                      {actionButtonTextMobile ?? actionButtonText}
-                    </span>
-                  </>
+                  actionButtonText
                 )}
               </button>
             ))}

@@ -20,10 +20,8 @@ export interface CategoryTile {
 export interface ShopByCategoriesSettings {
   /** Widget variant */
   variant?: string;
-  /** Section heading — normal weight part */
-  headingNormal?: string;
-  /** Section heading — bold part */
-  headingBold?: string;
+  /** Section heading (rich HTML — supports <strong>, <em>, etc.) */
+  heading?: string;
   /** Array of category tiles */
   tiles?: CategoryTile[];
 }

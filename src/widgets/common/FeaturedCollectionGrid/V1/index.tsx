@@ -7,6 +7,7 @@ import type {
   ApiProduct,
 } from "../types";
 import { ProductCard } from "@/ui/components/index";
+import { getProductLabel } from "@/ui/components/ProductCard/badgeUtils";
 import { useCartItem, useCartStore, type CartItem } from "@shopkit/cart";
 
 /* ------------------------------------------------------------------ */
@@ -36,6 +37,12 @@ function transformApiProduct(
     discount = `${pct}% off`;
   }
 
+  // Resolve badge: metafield first, tag fallback (matches bblunt reference).
+  const resolvedBadge = getProductLabel(
+    product.metadata?.product_labels?.value,
+    product.tags
+  );
+
   return {
     id: product.id,
     productId: product.id,
@@ -50,7 +57,8 @@ function transformApiProduct(
     mainImage: mainImg,
     hoverImage: hoverImg,
     category: product.productType || "",
-    badge: product.metadata?.product_labels?.value || undefined,
+    badge: resolvedBadge?.label,
+    badgeBackground: resolvedBadge?.background,
     rating: product.average_rating || 0,
     reviewCount: product.rating_count || 0,
     salePrice,

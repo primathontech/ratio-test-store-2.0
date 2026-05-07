@@ -10,10 +10,7 @@ import { ShineAcademyBannerProps } from "../types";
 /*  Single-column layout at all breakpoints, fade-in on scroll         */
 /* ------------------------------------------------------------------ */
 
-export const V1 = memo(function V1({
-  settings,
-  className,
-}: ShineAcademyBannerProps) {
+export const V1 = memo(function V1({ settings }: ShineAcademyBannerProps) {
   const logoSrc =
     settings?.logoSrc || "/images/shine-academy/shine-academy-logo.webp";
   const logoAlt = settings?.logoAlt || "BBlunt Shine Academy";
@@ -22,12 +19,14 @@ export const V1 = memo(function V1({
     "Every time you buy from our website, you play a significant role in impacting a woman\u2019s life by empowering her to shine on.";
   const mosaicSrcDesktop =
     settings?.mosaicSrcDesktop ||
-    settings?.mosaicSrc ||
+    "/images/shine-academy/home-shine-academy-desktop.webp";
+  const mosaicSrcMobile =
+    settings?.mosaicSrcMobile ||
+    settings?.mosaicSrcDesktop ||
     "/images/shine-academy/home-shine-academy-desktop.webp";
   const mosaicAlt =
     settings?.mosaicAlt ||
     "BBlunt Shine Academy - salon stylists and trainees collage";
-  const backgroundColor = settings?.backgroundColor || "#E8F0F7";
 
   /* ---- Scroll fade-in animation ---- */
   const sectionRef = useRef<HTMLElement>(null);
@@ -94,11 +93,11 @@ export const V1 = memo(function V1({
 
           {/* ---- Image column: mosaic collage ---- */}
           <div className="sab-animate-on-scroll flex items-center">
-            {/* Mobile image (uses desktop asset) */}
+            {/* Mobile image */}
             <div className="relative w-full md:hidden px-[15px]">
               <div className="overflow-hidden rounded-tl-[20px] rounded-tr-[20px] rounded-bl-0 rounded-br-[20px]">
                 <Image
-                  src={mosaicSrcDesktop}
+                  src={mosaicSrcMobile}
                   alt={mosaicAlt}
                   width={2000}
                   height={800}

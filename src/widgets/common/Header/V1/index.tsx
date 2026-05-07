@@ -427,6 +427,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
   useEffect(() => {
     setSearchQuery(urlQuery);
   }, [urlQuery]);
+
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const desktopSearchInputRef = useRef<HTMLInputElement | null>(null);
   const router = useRouter();
@@ -602,7 +603,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
           {/* ---- Mobile Hamburger (visible below 1100px) ---- */}
           <div className="flex items-center mr-3 min-[1100px]:hidden">
             <button
-              className="p-1 text-primary"
+              className="text-primary"
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open menu"
               aria-expanded={mobileMenuOpen}
@@ -632,7 +633,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                 <li key={index} className="relative group flex items-center">
                   <Link
                     href={item.href}
-                    className="relative flex items-center gap-2 text-sm leading-[16.8px] font-bold text-black no-underline whitespace-nowrap after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-px after:bg-black after:origin-right after:scale-x-0 after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
+                    className="relative flex items-baseline gap-2 text-sm leading-[16.8px] font-bold text-black no-underline whitespace-nowrap after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-px after:bg-black after:origin-right after:scale-x-0 after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
                   >
                     <span>{item.label}</span>
                     {item.dropdown && (
@@ -660,10 +661,10 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               href={getAppData?.app_url || "#"}
               target="_blank"
               rel="noopener noreferrer"
-              className="md:hidden transition-all duration-200 ease-in-out flex items-center justify-center px-1.5 py-[3px] max-w-[65px] text-xs font-medium bg-black"
+              className="md:hidden transition-all duration-200 ease-in-out flex items-center justify-center px-1.5 py-[3.5px] max-w-[65px] text-xs bg-primary"
               aria-label={getAppData?.button_text || "Get App"}
               style={{
-                color: "#ffffff",
+                color: "#fff",
                 width: "71px",
                 height: "24px",
                 borderRadius: "100px",

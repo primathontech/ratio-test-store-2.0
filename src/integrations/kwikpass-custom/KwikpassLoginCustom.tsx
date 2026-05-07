@@ -643,7 +643,7 @@ export default function KwikpassLoginCustom() {
   const showDropdown = open && dropdownPosition && isAuthenticated;
   return (
     <div
-      className="relative flex items-center flex-col w-[85.24px]"
+      className="relative flex items-center flex-col"
       data-testid="kwikpass-login"
       onMouseEnter={!isAuthenticated ? openDropdown : undefined}
       onMouseLeave={!isAuthenticated ? closeDropdown : undefined}
@@ -654,7 +654,7 @@ export default function KwikpassLoginCustom() {
           {open ? (
             <div
               ref={buttonRef as React.RefObject<HTMLDivElement>}
-              className="h-full flex items-center gap-2 w-[100px]"
+              className="h-full flex items-center gap-2"
             >
               <div
                 className="flex items-center justify-start cursor-pointer"
@@ -688,7 +688,7 @@ export default function KwikpassLoginCustom() {
           ) : (
             <button
               ref={buttonRef as React.RefObject<HTMLButtonElement>}
-              className="h-full flex items-center gap-2 cursor-pointer w-[85.24px]"
+              className="h-full flex items-center gap-2 cursor-pointer"
               aria-label="Open user menu"
               onClick={toggleDropdown}
               disabled={isLoggingIn}

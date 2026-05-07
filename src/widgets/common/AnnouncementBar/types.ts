@@ -21,7 +21,7 @@ export interface AnnouncementBarSettings {
   /**
    * List of announcement items to display in the marquee
    */
-  items?: AnnouncementItem[];
+  items: AnnouncementItem[];
 
   /**
    * Background color of the bar

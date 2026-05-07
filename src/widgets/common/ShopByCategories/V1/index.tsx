@@ -3,7 +3,7 @@
 import React, { memo, useRef, useState, useCallback, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { ShopByCategoriesProps, CategoryTile } from "../types";
+import { ShopByCategoriesProps } from "../types";
 
 /* ------------------------------------------------------------------ */
 /*  Arrow SVG icons (prev / next) — visible only on tablet/mobile     */
@@ -42,50 +42,12 @@ const NextArrow = () => (
 );
 
 /* ------------------------------------------------------------------ */
-/*  Default tiles data                                                 */
-/* ------------------------------------------------------------------ */
-
-const DEFAULT_TILES: CategoryTile[] = [
-  {
-    label: "Shampoo",
-    href: "/collections/shampoo",
-    desktopImage: "/ShopByCategories/images/shampoo-desktop.png",
-    mobileImage: "/ShopByCategories/images/shampoo-mobile.png",
-  },
-  {
-    label: "Conditioner",
-    href: "/collections/conditioner",
-    desktopImage: "/ShopByCategories/images/conditioner-desktop.png",
-    mobileImage: "/ShopByCategories/images/conditioner-mobile.png",
-  },
-  {
-    label: "Hair spray",
-    href: "/collections/sprays",
-    desktopImage: "/ShopByCategories/images/hair-spray-desktop.png",
-    mobileImage: "/ShopByCategories/images/hair-spray-mobile.png",
-  },
-  {
-    label: "Hair colour",
-    href: "/collections/hair-colour",
-    desktopImage: "/ShopByCategories/images/hair-colour-desktop.png",
-    mobileImage: "/ShopByCategories/images/hair-colour-mobile.png",
-  },
-  {
-    label: "Hair serum",
-    href: "/collections/serum",
-    desktopImage: "/ShopByCategories/images/hair-serum-desktop.png",
-    mobileImage: "/ShopByCategories/images/hair-serum-mobile.png",
-  },
-];
-
-/* ------------------------------------------------------------------ */
 /*  Main V1 component                                                  */
 /* ------------------------------------------------------------------ */
 
 export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
-  const tiles = settings?.tiles ?? DEFAULT_TILES;
-  const headingNormal = settings?.headingNormal ?? "Shop by ";
-  const headingBold = settings?.headingBold ?? "Categories";
+  const tiles = settings?.tiles ?? [];
+  const heading = settings?.heading ?? "Shop by <strong>Categories</strong>";
 
   const viewportRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -141,10 +103,9 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
           fontWeight: 400,
           color: "#1D1D1D",
         }}
-      >
-        {headingNormal}
-        <strong style={{ fontWeight: 700 }}>{headingBold}</strong>
-      </h3>
+        // eslint-disable-next-line no-restricted-syntax
+        dangerouslySetInnerHTML={{ __html: heading }}
+      />
 
       {/* Carousel wrapper — relative for nav button positioning */}
       <div className="relative">

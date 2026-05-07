@@ -51,12 +51,22 @@ export function DropdownAccordion({
           />
         </button>
       </div>
-      {open && (
-        <ul className="list-none p-0 m-0 pl-[19px] flex flex-col gap-3.5 ml-0.5 border-l border-[#e0e0e0] my-[15px]">
+      <div
+        className={`grid transition-[grid-template-rows,opacity,margin] duration-200 ease-linear ${
+          open
+            ? "grid-rows-[1fr] opacity-100 my-[15px]"
+            : "grid-rows-[0fr] opacity-0 my-0"
+        }`}
+      >
+        <ul
+          className="list-none p-0 m-0 pl-[19px] flex flex-col gap-3.5 ml-0.5 border-l border-[#e0e0e0] overflow-hidden min-h-0"
+          aria-hidden={!open}
+        >
           {group.items.map((item, ii) => (
             <li key={ii}>
               <Link
                 href={item.href}
+                tabIndex={open ? 0 : -1}
                 className="text-sm leading-[16.8px] font-normal text-[#545454] hover:text-loading-blue no-underline transition-colors duration-200"
               >
                 {item.label}
@@ -64,7 +74,7 @@ export function DropdownAccordion({
             </li>
           ))}
         </ul>
-      )}
+      </div>
     </div>
   );
 }

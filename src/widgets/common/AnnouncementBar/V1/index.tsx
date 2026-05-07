@@ -2,21 +2,7 @@
 
 import React, { memo, useRef, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { AnnouncementBarProps, AnnouncementItem } from "../types";
-
-/**
- * Default announcement items — matches the BBlunt source site
- */
-const DEFAULT_ITEMS: AnnouncementItem[] = [
-  {
-    text: "Buy 3 Products at \u20B9799 | Use code : <strong>FLAT3</strong>",
-    href: "/pages/flat3",
-  },
-  {
-    text: "Shop for \u20B9499 & Get 2 Best Sellers FREE | Code : <strong>FREEIM</strong>",
-    href: "/pages/shine-squad-weekly-offer",
-  },
-];
+import { AnnouncementBarProps } from "../types";
 
 // Utility function to format href for tooltip
 const formatHrefForTooltip = (href: string): string => {
@@ -43,7 +29,7 @@ export const V1 = memo(function V1({
   settings,
   className,
 }: AnnouncementBarProps) {
-  const items = settings?.items ?? DEFAULT_ITEMS;
+  const items = settings?.items;
   const bgColor = settings?.backgroundColor ?? "#000000";
   const textColor = settings?.textColor ?? "#ffffff";
   const speed = settings?.speed ?? 35;

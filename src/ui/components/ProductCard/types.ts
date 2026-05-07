@@ -30,6 +30,13 @@ export interface ProductCardProduct {
   badge?: string;
   /** Badge style variant: "trending" = green, "new"/"bestseller" = red, "deal" = magenta */
   badgeVariant?: "trending" | "new" | "bestseller" | "deal";
+  /**
+   * Direct badge background color. Takes precedence over `badgeVariant`.
+   * Set by transform layers using `getProductLabel(...)` from
+   * `./badgeUtils` so the color matches the resolved label
+   * (metafield default = #82c341, tag map = per-entry color).
+   */
+  badgeBackground?: string;
   /** Star rating (e.g. 4.85) */
   rating: number;
   /** Number of reviews */
@@ -73,14 +80,10 @@ export interface ProductCardSettings {
   showAddToCartToast?: boolean;
   /** Toast title — defaults to "Item added to your cart" */
   addToCartToastTitle?: string;
-  /** Action button text (desktop) — defaults to "Add to cart" */
+  /** Action button text — defaults to "Add to cart" */
   actionButtonText?: string;
-  /** Action button text (mobile, < 769px) — defaults to actionButtonText */
-  actionButtonTextMobile?: string;
-  /** Sold-out fallback text (desktop) — defaults to "Sold Out" */
+  /** Sold-out fallback text — defaults to "Sold Out" */
   soldOutText?: string;
-  /** Sold-out fallback text (mobile) — defaults to soldOutText */
-  soldOutTextMobile?: string;
   /** Override card background color (overrides theme) */
   backgroundColor?: string;
   /** Override primary text color (overrides theme) */

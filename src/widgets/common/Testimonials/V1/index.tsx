@@ -180,8 +180,8 @@ const TestimonialCard = memo(function TestimonialCard({
 /* ------------------------------------------------------------------ */
 
 export const V1 = memo(function V1({ settings }: TestimonialsProps) {
-  const headingRegular = settings?.headingRegular ?? "What our";
-  const headingBold = settings?.headingBold ?? "customers are saying?";
+  const heading =
+    settings?.heading ?? "What our <strong>customers are saying?</strong>";
   const cardBackground = settings?.cardBackground ?? "#000000";
   const starColor = settings?.starColor ?? "#FFC300";
   const starEmptyColor = "#4A4A4A";
@@ -231,10 +231,11 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
       <div className="mx-auto max-w-[1400px] pl-[15px] md:pl-[30px] pr-0 md:pr-[30px] xl:px-[50px]">
         {/* Section heading */}
         <div className="mt-[25px] md:mt-14 mb-4 md:mb-[30px] text-left md:text-center testimonials-animate-on-scroll">
-          <h2 className="text-2xl xl:text-[28px] leading-[29px] lg:leading-[40px] font-normal text-black m-0 md:inline-block md:text-left lg:block lg:text-center">
-            {headingRegular}{" "}
-            <strong className="font-bold block lg:inline">{headingBold}</strong>
-          </h2>
+          <h2
+            className="text-2xl xl:text-[28px] leading-[29px] lg:leading-[40px] font-normal text-black m-0 md:inline-block md:text-left lg:block lg:text-center"
+            // eslint-disable-next-line no-restricted-syntax
+            dangerouslySetInnerHTML={{ __html: heading }}
+          />
         </div>
 
         {/* Carousel */}

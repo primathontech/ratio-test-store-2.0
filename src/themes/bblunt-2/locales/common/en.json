@@ -2,8 +2,51 @@
   "common": {
     "logo": "/images/bblunt-2/logo.svg",
     "site_name": "bblunt-2",
-    "add_to_cart": "Add to Cart",
-    "go_to_cart": "Go to Cart",
+    "product_card": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "View"
+    },
+    "testimonials": {
+      "heading__rich": "What our <strong>customers are saying?</strong>",
+      "items": [
+        {
+          "heading": "Surprised at the result",
+          "reviewText": "So easy peasy to use! In just 5 minutes like shampoo I can apply and it leaves my hair so shiny and wonderful!! Totally recommended for people like me who can’t get roots touched up every other week! Thanks BBLUNT!",
+          "authorName": "Amaira Joe",
+          "avatarSrc": "/Testimonials/images/amaira-joe.jpg",
+          "stars": 5
+        },
+        {
+          "heading": "Last Longing Hair Colour!",
+          "reviewText": "My friend suggested me use this hair colour, and I tried it. Guess what? I was shocked as it gives a smooth glossy & nourished finish, covers grey hairs, and looks natural. The colour easily lasted for more than two months, unlike other brands in the market.",
+          "authorName": "Nikita Advani",
+          "avatarSrc": "/Testimonials/images/nikita-advani.jpg",
+          "stars": 5
+        },
+        {
+          "heading": "Love this Intense Moisture Range!",
+          "reviewText": "The first impression after using the shampoo is really impressive. It gives smoothness & hydration and also helps to reduce dryness from my dry and color-treated hair. I highly recommend it to everyone with dry and damaged hair.",
+          "authorName": "Anita Agrawal",
+          "avatarSrc": "/Testimonials/images/anita-agrawal.jpg",
+          "stars": 5
+        },
+        {
+          "heading": "Curly Girls Will Love This",
+          "reviewText": "This BBLUNT Curly Hair Shampoo & Conditioner is the best combo for people with curly hair. It makes our hair frizz free and smooth, and even it makes it bounce that looks so gorgeous every time. Use both products together to get the best result.",
+          "authorName": "Tarini Menon",
+          "avatarSrc": "/Testimonials/images/tarini-menon.jpg",
+          "stars": 5
+        }
+      ]
+    },
+    "shine_academy_banner": {
+      "logoSrc": "/images/shine-academy/shine-academy-logo.webp",
+      "logoAlt": "BBlunt Shine Academy",
+      "tagline": "Every time you buy from our website, you play a significant role in impacting a woman’s life by empowering her to shine on.",
+      "mosaicSrcDesktop": "/images/shine-academy/mosaic-collage.webp",
+      "mosaicSrcMobile": "/images/shine-academy/mosaic-collage.webp",
+      "mosaicAlt": "BBlunt Shine Academy - salon stylists and trainees collage"
+    },
     "announcement_bar__rich": [
       {
         "id": 0,
@@ -12,7 +55,7 @@
       },
       {
         "id": 1,
-        "text": "Get 2 Products at ₹599 | Use code : <strong>GET599</strong>",
+        "text": "Get 3 Products at ₹999 | Use code : <strong>GET999</strong>",
         "href": "/pages/shine-squad-mega-offer"
       }
     ]
