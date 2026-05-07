@@ -7,6 +7,7 @@ import React, {
   useRef,
   useEffect,
   useCallback,
+  useMemo,
 } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -25,124 +26,6 @@ import { useDebounce } from "@/hooks/useDebounce";
 
 const SEARCH_RESULTS_ROUTE = "/pages/search";
 const OVERLAY_VIEWPORT_BREAKPOINT = 1150;
-
-/* ──────────────────────── Navigation Data ──────────────────────── */
-
-const DEFAULT_NAV: NavItem[] = [
-  {
-    label: "Product",
-    href: "/collections/all",
-    dropdown: [
-      {
-        items: [
-          { label: "All Products", href: "/collections/all" },
-          { label: "New Launches", href: "/collections/new-launches" },
-          { label: "Combos", href: "/collections/combos" },
-          { label: "Kits", href: "/collections/kits" },
-          { label: "Best Sellers", href: "/collections/bestseller" },
-          { label: "Tarini X BBlunt", href: "/collections/tarini-range" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Hair Care",
-    href: "/collections/hair-care",
-    dropdown: [
-      {
-        heading: "Product Type",
-        items: [
-          { label: "Shampoo", href: "/collections/shampoo" },
-          { label: "Hair Sprays", href: "/collections/sprays" },
-          { label: "Conditioner", href: "/collections/conditioner" },
-          { label: "Mask", href: "/collections/hair-mask" },
-          { label: "Serum", href: "/collections/serum" },
-        ],
-      },
-      {
-        heading: "Shop By Concern",
-        items: [
-          { label: "Hair fall", href: "/collections/hairfall" },
-          { label: "Dry Hair", href: "/collections/dry-hair" },
-          { label: "Damaged Hair", href: "/collections/damaged-hair" },
-          {
-            label: "Smoothening Range",
-            href: "/collections/advanced-smoothening",
-          },
-          { label: "Anti-dandruff", href: "/collections/anti-dandruff" },
-          { label: "Curly Hair", href: "/collections/curly-hair" },
-          { label: "Shine Range", href: "/collections/intense-shine" },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Hair Colour",
-    href: "/collections/hair-colour",
-    dropdown: [
-      {
-        items: [
-          { label: "Salon Secret", href: "/collections/salon-secret" },
-          { label: "Colour Bundles", href: "/collections/colour-bundles" },
-          {
-            label: "Hair Colour Shampoo",
-            href: "/collections/hair-colour-shampoo",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Hair Styling",
-    href: "/collections/hair-styling",
-    dropdown: [
-      {
-        items: [
-          { label: "Heat Protection", href: "/collections/heat-protection" },
-          { label: "Hair Sprays", href: "/collections/sprays" },
-          {
-            label: "Styling Appliances",
-            href: "https://style.bblunt.com/collections/electronic-devices",
-          },
-        ],
-      },
-    ],
-  },
-  {
-    label: "Salon",
-    href: "https://bbluntsalons.co.in/salon-locator",
-    dropdown: [
-      {
-        items: [
-          {
-            label: "Mumbai",
-            href: "https://bbluntsalons.co.in/salon-locator",
-          },
-          {
-            label: "Hyderabad",
-            href: "https://bbluntsalons.co.in/salon-locator",
-          },
-          {
-            label: "Bangalore",
-            href: "https://bbluntsalons.co.in/salon-locator",
-          },
-          {
-            label: "Gurugram",
-            href: "https://bbluntsalons.co.in/salon-locator",
-          },
-          {
-            label: "Guwahati",
-            href: "https://bbluntsalons.co.in/salon-locator",
-          },
-          {
-            label: "Kolkata",
-            href: "https://bbluntsalons.co.in/salon-locator",
-          },
-        ],
-      },
-    ],
-  },
-];
 
 /* ──────────────────────── Inline SVG Icons ──────────────────────── */
 
@@ -289,13 +172,6 @@ function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
 
 /* ──────────────────────── Search Input with Typing Animation ──── */
 
-const SEARCH_SUGGESTIONS = [
-  "Search for Shampoo",
-  "Search for Hair Care",
-  "Search for Conditioner",
-  "Search for Salon Treatment",
-];
-
 function SearchInput({
   focused,
   onFocusChange,
@@ -304,6 +180,7 @@ function SearchInput({
   onClick,
   onSubmit,
   inputRef: externalInputRef,
+  suggestions,
 }: {
   focused: boolean;
   onFocusChange: (v: boolean) => void;
@@ -312,19 +189,23 @@ function SearchInput({
   onClick?: () => void;
   onSubmit?: (query: string) => void;
   inputRef?: React.MutableRefObject<HTMLInputElement | null>;
+  suggestions: string[];
 }) {
   const [placeholder, setPlaceholder] = useState("");
   const internalInputRef = useRef<HTMLInputElement | null>(null);
   const inputRef = externalInputRef ?? internalInputRef;
 
   useEffect(() => {
+    if (!suggestions.length) {
+      return;
+    }
     let suggestionIdx = 0;
     let charIdx = 0;
     let isDeleting = false;
     let timer: ReturnType<typeof setTimeout>;
 
     const tick = () => {
-      const current = SEARCH_SUGGESTIONS[suggestionIdx];
+      const current = suggestions[suggestionIdx];
 
       if (!isDeleting) {
         charIdx++;
@@ -343,7 +224,7 @@ function SearchInput({
         setPlaceholder(current.substring(0, charIdx));
         if (charIdx <= 0) {
           isDeleting = false;
-          suggestionIdx = (suggestionIdx + 1) % SEARCH_SUGGESTIONS.length;
+          suggestionIdx = (suggestionIdx + 1) % suggestions.length;
           timer = setTimeout(tick, 300);
           return;
         }
@@ -353,7 +234,7 @@ function SearchInput({
 
     timer = setTimeout(tick, 500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [suggestions]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -559,12 +440,82 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     // Focus is restored by the urlQuery-keyed useEffect once navigation lands.
   }, [debouncedSearchQuery, urlQuery, router]);
 
-  const navigation = settings?.navigation ?? DEFAULT_NAV;
-  const logoSrc = settings?.logoSrc ?? "/Header/images/logo.png";
+  /* Build navigation from flat editor-friendly settings keys.
+   * Each top-level nav has its own *_label, *_href, *_items so the editor
+   * can edit them individually without nested-array support. */
+  const navigation = useMemo<NavItem[]>(() => {
+    const items: NavItem[] = [];
+
+    if (settings?.product_label) {
+      items.push({
+        label: settings.product_label,
+        href: settings.product_href ?? "",
+        dropdown: settings.product_items?.length
+          ? [{ items: settings.product_items }]
+          : undefined,
+      });
+    }
+
+    if (settings?.hair_care_label) {
+      const groups: NavDropdownGroup[] = [];
+      if (settings.hair_care_type_items?.length) {
+        groups.push({
+          heading: settings.hair_care_type_label,
+          items: settings.hair_care_type_items,
+        });
+      }
+      if (settings.hair_care_concern_items?.length) {
+        groups.push({
+          heading: settings.hair_care_concern_label,
+          items: settings.hair_care_concern_items,
+        });
+      }
+      items.push({
+        label: settings.hair_care_label,
+        href: settings.hair_care_href ?? "",
+        dropdown: groups.length ? groups : undefined,
+      });
+    }
+
+    if (settings?.hair_colour_label) {
+      items.push({
+        label: settings.hair_colour_label,
+        href: settings.hair_colour_href ?? "",
+        dropdown: settings.hair_colour_items?.length
+          ? [{ items: settings.hair_colour_items }]
+          : undefined,
+      });
+    }
+
+    if (settings?.hair_styling_label) {
+      items.push({
+        label: settings.hair_styling_label,
+        href: settings.hair_styling_href ?? "",
+        dropdown: settings.hair_styling_items?.length
+          ? [{ items: settings.hair_styling_items }]
+          : undefined,
+      });
+    }
+
+    if (settings?.salon_label) {
+      items.push({
+        label: settings.salon_label,
+        href: settings.salon_href ?? "",
+        dropdown: settings.salon_items?.length
+          ? [{ items: settings.salon_items }]
+          : undefined,
+      });
+    }
+
+    return items;
+  }, [settings]);
+
+  const logoSrc = settings?.logoSrc ?? "";
   const logoAlt = settings?.logoAlt ?? "BBlunt";
   const cartCount = useCartTotalQuantity();
   const openCart = useCartStore((s) => s.openCart);
   const backgroundColor = settings?.backgroundColor ?? "#ffffff";
+  const searchSuggestions = settings?.searchSuggestions ?? [];
 
   const closeMobileMenu = useCallback(() => {
     setMobileMenuOpen(false);
@@ -697,7 +648,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
             {/* Desktop search input (visible from 1100px). */}
             <div className="hidden min-[1100px]:block w-[255px]">
               <SearchInputV2
-                searchPlaceholder={SEARCH_SUGGESTIONS}
+                searchPlaceholder={searchSuggestions}
                 isMobile={false}
                 dropdownTopPosition="48px"
               />
@@ -811,12 +762,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                   }
                 >
                   <SearchInputV2
-                    searchPlaceholder={[
-                      "Search for Shampoo",
-                      "Search for Hair Care",
-                      "Search for Conditioner",
-                      "Search for Salon Treatment",
-                    ]}
+                    searchPlaceholder={searchSuggestions}
                     className="w-full border border-[#DDDDDD] bg-white focus:outline-none focus:border-[#DDDDDD]"
                     isMobile={true}
                     onClose={closeSearchOverlay}

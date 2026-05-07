@@ -35,16 +35,38 @@ export interface HeaderSettings {
   logoSrc?: string;
   /** Logo alt text */
   logoAlt?: string;
-  /** Navigation items */
-  navigation?: NavItem[];
   /** Search placeholder text */
   searchPlaceholder?: string;
-  /** Cart link href */
-  cartHref?: string;
-  /** Account link href */
-  accountHref?: string;
-  /** Header background color (hex). Defaults to #ffffff — when white, applies a frosted-glass blur. */
+  /** Rotating search input suggestions (typing animation) */
+  searchSuggestions?: string[];
+  /** Header background color (hex). */
   backgroundColor?: string;
+
+  /* ── Flat navigation keys (editor-friendly — dropdowns are flat lists) ── */
+  product_label?: string;
+  product_href?: string;
+  product_items?: NavDropdownItem[];
+
+  hair_care_label?: string;
+  hair_care_href?: string;
+  hair_care_type_label?: string;
+  hair_care_type_href?: string;
+  hair_care_type_items?: NavDropdownItem[];
+  hair_care_concern_label?: string;
+  hair_care_concern_href?: string;
+  hair_care_concern_items?: NavDropdownItem[];
+
+  hair_colour_label?: string;
+  hair_colour_href?: string;
+  hair_colour_items?: NavDropdownItem[];
+
+  hair_styling_label?: string;
+  hair_styling_href?: string;
+  hair_styling_items?: NavDropdownItem[];
+
+  salon_label?: string;
+  salon_href?: string;
+  salon_items?: NavDropdownItem[];
 }
 
 /**

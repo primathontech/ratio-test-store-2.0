@@ -139,9 +139,16 @@ export const themeRegistry = {
     },
 
     // Static templates (only translationsPath)
-    [THEMES.BBLUNT_2.static_templates.ABOUT_US]: {
+    [TEMPLATE_TYPES["about-us"]]: {
       default: {
-        translationsPath: "/themes/bblunt-2/locales/pages/about-us",
+        templatePath: "/themes/bblunt-2/templates/about-us/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/about-us/en.json",
+        routeContext: {
+          templateName: "about-us",
+          path: "/pages/about-us",
+          params: {},
+          query: {},
+        },
       },
     },
   },
