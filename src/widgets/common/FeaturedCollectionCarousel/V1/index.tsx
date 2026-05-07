@@ -1,13 +1,13 @@
 "use client";
 
 import React, { memo, useMemo, useCallback } from "react";
-import Image from "next/image";
-import Link from "next/link";
 import type { FeaturedCollectionCarouselProps, ApiProduct } from "../types";
 import { ProductCard } from "@/ui/components/ProductCard";
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
+import { getProductLabel } from "@/ui/components/ProductCard/badgeUtils";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
 import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
+import { LazyViewAllButton } from "../components/LazyViewAllButton";
 
 /* ------------------------------------------------------------------ */
 /*  SVG Icons                                                          */
@@ -43,24 +43,6 @@ const NextArrowIcon = () => (
   </svg>
 );
 
-const ChevronRightIcon = () => (
-  <svg
-    width="7"
-    height="12"
-    viewBox="0 0 7 12"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-  >
-    <path
-      d="M1 1L6 6L1 11"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-);
-
 /* ------------------------------------------------------------------ */
 /*  Transform: API product → ProductCardProduct                        */
 /* ------------------------------------------------------------------ */
@@ -86,6 +68,12 @@ function transformApiProduct(product: ApiProduct): ProductCardProduct {
     discount = `${pct}% off`;
   }
 
+  // Resolve badge: metafield first, tag fallback (matches bblunt reference).
+  const resolvedBadge = getProductLabel(
+    product.metadata?.product_labels?.value,
+    product.tags
+  );
+
   return {
     id: product.id,
     productId: product.id,
@@ -100,7 +88,8 @@ function transformApiProduct(product: ApiProduct): ProductCardProduct {
     mainImage: mainImg,
     hoverImage: hoverImg,
     category: product.productType || "",
-    badge: product.metadata?.product_labels?.value || "Get2@\u20B9599",
+    badge: resolvedBadge?.label,
+    badgeBackground: resolvedBadge?.background,
     rating: product.average_rating || 0,
     reviewCount: product.rating_count || 0,
     salePrice,
@@ -111,12 +100,6 @@ function transformApiProduct(product: ApiProduct): ProductCardProduct {
       product.metadata?.product_subtitle?.value ||
       "Reduces Up to 93% Hair Fall | Strengthens & Nourishes Hair",
   };
-}
-
-function getMainImage(product: ApiProduct): string {
-  return (
-    product.images?.find((img) => img.is_main)?.url || product.image_url || ""
-  );
 }
 
 /* ------------------------------------------------------------------ */
@@ -131,8 +114,7 @@ interface ExtractedCollection {
 
 function extractFromData(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any,
-  collectionHandle?: string
+  data: any
 ): ExtractedCollection | null {
   if (!data || !data.success) {
     return null;
@@ -148,7 +130,7 @@ function extractFromData(
   return {
     products: products as ApiProduct[],
     totalProducts: collection?.productPagination?.total || products.length,
-    handle: collectionHandle || collection?.handle || "",
+    handle: collection?.handle || "",
   };
 }
 
@@ -183,10 +165,14 @@ function buildCartItem(
 
 interface FeaturedCarouselCardProps {
   product: ApiProduct;
+  actionButtonText?: string;
+  soldOutText?: string;
 }
 
 const FeaturedCarouselCard = memo(function FeaturedCarouselCard({
   product,
+  actionButtonText,
+  soldOutText,
 }: FeaturedCarouselCardProps) {
   const cardProduct = useMemo(() => transformApiProduct(product), [product]);
   const productId = product.id;
@@ -256,7 +242,11 @@ const FeaturedCarouselCard = memo(function FeaturedCarouselCard({
   return (
     <ProductCard
       product={cardProduct}
-      settings={{ showAddToCartToast: true }}
+      settings={{
+        showAddToCartToast: true,
+        ...(actionButtonText ? { actionButtonText } : {}),
+        ...(soldOutText ? { soldOutText } : {}),
+      }}
       onAddToCart={handleAddToCart}
       onIncrement={handleIncrement}
       onDecrement={handleDecrement}
@@ -286,21 +276,21 @@ export const V1 = memo(function V1({
   data,
   settings,
 }: FeaturedCollectionCarouselProps) {
-  const headingNormal = settings?.headingNormal || "";
-  const headingBold = settings?.headingBold || "";
-  const collectionHandle = settings?.collectionHandle || "";
+  const headingRich = settings?.heading || "";
+  const actionButtonText = settings?.actionButtonText;
+  const soldOutText = settings?.soldOutText;
 
-  const extracted = useMemo(
-    () => extractFromData(data, collectionHandle),
-    [data, collectionHandle]
-  );
+  const extracted = useMemo(() => extractFromData(data), [data]);
 
   const products = useMemo(
     () => extracted?.products ?? [],
     [extracted?.products]
   );
   const totalProducts = extracted?.totalProducts ?? 0;
-  const handle = extracted?.handle || collectionHandle;
+  // Server-fetched handle is the source of truth (data source already specifies
+  // it). View All target defaults to the same; settings can override.
+  const handle = extracted?.handle || "";
+  const viewAllCollectionHandle = settings?.viewAllCollectionHandle || handle;
 
   const renderProduct = useCallback(
     (idx: number) => {
@@ -310,11 +300,15 @@ export const V1 = memo(function V1({
       }
       return (
         <div className="md:border-r md:border-[#EBEBEB] overflow-hidden">
-          <FeaturedCarouselCard product={product} />
+          <FeaturedCarouselCard
+            product={product}
+            actionButtonText={actionButtonText}
+            soldOutText={soldOutText}
+          />
         </div>
       );
     },
-    [products]
+    [products, actionButtonText, soldOutText]
   );
 
   if (products.length === 0) {
@@ -332,17 +326,17 @@ export const V1 = memo(function V1({
       <div className="relative z-[1] mx-auto xl:mx-5 px-1.5 md:px-[30px] xl:px-[50px]">
         {/* Heading */}
         <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px]">
+          {/* Heading — rich HTML; <strong> in the source becomes the bold part. */}
           <h4
-            className="text-2xl xl:text-[28px] leading-[29px] md:leading-[34px]"
+            className="text-2xl xl:text-[28px] leading-[29px] md:leading-[34px] [&_strong]:font-bold"
             style={{
               color: "#1D1D1D",
               fontWeight: 400,
               margin: 0,
             }}
-          >
-            {headingNormal}
-            <strong style={{ fontWeight: 700 }}>{headingBold}</strong>
-          </h4>
+            // eslint-disable-next-line no-restricted-syntax
+            dangerouslySetInnerHTML={{ __html: headingRich }}
+          />
         </div>
 
         {/* Carousel area */}
@@ -414,60 +408,16 @@ export const V1 = memo(function V1({
           />
         </div>
 
-        {/* View all link */}
-        {totalProducts > 0 && handle && (
-          <div className="flex justify-center mt-[17.4px] md:mt-[30px]">
-            <Link
-              href={`/collections/${handle}`}
-              className="inline-flex items-center no-underline text-sm md:text-lg pl-4 md:pl-[42px] pr-4 md:pr-[55px] w-full md:w-auto mx-4 md:mx-0 p-1.5 md:p-0 justify-center"
-              style={{
-                backgroundColor: "#F4F6F8",
-                color: "#1D1D1D",
-                paddingTop: "6px",
-                paddingBottom: "6px",
-                borderRadius: "4px",
-                fontWeight: 500,
-                transition: "all 0.2s",
-                gap: "8px",
-              }}
-            >
-              {/* First 3 product preview images */}
-              <span className="inline-flex flex-row-reverse items-center">
-                {products.slice(0, 3).map((p, i) => {
-                  const mainImage = getMainImage(p);
-                  return (
-                    <span
-                      key={p.id ?? i}
-                      className={`relative inline-flex overflow-hidden rounded-md border border-[#dddddd] md:border-[3px] w-5 md:w-8 h-5 md:h-8 ${
-                        i === 0 ? "mr-0" : "mr-[-12px]"
-                      }`}
-                      style={{
-                        zIndex: products.slice(0, 3).length - i,
-                      }}
-                    >
-                      <Image
-                        src={
-                          mainImage.startsWith("//")
-                            ? `https:${mainImage}`
-                            : mainImage
-                        }
-                        alt=""
-                        width={27}
-                        height={27}
-                        style={{
-                          objectFit: "cover",
-                        }}
-                      />
-                    </span>
-                  );
-                })}
-              </span>
-              <span className="text-black font-medium">
-                View all {totalProducts} products
-              </span>
-              <ChevronRightIcon />
-            </Link>
-          </div>
+        {/* View all link — reuses server products as thumbnails when handles
+            match (no extra fetch); lazy-fetches via getCollection on intersection
+            when viewAllCollectionHandle differs from the server-fetched handle. */}
+        {handle && (
+          <LazyViewAllButton
+            serverCollectionHandle={handle}
+            configCollectionHandle={viewAllCollectionHandle}
+            serverTotalProducts={totalProducts}
+            serverProducts={products}
+          />
         )}
       </div>
     </section>

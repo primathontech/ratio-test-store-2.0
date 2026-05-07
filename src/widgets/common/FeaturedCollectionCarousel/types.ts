@@ -12,12 +12,24 @@ export type { ApiProduct };
 export interface FeaturedCollectionCarouselSettings {
   /** Widget variant */
   variant?: string;
-  /** Section heading — normal weight part (e.g. "For ") */
-  headingNormal?: string;
-  /** Section heading — bold part (e.g. "Hair Fall Control") */
-  headingBold?: string;
-  /** Collection handle for View All link */
-  collectionHandle?: string;
+  /**
+   * Rich-text section heading. Inline HTML is allowed for emphasis —
+   * e.g. `For <strong>Hair Fall Control</strong>`. Set by the template;
+   * rendered via `dangerouslySetInnerHTML`.
+   */
+  heading?: string;
+  /**
+   * Optional override for the "View all" link target (and its thumbnails).
+   * The server-fetched handle comes from the data source — when this setting
+   * is omitted (or matches the server handle), the View All button reuses
+   * server data with no extra fetch. When different, the button lazy-fetches
+   * this collection on intersection.
+   */
+  viewAllCollectionHandle?: string;
+  /** Add-to-cart button text. Defaults to "Add to cart". */
+  actionButtonText?: string;
+  /** Sold-out fallback text. Defaults to "Sold Out". */
+  soldOutText?: string;
 }
 
 /**

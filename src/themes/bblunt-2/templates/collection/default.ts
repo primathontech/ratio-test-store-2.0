@@ -224,14 +224,12 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.ShineAcademyBanner,
           settings: {
             variant: "v1",
-            logoSrc: "/images/shine-academy/shine-academy-logo.webp",
-            logoAlt: "BBlunt Shine Academy",
-            tagline:
-              "Every time you buy from our website, you play a significant role in impacting a woman\u2019s life by empowering her to shine on.",
-            mosaicSrc: "/images/shine-academy/mosaic-collage.webp",
-            mosaicAlt:
-              "BBlunt Shine Academy - salon stylists and trainees collage",
-            backgroundColor: "#E8F0F7",
+            logoSrc: "t:common.shine_academy_banner.logoSrc",
+            logoAlt: "t:common.shine_academy_banner.logoAlt",
+            tagline: "t:common.shine_academy_banner.tagline",
+            mosaicSrcDesktop: "t:common.shine_academy_banner.mosaicSrcDesktop",
+            mosaicSrcMobile: "t:common.shine_academy_banner.mosaicSrcMobile",
+            mosaicAlt: "t:common.shine_academy_banner.mosaicAlt",
           },
         },
       ],
@@ -257,44 +255,10 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.Testimonials,
           settings: {
             variant: "v1",
-            headingRegular: "What our",
-            headingBold: "customers are saying?",
+            heading: "t:common.testimonials.heading__rich",
             cardBackground: "rgb(29, 29, 29)",
             starColor: "rgb(255, 192, 2)",
-            testimonials: [
-              {
-                heading: "Surprised at the result",
-                reviewText:
-                  "So easy peasy to use! In just 5 minutes like shampoo I can apply and it leaves my hair so shiny and wonderful!! Totally recommended for people like me who can\u2019t get roots touched up every other week! Thanks BBLUNT!",
-                authorName: "Amaira Joe",
-                avatarSrc: "/images/testimonials/amaira-joe.jpg",
-                stars: 5,
-              },
-              {
-                heading: "Last Longing Hair Colour!",
-                reviewText:
-                  "My friend suggested me use this hair colour, and I tried it. Guess what? I was shocked as it gives a smooth glossy & nourished finish, covers grey hairs, and looks natural. The colour easily lasted for more than two months, unlike other brands in the market.",
-                authorName: "Nikita Advani",
-                avatarSrc: "/images/testimonials/nikita-advani.jpg",
-                stars: 5,
-              },
-              {
-                heading: "Love this Intense Moisture Range!",
-                reviewText:
-                  "The first impression after using the shampoo is really impressive. It gives smoothness & hydration and also helps to reduce dryness from my dry and color-treated hair. I highly recommend it to everyone with dry and damaged hair.",
-                authorName: "Anita Agrawal",
-                avatarSrc: "/images/testimonials/anita-agrawal.jpg",
-                stars: 5,
-              },
-              {
-                heading: "Curly Girls Will Love This",
-                reviewText:
-                  "This BBLUNT Curly Hair Shampoo & Conditioner is the best combo for people with curly hair. It makes our hair frizz free and smooth, and even it makes it bounce that looks so gorgeous every time. Use both products together to get the best result.",
-                authorName: "Tarini Menon",
-                avatarSrc: "/images/testimonials/tarini-menon.jpg",
-                stars: 5,
-              },
-            ],
+            testimonials: "t:common.testimonials.items",
           },
         },
       ],

@@ -42,53 +42,6 @@ const NextArrow = () => (
 );
 
 /* ------------------------------------------------------------------ */
-/*  Default tiles data                                                 */
-/* ------------------------------------------------------------------ */
-
-const DEFAULT_TILES: ConcernTile[] = [
-  {
-    label: "Hair fall fighters",
-    href: "/collections/hairfall",
-    image: "/ShopByConcerns/images/hair-fall-fighters.png",
-  },
-  {
-    label: "Frizz fixers",
-    href: "/collections/dry-hair",
-    image: "/ShopByConcerns/images/frizz-fixers.png",
-  },
-  {
-    label: "Damage repair",
-    href: "/collections/damaged-hair",
-    image: "/ShopByConcerns/images/damage-repair.png",
-  },
-  {
-    label: "Smooth hair essentials",
-    href: "/collections/advanced-smoothening",
-    image: "/ShopByConcerns/images/smooth-hair-essentials.png",
-  },
-  {
-    label: "Dandruff defence",
-    href: "/collections/anti-dandruff",
-    image: "/ShopByConcerns/images/dandruff-defence.png",
-  },
-  {
-    label: "Curl care crew",
-    href: null,
-    image: "/ShopByConcerns/images/curl-care-crew.png",
-  },
-  {
-    label: "Shine boosters",
-    href: null,
-    image: "/ShopByConcerns/images/shine-boosters.png",
-  },
-  {
-    label: "Scalp saviours",
-    href: null,
-    image: "/ShopByConcerns/images/scalp-saviours.png",
-  },
-];
-
-/* ------------------------------------------------------------------ */
 /*  Tile component                                                     */
 /* ------------------------------------------------------------------ */
 
@@ -121,22 +74,31 @@ const Tile = ({ tile }: { tile: ConcernTile }) => {
 /* ------------------------------------------------------------------ */
 
 export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
-  const tiles = settings?.tiles ?? DEFAULT_TILES;
-  const headingNormal = settings?.headingNormal ?? "Shop by ";
-  const headingBold = settings?.headingBold ?? "Concerns";
+  const tiles = settings?.tiles ?? [];
+  const heading = settings?.heading ?? "Shop by <strong>Concerns</strong>";
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [maxIndex, setMaxIndex] = useState(0);
+  const [isDesktop, setIsDesktop] = useState(false);
 
-  /* Calculate how many slides we can advance based on viewport */
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const update = () => setIsDesktop(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, []);
+
+  /* Calculate how many slides we can advance based on viewport.
+   * Must mirror the .sbc-slide CSS breakpoints in globals.css. */
   const getVisibleCount = useCallback(() => {
     if (typeof window === "undefined") {
       return 5;
     }
     const w = window.innerWidth;
-    if (w < 990) {
-      return 2;
+    if (w < 768) {
+      return 2; // CSS shows 2.5 tiles, advance by 2
     }
     if (w < 1024) {
       return 3;
@@ -170,23 +132,26 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
     setCurrentIndex((prev) => Math.min(maxIndex, prev + visible));
   }, [maxIndex, getVisibleCount]);
 
-  /* Calculate translateX based on currentIndex */
-  /* Each tile width + gap, expressed as percentage of container */
+  /* Calculate translateX by measuring the actual rendered first tile + the
+   * real gap from the flex track. This avoids drift between JS assumptions
+   * and the CSS in globals.css (.sbc-slide widths + responsive flex gap). */
   const getTranslateX = () => {
     if (!containerRef.current || currentIndex === 0) {
       return "0px";
     }
-    const container = containerRef.current;
-    const gap = 15; // 15px gap between tiles
-    const containerWidth = container.offsetWidth;
-    const visible = getVisibleCount();
-    const tileWidth = (containerWidth - (visible - 1) * gap) / visible;
+    const track = containerRef.current.firstElementChild as HTMLElement | null;
+    const firstTile = track?.firstElementChild as HTMLElement | null;
+    if (!track || !firstTile) {
+      return "0px";
+    }
+    const tileWidth = firstTile.offsetWidth;
+    const gap = parseFloat(getComputedStyle(track).columnGap || "0") || 0;
     return `-${currentIndex * (tileWidth + gap)}px`;
   };
 
   return (
     <section
-      className="relative bg-secondary pt-11 md:pt-14 overflow-hidden"
+      className="relative bg-secondary max-w-[1400px] mx-auto pt-11 md:pt-14 overflow-hidden"
       aria-label="Shop by Concerns"
     >
       {/* Section Heading */}
@@ -197,19 +162,18 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
           fontWeight: 400,
           color: "#1D1D1D",
         }}
-      >
-        {headingNormal}
-        <strong style={{ fontWeight: 700 }}>{headingBold}</strong>
-      </h3>
+        // eslint-disable-next-line no-restricted-syntax
+        dangerouslySetInnerHTML={{ __html: heading }}
+      />
 
       {/* Carousel wrapper */}
-      <div className="relative pl-3.5 md:px-[30px] xl:px-[70px]">
-        {/* Prev button */}
+      <div className="flex items-center">
+        {/* Prev button — desktop only */}
         <button
           onClick={goPrev}
           disabled={!canGoPrev}
           aria-label="Previous"
-          className="hidden md:flex absolute left-0.5 lg:left-[5px] xl:left-[18px] top-[50%] -translate-y-[50%] z-[2] w-10 xl:w-[46px] h-10 xl:h-[46px] items-center justify-center text-primary"
+          className="hidden md:flex flex-shrink-0 w-10 xl:w-[46px] h-10 xl:h-[46px] items-center justify-center text-primary"
         >
           <span
             className="inline-flex transition-opacity duration-300"
@@ -219,16 +183,23 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
           </span>
         </button>
 
-        {/* Slider viewport */}
-        <div className="overflow-hidden pl-0 md:pl-[15px]" ref={containerRef}>
+        {/* Slider viewport — native scroll on mobile, button-driven on desktop */}
+        <div
+          className="flex-1 min-w-0 overflow-x-auto md:overflow-hidden snap-x snap-mandatory md:snap-none scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          ref={containerRef}
+        >
           <div
-            className="flex gap-2 lg:gap-[15px] transition-transform duration-[400ms] ease-in-out"
-            style={{ transform: `translateX(${getTranslateX()})` }}
+            className="flex gap-2 lg:gap-[15px] md:transition-transform md:duration-[400ms] md:ease-in-out"
+            style={
+              isDesktop
+                ? { transform: `translateX(${getTranslateX()})` }
+                : undefined
+            }
           >
             {tiles.map((tile, i) => (
               <div
                 key={i}
-                className="sbc-slide flex-shrink-0"
+                className="sbc-slide flex-shrink-0 snap-start md:snap-align-none first:ml-[14px] last:mr-[14px] md:first:ml-0 md:last:mr-0"
                 role="group"
                 aria-label={`${i + 1} of ${tiles.length}`}
               >
@@ -238,12 +209,12 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
           </div>
         </div>
 
-        {/* Next button */}
+        {/* Next button — desktop only */}
         <button
           onClick={goNext}
           disabled={!canGoNext}
           aria-label="Next"
-          className="hidden md:flex absolute right-0 lg:right-[-11px] xl:right-[18px] top-[50%] -translate-y-[50%] z-[2] w-10 xl:w-[46px] h-10 xl:h-[46px] items-center justify-center text-primary"
+          className="hidden md:flex flex-shrink-0 w-10 xl:w-[46px] h-10 xl:h-[46px] items-center justify-center text-primary"
         >
           <span
             className="inline-flex transition-opacity duration-300"

@@ -18,10 +18,8 @@ export interface ConcernTile {
 export interface ShopByConcernsSettings {
   /** Widget variant */
   variant?: string;
-  /** Section heading — normal weight part */
-  headingNormal?: string;
-  /** Section heading — bold part */
-  headingBold?: string;
+  /** Section heading (rich HTML — supports <strong>, <em>, etc.) */
+  heading?: string;
   /** Array of concern tiles */
   tiles?: ConcernTile[];
 }

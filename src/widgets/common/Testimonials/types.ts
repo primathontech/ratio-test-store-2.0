@@ -17,10 +17,8 @@ export interface TestimonialItem {
 export interface TestimonialsSettings {
   /** Widget variant */
   variant?: string;
-  /** Section heading — regular text portion */
-  headingRegular?: string;
-  /** Section heading — bold text portion */
-  headingBold?: string;
+  /** Section heading (rich HTML — supports <strong>, <em>, etc.) */
+  heading?: string;
   /** Array of testimonial cards */
   testimonials?: TestimonialItem[];
   /** Card background colour */
