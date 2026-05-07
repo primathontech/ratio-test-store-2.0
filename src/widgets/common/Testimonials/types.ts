@@ -1,4 +1,5 @@
 import { WidgetProps } from "@/widgets/types";
+import type { CarouselBreakpoint } from "@/ui/components/SwipeCarousel";
 
 /**
  * A single testimonial card
@@ -25,6 +26,12 @@ export interface TestimonialsSettings {
   cardBackground?: string;
   /** Star fill colour */
   starColor?: string;
+  /**
+   * Optional override for the SwipeCarousel breakpoints. Set from the
+   * template to tune cards/gap per viewport bucket. Falls back to the
+   * widget's built-in default when omitted.
+   */
+  carouselBreakpoints?: CarouselBreakpoint[];
 }
 
 /**

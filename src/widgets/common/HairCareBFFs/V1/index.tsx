@@ -310,7 +310,7 @@ const HairCareCard = memo(function HairCareCard({
 /*  Carousel breakpoints                                               */
 /* ------------------------------------------------------------------ */
 
-const HAIR_CARE_BFFS_BREAKPOINTS = [
+const DEFAULT_HAIR_CARE_BFFS_BREAKPOINTS = [
   { minWidth: 0, cards: 2.15, gap: 0 },
   { minWidth: 1024, cards: 5, gap: 0 },
   { minWidth: 1440, cards: 5, gap: 0 },
@@ -331,6 +331,10 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
   const collectionsConfig = settings?.collections;
   const actionButtonText = settings?.actionButtonText;
   const soldOutText = settings?.soldOutText;
+  const carouselBreakpoints =
+    settings?.carouselBreakpoints && settings.carouselBreakpoints.length > 0
+      ? settings.carouselBreakpoints
+      : DEFAULT_HAIR_CARE_BFFS_BREAKPOINTS;
   const tabs = useMemo(
     () => buildTabs(data, collectionsConfig),
     [data, collectionsConfig]
@@ -473,7 +477,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
         >
           <SwipeCarousel
             itemCount={products.length}
-            breakpoints={HAIR_CARE_BFFS_BREAKPOINTS}
+            breakpoints={carouselBreakpoints}
             resetKey={activeTabIndex}
             renderItem={renderProduct}
             renderPrev={(onClick, disabled) => (

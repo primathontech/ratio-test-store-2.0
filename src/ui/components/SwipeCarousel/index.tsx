@@ -1,6 +1,7 @@
 "use client";
 
 import React, { memo, useState, useRef, useCallback, useEffect } from "react";
+import useResponsive from "@/hooks/useResponsive";
 
 /* ------------------------------------------------------------------ */
 /*  Types                                                              */
@@ -44,18 +45,47 @@ export interface SwipeCarouselProps {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Resolve breakpoint                                                 */
+/*  Pick a carousel breakpoint from the responsive flags               */
 /* ------------------------------------------------------------------ */
 
-function resolveBreakpoint(
+/**
+ * Map the useResponsive hook's 3-bucket flags onto the carousel's
+ * breakpoint list:
+ *   isMobile  → first (smallest) breakpoint — typical mobile layout
+ *   isTablet  → largest breakpoint with minWidth < 1024 — the 768 bucket if present
+ *   otherwise (isDesktop) → last (largest) breakpoint — desktop layout
+ *
+ * The hook's tablet bucket (768–1149) and desktop bucket (≥1150) are coarser
+ * than carousel breakpoint lists that include both 1024 and 1440 thresholds;
+ * sub-ranges that fall inside a hook bucket all map to the same carousel
+ * entry by design.
+ */
+function pickBreakpoint(
   breakpoints: CarouselBreakpoint[],
-  width: number
+  flags: { isMobile: boolean; isTablet: boolean }
 ): CarouselBreakpoint {
-  let match = breakpoints[0];
-  for (const bp of breakpoints) {
-    if (width >= bp.minWidth) match = bp;
+  if (breakpoints.length === 0) {
+    return { minWidth: 0, cards: 1, gap: 0 };
   }
-  return match;
+  // Defensive: ensure ascending order.
+  const sorted = [...breakpoints].sort((a, b) => a.minWidth - b.minWidth);
+
+  if (flags.isMobile) {
+    return sorted[0];
+  }
+  if (flags.isTablet) {
+    // Largest bp with minWidth < 1024 — prefers a 768 bucket when present,
+    // falls back to the smallest entry if the carousel only has mobile +
+    // desktop tiers.
+    for (let i = sorted.length - 1; i >= 0; i--) {
+      if (sorted[i].minWidth < 1024) {
+        return sorted[i];
+      }
+    }
+    return sorted[0];
+  }
+  // isDesktop
+  return sorted[sorted.length - 1];
 }
 
 /* ------------------------------------------------------------------ */
@@ -75,20 +105,22 @@ export const SwipeCarousel = memo(function SwipeCarousel({
   const viewportRef = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [mounted, setMounted] = useState(false);
-  const [bp, setBp] = useState<CarouselBreakpoint>(
-    () => breakpoints[0] // Start with mobile breakpoint (smallest)
-  );
 
-  /* ---------- Mount + Resize listener ---------- */
+  // Source of truth for breakpoint: the shared useResponsive hook.
+  // The hook owns its own resize listener AND handles editor-preview
+  // breakpoint switching — no `window.innerWidth` access here.
+  const { isMobile, isTablet } = useResponsive();
+
+  /* ---------- Resolve carousel breakpoint from flags ---------- */
+  // Map the hook's 3 buckets onto the breakpoints array:
+  //   isMobile  → smallest minWidth (mobile bucket)
+  //   isTablet  → largest bp with minWidth < 1024 (the 768 bucket when present)
+  //   isDesktop → largest bp (top of the scale)
+  const bp = pickBreakpoint(breakpoints, { isMobile, isTablet });
+
   useEffect(() => {
-    const update = () => {
-      setBp(resolveBreakpoint(breakpoints, window.innerWidth));
-    };
-    update();
     setMounted(true);
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, [breakpoints]);
+  }, []);
 
   /* ---------- Reset index on key change ---------- */
   useEffect(() => {
@@ -108,7 +140,9 @@ export const SwipeCarousel = memo(function SwipeCarousel({
 
   useEffect(() => {
     const compute = () => {
-      if (!viewportRef.current) return;
+      if (!viewportRef.current) {
+        return;
+      }
       const vw = viewportRef.current.offsetWidth;
       const cw = (vw - gapPx * (Math.floor(visibleCards) - 1)) / visibleCards;
       setCardWidth(cw);
@@ -153,11 +187,16 @@ export const SwipeCarousel = memo(function SwipeCarousel({
 
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent) => {
-      if (!isSwiping.current) return;
+      if (!isSwiping.current) {
+        return;
+      }
       const dx = e.changedTouches[0].clientX - touchStartX.current;
       if (Math.abs(dx) >= swipeThreshold) {
-        if (dx < 0) goNext();
-        else goPrev();
+        if (dx < 0) {
+          goNext();
+        } else {
+          goPrev();
+        }
       }
     },
     [swipeThreshold, goNext, goPrev]
@@ -170,7 +209,9 @@ export const SwipeCarousel = memo(function SwipeCarousel({
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     // Only primary button
-    if (e.button !== 0) return;
+    if (e.button !== 0) {
+      return;
+    }
     mouseStartX.current = e.clientX;
     isDragging.current = true;
     hasDragged.current = false;
@@ -179,18 +220,27 @@ export const SwipeCarousel = memo(function SwipeCarousel({
 
   useEffect(() => {
     const onMouseMove = (e: MouseEvent) => {
-      if (!isDragging.current) return;
+      if (!isDragging.current) {
+        return;
+      }
       const dx = Math.abs(e.clientX - mouseStartX.current);
-      if (dx > 5) hasDragged.current = true;
+      if (dx > 5) {
+        hasDragged.current = true;
+      }
     };
 
     const onMouseUp = (e: MouseEvent) => {
-      if (!isDragging.current) return;
+      if (!isDragging.current) {
+        return;
+      }
       isDragging.current = false;
       const dx = e.clientX - mouseStartX.current;
       if (Math.abs(dx) >= swipeThreshold) {
-        if (dx < 0) goNext();
-        else goPrev();
+        if (dx < 0) {
+          goNext();
+        } else {
+          goPrev();
+        }
       }
     };
 

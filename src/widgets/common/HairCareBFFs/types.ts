@@ -3,6 +3,7 @@ import type {
   ApiProduct,
   ApiCollectionResult,
 } from "@/widgets/common/FeaturedCollectionGrid/types";
+import type { CarouselBreakpoint } from "@/ui/components/SwipeCarousel";
 
 /**
  * Re-export API types used in the transform layer.
@@ -54,6 +55,12 @@ export interface HairCareBFFsSettings {
   actionButtonText?: string;
   /** Sold-out fallback text. Defaults to "Sold Out". */
   soldOutText?: string;
+  /**
+   * Optional override for the SwipeCarousel breakpoints. Set from the
+   * template to tune cards/gap per viewport bucket. Falls back to the
+   * widget's built-in default when omitted.
+   */
+  carouselBreakpoints?: CarouselBreakpoint[];
 }
 
 /**
