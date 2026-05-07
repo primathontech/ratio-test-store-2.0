@@ -46,84 +46,43 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   try {
     const collection = await fetchCollection(params.collectionname);
+    const locale = getStaticLocale();
 
-    if (!collection) {
+    if (!collection || !collection.data) {
       return {
-        title: "Collection Not Found | Wellevrsed",
+        title: "Collection Not Found",
         description: "The requested collection could not be found.",
-        alternates: {
-          canonical: `${
-            process.env.NEXT_PUBLIC_BASE_URL || "https://wellversed.in"
-          }/collections/${params.collectionname}`,
-        },
       };
     }
 
-    const seoTitle = `${collection.seo?.title || collection.title}`;
-    const seoDescription = collection?.seo?.description;
+    const collectionData = collection.data;
 
-    // Generate SEO data including structured data
-    const locale = getStaticLocale();
-    const seoData = await seoSystem.generateSEOData({
+    const baseSeoData = await seoSystem.generateSEOData({
       type: "collection",
-      data: collection,
+      data: collectionData,
       path: `/collections/${params.collectionname}`,
       locale,
     });
 
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://bblunt.com/";
+    const canonicalUrl = collectionData?.seo_handle
+      ? `${baseUrl}/collections/${collectionData.seo_handle}`
+      : baseSeoData.canonical;
+
+    const seoData = {
+      ...baseSeoData,
+      title: collectionData?.seo_title || baseSeoData.title,
+      description: collectionData?.seo_description || baseSeoData.description,
+      canonical: canonicalUrl,
+    };
+
     const metaTagGenerator = new MetaTagGenerator(seoSystem["config"]);
-    const metadata = metaTagGenerator.generateNextJSMetadata({
-      title: seoTitle,
-      description: seoDescription,
-      type: "website" as "website",
-      canonical: `${
-        process.env.NEXT_PUBLIC_BASE_URL || "https://wellversed.in"
-      }/collections/${params.collectionname}`,
-      image: collection.image
-        ? {
-            id: `collection-${params.collectionname}`,
-            url: collection.image.url,
-            altText: collection.title,
-            width: collection.image.width || 800,
-            height: collection.image.height || 800,
-          }
-        : {
-            id: "wellversed-default",
-            url: "/images/logo/wellversed-logo.svg",
-            altText: collection.title,
-            width: 2048,
-            height: 2048,
-          },
-    });
-
-    // Add structured data to the head section to avoid Facebook Pixel conflicts
-    if (seoData.structuredData && seoData.structuredData.length > 0) {
-      const structuredDataScripts = seoData.structuredData.map(
-        (schema, index) => ({
-          type: "application/ld+json" as const,
-          children: JSON.stringify(schema),
-          key: `structured-data-${index}`,
-        })
-      );
-
-      return {
-        ...metadata,
-        other: {
-          ...metadata.other,
-          // Add structured data as script tags in head
-          "script:type=application/ld+json": structuredDataScripts.map(
-            (script) => script.children
-          ),
-        },
-      };
-    }
-
-    return metadata;
+    return metaTagGenerator.generateNextJSMetadata(seoData);
   } catch (error) {
     console.error("Error generating metadata for collection:", error);
     return {
-      title: "Collection | Wellevrsed",
-      description: "Shop our amazing collections at Wellevrsed",
+      title: "Collection | BBlunt",
+      description: "Shop our amazing collections at BBlunt",
     };
   }
 }

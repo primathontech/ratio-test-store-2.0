@@ -2,6 +2,8 @@ import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
+import { getSEOConfig } from "@/config";
+import { MetaTagGenerator } from "@shopkit/seo";
 import { Metadata } from "next";
 import { getRouteTranslations } from "@/utils";
 
@@ -14,10 +16,27 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const params = await searchParams;
   const query = params?.q ?? "";
-  return {
-    title: query ? `Search results for "${query}" - BBlunt` : "Search - BBlunt",
-    description: "Search results across the BBlunt catalogue.",
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://bblunt.com";
+
+  const seoData = {
+    title: query ? `"${query}" - bblunt-com` : "Search – BBlunt",
+    description: query
+      ? `BBlunt shampoo for dry, frizzy & damaged hair. Get salon-like shine & nourishment at home. Best for coloured & chemically-treated hair.`
+      : "BBlunt shampoo for dry, frizzy & damaged hair. Get salon-like shine & nourishment at home. Best for coloured & chemically-treated hair.",
+    type: "website" as "website",
+    canonical: `${baseUrl}/pages/search`,
+    image: {
+      id: "bblunt-logo",
+      url: "/bblunt-2/images/bblunt-logo.avif",
+      altText: "BBlunt",
+      width: 1200,
+      height: 630,
+    },
   };
+
+  const seoConfig = getSEOConfig();
+  const metaTagGenerator = new MetaTagGenerator(seoConfig);
+  return metaTagGenerator.generateNextJSMetadata(seoData);
 }
 
 export default async function SearchtapSearchPage({

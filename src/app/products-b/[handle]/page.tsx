@@ -85,7 +85,7 @@ export async function generateMetadata({
 
     if (!product) {
       return {
-        title: "Product Not Found | Wellevrsed",
+        title: "Product Not Found | BBlunt",
         description: "The requested product could not be found.",
       };
     }
@@ -116,11 +116,11 @@ export async function generateMetadata({
             height: product.images[0].height || 800,
           }
         : {
-            id: "wellversed-default",
-            url: "/images/logo/wellversed-logo.svg",
+            id: "bblunt-default",
+            url: "/bblunt-2/images/bblunt-logo.avif",
             altText: product.title,
-            width: 2048,
-            height: 2048,
+            width: 1200,
+            height: 630,
           },
     });
 
@@ -150,8 +150,8 @@ export async function generateMetadata({
   } catch (error) {
     console.error("Error generating metadata for product:", error);
     return {
-      title: "Product | Wellevrsed",
-      description: "Shop our amazing products at Wellevrsed",
+      title: "Product | BBlunt",
+      description: "Shop our amazing products at BBlunt",
     };
   }
 }
