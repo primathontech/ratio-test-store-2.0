@@ -159,5 +159,18 @@ export const themeRegistry = {
         },
       },
     },
+
+    [TEMPLATE_TYPES["privacy-policy"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/privacy-policy/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/privacy-policy",
+        routeContext: {
+          templateName: "privacy-policy",
+          path: "/pages/privacy-policy",
+          params: {},
+          query: {},
+        },
+      },
+    },
   },
 };
