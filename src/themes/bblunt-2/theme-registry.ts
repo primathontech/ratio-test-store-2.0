@@ -185,5 +185,19 @@ export const themeRegistry = {
         },
       },
     },
+
+    [TEMPLATE_TYPES["terms-and-conditions"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/terms-and-conditions/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/terms-and-conditions",
+        routeContext: {
+          templateName: "terms-and-conditions",
+          path: "/pages/terms-and-conditions",
+          params: {},
+          query: {},
+        },
+      },
+    },
   },
 };
