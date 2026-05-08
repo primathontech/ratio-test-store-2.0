@@ -802,6 +802,118 @@ const merchantWidgetSchemas = {
       },
     },
   },
+  [WIDGET_TYPES.CollectionTimer]: {
+    type: WIDGET_TYPES.CollectionTimer,
+    name: "Collection Timer",
+    description:
+      "Countdown timer widget for collection pages with urgency text, sale label, and expiry messaging.",
+    settingsSchema: {
+      endDateString: {
+        type: "text",
+        label: "End Date (e.g. Apr 30, 2026 23:59:59)",
+        default: "",
+      },
+      urgencyText: {
+        type: "text",
+        label: "Urgency Text",
+        default: "Hurry Up!",
+      },
+      saleLabel: {
+        type: "text",
+        label: "Sale Label",
+        default: "Sale ends in:",
+      },
+      expiredText: {
+        type: "text",
+        label: "Expired Text",
+        default: "Oops! Offer is Expired",
+      },
+    },
+  },
+  [WIDGET_TYPES.CollectionHeroBanner]: {
+    type: WIDGET_TYPES.CollectionHeroBanner,
+    name: "Collection Hero Banner",
+    description:
+      "Collection page hero banner with customizable aspect ratios for mobile and desktop.",
+    settingsSchema: {
+      mobileAspectRatio: {
+        type: "text",
+        label: "Mobile Aspect Ratio (e.g. 1/1)",
+        default: "1/1",
+      },
+      desktopAspectRatio: {
+        type: "text",
+        label: "Desktop Aspect Ratio (e.g. 1440/530)",
+        default: "1440/530",
+      },
+    },
+    requiresDataSource: true,
+    compatibleDataSources: ["COLLECTION"],
+  },
+  [WIDGET_TYPES.CollectionPage]: {
+    type: WIDGET_TYPES.CollectionPage,
+    name: "Collection Widget",
+    description:
+      "Collection listing widget with product cards, actions, badges, ratings, and load-more support.",
+    settingsSchema: {
+      actionButtonText: {
+        type: "text",
+        label: "Action Button Text",
+        default: "",
+      },
+      showFilterAndSort: {
+        type: "boolean",
+        label: "Show Filter And Sort",
+        default: true,
+      },
+      soldOutText: {
+        type: "text",
+        label: "Sold Out Text",
+        default: "",
+      },
+      filterTitle: {
+        type: "text",
+        label: "Filter Title",
+        default: "",
+      },
+      sortDropdownText: {
+        type: "text",
+        label: "Sort Dropdown Label",
+        default: "",
+      },
+      title: {
+        type: "text",
+        label: "Collection Title (override)",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.AdditionalInformation]: {
+    type: WIDGET_TYPES.AdditionalInformation,
+    name: "Collection Additional Information",
+    description:
+      "Accordion widget displaying collection description with a configurable title.",
+    settingsSchema: {
+      title: {
+        type: "text",
+        label: "Title",
+        default: "Additional Information",
+      },
+    },
+  },
+  [WIDGET_TYPES.FaqAccordion]: {
+    type: WIDGET_TYPES.FaqAccordion,
+    name: "Collection FAQ",
+    description:
+      "FAQ accordion widget for collection pages with a configurable title.",
+    settingsSchema: {
+      title: {
+        type: "text",
+        label: "Title",
+        default: "FAQ",
+      },
+    },
+  },
   // [WIDGET_TYPES.Footer]: {
   //   type: WIDGET_TYPES.Footer,
   //   name: "Footer",

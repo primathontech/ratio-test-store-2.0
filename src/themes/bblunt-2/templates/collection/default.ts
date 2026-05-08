@@ -127,7 +127,6 @@ export const template: PageConfig = {
           dataSourceKey: "collectionData",
           settings: {
             variant: "v1",
-            bannerCarousel: [],
             autoplay: true,
             autoplayInterval: 5000,
             loop: true,
@@ -162,15 +161,19 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.CollectionTimer,
           settings: {
             variant: "v1",
-            endDateString: "Dec 31, 2026 23:59:59",
-            urgencyText: "Hurry Up!",
-            saleLabel: "Sale ends in:",
-            expiredText: "Oops! Offer is Expired",
             visible: true,
+            endDateString:
+              "t:bblunt-2_collection_default.collection_timer.endDateString",
+            timerInterval: 1000,
+            urgencyText:
+              "t:bblunt-2_collection_default.collection_timer.urgencyText",
+            saleLabel:
+              "t:bblunt-2_collection_default.collection_timer.saleLabel",
+            expiredText:
+              "t:bblunt-2_collection_default.collection_timer.expiredText",
             backgroundColor: "#ffffff",
             textColor: "#1D1D1D",
             urgencyColor: "#FF0000",
-            timerInterval: 1000,
           },
         },
       ],
@@ -197,6 +200,22 @@ export const template: PageConfig = {
           dataSourceKey: "collectionData",
           settings: {
             variant: "v1",
+            autoLoadMore: true,
+
+            // Card settings
+            showActionButton: true,
+            actionButtonText: "t:common.product_card.add_to_cart",
+            soldOutText: "t:common.product_card.sold_out",
+            currencySymbol: "₹",
+            showBadge: true,
+            showRating: true,
+            actionButtonTextColor: "#fff",
+            sectionTextColor: "#1D1D1D",
+
+            // Product Filter And Grid Settings
+            filterTitle: "t:common.collection_page.filter_title",
+            sortDropdownText:
+              "t:common.collection_page.sort_dropdown_button_text",
           },
         },
       ],
@@ -223,7 +242,7 @@ export const template: PageConfig = {
           dataSourceKey: "collectionData",
           settings: {
             variant: "v1",
-            title: "FAQ",
+            title: "t:bblunt-2_collection_default.collection_faq.title",
           },
         },
       ],
@@ -244,7 +263,7 @@ export const template: PageConfig = {
       },
       widgets: [
         {
-          id: "shine-academy-banner-widget",
+          id: "bblunt-2-shine-academy-banner",
           name: "Shine Academy Banner",
           type: WIDGET_TYPES.ShineAcademyBanner,
           settings: {
@@ -259,7 +278,6 @@ export const template: PageConfig = {
         },
       ],
     },
-
     // Testimonials Section
     {
       id: "testimonials-section",
@@ -275,14 +293,12 @@ export const template: PageConfig = {
       },
       widgets: [
         {
-          id: "testimonials-widget",
+          id: "bblunt-2-testimonials",
           name: "Testimonials",
           type: WIDGET_TYPES.Testimonials,
           settings: {
             variant: "v1",
             heading: "t:common.testimonials.heading__rich",
-            cardBackground: "rgb(29, 29, 29)",
-            starColor: "rgb(255, 192, 2)",
             testimonials: "t:common.testimonials.items",
           },
         },
@@ -310,7 +326,8 @@ export const template: PageConfig = {
           dataSourceKey: "collectionData",
           settings: {
             variant: "v2",
-            title: "Additional Information",
+            title:
+              "t:bblunt-2_collection_default.collection_additional_information.title",
           },
         },
       ],

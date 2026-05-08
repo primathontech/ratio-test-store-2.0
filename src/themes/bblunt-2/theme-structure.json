@@ -96,12 +96,12 @@
           "supportedLanguages": ["en"],
           "routeContext": {
             "templateName": "collection",
-            "path": "/collections/shampoo",
+            "path": "/collections/colour-bundles",
             "params": {
-              "handle": "shampoo"
+              "handle": "colour-bundles"
             },
             "query": {},
-            "collectionHandle": "shampoo",
+            "collectionHandle": "colour-bundles",
             "fetchAPITemplate": true
           }
         }
