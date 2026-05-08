@@ -1,7 +1,7 @@
 "use client";
 
 import React, { memo } from "react";
-import { AboutUsStoryProps, AboutUsStoryBlock } from "../types";
+import { AboutUsStoryProps } from "../types";
 
 /* ------------------------------------------------------------------ */
 /*  Ornamental Divider SVG                                             */
@@ -72,25 +72,6 @@ const OrnamentalDivider = ({ color = "#000" }: { color?: string }) => (
 /*  Default content blocks (from bblunt.com About Us page)             */
 /* ------------------------------------------------------------------ */
 
-const DEFAULT_BLOCKS: AboutUsStoryBlock[] = [
-  {
-    heading: "Salon-Like Experience At Home",
-    body: "With over 1 million haircuts and over 100 years behind the salon chair, we understand Indian hair and its needs like no one. else. With BBLUNT products crafted by expertise, you get a salon-like experience at home!",
-  },
-  {
-    heading: "Specially Created For Indian Hair",
-    body: "Hard water is laden with a high mineral content that causes damage, hair fall, and dullness. BBLUNT\u2019s range of hair care is specially created to protect Indian hair. We\u2019ve developed a range that rejuvenates your hair and defends it against hard water and pollution. Our products leave your hair soft, shiny, and manageable!",
-  },
-  {
-    heading: "Years Of Experience & Expertise",
-    body: "Founded back in the early 90s, we understand Indian trends, colours, styles, and fashion like no one else. With years of experience and expertise with anything and everything to do with hair, we believe that copy-pasting is just not an option. Deeply inspired by people who love to express their personality through their hair and are not afraid to experiment, we at BBLUNT continue to be the trendsetters.",
-  },
-  {
-    heading: "Trusted by Bollywood",
-    body: "With being a part of the Bollywood journey for over a decade, we have been the trendsetter for many Bollywood celebrities and fashionistas. We have also delivered some career-defining looks that have shaped some of the nation\u2019s most loved on-screen characters.",
-  },
-];
-
 /* ------------------------------------------------------------------ */
 /*  V1 -- AboutUsStory                                                 */
 /*  Four centered heading + ornamental SVG divider + paragraph blocks. */
@@ -103,10 +84,9 @@ export const V1 = memo(function AboutUsStoryV1({
   settings,
   className,
 }: AboutUsStoryProps) {
-  const blocks = settings?.blocks || DEFAULT_BLOCKS;
+  const blocks = settings?.blocks || [];
   const textColor = settings?.textColor || "#1d1d1d";
   const dividerColor = settings?.dividerColor || "#000000";
-
   return (
     <section className={className || ""}>
       <div
