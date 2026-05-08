@@ -54,6 +54,14 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
     filterTitle = "Filters",
     sortDropdownText = "Sort by",
     showFilterAndSort = true,
+    showActionButton = true,
+    actionButtonText = "Add to cart",
+    soldOutText = "View",
+    showBadge = true,
+    showRating = true,
+    actionButtonTextColor,
+    sectionTextColor,
+    productCardBackgroundColor,
   } = safeSettings;
 
   const items = useCartItems();
@@ -484,7 +492,8 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
         {collection?.title && (
           <h1
             data-testid="collection-page-title"
-            className="text-left xl2:text-center text-black leading-none text-[22px] md:text-[32px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
+            className="text-left xl2:text-center leading-none text-[22px] md:text-[32px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
+            style={sectionTextColor ? { color: sectionTextColor } : undefined}
           >
             {collection.title}
           </h1>
@@ -699,7 +708,17 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                         isInCart={!!cartLine}
                         cartItem={cartLine}
                         isQuantityLoading={isCardLoading}
-                        settings={{ showAddToCartToast: true }}
+                        settings={{
+                          showAddToCartToast: true,
+                          showActionButton,
+                          actionButtonText,
+                          soldOutText,
+                          showBadge,
+                          showRating,
+                          actionButtonTextColor,
+                          backgroundColor: productCardBackgroundColor,
+                          color: sectionTextColor,
+                        }}
                         className="md:border md:!rounded-lg !border-white md:!border-[#EBEBEB] !pl-0"
                       />
                     </div>

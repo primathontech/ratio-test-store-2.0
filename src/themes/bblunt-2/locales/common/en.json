@@ -282,6 +282,10 @@
         "text": "Get 3 Products at ₹999 | Use code : <strong>GET999</strong>",
         "href": "/pages/shine-squad-mega-offer"
       }
-    ]
+    ],
+    "collection_page": {
+      "filter_title": "Filter",
+      "sort_dropdown_button_text": "Sort by"
+    }
   }
 }
