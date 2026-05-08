@@ -146,7 +146,7 @@ export const MobileFilterDropdown = ({
         <>
           <div
             data-testid="mobile-filter-dropdown-backdrop"
-            className="fixed inset-0 transition-opacity duration-300 bg-black/80 z-2000"
+            className="fixed inset-0 transition-opacity duration-300 bg-[#000000]/80 z-[2000]"
             onClick={handleClose}
           />
           <div

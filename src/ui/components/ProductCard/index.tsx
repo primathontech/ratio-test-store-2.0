@@ -172,7 +172,9 @@ const LIGHT_THEME = {
   cardOverflow: "hidden" as const,
   textPrimary: "#1d1d1d",
   textSecondary: "#666666",
-  textMuted: "#999999",
+  textMuted: "#1D1D1D8C",
+  comparePriceMobile: "#1D1D1D",
+  comparePriceDesktop: "#1D1D1D8C",
   chipBg: "#F4F6F8",
   chipBorder: "none",
   chipColor: "#1d1d1d",
@@ -186,7 +188,7 @@ const LIGHT_THEME = {
   buttonHoverBg: "rgb(56,56,56)",
   buttonHoverColor: "#ffffff",
   buttonHoverBorder: "2px solid #000000",
-  discountColor: "rgb(0, 160, 0)",
+  discountColor: "#f04438",
   imageRadius: "10px",
   buttonRadius: "4px",
 };
@@ -199,6 +201,8 @@ const DARK_THEME = {
   textPrimary: "#ffffff",
   textSecondary: "rgba(255,255,255,0.7)",
   textMuted: "rgba(255,255,255,0.5)",
+  comparePriceMobile: "rgba(255,255,255,0.5)",
+  comparePriceDesktop: "rgba(255,255,255,0.5)",
   chipBg: "rgb(29, 29, 29)",
   chipBorder: "none",
   chipColor: "#ffffff",
@@ -473,7 +477,7 @@ export const ProductCard = memo(function ProductCard({
 
           {/* Price row */}
           <div
-            className={`flex items-center gap-[6px] flex-wrap mt-auto ${priceSectionClassName}`.trim()}
+            className={`flex flex-col lg:flex-row items-start lg:items-center gap-0 lg:gap-[6px] flex-wrap mt-auto min-h-8 md:min-h-4 ${priceSectionClassName}`.trim()}
           >
             <span
               className={`text-[14px] md:text-[16px] ${salePriceClassName}`.trim()}
@@ -487,26 +491,31 @@ export const ProductCard = memo(function ProductCard({
             {product.originalPrice &&
               product.originalPrice > product.salePrice && (
                 <>
-                  <span
-                    className={`text-[12px] line-through ${compareAtPriceClassName}`.trim()}
-                    style={{
-                      color: t.textMuted,
-                      fontWeight: 400,
-                    }}
-                  >
-                    &#8377;{product.originalPrice.toLocaleString("en-IN")}
-                  </span>
-                  {product.discount && (
+                  <div className="leading-[13px] gap-1">
                     <span
-                      className={`text-[12px] ${discountClassName}`.trim()}
-                      style={{
-                        color: t.discountColor,
-                        fontWeight: 600,
-                      }}
+                      className={`text-[12px] line-through mr-1 text-[var(--compare-price-mobile)] md:text-[var(--compare-price-desktop)] ${compareAtPriceClassName}`.trim()}
+                      style={
+                        {
+                          "--compare-price-mobile": t.comparePriceMobile,
+                          "--compare-price-desktop": t.comparePriceDesktop,
+                          fontWeight: 400,
+                        } as React.CSSProperties
+                      }
                     >
-                      {product.discount}
+                      &#8377;{product.originalPrice.toLocaleString("en-IN")}
                     </span>
-                  )}
+                    {product.discount && (
+                      <span
+                        className={`text-[12px] ${discountClassName}`.trim()}
+                        style={{
+                          color: t.discountColor,
+                          fontWeight: 600,
+                        }}
+                      >
+                        {product.discount}
+                      </span>
+                    )}
+                  </div>
                 </>
               )}
           </div>

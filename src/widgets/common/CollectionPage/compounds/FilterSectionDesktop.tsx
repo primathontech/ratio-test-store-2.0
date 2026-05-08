@@ -95,7 +95,7 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-bold text-black mb-14">{filterTitle}</h2>
+      <h2 className="text-2xl font-bold text-black mb-12">{filterTitle}</h2>
 
       <div
         data-testid="filter-section-desktop-filters-list"
