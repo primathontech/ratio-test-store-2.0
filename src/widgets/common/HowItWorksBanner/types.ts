@@ -12,20 +12,10 @@ export interface HowItWorksBannerSettings {
   mobileImage?: string;
   /** Alt text for the banner images */
   alt?: string;
-  /** Desktop image natural width */
-  desktopWidth?: number;
-  /** Desktop image natural height */
-  desktopHeight?: number;
-  /** Mobile image natural width */
-  mobileWidth?: number;
-  /** Mobile image natural height */
-  mobileHeight?: number;
-  /** Container max-width in px (default 1300) */
-  containerMaxWidth?: number;
-  /** Top margin in px (default 56) */
-  marginTop?: number;
-  /** Bottom padding in px (default 22) */
-  paddingBottom?: number;
+  /** Mobile aspect ratio (e.g. "1500/1167") — controls image height on mobile */
+  mobileAspectRatio?: string;
+  /** Desktop aspect ratio (e.g. "5692/692") — controls image height on desktop */
+  desktopAspectRatio?: string;
 }
 
 /**

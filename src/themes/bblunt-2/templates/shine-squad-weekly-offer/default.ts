@@ -198,14 +198,15 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.HeroBanner,
           settings: {
             variant: "v1",
-            desktopImage: "/HeroBanner/images/hero-desktop.jpg",
-            mobileImage: "/HeroBanner/images/hero-mobile.jpg",
-            alt: "Hair Fall Control Freebies - Use Code FREEHF - Shop Now",
-            desktopWidth: 1440,
-            desktopHeight: 529,
-            mobileWidth: 1200,
-            mobileHeight: 1200,
-            paddingBottom: 7,
+            desktopImage:
+              "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.desktopImage",
+            mobileImage:
+              "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.mobileImage",
+            alt: "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.alt",
+            mobileAspectRatio:
+              "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.mobileAspectRatio",
+            desktopAspectRatio:
+              "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.desktopAspectRatio",
           },
         },
       ],
@@ -219,9 +220,9 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 56, right: 0, bottom: 22, left: 0 } },
+          tablet: { padding: { top: 56, right: 0, bottom: 22, left: 0 } },
+          desktop: { padding: { top: 56, right: 0, bottom: 22, left: 0 } },
         },
       },
       widgets: [
@@ -231,16 +232,15 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.HowItWorksBanner,
           settings: {
             variant: "v1",
-            desktopImage: "/HowItWorksBanner/images/howtoshop-desktop.jpg",
-            mobileImage: "/HowItWorksBanner/images/howtoshop-mobile.jpg",
-            alt: "How To Shop: 1. Add favorites worth 499 to cart, 2. Apply code FREEHF at checkout, 3. Free products delivered with your order",
-            desktopWidth: 5692,
-            desktopHeight: 692,
-            mobileWidth: 1500,
-            mobileHeight: 1167,
-            containerMaxWidth: 1300,
-            marginTop: 56,
-            paddingBottom: 22,
+            desktopImage:
+              "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.desktopImage",
+            mobileImage:
+              "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.mobileImage",
+            alt: "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.alt",
+            mobileAspectRatio:
+              "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.mobileAspectRatio",
+            desktopAspectRatio:
+              "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.desktopAspectRatio",
           },
         },
       ],
@@ -266,10 +266,14 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.CountdownTimer,
           settings: {
             variant: "v1",
-            targetDate: "Apr 12, 2026 00:00:00",
-            heading: "Hurry Up!",
-            subheading: "Hurry! Offer Will Expire in",
-            expiredText: "Oops! Offer is Expired",
+            targetDate:
+              "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.targetDate",
+            heading:
+              "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.heading",
+            subheading:
+              "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.subheading",
+            expiredText:
+              "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.expiredText",
           },
         },
       ],
@@ -279,7 +283,7 @@ export const template: PageConfig = {
     categoryGridSection(
       "most-loved",
       "Most Loved",
-      "Most Loved",
+      "t:bblunt-2_shine-squad-weekly-offer_default.most_loved_grid.category_title",
       40,
       "mostLovedCollection",
       "most-loved-home-page"

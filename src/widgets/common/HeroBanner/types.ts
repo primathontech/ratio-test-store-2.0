@@ -14,16 +14,10 @@ export interface HeroBannerSettings {
   alt?: string;
   /** Optional link URL wrapping the entire banner */
   href?: string;
-  /** Desktop image natural width */
-  desktopWidth?: number;
-  /** Desktop image natural height */
-  desktopHeight?: number;
-  /** Mobile image natural width */
-  mobileWidth?: number;
-  /** Mobile image natural height */
-  mobileHeight?: number;
-  /** Bottom padding in px */
-  paddingBottom?: number;
+  /** Mobile aspect ratio (e.g. "1/1") — controls image height on mobile */
+  mobileAspectRatio?: string;
+  /** Desktop aspect ratio (e.g. "1440/529") — controls image height on desktop */
+  desktopAspectRatio?: string;
 }
 
 /**

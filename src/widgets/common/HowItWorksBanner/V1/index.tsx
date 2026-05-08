@@ -26,42 +26,45 @@ export const V1 = memo(function HowItWorksBannerV1({
   const alt =
     settings?.alt ||
     "How To Shop: 1. Add favorites worth 499 to cart, 2. Apply code FREEHF at checkout, 3. Free products delivered with your order";
-  const desktopWidth = settings?.desktopWidth || 5692;
-  const desktopHeight = settings?.desktopHeight || 692;
-  const mobileWidth = settings?.mobileWidth || 1500;
-  const mobileHeight = settings?.mobileHeight || 1167;
-  const containerMaxWidth = settings?.containerMaxWidth || 1300;
-  const marginTop = settings?.marginTop ?? 56;
-  const paddingBottom = settings?.paddingBottom ?? 22;
+  const mobileAspectRatio = settings?.mobileAspectRatio || "1500 / 1167";
+  const desktopAspectRatio = settings?.desktopAspectRatio || "5692 / 692";
+
+  const toCssRatio = (ratio: string) => ratio.replace("/", " / ");
+  const desktopStyle: React.CSSProperties = {
+    aspectRatio: toCssRatio(desktopAspectRatio),
+    height: "auto",
+  };
+  const mobileStyle: React.CSSProperties = {
+    aspectRatio: toCssRatio(mobileAspectRatio),
+    height: "auto",
+  };
 
   return (
     <section
-      className={`w-full ${className || ""}`}
-      style={{
-        marginTop: `${marginTop}px`,
-        paddingBottom: `${paddingBottom}px`,
-      }}
+      className={`w-full mx-auto md:max-w-[1360px] lg:max-w-[1400px] ${className || ""}`}
     >
-      <div className="mx-auto" style={{ maxWidth: `${containerMaxWidth}px` }}>
-        {/* Desktop / Tablet image (>=768px) */}
+      <div className="px-4 md:px-7 xl2:px-12">
+        {/* Desktop / Tablet image (>=768px) — sized via CSS aspect-ratio. */}
         <Image
           src={desktopImage}
           alt={alt}
-          width={desktopWidth}
-          height={desktopHeight}
+          width={5692}
+          height={692}
           loading="lazy"
-          className="hidden md:block w-full h-auto"
-          sizes={`(min-width: 1150px) ${containerMaxWidth}px, calc(100vw - 30px)`}
+          className="hidden md:block w-full"
+          sizes="(min-width: 1150px) 1300px, calc(100vw - 30px)"
+          style={desktopStyle}
         />
         {/* Mobile image (<768px) */}
         <Image
           src={mobileImage}
           alt={alt}
-          width={mobileWidth}
-          height={mobileHeight}
+          width={1500}
+          height={1167}
           loading="lazy"
-          className="block md:hidden w-full h-auto"
+          className="block md:hidden w-full"
           sizes="100vw"
+          style={mobileStyle}
         />
       </div>
     </section>

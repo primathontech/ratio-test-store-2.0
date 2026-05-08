@@ -37,10 +37,16 @@ function transformApiProduct(
     discount = `${pct}% off`;
   }
 
+  const tagStrings = (product.tags || [])
+    .map((t: unknown) =>
+      typeof t === "string" ? t : ((t as { name?: string } | null)?.name ?? "")
+    )
+    .filter((s): s is string => !!s);
+
   // Resolve badge: metafield first, tag fallback (matches bblunt reference).
   const resolvedBadge = getProductLabel(
     product.metadata?.product_labels?.value,
-    product.tags
+    tagStrings
   );
 
   return {
@@ -177,15 +183,17 @@ const FeaturedCollectionGridCard = memo(function FeaturedCollectionGridCard({
   }, [decrementItem, cartLine, variantId]);
 
   return (
-    <ProductCard
-      product={cardProduct}
-      onAddToCart={handleAddToCart}
-      onIncrement={handleIncrement}
-      onDecrement={handleDecrement}
-      isInCart={isInCart}
-      cartItem={cartLine}
-      isQuantityLoading={isQuantityLoading}
-    />
+    <div className="overflow-hidden rounded-t-xl md:rounded-xl md:border md:border-solid md:border-gray-light">
+      <ProductCard
+        product={cardProduct}
+        onAddToCart={handleAddToCart}
+        onIncrement={handleIncrement}
+        onDecrement={handleDecrement}
+        isInCart={isInCart}
+        cartItem={cartLine}
+        isQuantityLoading={isQuantityLoading}
+      />
+    </div>
   );
 });
 
@@ -212,33 +220,28 @@ export const V1 = memo(function V1({
       aria-label={categoryTitle}
     >
       {/* Container */}
-      <div
-        className="mx-auto px-4 md:px-10 lg:px-[72px]"
-        style={{ maxWidth: "1440px" }}
-      >
-        {/* Category title banner */}
+      <div className="mx-auto px-4 md:px-[50px]" style={{ maxWidth: "1400px" }}>
+        {/* Category title — plain centered heading (matches bblunt.com live) */}
         <div
-          className="flex items-center justify-center py-2.5 md:py-3 mb-6"
-          style={{
-            backgroundColor: "#000000",
-            borderRadius: "0px",
-          }}
+          className="flex items-center justify-center text-center px-[15px]"
+          style={{ marginBottom: "30px" }}
         >
           <h3
-            className="text-xl md:text-2xl lg:text-[28px] text-center"
+            className="text-center"
             style={{
-              color: "#ffffff",
-              fontWeight: 700,
+              color: "#000000",
+              fontSize: "28px",
+              fontWeight: 400,
+              lineHeight: 1.2,
               margin: 0,
-              lineHeight: 1.3,
             }}
           >
             {categoryTitle}
           </h3>
         </div>
 
-        {/* Product grid: 2 cols mobile, 4 cols desktop */}
-        <div className="grid grid-cols-2 lg:grid-cols-4">
+        {/* Product grid: 2 cols mobile, 3 cols tablet, 4 cols desktop, 16px gap */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4">
           {products.map((product, idx) => (
             <FeaturedCollectionGridCard
               key={product.id || idx}
