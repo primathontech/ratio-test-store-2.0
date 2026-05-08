@@ -286,6 +286,12 @@
     "collection_page": {
       "filter_title": "Filter",
       "sort_dropdown_button_text": "Sort by"
+    },
+    "deleteAccount": {
+      "heading": "Delete Your Account",
+      "description": "Deleting your account will permanently remove your personal data, app activity, and any associated information. This action cannot be undone. To proceed, please verify your identity by entering your registered email address or phone number below. We'll send you a confirmation link or code to complete your account deletion request.",
+      "submitLabel": "Send",
+      "successMessage": "Thanks for contacting us. We'll get back to you as soon as possible."
     }
   }
 }

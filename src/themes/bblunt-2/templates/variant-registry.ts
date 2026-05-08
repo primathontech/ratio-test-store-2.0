@@ -37,6 +37,9 @@ export const variantRegistry = {
   [TEMPLATE_TYPES["privacy-policy"]]: {
     default: () => import("./privacy-policy/default").then((m) => m.template),
   },
+  [TEMPLATE_TYPES["return-policy"]]: {
+    default: () => import("./return-policy/default").then((m) => m.template),
+  },
   [TEMPLATE_TYPES.account]: {
     default: () => import("./account/default").then((m) => m.template),
   },

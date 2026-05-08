@@ -172,5 +172,18 @@ export const themeRegistry = {
         },
       },
     },
+
+    [TEMPLATE_TYPES["return-policy"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/return-policy/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/return-policy",
+        routeContext: {
+          templateName: "return-policy",
+          path: "/pages/return-policy",
+          params: {},
+          query: {},
+        },
+      },
+    },
   },
 };

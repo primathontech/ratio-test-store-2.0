@@ -133,13 +133,10 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.DeleteAccount,
           settings: {
             variant: "v1",
-            heading: "t:bblunt-2_privacy-policy_default.deleteAccount.heading",
-            description:
-              "t:bblunt-2_privacy-policy_default.deleteAccount.description",
-            submitLabel:
-              "t:bblunt-2_privacy-policy_default.deleteAccount.submitLabel",
-            successMessage:
-              "t:bblunt-2_privacy-policy_default.deleteAccount.successMessage",
+            heading: "t:common.deleteAccount.heading",
+            description: "t:common.deleteAccount.description",
+            submitLabel: "t:common.deleteAccount.submitLabel",
+            successMessage: "t:common.deleteAccount.successMessage",
           },
         },
       ],

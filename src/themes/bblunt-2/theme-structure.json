@@ -223,6 +223,25 @@
           }
         }
       ]
+    },
+    {
+      "name": "Return Policy",
+      "templates": [
+        {
+          "id": "bblunt-2_return-policy_default",
+          "name": "Return Policy (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "return-policy",
+            "path": "/pages/return-policy",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
     }
   ]
 }
