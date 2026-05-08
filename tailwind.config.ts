@@ -10,6 +10,7 @@ const config: Config = {
     "./src/ui/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/theme/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/integrations/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/themes/**/locales/**/*.json",
   ],
   theme: {
     extend: {

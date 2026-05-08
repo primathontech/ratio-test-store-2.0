@@ -34,6 +34,9 @@ export const variantRegistry = {
   [TEMPLATE_TYPES["about-us"]]: {
     default: () => import("./about-us/default").then((m) => m.template),
   },
+  [TEMPLATE_TYPES["privacy-policy"]]: {
+    default: () => import("./privacy-policy/default").then((m) => m.template),
+  },
   [TEMPLATE_TYPES.account]: {
     default: () => import("./account/default").then((m) => m.template),
   },

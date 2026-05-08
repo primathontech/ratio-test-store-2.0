@@ -118,12 +118,12 @@
           "supportedLanguages": ["en"],
           "routeContext": {
             "templateName": "collection-b",
-            "path": "/collections-b/shampoo",
+            "path": "/collections-b/colour-bundles",
             "params": {
-              "handle": "shampoo"
+              "handle": "colour-bundles"
             },
             "query": {},
-            "collectionHandle": "shampoo",
+            "collectionHandle": "colour-bundles",
             "fetchAPITemplate": true
           }
         }
@@ -198,6 +198,25 @@
           "routeContext": {
             "templateName": "about-us",
             "path": "/pages/about-us",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Privacy Policy",
+      "templates": [
+        {
+          "id": "bblunt-2_privacy-policy_default",
+          "name": "Privacy Policy (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "privacy-policy",
+            "path": "/pages/privacy-policy",
             "params": {},
             "query": {},
             "fetchAPITemplate": true

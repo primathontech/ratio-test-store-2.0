@@ -444,6 +444,34 @@ const merchantWidgetSchemas = {
       },
     },
   },
+  [WIDGET_TYPES.DeleteAccount]: {
+    type: WIDGET_TYPES.DeleteAccount,
+    name: "Delete Account",
+    description:
+      "Account deletion request form with heading, description, submit button, and success message",
+    settingsSchema: {
+      heading: {
+        type: "text" as const,
+        label: "Heading",
+        default: "",
+      },
+      description: {
+        type: "richtext" as const,
+        label: "Description",
+        default: "",
+      },
+      submitLabel: {
+        type: "text" as const,
+        label: "Submit Button Label",
+        default: "",
+      },
+      successMessage: {
+        type: "text" as const,
+        label: "Success Message",
+        default: "",
+      },
+    },
+  },
   [WIDGET_TYPES.ShineAcademyBanner]: {
     type: WIDGET_TYPES.ShineAcademyBanner,
     name: "Shine Academy Banner",
@@ -885,19 +913,6 @@ const merchantWidgetSchemas = {
         type: "text",
         label: "Collection Title (override)",
         default: "",
-      },
-    },
-  },
-  [WIDGET_TYPES.AdditionalInformation]: {
-    type: WIDGET_TYPES.AdditionalInformation,
-    name: "Collection Additional Information",
-    description:
-      "Accordion widget displaying collection description with a configurable title.",
-    settingsSchema: {
-      title: {
-        type: "text",
-        label: "Title",
-        default: "Additional Information",
       },
     },
   },
