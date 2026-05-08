@@ -2,6 +2,7 @@
 
 import React, { memo, useCallback, useEffect, useRef } from "react";
 import Image from "next/image";
+import { usePathname } from "next/navigation";
 import { TestimonialsProps, TestimonialItem } from "../types";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
 
@@ -48,13 +49,15 @@ const StarRating = ({
   count,
   starColor,
   starEmptyColor,
+  paddingTopClass,
 }: {
   count: number;
   starColor: string;
   starEmptyColor: string;
+  paddingTopClass: string;
 }) => (
   <div
-    className="flex gap-[7px] min-h-[55px]"
+    className={`flex gap-[7px] min-h-[55px] ${paddingTopClass}`.trim()}
     role="img"
     aria-label={`${count} out of 5 stars`}
   >
@@ -118,11 +121,15 @@ const TestimonialCard = memo(function TestimonialCard({
   cardBackground,
   starColor,
   starEmptyColor,
+  cardMinHeightClass,
+  starPaddingTopClass,
 }: {
   item: TestimonialItem;
   cardBackground: string;
   starColor: string;
   starEmptyColor: string;
+  cardMinHeightClass: string;
+  starPaddingTopClass: string;
 }) {
   return (
     <div className="relative w-full h-full">
@@ -130,7 +137,7 @@ const TestimonialCard = memo(function TestimonialCard({
       <div className="relative">
         {/* Dark card body */}
         <div
-          className="relative w-full pl-[1.6rem] md:pl-[2.4rem] pt-[1.6rem] md:pt-[2.4rem] pr-[1.6rem] md:pr-[2.4rem] rounded rounded-bl-none min-h-[217px]"
+          className={`relative w-full px-6 pt-6 rounded rounded-bl-none ${cardMinHeightClass}`.trim()}
           style={{ backgroundColor: cardBackground }}
         >
           {/* Title */}
@@ -139,7 +146,7 @@ const TestimonialCard = memo(function TestimonialCard({
           </h4>
 
           {/* Description */}
-          <p className="text-sm md:text-sm leading-[22.5px] font-normal mb-5 md:mb-[2.6rem] text-secondary m-0">
+          <p className="text-sm md:text-sm leading-[22.5px] font-normal mb-5 md:mb-[26px] text-secondary m-0">
             {item.reviewText}
           </p>
 
@@ -149,6 +156,7 @@ const TestimonialCard = memo(function TestimonialCard({
               count={item.stars}
               starColor={starColor}
               starEmptyColor={starEmptyColor}
+              paddingTopClass={starPaddingTopClass}
             />
           </div>
 
@@ -220,11 +228,20 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
           cardBackground={cardBackground}
           starColor={starColor}
           starEmptyColor={starEmptyColor}
+          cardMinHeightClass={cardMinHeightClass}
+          starPaddingTopClass={starPaddingTopClass}
         />
       );
     },
     [testimonials, cardBackground, starColor, starEmptyColor]
   );
+
+  const pathname = usePathname();
+  const isCollectionPage = pathname?.startsWith("/collections/") ?? false;
+  const cardMinHeightClass = isCollectionPage
+    ? "min-h-[274px]"
+    : "min-h-[217px]";
+  const starPaddingTopClass = isCollectionPage ? "pt-[44px]" : "pt-[4px]";
 
   /* Scroll reveal animation */
   useEffect(() => {

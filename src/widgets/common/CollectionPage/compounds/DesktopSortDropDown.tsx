@@ -84,7 +84,9 @@ export const DesktopSortDropdown = ({
                   <label
                     key={option.id}
                     data-testid={`desktop-sort-dropdown-option-${option.id}`}
-                    className="flex items-center px-5 my-[13px] hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                    className={`flex items-center px-5 my-[13px] cursor-pointer transition-colors duration-150 ${
+                      isActiveSort ? "bg-[#F2F2F2]" : "hover:bg-gray-50"
+                    }`}
                   >
                     <div
                       data-testid={`desktop-sort-dropdown-option-content-${option.id}`}

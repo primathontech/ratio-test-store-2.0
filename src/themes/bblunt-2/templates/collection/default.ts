@@ -350,9 +350,9 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 20, right: 0, bottom: 60, left: 0 } },
-          tablet: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
       },
       widgets: [

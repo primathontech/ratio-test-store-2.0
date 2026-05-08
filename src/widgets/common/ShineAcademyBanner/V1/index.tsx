@@ -73,7 +73,7 @@ export const V1 = memo(function V1({ settings }: ShineAcademyBannerProps) {
         {/* Inner newsletter container -- max-width 1300px centered */}
         <div className="mx-auto max-w-[1300px] flex flex-col">
           {/* ---- Text column: logo + tagline ---- */}
-          <div className="sab-animate-on-scroll flex flex-col items-center justify-center px-[15px] md:px-10">
+          <div className="sab-animate-on-scroll flex flex-col items-center justify-center px-[15px] md:px-10 py-[30px] lg:py-10 xl:py-2.5">
             {/* Shine Academy logo */}
             <div className="relative w-[175px] h-[89.5px] md:w-[336px] md:h-[172px] xl:w-[336px] xl:h-[172.7px]">
               <Image
@@ -86,7 +86,7 @@ export const V1 = memo(function V1({ settings }: ShineAcademyBannerProps) {
             </div>
 
             {/* Tagline */}
-            <p className="text-xs md:text-2xl font-medium text-[#545454] text-center mb-[18px] md:mb-0 mt-[18px] md:mt-[18px] max-w-[700px] m-0 leading-[13px] md:leading-[26.4px] px-5 md:px-0">
+            <p className="text-xs md:text-2xl font-medium text-[#545454] text-center mb-[18px] md:mb-0 mt-[18px] md:mt-[26px] max-w-[700px] m-0 leading-[13px] md:leading-[26.4px] px-7 md:px-0">
               {tagline}
             </p>
           </div>
@@ -114,7 +114,7 @@ export const V1 = memo(function V1({ settings }: ShineAcademyBannerProps) {
                 alt={mosaicAlt}
                 width={2000}
                 height={800}
-                className="object-contain rounded-tl-[20px] rounded-tr-[20px] md:rounded-tl-[20px] rounded-br-[20px] md:rounded-bl-[20px] w-full h-auto px-[15px] md:px-0"
+                className="object-contain rounded-tl-[20px] rounded-tr-[20px] md:rounded-tl-[20px] rounded-br-[20px] md:rounded-bl-[20px] w-full h-auto px-[30px] xl:px-0"
                 sizes="(min-width: 1440px) 1300px, (min-width: 1024px) 960px, 700px"
                 loading="lazy"
               />

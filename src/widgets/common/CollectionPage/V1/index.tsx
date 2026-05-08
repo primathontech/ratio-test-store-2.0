@@ -479,12 +479,12 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
     >
       <div
         data-testid="collection-page-content"
-        className="px-[15px] md:px-12 lg:px-20 xl:px-20 pb-[5.25rem] md:pb-24 lg:pb-28 xl3:px-0"
+        className="px-[15px] md:px-[30px] xl:px-20 pb-[5.25rem] md:pb-24 lg:pb-[130px] xl3:px-0"
       >
         {collection?.title && (
           <h1
             data-testid="collection-page-title"
-            className="text-left xl2:text-center text-primary leading-none text-xl md:text-[32px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
+            className="text-left xl2:text-center text-black leading-none text-[22px] md:text-[32px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
           >
             {collection.title}
           </h1>
@@ -508,7 +508,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
             className={`flex items-center gap-2 overflow-auto hide-scrollbar md:hidden transition-all duration-200 ${
               isFixed
                 ? "fixed top-[58px] left-0 right-0 z-[1200] bg-white shadow-md mb-0 py-2.5"
-                : "relative mb-[25px]"
+                : "relative mb-[16px]"
             }`}
           >
             <MobileFilterDropdown
@@ -606,12 +606,12 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
 
         <div
           data-testid="collection-page-main-layout"
-          className="flex gap-7 md:pt-[26px] xl2:pt-8"
+          className="flex gap-4 md:pt-[26px] xl2:pt-7"
         >
           {showFilterAndSort && (
             <aside
               data-testid="collection-page-desktop-sidebar"
-              className="md:flex-shrink-0 md:w-[calc(21%-(16px/2))] md:pr-3 hidden xl2:block"
+              className="md:flex-shrink-0 md:w-[calc(21%-(16px/2))] md:pr-3 hidden xl2:block max-w-[252px]"
             >
               <FilterSectionDesktop
                 filterTitle={filterTitle}
@@ -638,7 +638,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
             >
               <div
                 data-testid="collection-page-products-header"
-                className="flex justify-between items-center pb-[25px] lg:pb-8"
+                className="flex justify-between items-center pb-[25px] lg:pb-9 mt-[4px]"
               >
                 <p
                   data-testid="collection-page-products-count"
@@ -700,7 +700,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                         cartItem={cartLine}
                         isQuantityLoading={isCardLoading}
                         settings={{ showAddToCartToast: true }}
-                        className="md:border md:rounded-lg md:border-[#DDD]"
+                        className="md:border md:!rounded-lg !border-white md:border-[#EBEBEB]"
                       />
                     </div>
                   );
