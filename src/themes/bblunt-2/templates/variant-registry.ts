@@ -40,6 +40,10 @@ export const variantRegistry = {
   [TEMPLATE_TYPES["return-policy"]]: {
     default: () => import("./return-policy/default").then((m) => m.template),
   },
+  [TEMPLATE_TYPES["terms-and-conditions"]]: {
+    default: () =>
+      import("./terms-and-conditions/default").then((m) => m.template),
+  },
   [TEMPLATE_TYPES.account]: {
     default: () => import("./account/default").then((m) => m.template),
   },

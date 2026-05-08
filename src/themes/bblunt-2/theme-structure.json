@@ -242,6 +242,25 @@
           }
         }
       ]
+    },
+    {
+      "name": "Terms And Conditions",
+      "templates": [
+        {
+          "id": "bblunt-2_terms-and-conditions_default",
+          "name": "Terms And Conditions (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "terms-and-conditions",
+            "path": "/pages/terms-and-conditions",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
     }
   ]
 }
