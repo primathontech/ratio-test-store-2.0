@@ -4,7 +4,8 @@
     "site_name": "bblunt-2",
     "product_card": {
       "add_to_cart": "Add to cart",
-      "sold_out": "View"
+      "sold_out": "View",
+      "sold_out_in_pdp": "Sold Out"
     },
     "header": {
       "logoSrc": "/Header/images/logo.png",

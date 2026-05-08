@@ -52,12 +52,12 @@
           "supportedLanguages": ["en"],
           "routeContext": {
             "templateName": "products",
-            "path": "/products/sample-product",
+            "path": "/products/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
             "params": {
-              "handle": "sample-product"
+              "handle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32"
             },
             "query": {},
-            "productHandle": "sample-product",
+            "productHandle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
             "fetchAPITemplate": true
           }
         }
@@ -74,12 +74,12 @@
           "supportedLanguages": ["en"],
           "routeContext": {
             "templateName": "products-b",
-            "path": "/products-b/sample-product",
+            "path": "/products-b/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
             "params": {
-              "handle": "sample-product"
+              "handle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32"
             },
             "query": {},
-            "productHandle": "sample-product",
+            "productHandle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
             "fetchAPITemplate": true
           }
         }
@@ -96,12 +96,12 @@
           "supportedLanguages": ["en"],
           "routeContext": {
             "templateName": "collection",
-            "path": "/collections/sample",
+            "path": "/collections/shampoo",
             "params": {
-              "handle": "sample"
+              "handle": "shampoo"
             },
             "query": {},
-            "collectionHandle": "sample",
+            "collectionHandle": "shampoo",
             "fetchAPITemplate": true
           }
         }
@@ -118,12 +118,12 @@
           "supportedLanguages": ["en"],
           "routeContext": {
             "templateName": "collection-b",
-            "path": "/collections-b/sample",
+            "path": "/collections-b/shampoo",
             "params": {
-              "handle": "sample"
+              "handle": "shampoo"
             },
             "query": {},
-            "collectionHandle": "sample",
+            "collectionHandle": "shampoo",
             "fetchAPITemplate": true
           }
         }

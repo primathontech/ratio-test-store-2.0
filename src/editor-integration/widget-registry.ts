@@ -208,6 +208,193 @@ const merchantWidgetSchemas = {
       },
     },
   },
+  [WIDGET_TYPES.ProductDetail]: {
+    type: WIDGET_TYPES.ProductDetail,
+    name: "Product Detail",
+    description:
+      "Product detail page hero (gallery + price + variants + ATC). Color/visual settings remain template-only.",
+    settingsSchema: {
+      // Coupon marquee
+      showProductMarquee: {
+        type: "boolean" as const,
+        label: "Show Coupon Marquee",
+        default: false,
+      },
+      productMarqueeText: {
+        type: "text" as const,
+        label: "Marquee Text",
+        default: "",
+      },
+      productMarqueeCouponCode: {
+        type: "text" as const,
+        label: "Marquee Coupon Code",
+        default: "",
+      },
+      productMarqueeSpeed: {
+        type: "text" as const,
+        label: "Marquee Speed (e.g. 8s)",
+        default: "",
+      },
+      productMarqueeHref: {
+        type: "text" as const,
+        label: "Marquee Link",
+        default: "",
+      },
+      // Right column copy
+      netContentText: {
+        type: "text" as const,
+        label: "Net Content Label",
+        default: "",
+      },
+      inclusiveOfAllTaxesText: {
+        type: "text" as const,
+        label: "Tax Note",
+        default: "",
+      },
+      reviewsText: {
+        type: "text" as const,
+        label: "Reviews Suffix",
+        default: "",
+      },
+      mrp: { type: "text" as const, label: "MRP Label", default: "" },
+      usp: { type: "text" as const, label: "USP Label", default: "" },
+      discount: {
+        type: "text" as const,
+        label: "Discount Suffix",
+        default: "",
+      },
+      selectSizeText: {
+        type: "text" as const,
+        label: "Select Size Heading",
+        default: "",
+      },
+      rupeeSymbol: {
+        type: "text" as const,
+        label: "Currency Symbol",
+        default: "",
+      },
+      addToCartText: {
+        type: "text" as const,
+        label: "Add to Cart Text",
+        default: "",
+      },
+      soldOutText: {
+        type: "text" as const,
+        label: "Sold Out Text",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.ReasonsToLove]: {
+    type: WIDGET_TYPES.ReasonsToLove,
+    name: "Reasons to Love",
+    description: "Product reasons-to-love section (data-driven from API)",
+    settingsSchema: {
+      sectionTitle: {
+        type: "text" as const,
+        label: "Section Title",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.ProductTabs]: {
+    type: WIDGET_TYPES.ProductTabs,
+    name: "Product Tabs",
+    description: "Accordion-style product info tabs (data-driven from API)",
+    settingsSchema: {},
+  },
+  [WIDGET_TYPES.ProductFAQ]: {
+    type: WIDGET_TYPES.ProductFAQ,
+    name: "Product FAQ",
+    description: "Accordion FAQ section for the product",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Section Title",
+        default: "",
+      },
+      defaultExpanded: {
+        type: "boolean" as const,
+        label: "Default Expanded",
+        default: true,
+      },
+    },
+  },
+  [WIDGET_TYPES.CustomerReviews]: {
+    type: WIDGET_TYPES.CustomerReviews,
+    name: "Customer Reviews",
+    description: "Customer reviews block with form and review list",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Section Title",
+        default: "",
+      },
+      writeReviewButtonText: {
+        type: "text" as const,
+        label: "Write Review Button Text",
+        default: "",
+      },
+      cancelReviewButtonText: {
+        type: "text" as const,
+        label: "Cancel Review Button Text",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.RecentlyViewed]: {
+    type: WIDGET_TYPES.RecentlyViewed,
+    name: "Recently Viewed",
+    description:
+      "Recently-viewed product carousel (cards & colors stay template-only)",
+    settingsSchema: {
+      heading: {
+        type: "text" as const,
+        label: "Section Heading",
+        default: "",
+      },
+      actionButtonText: {
+        type: "text" as const,
+        label: "Add to Cart Text (desktop)",
+        default: "",
+      },
+      soldOutText: {
+        type: "text" as const,
+        label: "Sold Out Text (desktop)",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.AdditionalInformation]: {
+    type: WIDGET_TYPES.AdditionalInformation,
+    name: "Additional Information",
+    description: "Manufacturer / origin / care details accordion",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Section Title",
+        default: "",
+      },
+      defaultExpanded: {
+        type: "boolean" as const,
+        label: "Default Expanded",
+        default: false,
+      },
+    },
+  },
+  [WIDGET_TYPES.ProductDisclaimer]: {
+    type: WIDGET_TYPES.ProductDisclaimer,
+    name: "Product Disclaimer",
+    description: "Product safety / disclaimer block",
+    settingsSchema: {
+      sectionTitle: {
+        type: "text" as const,
+        label: "Section Title",
+        default: "",
+      },
+    },
+  },
+
   [WIDGET_TYPES.AboutUsHero]: {
     type: WIDGET_TYPES.AboutUsHero,
     name: "About Us Hero",

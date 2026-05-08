@@ -1,5 +1,6 @@
 "use client";
 
+import { useResponsive } from "@/hooks/useResponsive";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -127,19 +128,23 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
   productLabel,
   children,
 }) => {
-  const [isMobile, setIsMobile] = useState(false);
+  // Source mobile flag from the shared hook — its `<768` threshold matches
+  // MOBILE_BREAKPOINT exactly, so this is a semantically lossless swap.
+  const { isMobile } = useResponsive();
   const [containerWidth, setContainerWidth] = useState(MIN_MOBILE_IMAGE_SIZE);
   const videoRefs = useRef<{ [key: string | number]: HTMLVideoElement | null }>(
     {}
   );
 
+  // Container width still needs pixel-perfect viewport measurement (used as
+  // image/video size on mobile). The hook only buckets — keep the dedicated
+  // resize listener for this value.
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
     const handleResize = () => {
       const width = window.innerWidth;
-      setIsMobile(width < MOBILE_BREAKPOINT);
       if (width < MOBILE_BREAKPOINT) {
         setContainerWidth(
           Math.max(MIN_MOBILE_IMAGE_SIZE, width - MOBILE_HORIZONTAL_PADDING)

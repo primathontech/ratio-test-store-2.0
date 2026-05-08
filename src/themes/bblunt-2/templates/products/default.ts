@@ -120,24 +120,34 @@ export const template: PageConfig = {
             variant: "v1",
 
             // Coupon marquee (between price block and variant picker)
-            showProductMarquee: false,
-            productMarqueeText: "Shop for ₹499 & Get 2 Bestsellers Free",
-            productMarqueeCouponCode: "FREEHF",
-            productMarqueeSpeed: "8s",
+            showProductMarquee:
+              "t:bblunt-2_products_default.product_detail.showProductMarquee",
+            productMarqueeText:
+              "t:bblunt-2_products_default.product_detail.productMarqueeText",
+            productMarqueeCouponCode:
+              "t:bblunt-2_products_default.product_detail.productMarqueeCouponCode",
+            productMarqueeSpeed:
+              "t:bblunt-2_products_default.product_detail.productMarqueeSpeed",
             productMarqueeHref:
-              "https://bblunt.com/pages/shine-squad-weekly-offer",
+              "t:bblunt-2_products_default.product_detail.productMarqueeHref",
 
-            // Right-column copy
-            netContentText: "Net content",
-            inclusiveOfAllTaxesText: "Incl. of all taxes",
-            reviewsText: "reviews",
-            mrp: "M.R.P.",
-            usp: "USP",
-            discount: "% off",
-            selectSizeText: "Select size",
-            soldOutText: "Sold out",
-            rupeeSymbol: "₹",
-            addToCartText: "Add to cart",
+            // Right-column copy (from translations)
+            netContentText:
+              "t:bblunt-2_products_default.product_detail.netContentText",
+            inclusiveOfAllTaxesText:
+              "t:bblunt-2_products_default.product_detail.inclusiveOfAllTaxesText",
+            reviewsText:
+              "t:bblunt-2_products_default.product_detail.reviewsText",
+            mrp: "t:bblunt-2_products_default.product_detail.mrp",
+            usp: "t:bblunt-2_products_default.product_detail.usp",
+            discount: "t:bblunt-2_products_default.product_detail.discount",
+            selectSizeText:
+              "t:bblunt-2_products_default.product_detail.selectSizeText",
+            rupeeSymbol:
+              "t:bblunt-2_products_default.product_detail.rupeeSymbol",
+            // Add-to-cart and sold-out shared across product widgets
+            addToCartText: "t:common.product_card.add_to_cart",
+            soldOutText: "t:common.product_card.sold_out_in_pdp",
 
             productGallery: {
               variant: "v1",
@@ -206,6 +216,8 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
+            sectionTitle:
+              "t:bblunt-2_products_default.reasons_to_love.section_title",
           },
         },
       ],
@@ -258,8 +270,9 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            title: "Product FAQs",
-            defaultExpanded: true,
+            title: "t:bblunt-2_products_default.product_faq.title",
+            defaultExpanded:
+              "t:bblunt-2_products_default.product_faq.defaultExpanded",
           },
         },
       ],
@@ -286,7 +299,11 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            title: "Customer Reviews",
+            title: "t:bblunt-2_products_default.customer_reviews.title",
+            writeReviewButtonText:
+              "t:bblunt-2_products_default.customer_reviews.writeReviewButtonText",
+            cancelReviewButtonText:
+              "t:bblunt-2_products_default.customer_reviews.cancelReviewButtonText",
           },
         },
       ],
@@ -313,19 +330,9 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            heading: "Recently Viewed",
-            maxProducts: 10,
-            showActionButton: true,
-            actionButtonText: "Add to cart",
-            actionButtonTextMobile: "Add",
-            actionButtonTextColor: "#ffffff",
-            showBadge: true,
-            showRating: true,
-            soldOutText: "Sold Out",
-            soldOutTextMobile: "Sold",
-            productCardBackgroundColor: "#ffffff",
-            sectionBackgroundColor: "#ffffff",
-            sectionTextColor: "#1d1d1d",
+            heading: "t:bblunt-2_products_default.recently_viewed.heading",
+            actionButtonText: "t:common.product_card.add_to_cart",
+            soldOutText: "t:common.product_card.sold_out",
           },
         },
       ],
@@ -352,8 +359,9 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            title: "Additional Information",
-            defaultExpanded: false,
+            title: "t:bblunt-2_products_default.additional_information.title",
+            defaultExpanded:
+              "t:bblunt-2_products_default.additional_information.defaultExpanded",
           },
         },
       ],
@@ -380,7 +388,8 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            sectionTitle: "Disclaimer",
+            sectionTitle:
+              "t:bblunt-2_products_default.product_disclaimer.sectionTitle",
           },
         },
       ],
@@ -483,8 +492,7 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            buttonText: "Add to cart",
-            cartHref: "/cart",
+            buttonText: "t:common.product_card.add_to_cart",
           },
         },
       ],

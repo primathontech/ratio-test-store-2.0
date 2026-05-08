@@ -47,10 +47,14 @@ export const themeRegistry = {
         translationsPath: "/themes/bblunt-2/locales/pages/products",
         routeContext: {
           templateName: "products",
-          path: "/products/sample-product",
-          params: { handle: "sample-product" },
+          path: "/products/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
+          params: {
+            handle:
+              "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
+          },
           query: {},
-          productHandle: "sample-product",
+          productHandle:
+            "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
         },
       },
     },
@@ -61,10 +65,14 @@ export const themeRegistry = {
         translationsPath: "/themes/bblunt-2/locales/pages/products-b",
         routeContext: {
           templateName: "products-b",
-          path: "/products-b/sample-product",
-          params: { handle: "sample-product" },
+          path: "/products-b/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
+          params: {
+            handle:
+              "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
+          },
           query: {},
-          productHandle: "sample-product",
+          productHandle:
+            "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
         },
       },
     },
@@ -75,10 +83,10 @@ export const themeRegistry = {
         translationsPath: "/themes/bblunt-2/locales/pages/collections",
         routeContext: {
           templateName: "collection",
-          path: "/collections/sample",
-          params: { handle: "sample" },
+          path: "/collections/shampoo",
+          params: { handle: "shampoo" },
           query: {},
-          collectionHandle: "sample",
+          collectionHandle: "shampoo",
         },
       },
     },
@@ -89,10 +97,10 @@ export const themeRegistry = {
         translationsPath: "/themes/bblunt-2/locales/pages/collections-b",
         routeContext: {
           templateName: "collection-b",
-          path: "/collections-b/sample",
-          params: { handle: "sample" },
+          path: "/collections-b/shampoo",
+          params: { handle: "shampoo" },
           query: {},
-          collectionHandle: "sample",
+          collectionHandle: "shampoo",
         },
       },
     },
