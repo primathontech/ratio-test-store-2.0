@@ -395,6 +395,103 @@ const merchantWidgetSchemas = {
     },
   },
 
+  [WIDGET_TYPES.HeroBanner]: {
+    type: WIDGET_TYPES.HeroBanner,
+    name: "Hero Banner",
+    description: "Static hero image banner (desktop + mobile variants)",
+    settingsSchema: {
+      desktopImage: {
+        type: "image" as const,
+        label: "Desktop Image",
+        default: "",
+      },
+      mobileImage: {
+        type: "image" as const,
+        label: "Mobile Image",
+        default: "",
+      },
+      alt: { type: "text" as const, label: "Image Alt Text", default: "" },
+      href: {
+        type: "text" as const,
+        label: "Link URL (optional)",
+        default: "",
+      },
+      mobileAspectRatio: {
+        type: "text" as const,
+        label: "Mobile Aspect Ratio (e.g. 1/1)",
+        default: "",
+      },
+      desktopAspectRatio: {
+        type: "text" as const,
+        label: "Desktop Aspect Ratio (e.g. 1440/529)",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.HowItWorksBanner]: {
+    type: WIDGET_TYPES.HowItWorksBanner,
+    name: "How It Works Banner",
+    description: "Static how-it-works image banner (desktop + mobile)",
+    settingsSchema: {
+      mobileAspectRatio: {
+        type: "text" as const,
+        label: "Mobile Aspect Ratio (e.g. 1500/1167)",
+        default: "",
+      },
+      desktopAspectRatio: {
+        type: "text" as const,
+        label: "Desktop Aspect Ratio (e.g. 5692/692)",
+        default: "",
+      },
+      desktopImage: {
+        type: "image" as const,
+        label: "Desktop Image",
+        default: "",
+      },
+      mobileImage: {
+        type: "image" as const,
+        label: "Mobile Image",
+        default: "",
+      },
+      alt: { type: "text" as const, label: "Image Alt Text", default: "" },
+    },
+  },
+  [WIDGET_TYPES.CountdownTimer]: {
+    type: WIDGET_TYPES.CountdownTimer,
+    name: "Countdown Timer",
+    description: "Standalone countdown to a target date",
+    settingsSchema: {
+      targetDate: {
+        type: "text" as const,
+        label: "Target Date (e.g. Apr 12, 2026 00:00:00)",
+        default: "",
+      },
+      heading: { type: "text" as const, label: "Heading", default: "" },
+      subheading: { type: "text" as const, label: "Subheading", default: "" },
+      expiredText: {
+        type: "text" as const,
+        label: "Expired Text",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.FeaturedCollectionGrid]: {
+    type: WIDGET_TYPES.FeaturedCollectionGrid,
+    name: "Featured Collection Grid",
+    description: "Product grid for a single collection handle",
+    settingsSchema: {
+      categoryTitle: {
+        type: "text" as const,
+        label: "Category Title",
+        default: "",
+      },
+      collectionHandle: {
+        type: "text" as const,
+        label: "Collection Handle",
+        default: "",
+      },
+    },
+  },
   [WIDGET_TYPES.AboutUsHero]: {
     type: WIDGET_TYPES.AboutUsHero,
     name: "About Us Hero",
