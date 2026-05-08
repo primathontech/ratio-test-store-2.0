@@ -700,7 +700,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                         cartItem={cartLine}
                         isQuantityLoading={isCardLoading}
                         settings={{ showAddToCartToast: true }}
-                        className="md:border md:!rounded-lg !border-white md:border-[#EBEBEB]"
+                        className="md:border md:!rounded-lg !border-white md:!border-[#EBEBEB] !pl-0"
                       />
                     </div>
                   );

@@ -3,7 +3,6 @@
 import React, { memo, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useCartStore } from "@shopkit/cart";
 import { ProductCardTheme } from "./types";
 import type { ProductCardProps } from "./types";
@@ -247,8 +246,6 @@ export const ProductCard = memo(function ProductCard({
   const [showToast, setShowToast] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const isCartOpen = useCartStore((s) => s.isOpen);
-  const pathname = usePathname();
-  const isHomePage = pathname === "/";
   const t = theme === ProductCardTheme.DARK ? DARK_THEME : LIGHT_THEME;
   const {
     showBadge = true,
@@ -317,7 +314,7 @@ export const ProductCard = memo(function ProductCard({
       className={`block ${searchProductCard ? "" : "h-full"} ${linkClassName}`.trim()}
     >
       <div
-        className={`flex flex-col ${searchProductCard ? "h-auto !pl-0" : `h-full ${isHomePage ? "pl-[10px]" : ""}`} ${className}`.trim()}
+        className={`flex flex-col ${searchProductCard ? "h-auto !pl-0" : "h-full pl-[10px]"} ${className}`.trim()}
         style={{
           backgroundColor: cardBg,
           borderRadius: t.cardRadius,
