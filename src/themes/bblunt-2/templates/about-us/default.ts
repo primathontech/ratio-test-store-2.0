@@ -107,12 +107,9 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.AboutUsHero,
           settings: {
             variant: "v1",
-            imageSrc:
-              "https://cdn.shopify.com/s/files/1/0616/4994/4654/files/About-us.jpg?v=1729494426",
-            imageAlt: "About Us Banner",
-            href: "/products",
-            imageWidth: 1522,
-            imageHeight: 476,
+            imageSrc: "t:bblunt-2_about-us_default.hero.imageSrc",
+            imageAlt: "t:bblunt-2_about-us_default.hero.imageAlt",
+            href: "t:bblunt-2_about-us_default.hero.href",
           },
         },
       ],
@@ -138,8 +135,7 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.AboutUsStory,
           settings: {
             variant: "v1",
-            textColor: "#1d1d1d",
-            dividerColor: "#000000",
+            blocks: "t:bblunt-2_about-us_default.story.blocks",
           },
         },
       ],
@@ -165,8 +161,7 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.AboutUsValues,
           settings: {
             variant: "v1",
-            headingColor: "#1d1d1d",
-            bodyColor: "#4a4a4a",
+            items: "t:bblunt-2_about-us_default.values.items",
           },
         },
       ],

@@ -208,6 +208,55 @@ const merchantWidgetSchemas = {
       },
     },
   },
+  [WIDGET_TYPES.AboutUsHero]: {
+    type: WIDGET_TYPES.AboutUsHero,
+    name: "About Us Hero",
+    description: "Hero banner image for the About Us page",
+    settingsSchema: {
+      imageSrc: {
+        type: "image" as const,
+        label: "Banner Image",
+        default: "",
+      },
+      imageAlt: {
+        type: "text" as const,
+        label: "Image Alt Text",
+        default: "",
+      },
+      href: {
+        type: "text" as const,
+        label: "Link Destination",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.AboutUsStory]: {
+    type: WIDGET_TYPES.AboutUsStory,
+    name: "About Us Story",
+    description: "Story section with heading + body content blocks",
+    settingsSchema: {
+      blocks: {
+        type: "objectArray" as const,
+        label: "Content Blocks",
+        fields: ["heading", "body"],
+        default: [],
+      },
+    },
+  },
+  [WIDGET_TYPES.AboutUsValues]: {
+    type: WIDGET_TYPES.AboutUsValues,
+    name: "About Us Values",
+    description: "Two-column icon grid with brand value items",
+    settingsSchema: {
+      items: {
+        type: "objectArray" as const,
+        label: "Value Items",
+        fields: ["iconSrc", "iconAlt", "heading", "body"],
+        fieldTypes: { iconSrc: "image" },
+        default: [],
+      },
+    },
+  },
   [WIDGET_TYPES.ShineAcademyBanner]: {
     type: WIDGET_TYPES.ShineAcademyBanner,
     name: "Shine Academy Banner",

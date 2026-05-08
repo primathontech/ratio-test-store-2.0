@@ -142,7 +142,7 @@ export const themeRegistry = {
     [TEMPLATE_TYPES["about-us"]]: {
       default: {
         templatePath: "/themes/bblunt-2/templates/about-us/default.ts",
-        translationsPath: "/themes/bblunt-2/locales/pages/about-us/en.json",
+        translationsPath: "/themes/bblunt-2/locales/pages/about-us",
         routeContext: {
           templateName: "about-us",
           path: "/pages/about-us",

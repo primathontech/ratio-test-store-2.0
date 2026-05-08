@@ -1,1 +1,45 @@
-{}
+{
+  "bblunt-2_about-us_default": {
+    "hero": {
+      "imageSrc": "https://cdn.shopify.com/s/files/1/0616/4994/4654/files/About-us.jpg?v=1729494426",
+      "imageAlt": "About Us Banner",
+      "href": "/products"
+    },
+    "story": {
+      "blocks": [
+        {
+          "heading": "Salon-Like Experience At Home",
+          "body": "With over 1 million haircuts and over 100 years behind the salon chair, we understand Indian hair and its needs like no one. else. With BBLUNT products crafted by expertise, you get a salon-like experience at home!"
+        },
+        {
+          "heading": "Specially Created For Indian Hair",
+          "body": "Hard water is laden with a high mineral content that causes damage, hair fall, and dullness. BBLUNT’s range of hair care is specially created to protect Indian hair. We’ve developed a range that rejuvenates your hair and defends it against hard water and pollution. Our products leave your hair soft, shiny, and manageable!"
+        },
+        {
+          "heading": "Years Of Experience & Expertise",
+          "body": "Founded back in the early 90s, we understand Indian trends, colours, styles, and fashion like no one else. With years of experience and expertise with anything and everything to do with hair, we believe that copy-pasting is just not an option. Deeply inspired by people who love to express their personality through their hair and are not afraid to experiment, we at BBLUNT continue to be the trendsetters."
+        },
+        {
+          "heading": "Trusted by Bollywood",
+          "body": "With being a part of the Bollywood journey for over a decade, we have been the trendsetter for many Bollywood celebrities and fashionistas. We have also delivered some career-defining looks that have shaped some of the nation’s most loved on-screen characters."
+        }
+      ]
+    },
+    "values": {
+      "items": [
+        {
+          "iconSrc": "/AboutUsValues/images/about-us-1.svg",
+          "iconAlt": "Designed for Indian Hair",
+          "heading": "Designed for Indian Hair",
+          "body": "Indian water, pollution, and the environment can be hard on hair. But we work harder to protect Indian hair."
+        },
+        {
+          "iconSrc": "/AboutUsValues/images/about-us-2.svg",
+          "iconAlt": "Cruelty-free",
+          "heading": "Cruelty-free",
+          "body": "25 million+ animals are used for testing and research. Not a single one by us."
+        }
+      ]
+    }
+  }
+}
