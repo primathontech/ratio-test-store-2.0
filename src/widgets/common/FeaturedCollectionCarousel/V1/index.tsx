@@ -253,6 +253,7 @@ const FeaturedCarouselCard = memo(function FeaturedCarouselCard({
       isInCart={isInCart}
       cartItem={cartLine}
       isQuantityLoading={isQuantityLoading}
+      className="pl-[12px] min-[992px]:pl-0"
     />
   );
 });

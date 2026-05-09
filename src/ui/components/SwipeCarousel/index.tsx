@@ -49,20 +49,15 @@ export interface SwipeCarouselProps {
 /* ------------------------------------------------------------------ */
 
 /**
- * Map the useResponsive hook's 3-bucket flags onto the carousel's
- * breakpoint list:
- *   isMobile  → first (smallest) breakpoint — typical mobile layout
- *   isTablet  → largest breakpoint with minWidth < 1024 — the 768 bucket if present
- *   otherwise (isDesktop) → last (largest) breakpoint — desktop layout
- *
- * The hook's tablet bucket (768–1149) and desktop bucket (≥1150) are coarser
- * than carousel breakpoint lists that include both 1024 and 1440 thresholds;
- * sub-ranges that fall inside a hook bucket all map to the same carousel
- * entry by design.
+ * Map the useResponsive hook's flags onto the carousel's breakpoint list:
+ *   isMobile     → smallest minWidth (mobile bucket, <768)
+ *   isTabletWide → largest bp with minWidth < 1150 (the 992 bucket, 992–1149)
+ *   isTablet     → largest bp with minWidth < 992 (the 768 bucket, 768–991)
+ *   isDesktop    → largest bp overall (≥1150)
  */
 function pickBreakpoint(
   breakpoints: CarouselBreakpoint[],
-  flags: { isMobile: boolean; isTablet: boolean }
+  flags: { isMobile: boolean; isTablet: boolean; isTabletWide: boolean }
 ): CarouselBreakpoint {
   if (breakpoints.length === 0) {
     return { minWidth: 0, cards: 1, gap: 0 };
@@ -73,12 +68,19 @@ function pickBreakpoint(
   if (flags.isMobile) {
     return sorted[0];
   }
-  if (flags.isTablet) {
-    // Largest bp with minWidth < 1024 — prefers a 768 bucket when present,
-    // falls back to the smallest entry if the carousel only has mobile +
-    // desktop tiers.
+  if (flags.isTabletWide) {
+    // Upper tablet (992–1149): largest bp with minWidth < 1150.
     for (let i = sorted.length - 1; i >= 0; i--) {
-      if (sorted[i].minWidth < 1024) {
+      if (sorted[i].minWidth < 1150) {
+        return sorted[i];
+      }
+    }
+    return sorted[0];
+  }
+  if (flags.isTablet) {
+    // Lower tablet (768–991): largest bp with minWidth < 992.
+    for (let i = sorted.length - 1; i >= 0; i--) {
+      if (sorted[i].minWidth < 992) {
         return sorted[i];
       }
     }
@@ -109,14 +111,10 @@ export const SwipeCarousel = memo(function SwipeCarousel({
   // Source of truth for breakpoint: the shared useResponsive hook.
   // The hook owns its own resize listener AND handles editor-preview
   // breakpoint switching — no `window.innerWidth` access here.
-  const { isMobile, isTablet } = useResponsive();
+  const { isMobile, isTablet, isTabletWide } = useResponsive();
 
   /* ---------- Resolve carousel breakpoint from flags ---------- */
-  // Map the hook's 3 buckets onto the breakpoints array:
-  //   isMobile  → smallest minWidth (mobile bucket)
-  //   isTablet  → largest bp with minWidth < 1024 (the 768 bucket when present)
-  //   isDesktop → largest bp (top of the scale)
-  const bp = pickBreakpoint(breakpoints, { isMobile, isTablet });
+  const bp = pickBreakpoint(breakpoints, { isMobile, isTablet, isTabletWide });
 
   useEffect(() => {
     setMounted(true);
@@ -146,12 +144,20 @@ export const SwipeCarousel = memo(function SwipeCarousel({
       const vw = viewportRef.current.offsetWidth;
       const cw = (vw - gapPx * (Math.floor(visibleCards) - 1)) / visibleCards;
       setCardWidth(cw);
-      setTransformPx(-(safeIndex * (cw + gapPx)));
+      const desired = -(safeIndex * (cw + gapPx));
+      // Clamp so the final position never overshoots — when itemCount minus
+      // visibleCards is fractional (e.g. 10 − 2.2 = 7.8), `maxIndex = ceil(7.8) = 8`
+      // would translate -8×cw and leave a 0.2-card empty gap on the right.
+      // Stop at -(totalContent − viewport) so the last card's right edge
+      // meets the viewport's right edge.
+      const totalContent = itemCount * cw + Math.max(0, itemCount - 1) * gapPx;
+      const maxScroll = Math.max(0, totalContent - vw);
+      setTransformPx(Math.max(desired, -maxScroll));
     };
     compute();
     window.addEventListener("resize", compute);
     return () => window.removeEventListener("resize", compute);
-  }, [safeIndex, visibleCards, gapPx]);
+  }, [safeIndex, visibleCards, gapPx, itemCount]);
 
   /* ---------- Prev / Next (scroll by full visible page) ---------- */
   const step = Math.max(1, Math.floor(visibleCards));
