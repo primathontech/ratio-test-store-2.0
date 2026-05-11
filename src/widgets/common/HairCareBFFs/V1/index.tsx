@@ -474,7 +474,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
         {/* Carousel area */}
         <div
-          className={`xl:mx-auto xl:max-w-[1300px] ${outerBorderClass} md:rounded-lg overflow-hidden`}
+          className={`xl:mx-auto xl:max-w-[1300px] ${outerBorderClass} md:rounded-lg`}
         >
           <SwipeCarousel
             itemCount={products.length}
@@ -486,22 +486,25 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
                 type="button"
                 onClick={onClick}
                 disabled={disabled}
-                className="absolute left-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
-                style={{
-                  top: "245px",
-                  transform: "translateY(-50%)",
-                  width: "46px",
-                  height: "46px",
-                  borderRadius: "9999px",
-                  backgroundColor: "transparent",
-                  border: "1px solid transparent",
-                  color: disabled ? "rgba(255,255,255,0.4)" : "#ffffff",
-                  opacity: disabled ? 0.4 : 1,
-                  transition: "all 0.2s",
-                }}
+                className={`absolute left-[-30px] top-1/2 -translate-y-1/2 z-[3] items-center justify-center cursor-pointer text-gray-700 hover:text-loading-blue transition-colors duration-300 ${
+                  disabled ? "hidden" : "hidden lg:flex"
+                }`}
                 aria-label="Previous products"
               >
                 <ChevronLeftIcon />
+              </button>
+            )}
+            renderNext={(onClick, disabled) => (
+              <button
+                type="button"
+                onClick={onClick}
+                disabled={disabled}
+                className={`absolute right-[-30px] top-1/2 -translate-y-1/2 z-[3] items-center justify-center cursor-pointer text-gray-700 hover:text-loading-blue transition-colors duration-300 ${
+                  disabled ? "hidden" : "hidden lg:flex"
+                }`}
+                aria-label="Next products"
+              >
+                <ChevronRightIcon />
               </button>
             )}
           />

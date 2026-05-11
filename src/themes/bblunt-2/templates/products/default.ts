@@ -493,6 +493,8 @@ export const template: PageConfig = {
           settings: {
             variant: "v1",
             buttonText: "t:common.product_card.add_to_cart",
+            inclusiveOfAllTaxesText:
+              "t:bblunt-2_products_default.product_detail.inclusiveOfAllTaxesText",
           },
         },
       ],
