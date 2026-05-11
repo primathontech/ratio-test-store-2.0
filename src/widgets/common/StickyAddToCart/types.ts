@@ -18,7 +18,7 @@ export interface StickyAddToCartSettings {
   /** Price string (e.g. "₹399") */
   price?: string;
   /** Tax note (e.g. "Incl. of all taxes") */
-  taxNote?: string;
+  inclusiveOfAllTaxesText?: string;
   /** Add to cart button text */
   buttonText?: string;
   /** Cart link URL */
