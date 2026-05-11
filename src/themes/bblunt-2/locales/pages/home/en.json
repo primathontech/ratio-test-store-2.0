@@ -8,12 +8,28 @@
       "backgroundImage": "/HairCareBFFs/images/bg-watermark.png",
       "collections": [
         {
+          "label": "Most Loved",
+          "viewAllCollectionHandle": "most-loved-home-page"
+        },
+        {
           "label": "Shampoo",
           "viewAllCollectionHandle": "shampoo-haircarebffs"
         },
         {
-          "label": "Most Loved",
-          "viewAllCollectionHandle": "shampoo-haircarebffs"
+          "label": "Conditioner",
+          "viewAllCollectionHandle": "shampoo-haircarebffs-copy"
+        },
+        {
+          "label": "Hair Spray",
+          "viewAllCollectionHandle": "spray-haircarebffs"
+        },
+        {
+          "label": "Hair Colour",
+          "viewAllCollectionHandle": "salon-haircarebffs"
+        },
+        {
+          "label": "Hair Mask",
+          "viewAllCollectionHandle": "hair-mask-haircarebffs"
         }
       ]
     },
