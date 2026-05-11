@@ -521,13 +521,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     setMobileMenuOpen(false);
   }, []);
 
-  const getAppData = {
-    app_url: "#",
-    logo_url: "https://bblunt.com/cdn/shop/files/bbluntIcon.webp?v=1760440322",
-    title: "Get this App",
-    description: "For better experience and exclusive features",
-    button_text: "Use app",
-  };
+  const getAppData = settings?.getApp;
 
   const connectWithUsData = [
     { key: "track_order", label: "Track Order", href: "/account" },

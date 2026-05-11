@@ -20,7 +20,7 @@ export const GetApp = ({ data }: { data?: GetAppData }) => {
   return (
     <div className="app-widget bg-primary p-2 md:px-3 h-[75px] flex justify-between items-center gap-4">
       <Link
-        href={"https://bblunt.com/cdn/shop/files/bbluntIcon.webp?v=1760440322"}
+        href={data?.app_url || "#"}
         className="app-widget-inner block no-underline text-white hover:text-white"
         target="_blank"
         rel="noopener noreferrer"

@@ -84,7 +84,7 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
       {/* Backdrop */}
       <Box
         className={`
-          mobile-nav-backdrop fixed inset-0 bg-black/50 z-[9998] transition-opacity duration-300
+          mobile-nav-backdrop fixed inset-0 bg-[#000000]/80 z-[9998] transition-opacity duration-300
           ${isOpen ? "opacity-100" : "opacity-0 pointer-events-none"}
         `}
         onClick={handleBackdropClick}

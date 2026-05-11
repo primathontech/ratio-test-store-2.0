@@ -925,6 +925,22 @@ const merchantWidgetSchemas = {
         fields: ["label", "href"],
         default: [],
       },
+
+      // Mobile drawer "Get this App" banner
+      getApp: {
+        type: "objectArray" as const,
+        label: "Mobile Drawer: Get App Banner",
+        fields: [
+          "title",
+          "description",
+          "button_text",
+          "logo_alt",
+          "logo_url",
+          "app_url",
+        ],
+        fieldTypes: { logo_url: "image" },
+        default: [],
+      },
     },
   },
   [WIDGET_TYPES.CollectionTimer]: {

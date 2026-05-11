@@ -55,9 +55,9 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
             strokeLinecap="round"
             strokeLinejoin="round"
             aria-hidden="true"
-            className="transition-transform duration-300 ease-in-out"
+            className="transition-transform duration-700 ease-in-out"
             style={{
-              transform: isExpanded ? "rotate(0deg)" : "rotate(90deg)",
+              transform: isExpanded ? "rotate(0deg)" : "rotate(-90deg)",
             }}
           >
             <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -68,7 +68,7 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
               y2="19"
               style={{
                 opacity: isExpanded ? 0 : 1,
-                transition: "opacity 300ms ease-in-out",
+                transition: "opacity 400ms ease-in-out",
               }}
             ></line>
           </svg>

@@ -98,7 +98,15 @@
           "label": "Kolkata",
           "href": "https://bbluntsalons.co.in/salon-locator"
         }
-      ]
+      ],
+      "get_app": {
+        "title": "Get this App",
+        "description": "For better experience and exclusive features",
+        "button_text": "Use app",
+        "logo_alt": "App Logo",
+        "logo_url": "https://bblunt.com/cdn/shop/files/bbluntIcon.webp?v=1760440322",
+        "app_url": "https://onelink.to/zwhyy8"
+      }
     },
     "testimonials": {
       "heading__rich": "What our <strong>customers are saying?</strong>",

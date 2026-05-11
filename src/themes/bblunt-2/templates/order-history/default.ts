@@ -87,6 +87,7 @@ export const template: PageConfig = {
             salon_label: "t:common.header.salon_label",
             salon_href: "t:common.header.salon_href",
             salon_items: "t:common.header.salon_items",
+            getApp: "t:common.header.get_app",
           },
         },
       ],
