@@ -4,7 +4,7 @@
 // Reuses gtag.js if already loaded (by GA4), otherwise loads it.
 // Config key: "google-ads" → { conversionId: string, conversionLabel: string }
 //
-// Events tracked: Purchase, InitiateCheckout, AddToCart
+// Events tracked: Purchase (conversion only)
 // ─────────────────────────────────────────────────────────────────────────────
 
 (function () {
@@ -83,39 +83,7 @@
         })
       );
 
-      analytics.subscribe(
-        "InitiateCheckout",
-        safeHandler("InitiateCheckout", function (event) {
-          var p = event.properties;
-          log(
-            "[" + eid(event) + "] [InitiateCheckout] → conversion",
-            JSON.stringify({ send_to: sendTo, value: p.value })
-          );
-          gtag("event", "conversion", {
-            send_to: sendTo,
-            value: p.value,
-            currency: p.currency || "INR",
-          });
-        })
-      );
-
-      analytics.subscribe(
-        "AddToCart",
-        safeHandler("AddToCart", function (event) {
-          var p = event.properties;
-          log(
-            "[" + eid(event) + "] [AddToCart] → conversion",
-            JSON.stringify({ send_to: sendTo, value: p.value })
-          );
-          gtag("event", "conversion", {
-            send_to: sendTo,
-            value: p.value,
-            currency: p.currency || "INR",
-          });
-        })
-      );
-
-      log("All 3 event subscriptions registered");
+      log("Purchase conversion subscription registered");
     },
   };
 

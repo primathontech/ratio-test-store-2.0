@@ -70,8 +70,9 @@
         log("Init", "Reusing existing gtag");
       }
       var gtag = window.gtag;
-      gtag("config", config.measurementId, { send_page_view: true });
-      log("Init", "gtag configured with measurementId:", config.measurementId);
+      var mid = config.measurementId;
+      gtag("config", mid, { send_page_view: true });
+      log("Init", "gtag configured with measurementId:", mid);
 
       // ─── Helper: map contents[] → GA4 items[] ──────────────────────────
       function mapItems(contents, fallbackName) {
@@ -88,19 +89,9 @@
       // ─── Event Subscriptions ──────────────────────────────────────────
       // System emits PascalCase names. GA4 SDK maps to GA4 snake_case internally.
 
-      // Lets not track page_view manually
-      // analytics.subscribe(
-      //   "PageView",
-      //   safeHandler("PageView", function (event) {
-      //     var pg = event.page || {};
-      //     logEvent("PageView", "page_view", event);
-      //     gtag("event", "page_view", {
-      //       page_title: pg.title || document.title,
-      //       page_location: pg.url || window.location.href,
-      //       page_path: pg.path || window.location.pathname,
-      //     });
-      //   })
-      // );
+      // PageView is handled by GA4 Enhanced Measurement (auto-tracks
+      // history.pushState for SPA navigations) + send_page_view:true
+      // for the initial load. No manual subscription needed.
 
       analytics.subscribe(
         "ViewContent",
@@ -108,6 +99,7 @@
           var p = event.properties;
           logEvent("ViewContent", "view_item", event);
           gtag("event", "view_item", {
+            send_to: mid,
             items: [
               {
                 item_id: (p.content_ids || [])[0],
@@ -128,6 +120,7 @@
           var p = event.properties;
           logEvent("AddToCart", "add_to_cart", event);
           gtag("event", "add_to_cart", {
+            send_to: mid,
             items: mapItems(p.contents, p.content_name),
             currency: p.currency || "INR",
             value: p.value,
@@ -141,6 +134,7 @@
           var p = event.properties;
           logEvent("InitiateCheckout", "begin_checkout", event);
           gtag("event", "begin_checkout", {
+            send_to: mid,
             items: mapItems(p.contents),
             currency: p.currency || "INR",
             value: p.value,
@@ -155,6 +149,7 @@
           var p = event.properties;
           logEvent("AddShippingInfo", "add_shipping_info", event);
           gtag("event", "add_shipping_info", {
+            send_to: mid,
             shipping_tier: p.shipping_method,
             currency: p.currency || "INR",
             value: p.value,
@@ -169,6 +164,7 @@
           var p = event.properties;
           logEvent("AddPaymentInfo", "add_payment_info", event);
           gtag("event", "add_payment_info", {
+            send_to: mid,
             payment_type: p.payment_method,
             currency: p.currency || "INR",
             value: p.value,
@@ -182,6 +178,7 @@
           var p = event.properties;
           logEvent("Purchase", "purchase", event);
           gtag("event", "purchase", {
+            send_to: mid,
             transaction_id: p.order_id,
             value: p.value,
             currency: p.currency || "INR",
@@ -198,6 +195,7 @@
         safeHandler("Search", function (event) {
           logEvent("Search", "search", event);
           gtag("event", "search", {
+            send_to: mid,
             search_term: event.properties.search_string,
           });
         })
@@ -209,6 +207,7 @@
           var p = event.properties;
           logEvent("AddToWishlist", "add_to_wishlist", event);
           gtag("event", "add_to_wishlist", {
+            send_to: mid,
             items: [
               {
                 item_id: (p.content_ids || [])[0],
@@ -228,6 +227,7 @@
           var p = event.properties || {};
           logEvent("Lead", "generate_lead", event);
           gtag("event", "generate_lead", {
+            send_to: mid,
             value: p.value,
             currency: p.currency || "INR",
           });
@@ -240,6 +240,7 @@
           var p = event.properties || {};
           logEvent("CompleteRegistration", "sign_up", event);
           gtag("event", "sign_up", {
+            send_to: mid,
             method: p.method,
           });
         })
@@ -249,7 +250,7 @@
         "Contact",
         safeHandler("Contact", function (event) {
           logEvent("Contact", "contact", event);
-          gtag("event", "contact", {});
+          gtag("event", "contact", { send_to: mid });
         })
       );
 
@@ -257,7 +258,7 @@
         "Subscribe",
         safeHandler("Subscribe", function (event) {
           logEvent("Subscribe", "subscribe", event);
-          gtag("event", "subscribe", {});
+          gtag("event", "subscribe", { send_to: mid });
         })
       );
 
