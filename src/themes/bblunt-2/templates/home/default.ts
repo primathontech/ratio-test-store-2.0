@@ -98,23 +98,102 @@ export const template: PageConfig = {
     hairCareBffsCollections: {
       type: DATA_SOURCE_TYPES.COLLECTION_BY_HANDLES,
       params: {
-        handles: ["shampoo-haircarebffs", "most-loved-home-page"],
+        handles: [
+          "most-loved-home-page",
+          "shampoo-haircarebffs",
+          "shampoo-haircarebffs-copy",
+          "spray-haircarebffs",
+          "salon-haircarebffs",
+          "hair-mask-haircarebffs",
+        ],
       },
       options: { params: { productLimit: 12 } },
       required: false,
     },
-    mostLovedCarousel: {
+    hairFallControlCarousel: {
       type: DATA_SOURCE_TYPES.COLLECTION,
       params: {
-        handle: "most-loved-home-page",
+        handle: "for-hair-fall-control-home-page-1",
       },
       options: { params: { productLimit: 12 } },
       required: false,
     },
-    shampooCarousel: {
+    partyReadyHairAtHomeCarousel: {
       type: DATA_SOURCE_TYPES.COLLECTION,
       params: {
-        handle: "shampoo-haircarebffs",
+        handle: "for-party-ready-hair-at-home-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    dullAndDryHairCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-dull-dry-hair-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    highShineCremeHairColourCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "salon-secret-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    damageRepairCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-damage-repair-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    advancedSmootheningCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-advanced-smoothening-home-page-new",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    extraordinaryShinyHairCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-extraordinary-shiny-hair-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    bondRepairCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-bond-repair-home-page",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    dandruffControlCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-dandruff-control-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    fiveMinuteShampooHairColourCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "5-minute-shampoo-hair-colour-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    nourishedAndDefinedCurlCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-nourished-defined-curls-home-page-1",
       },
       options: { params: { productLimit: 12 } },
       required: false,
@@ -356,8 +435,8 @@ export const template: PageConfig = {
       "for-hair-fall-control",
       "For Hair Fall Control",
       "t:bblunt-2_home_default.featured_collection_carousels.for_hair_fall_control__rich",
-      "mostLovedCarousel",
-      "shampoo-haircarebffs"
+      "hairFallControlCarousel",
+      "hairfall"
     ),
 
     // For Party Ready Hair — FeaturedCollectionCarousel #2
@@ -365,7 +444,8 @@ export const template: PageConfig = {
       "for-party-ready-hair",
       "For Party Ready Hair",
       "t:bblunt-2_home_default.featured_collection_carousels.for_party_ready_hair__rich",
-      "shampooCarousel"
+      "partyReadyHairAtHomeCarousel",
+      "hair-styling"
     ),
 
     // For Dull & Dry Hair — FeaturedCollectionCarousel #3
@@ -373,7 +453,8 @@ export const template: PageConfig = {
       "for-dull-dry-hair",
       "For Dull & Dry Hair",
       "t:bblunt-2_home_default.featured_collection_carousels.for_dull_dry_hair__rich",
-      "mostLovedCarousel"
+      "dullAndDryHairCarousel",
+      "dry-hair"
     ),
 
     // High Shine Creme Hair Colour — FeaturedCollectionCarousel #4
@@ -381,7 +462,8 @@ export const template: PageConfig = {
       "high-shine-creme-hair-colour",
       "High Shine Creme Hair Colour",
       "t:bblunt-2_home_default.featured_collection_carousels.high_shine_creme_hair_colour__rich",
-      "mostLovedCarousel"
+      "highShineCremeHairColourCarousel",
+      "salon-secret"
     ),
 
     // For Damage Repair — FeaturedCollectionCarousel #5
@@ -389,7 +471,8 @@ export const template: PageConfig = {
       "for-damage-repair",
       "For Damage Repair",
       "t:bblunt-2_home_default.featured_collection_carousels.for_damage_repair__rich",
-      "mostLovedCarousel"
+      "damageRepairCarousel",
+      "damaged-hair"
     ),
 
     // For Advanced Smoothening — FeaturedCollectionCarousel #6
@@ -397,7 +480,8 @@ export const template: PageConfig = {
       "for-advanced-smoothening",
       "For Advanced Smoothening",
       "t:bblunt-2_home_default.featured_collection_carousels.for_advanced_smoothening__rich",
-      "mostLovedCarousel"
+      "advancedSmootheningCarousel",
+      "advanced-smoothening"
     ),
 
     // For Extraordinary Shiny Hair — FeaturedCollectionCarousel #7
@@ -405,7 +489,8 @@ export const template: PageConfig = {
       "for-extraordinary-shiny-hair",
       "For Extraordinary Shiny Hair",
       "t:bblunt-2_home_default.featured_collection_carousels.for_extraordinary_shiny_hair__rich",
-      "mostLovedCarousel"
+      "extraordinaryShinyHairCarousel",
+      "intense-shine"
     ),
 
     // For Bond Repair — FeaturedCollectionCarousel #8
@@ -413,15 +498,8 @@ export const template: PageConfig = {
       "for-bond-repair",
       "For Bond Repair",
       "t:bblunt-2_home_default.featured_collection_carousels.for_bond_repair__rich",
-      "mostLovedCarousel"
-    ),
-
-    // For Nourished & Defined Curls — FeaturedCollectionCarousel #9
-    carouselSection(
-      "for-nourished-defined-curls",
-      "For Nourished & Defined Curls",
-      "t:bblunt-2_home_default.featured_collection_carousels.for_nourished_defined_curls__rich",
-      "mostLovedCarousel"
+      "bondRepairCarousel",
+      "bond-repair"
     ),
 
     // For Dandruff Control — FeaturedCollectionCarousel #10
@@ -429,7 +507,8 @@ export const template: PageConfig = {
       "for-dandruff-control",
       "For Dandruff Control",
       "t:bblunt-2_home_default.featured_collection_carousels.for_dandruff_control__rich",
-      "mostLovedCarousel"
+      "dandruffControlCarousel",
+      "anti-dandruff"
     ),
 
     // 5 Minute Shampoo Hair Colour — FeaturedCollectionCarousel #11
@@ -437,7 +516,17 @@ export const template: PageConfig = {
       "five-minute-shampoo-hair-colour",
       "5 Minute Shampoo Hair Colour",
       "t:bblunt-2_home_default.featured_collection_carousels.five_minute_shampoo_hair_colour__rich",
-      "mostLovedCarousel"
+      "fiveMinuteShampooHairColourCarousel",
+      "hair-colour-shampoo"
+    ),
+
+    // For Nourished & Defined Curls — FeaturedCollectionCarousel #9
+    carouselSection(
+      "for-nourished-defined-curls",
+      "For Nourished & Defined Curls",
+      "t:bblunt-2_home_default.featured_collection_carousels.for_nourished_defined_curls__rich",
+      "nourishedAndDefinedCurlCarousel",
+      "curly-hair"
     ),
 
     // Shine Academy Banner Section
