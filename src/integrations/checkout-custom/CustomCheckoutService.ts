@@ -33,7 +33,7 @@ declare global {
       };
     };
     TrackierWebSDK?: any;
-    gtag?: (...args: any[]) => void;
+
   }
 }
 
@@ -284,20 +284,6 @@ export class CustomCheckoutService {
           this.triggerTrackierTrackConv(order);
         }
 
-        // Google Shopping Apps purchase conversion tracking
-        if (typeof window !== "undefined" && window.gtag) {
-          const orderAmount = order?.total_price;
-          const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
-          const conversionLabel =
-            process.env.NEXT_PUBLIC_GOOGLE_CONVERSION_LABEL;
-
-          window.gtag("event", "conversion", {
-            send_to: `${googleAdsId}/${conversionLabel}`,
-            value: orderAmount || 1.0,
-            transaction_id: orderId,
-          });
-        }
-
         // Trigger checkout complete event
         this.triggeredCheckoutCompleteEvent(order);
 
@@ -347,24 +333,6 @@ export class CustomCheckoutService {
           // Trigger Trackier conversion tracking if available
           if (typeof window !== "undefined" && window.TrackierWebSDK) {
             this.triggerTrackierTrackConv(order);
-          }
-
-          // Google Shopping Apps purchase conversion tracking
-          if (typeof window !== "undefined" && window.gtag) {
-            const orderId =
-              order?.order_name || order.orderSuccessBody?.order_name;
-            const orderAmount =
-              order?.total_price || order.orderSuccessBody?.total_price;
-
-            const googleAdsId = process.env.NEXT_PUBLIC_GOOGLE_ADS_ID;
-            const conversionLabel =
-              process.env.NEXT_PUBLIC_GOOGLE_CONVERSION_LABEL;
-
-            window.gtag("event", "conversion", {
-              send_to: `${googleAdsId}/${conversionLabel}`,
-              value: orderAmount || 1.0,
-              transaction_id: orderId,
-            });
           }
 
           // Trigger checkout complete event
