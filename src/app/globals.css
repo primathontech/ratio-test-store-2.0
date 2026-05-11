@@ -681,3 +681,15 @@
   left: -150%;
   transition: left 0.6s ease-out;
 }
+
+/* ------------------------------------------------------------------ */
+/*  LazyLoadShimmer widget                                             */
+/*  Sibling-hide rule: while the shimmer placeholder is mounted, the   */
+/*  section wrapping it carries `.bblunt-shimmer-host`, and every      */
+/*  sibling section that follows is collapsed. When the shimmer        */
+/*  unmounts (on IntersectionObserver), the class is removed and the   */
+/*  real sections take over. Mirrors bblunt.com's lazyload behavior.   */
+/* ------------------------------------------------------------------ */
+section.bblunt-shimmer-host ~ section {
+  display: none;
+}
