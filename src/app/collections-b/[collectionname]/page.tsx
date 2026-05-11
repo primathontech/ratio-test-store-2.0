@@ -16,28 +16,29 @@ const seoSystem = SEOFactory.createForEnvironment(
   process.env.NODE_ENV as "development" | "staging" | "production"
 );
 
-export async function generateStaticParams() {
-  const featuredCollections = process.env.FEATURED_COLLECTIONS;
+// TODO: Implement dynamic route generation based on FEATURED_COLLECTIONS environment variable
+// export async function generateStaticParams() {
+//   const featuredCollections = process.env.FEATURED_COLLECTIONS;
 
-  // Check environment variable
-  if (!featuredCollections) {
-    console.error("FEATURED_COLLECTIONS environment variable not found");
-    return [];
-  }
+//   // Check environment variable
+//   if (!featuredCollections) {
+//     console.error("FEATURED_COLLECTIONS environment variable not found");
+//     return [];
+//   }
 
-  // Split and clean handles
-  const handles = featuredCollections
-    .split(",")
-    .filter(Boolean)
-    .map((h) => h.trim());
+//   // Split and clean handles
+//   const handles = featuredCollections
+//     .split(",")
+//     .filter(Boolean)
+//     .map((h) => h.trim());
 
-  // Return each handle as { collectionname }
-  const staticParams = handles.map((handle) => ({
-    collectionname: handle,
-  }));
+//   // Return each handle as { collectionname }
+//   const staticParams = handles.map((handle) => ({
+//     collectionname: handle,
+//   }));
 
-  return staticParams;
-}
+//   return staticParams;
+// }
 
 export async function generateMetadata({
   params,

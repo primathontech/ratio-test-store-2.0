@@ -37,26 +37,35 @@ export async function generateStaticParams() {
 
   // Get all product handles from collections in parallel
   const commerceClient = getCommerceClient();
-
-  const collectionPromises = handles.map((handle) =>
-    commerceClient
-      .getCollection({
+  const collectionPromises = handles.map(async (handle) => {
+    try {
+      const collectionResponse = await commerceClient.getCollection({
         handle,
-        first: productsPerCollection,
-      })
-      .then((collectionResponse: any) => {
-        if (collectionResponse?.products) {
-          return collectionResponse.products.flatMap((product: any) =>
-            product?.handle ? [product.handle] : []
-          );
-        }
+        productLimit: productsPerCollection,
+      });
+
+      // Check various possible response structures
+      const collection = collectionResponse?.data || collectionResponse;
+      const products =
+        collection?.products || collection?.products?.edges || [];
+
+      if (!products || products.length === 0) {
+        console.warn(`No products found in collection '${handle}'`);
         return [];
-      })
-      .catch((err: any) => {
-        console.warn(`Collection handle '${handle}' not found, skipping`);
-        return [];
-      })
-  );
+      }
+
+      // Handle both direct products array and Shopify edges format
+      const productHandles = products.flatMap((product: any) => {
+        const productNode = product?.node || product;
+        return productNode?.handle ? [productNode.handle] : [];
+      });
+
+      return productHandles;
+    } catch (err) {
+      console.error(`Error fetching collection '${handle}':`, err);
+      return [];
+    }
+  });
 
   // Wait for all collection requests to complete in parallel
   const collectionResults = await Promise.all(collectionPromises);
@@ -68,7 +77,6 @@ export async function generateStaticParams() {
   const uniqueProductHandles = Array.from(new Set(allProductHandles));
 
   // Return handles directly - the collection API already validated these products exist
-  // Additional validation here would cause excessive API calls during build time
   const allHandles = uniqueProductHandles.map((handle) => ({ handle }));
 
   return allHandles;
