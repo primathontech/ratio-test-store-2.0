@@ -302,6 +302,7 @@ const HairCareCard = memo(function HairCareCard({
       isInCart={isInCart}
       cartItem={cartLine}
       isQuantityLoading={isQuantityLoading}
+      className="pl-[12px] min-[992px]:pl-0" // compensate for carousel padding
     />
   );
 });

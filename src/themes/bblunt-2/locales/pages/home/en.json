@@ -7,7 +7,10 @@
       "heading__rich": "Hair Care <strong>BFFs</strong>",
       "backgroundImage": "/HairCareBFFs/images/bg-watermark.png",
       "collections": [
-        { "label": "Shampoos" },
+        {
+          "label": "Shampoo",
+          "viewAllCollectionHandle": "shampoo-haircarebffs"
+        },
         {
           "label": "Most Loved",
           "viewAllCollectionHandle": "shampoo-haircarebffs"

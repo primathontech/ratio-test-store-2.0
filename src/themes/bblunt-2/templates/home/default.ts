@@ -12,17 +12,28 @@ import {
 // Tuned per viewport bucket. SwipeCarousel resolves the active entry
 // from useResponsive's flags. Widgets fall back to their own built-in
 // defaults when this setting is omitted.
+// Mirrors bblunt.com:
+//   <768    → 2.3 cards (mobile)
+//   768–991 → 2.3 cards (lower tablet)
+//   992–1149 → 4 cards (upper tablet)
+//   ≥1150   → 5 cards (desktop)
 const FEATURED_CAROUSEL_BREAKPOINTS = [
   { minWidth: 0, cards: 2.3, gap: 0 },
-  { minWidth: 768, cards: 3, gap: 0 },
-  { minWidth: 1024, cards: 4, gap: 0 },
-  { minWidth: 1440, cards: 5, gap: 0 },
+  { minWidth: 768, cards: 2.3, gap: 0 },
+  { minWidth: 992, cards: 4, gap: 0 },
+  { minWidth: 1150, cards: 5, gap: 0 },
 ];
 
+// Mirrors bblunt.com:
+//   <768    → 2.2 cards (mobile)
+//   768–991 → 2.2 cards (lower tablet)
+//   992–1149 → 4 cards (upper tablet)
+//   ≥1150   → 5 cards (desktop)
 const HAIR_CARE_BFFS_CAROUSEL_BREAKPOINTS = [
-  { minWidth: 0, cards: 2.15, gap: 0 },
-  { minWidth: 1024, cards: 5, gap: 0 },
-  { minWidth: 1440, cards: 5, gap: 0 },
+  { minWidth: 0, cards: 2.2, gap: 0 },
+  { minWidth: 768, cards: 2.2, gap: 0 },
+  { minWidth: 992, cards: 4, gap: 0 },
+  { minWidth: 1150, cards: 5, gap: 0 },
 ];
 
 /* ------------------------------------------------------------------ */

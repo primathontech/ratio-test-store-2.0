@@ -314,7 +314,7 @@ export const ProductCard = memo(function ProductCard({
       className={`block ${searchProductCard ? "" : "h-full"} ${linkClassName}`.trim()}
     >
       <div
-        className={`flex flex-col ${searchProductCard ? "h-auto !pl-0" : "h-full pl-[10px]"} ${className}`.trim()}
+        className={`flex flex-col ${searchProductCard ? "h-auto !pl-0" : "h-full"} ${className}`.trim()}
         style={{
           backgroundColor: cardBg,
           borderRadius: t.cardRadius,
