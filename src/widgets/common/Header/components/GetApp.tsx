@@ -20,12 +20,12 @@ export const GetApp = ({ data }: { data?: GetAppData }) => {
   return (
     <div className="app-widget bg-primary p-2 md:px-3 h-[75px] flex justify-between items-center gap-4">
       <Link
-        href={"https://bblunt.com/cdn/shop/files/bbluntIcon.webp?v=1760440322"}
+        href={data?.app_url || "#"}
         className="app-widget-inner block no-underline text-white hover:text-white"
         target="_blank"
         rel="noopener noreferrer"
       >
-        <Flex align="center" justify="center" className="gap-6 md:gap-4">
+        <Flex align="center" justify="center" className="gap-3 md:gap-4">
           {/* App Logo */}
           <div className="rounded overflow-hidden shrink-0">
             {data?.logo_url && (

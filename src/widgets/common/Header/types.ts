@@ -67,6 +67,16 @@ export interface HeaderSettings {
   salon_label?: string;
   salon_href?: string;
   salon_items?: NavDropdownItem[];
+
+  /** Mobile drawer "Get this App" banner */
+  getApp?: {
+    title?: string;
+    description?: string;
+    button_text?: string;
+    logo_alt?: string;
+    logo_url?: string;
+    app_url?: string;
+  };
 }
 
 /**

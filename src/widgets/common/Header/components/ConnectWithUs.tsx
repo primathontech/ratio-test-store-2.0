@@ -29,7 +29,7 @@ export const ConnectWithUs: React.FC<ConnectWithUsProps> = ({
   onTrackOrderClick,
 }) => {
   return (
-    <Box className="mx-8 flex flex-col gap-6 items-start mt-5">
+    <Box className="mx-5 flex flex-col gap-4 items-start mt-[15px]">
       {items.map((item, index) =>
         isChatItem(item.key) ? (
           <div

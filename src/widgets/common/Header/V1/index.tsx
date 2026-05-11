@@ -521,13 +521,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     setMobileMenuOpen(false);
   }, []);
 
-  const getAppData = {
-    app_url: "#",
-    logo_url: "https://bblunt.com/cdn/shop/files/bbluntIcon.webp?v=1760440322",
-    title: "Get this App",
-    description: "For better experience and exclusive features",
-    button_text: "Get App",
-  };
+  const getAppData = settings?.getApp;
 
   const connectWithUsData = [
     { key: "track_order", label: "Track Order", href: "/account" },
@@ -613,7 +607,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="md:hidden transition-all duration-200 ease-in-out flex items-center justify-center px-1.5 py-[3.5px] max-w-[65px] text-xs bg-primary"
-              aria-label={getAppData?.button_text || "Get App"}
+              aria-label={getAppData?.button_text || "Use app"}
               style={{
                 color: "#fff",
                 width: "71px",
@@ -621,7 +615,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                 borderRadius: "100px",
               }}
             >
-              {getAppData?.button_text || "Get App"}
+              {getAppData?.button_text || "Use app"}
             </Link>
 
             {/* Mobile/Tablet search icon (visible below 1100px) */}
