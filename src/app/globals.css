@@ -608,19 +608,12 @@
 }
 
 /* === ShopByConcerns Carousel === */
-/* Mobile (default): 2 tiles + half-peek visible (2.5 tiles) */
+/* Mobile + Tablet (default, up to 1024px): 2 tiles + half-peek visible (2.5 tiles) */
 .sbc-slide {
   width: calc((100% - 2 * 15px) / 2.5);
   min-width: calc((100% - 2 * 15px) / 2.5);
 }
-/* Tablet 768px: ~3 tiles visible */
-@media (min-width: 768px) {
-  .sbc-slide {
-    width: calc((100% - 2 * 15px) / 3);
-    min-width: calc((100% - 2 * 15px) / 3);
-  }
-}
-/* Tablet 1024px: 4 tiles visible */
+/* Desktop 1024px: 4 tiles visible */
 @media (min-width: 1024px) {
   .sbc-slide {
     width: calc((100% - 3 * 15px) / 4);

@@ -37,12 +37,12 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
   };
 
   return (
-    <Box className={`mx-8 ${showTopBorder ? "border-t" : ""}`}>
+    <Box className={`mx-5 ${showTopBorder ? "border-t" : ""}`}>
       {item.hasDropdown ? (
         <button
           onClick={handleClick}
           aria-expanded={isExpanded}
-          className="w-full flex items-center justify-between py-[9px] my-1 md:py-[9px] md:my-0 transition-colors duration-200"
+          className="w-full flex items-center justify-between py-[5.4px] my-1 md:py-[9px] md:my-0 transition-colors duration-200"
         >
           <p className="text-sm font-medium">{item.label}</p>
           <svg

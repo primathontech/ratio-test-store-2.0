@@ -25,7 +25,7 @@ export const GetApp = ({ data }: { data?: GetAppData }) => {
         target="_blank"
         rel="noopener noreferrer"
       >
-        <Flex align="center" justify="center" className="gap-6 md:gap-4">
+        <Flex align="center" justify="center" className="gap-3 md:gap-4">
           {/* App Logo */}
           <div className="rounded overflow-hidden shrink-0">
             {data?.logo_url && (

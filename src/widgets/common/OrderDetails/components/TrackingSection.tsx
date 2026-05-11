@@ -29,6 +29,12 @@ export const TrackingSection: React.FC<TrackingSectionProps> = ({
       ? "gap-20 sm:gap-56 ml-0 sm:ml-12"
       : "gap-20 sm:gap-36";
 
+  // Line width: below 638px → 30vw, 638px–920px → 34vw, above 920px → capped by max
+  const lineWidthClass =
+    orderStatus === "Cancelled"
+      ? "w-[clamp(7rem,20vw,17rem)] min-[638px]:w-[clamp(7rem,40vw,17rem)]"
+      : "w-[clamp(8rem,20vw,12rem)] min-[638px]:w-[clamp(8rem,28vw,12rem)]";
+
   return (
     <div data-testid="tracking-section-container" className="mb-6 w-fit">
       <div data-testid="tracking-section-wrapper" className="relative w-fit">
@@ -50,7 +56,7 @@ export const TrackingSection: React.FC<TrackingSectionProps> = ({
               orderStatus === "Cancelled" &&
               statusItem.status === "Cancelled"
             ) {
-              dotStyle = "bg-red-600 -ml-[42px]";
+              dotStyle = "bg-cancel-text -ml-[42px]";
             } else if (isCompleted) {
               dotStyle = "bg-black";
             } else {
@@ -66,7 +72,7 @@ export const TrackingSection: React.FC<TrackingSectionProps> = ({
                 orderStatus === "Cancelled" &&
                 nextStatus?.status === "Cancelled"
               ) {
-                lineColor = "bg-red-600";
+                lineColor = "bg-cancel-text";
               } else if (isCompleted && nextIsCompleted) {
                 // Both completed - black line
                 lineColor = "bg-black";
@@ -92,15 +98,11 @@ export const TrackingSection: React.FC<TrackingSectionProps> = ({
                 {!isLast && (
                   <div
                     data-testid={`tracking-section-status-line-${index}`}
-                    className={`absolute h-[3px] ${lineColor}`}
+                    className={`absolute h-[3px] ${lineColor} ${lineWidthClass}`}
                     style={{
-                      top: "14%",
-                      left: "50%",
+                      top: "13%",
+                      left: "63%",
                       transform: "translateY(-50%)",
-                      width:
-                        orderStatus === "Cancelled"
-                          ? "clamp(11rem, 25vw, 20rem)"
-                          : "clamp(11rem, 20vw, 15rem)",
                     }}
                   />
                 )}

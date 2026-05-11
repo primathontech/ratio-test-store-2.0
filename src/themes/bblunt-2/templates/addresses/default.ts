@@ -9,6 +9,36 @@ export const template: PageConfig = {
   id: "bblunt-2-addresses",
   dataSources: {},
   sections: [
+    // Announcement Bar Section
+    {
+      id: "announcement-bar-section",
+      name: "Announcement Bar",
+      type: SECTION_TYPES.HEADER_SECTION,
+      settings: {
+        layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        },
+      },
+      widgets: [
+        {
+          id: "bblunt-2-announcement-bar",
+          name: "Announcement Bar",
+          type: WIDGET_TYPES.AnnouncementBar,
+          settings: {
+            variant: "v1",
+            backgroundColor: "#000000",
+            textColor: "#ffffff",
+            speed: 35,
+            pauseOnHover: true,
+            items: "t:common.announcement_bar__rich",
+          },
+        },
+      ],
+    },
+
     // Header Section
     {
       id: "header-section",

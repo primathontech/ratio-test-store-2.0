@@ -105,7 +105,7 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
         aria-label="Navigation menu"
       >
         {/* Header */}
-        <Box className="flex items-center justify-start py-12 px-6 border-b border-white/10 shrink-0">
+        <Box className="flex items-center justify-start pt-6 pb-8 px-5 border-b border-white/10 shrink-0">
           <button
             onClick={onClose}
             className="rounded-lg transition-colors duration-200 bg-transparent border-none cursor-pointer hover:bg-white/10 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"
@@ -132,7 +132,7 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
           <GetApp data={getApp} />
 
           {/* Navigation Items */}
-          <Box className="flex-1 overflow-y-auto pt-2">
+          <Box className="flex-1 overflow-y-auto">
             <nav role="navigation" aria-label="Main navigation">
               {items.map((item: any, i) => (
                 <MobileNavigationItem
