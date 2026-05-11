@@ -37,12 +37,16 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
   };
 
   return (
-    <Box className={`mx-5 ${showTopBorder ? "border-t" : ""}`}>
+    <Box
+      className={`mx-5 ${showTopBorder ? "border-t" : ""}`}
+      data-testid={`mobile-navigation-item-${item.key || item.label}`}
+    >
       {item.hasDropdown ? (
         <button
           onClick={handleClick}
           aria-expanded={isExpanded}
           className="w-full flex items-center justify-between py-[5.4px] my-1 md:py-[9px] md:my-0 transition-colors duration-200"
+          data-testid={`mobile-navigation-item-button-${item.key || item.label}`}
         >
           <p className="text-sm font-medium">{item.label}</p>
           <svg
@@ -78,6 +82,7 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
           href={item.href as string}
           onClick={onClose}
           className="block py-2 my-1 px-4 text-sm"
+          data-testid={`mobile-navigation-item-link-${item.key || item.label}`}
         >
           {item.label}
         </Link>
@@ -89,10 +94,17 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
           className={`border-l ml-2.5 mb-1 overflow-hidden transition-all duration-300 ease-in-out ${
             isExpanded ? "max-h-[1000px] opacity-100" : "max-h-0 opacity-0 mb-0"
           }`}
+          data-testid={`mobile-navigation-item-dropdown-${item.key || item.label}`}
         >
-          <div className="py-1">
+          <div
+            className="py-1"
+            data-testid={`mobile-navigation-item-dropdown-content-${item.key || item.label}`}
+          >
             {item.dropdownItems.map((subItem, index) => (
-              <Box key={subItem.key || index}>
+              <Box
+                key={subItem.key || index}
+                data-testid={`mobile-navigation-item-subitem-${subItem.key || index}`}
+              >
                 {subItem.isCategory ? (
                   <CategoryNavigationItem item={subItem} onClose={onClose} />
                 ) : (
@@ -101,6 +113,7 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
                     href={subItem.href || "#"}
                     onClick={onClose}
                     className="block py-1 my-1 px-4 no-underline text-sm"
+                    data-testid={`mobile-navigation-item-sublink-${subItem.key || index}`}
                   >
                     {subItem.label}
                   </Link>

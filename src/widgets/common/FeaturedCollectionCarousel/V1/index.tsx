@@ -322,6 +322,7 @@ export const V1 = memo(function V1({
 
   return (
     <section
+      data-testid="featured-collection-container"
       className="relative overflow-hidden pb-[32.4px] md:pb-14"
       style={{
         backgroundColor: "#ffffff",
@@ -333,6 +334,7 @@ export const V1 = memo(function V1({
         <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px]">
           {/* Heading — rich HTML; <strong> in the source becomes the bold part. */}
           <h4
+            data-testid="featured-collection-container-heading"
             className="text-2xl xl:text-[28px] leading-[29px] md:leading-[34px] [&_strong]:font-bold"
             style={{
               color: "#1D1D1D",
@@ -345,7 +347,10 @@ export const V1 = memo(function V1({
         </div>
 
         {/* Carousel area */}
-        <div className="group xl:mx-auto xl:max-w-[1300px] md:border md:border-[#EBEBEB] md:rounded-lg overflow-hidden">
+        <div
+          data-testid="featured-collection-container-carousel"
+          className="group xl:mx-auto xl:max-w-[1300px] md:border md:border-[#EBEBEB] md:rounded-lg overflow-hidden"
+        >
           <SwipeCarousel
             itemCount={products.length}
             breakpoints={carouselBreakpoints}

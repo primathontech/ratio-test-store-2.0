@@ -91,6 +91,7 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
         onKeyDown={handleKeyDown}
         tabIndex={-1}
         aria-hidden="true"
+        data-testid="mobile-navigation-drawer-backdrop"
       />
 
       {/* Drawer */}
@@ -103,13 +104,18 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
         role="dialog"
         aria-modal="true"
         aria-label="Navigation menu"
+        data-testid="mobile-navigation-drawer"
       >
         {/* Header */}
-        <Box className="flex items-center justify-start pt-6 pb-8 px-5 border-b border-white/10 shrink-0">
+        <Box
+          className="flex items-center justify-start pt-6 pb-8 px-5 border-b border-white/10 shrink-0"
+          data-testid="mobile-navigation-drawer-header"
+        >
           <button
             onClick={onClose}
             className="rounded-lg transition-colors duration-200 bg-transparent border-none cursor-pointer hover:bg-white/10 focus:bg-white/10 focus:outline-none focus:ring-2 focus:ring-white/20"
             aria-label="Close menu"
+            data-testid="mobile-navigation-drawer-close-button"
           >
             <svg
               width="24"
@@ -127,13 +133,23 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
           </button>
         </Box>
 
-        <Box className="flex-1 overflow-auto">
+        <Box
+          className="flex-1 overflow-auto"
+          data-testid="mobile-navigation-drawer-content"
+        >
           {/* Get App Banner */}
           <GetApp data={getApp} />
 
           {/* Navigation Items */}
-          <Box className="flex-1 overflow-y-auto">
-            <nav role="navigation" aria-label="Main navigation">
+          <Box
+            className="flex-1 overflow-y-auto"
+            data-testid="mobile-navigation-drawer-nav-wrapper"
+          >
+            <nav
+              role="navigation"
+              aria-label="Main navigation"
+              data-testid="mobile-navigation-drawer-nav"
+            >
               {items.map((item: any, i) => (
                 <MobileNavigationItem
                   key={item.key || i}
@@ -149,13 +165,16 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
         </Box>
 
         {/* User Actions */}
-        <Box className="mx-4 border-t shrink-0">
+        <Box
+          className="mx-4 border-t shrink-0"
+          data-testid="mobile-navigation-drawer-user-actions"
+        >
           <button
             type="button"
             onClick={handleAccountClick}
             className="py-4 flex gap-2 items-center bg-transparent border-0 cursor-pointer"
             aria-label={isLoggedIn ? "My Account" : "Login"}
-            data-testid="mobile-drawer-account-button"
+            data-testid="mobile-navigation-drawer-account-button"
           >
             <svg
               width="20"
