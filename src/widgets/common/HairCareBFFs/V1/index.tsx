@@ -486,7 +486,9 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
                 type="button"
                 onClick={onClick}
                 disabled={disabled}
-                className="absolute left-[-30px] top-1/2 -translate-y-1/2 z-[3] hidden lg:flex items-center justify-center cursor-pointer text-white"
+                className={`absolute left-[-30px] top-1/2 -translate-y-1/2 z-[3] items-center justify-center cursor-pointer text-gray-700 hover:text-loading-blue transition-colors duration-300 ${
+                  disabled ? "hidden" : "hidden lg:flex"
+                }`}
                 aria-label="Previous products"
               >
                 <ChevronLeftIcon />
@@ -497,7 +499,9 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
                 type="button"
                 onClick={onClick}
                 disabled={disabled}
-                className="absolute right-[-30px] top-1/2 -translate-y-1/2 z-[3] hidden lg:flex items-center justify-center cursor-pointer text-white"
+                className={`absolute right-[-30px] top-1/2 -translate-y-1/2 z-[3] items-center justify-center cursor-pointer text-gray-700 hover:text-loading-blue transition-colors duration-300 ${
+                  disabled ? "hidden" : "hidden lg:flex"
+                }`}
                 aria-label="Next products"
               >
                 <ChevronRightIcon />
