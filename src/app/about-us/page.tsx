@@ -4,6 +4,9 @@ import { TranslationProvider } from "@shopkit/i18n/client";
 import type { Locale } from "@shopkit/i18n";
 import { getRouteTranslations, getThemeName } from "@/utils";
 import AboutUsTemplate from "@/editor-integration/static-templates/about-us";
+import { resolvePageSEO } from "@shopkit/seo";
+import { getSEOConfig } from "@/config";
+import type { Metadata } from "next";
 
 export default async function AboutUsPage() {
   const locale = getStaticLocale();
@@ -22,9 +25,10 @@ export default async function AboutUsPage() {
   );
 }
 
-export async function generateMetadata() {
-  return {
-    title: "About Us",
-    description: "Learn more about us.",
-  };
+export async function generateMetadata(): Promise<Metadata> {
+  const { siteUrl, siteName } = getSEOConfig();
+  return resolvePageSEO(
+    { title: "About Us" },
+    { siteUrl, siteName, path: "/about-us" }
+  );
 }
