@@ -8,11 +8,9 @@ import type {
   ApiProduct,
   ApiCollectionResult,
 } from "../types";
-import { ProductCard, ProductCardTheme } from "@/ui/components/index";
-import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
-import { getProductLabel } from "@/ui/components/ProductCard/badgeUtils";
+import { ProductCardTheme } from "@/ui/components/index";
+import { CartAwareProductCard } from "@/ui/components/CartAwareProductCard";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
-import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
 import { LazyViewAllButton } from "@/widgets/common/FeaturedCollectionCarousel/components/LazyViewAllButton";
 
 /* ------------------------------------------------------------------ */
@@ -48,65 +46,6 @@ const ChevronLeftIcon = () => (
     />
   </svg>
 );
-
-/* ------------------------------------------------------------------ */
-/*  Transform: API product → ProductCardProduct                        */
-/* ------------------------------------------------------------------ */
-
-function transformApiProduct(product: ApiProduct): ProductCardProduct {
-  const mainImg =
-    product.images?.find((img) => img.is_main)?.url || product.image_url || "";
-  const hoverImg = product.images?.find((img) => !img.is_main)?.url || mainImg;
-  const alt =
-    product.images?.find((img) => img.is_main)?.alt ||
-    product.title ||
-    "Product image";
-
-  // API prices are in paisa (59900 = ₹599)
-  const salePrice = product.price ? product.price / 100 : 0;
-  const originalPrice = product.compare_at_price
-    ? product.compare_at_price / 100
-    : undefined;
-
-  let discount: string | undefined;
-  if (originalPrice && originalPrice > salePrice && salePrice > 0) {
-    const pct = Math.round(((originalPrice - salePrice) / originalPrice) * 100);
-    discount = `${pct}% off`;
-  }
-
-  // Resolve badge: metafield first, tag fallback (matches bblunt reference).
-  const resolvedBadge = getProductLabel(
-    product.metadata?.product_labels?.value,
-    product.tags
-  );
-
-  return {
-    id: product.id,
-    productId: product.id,
-    variantId: product.variant?.id,
-    availableForSale:
-      typeof product.availableForSale === "boolean"
-        ? product.availableForSale
-        : product.variant?.availableForSale,
-    href: `/products/${product.handle}`,
-    title: product.title,
-    alt,
-    mainImage: mainImg,
-    hoverImage: hoverImg,
-    category: product.productType || "",
-    badge: resolvedBadge?.label,
-    badgeBackground: resolvedBadge?.background,
-    rating: product.average_rating || 0,
-    reviewCount: product.rating_count || 0,
-    salePrice,
-    originalPrice,
-    discount,
-    weight: product.metadata?.product_net_content?.value || "250g",
-    description:
-      product.metadata?.product_subtitle?.value ||
-      "Reduces Up to 93% Hair Fall | Strengthens & Nourishes Hair",
-  };
-}
 
 /* ------------------------------------------------------------------ */
 /*  Extract tabs from COLLECTION_BY_HANDLES response                   */
@@ -186,128 +125,6 @@ function buildTabs(
 }
 
 /* ------------------------------------------------------------------ */
-/*  Cart-aware product card wrapper                                    */
-/* ------------------------------------------------------------------ */
-
-interface HairCareCardProps {
-  product: ApiProduct;
-  theme: ProductCardTheme;
-  actionButtonText?: string;
-  soldOutText?: string;
-}
-
-function buildCartItem(
-  product: ApiProduct,
-  cardProduct: ProductCardProduct
-): CartItem {
-  const variantId = product.variant?.id;
-  const productId = product.id;
-  const lineId = variantId ?? productId;
-
-  return {
-    id: lineId,
-    productId,
-    variantId,
-    sku: product.variant?.sku,
-    title: product.title,
-    price: { amount: product.price ?? 0, currencyCode: "INR" },
-    compareAtPrice:
-      typeof product.compare_at_price === "number"
-        ? { amount: product.compare_at_price, currencyCode: "INR" }
-        : undefined,
-    quantity: 1,
-    image: cardProduct.mainImage,
-    product_type: product.productType,
-  };
-}
-
-const HairCareCard = memo(function HairCareCard({
-  product,
-  theme,
-  actionButtonText,
-  soldOutText,
-}: HairCareCardProps) {
-  const cardProduct = useMemo(() => transformApiProduct(product), [product]);
-  const productId = product.id;
-  const variantId = product.variant?.id;
-
-  const items = useCartItems();
-  const loadingItems = useCartStore((s) => s.loadingItems);
-  const addItem = useCartStore((s) => s.addItem);
-  const incrementItem = useCartStore((s) => s.incrementItem);
-  const decrementItem = useCartStore((s) => s.decrementItem);
-
-  const cartLine = useMemo(
-    () =>
-      items.find((i) => {
-        const lineProductId = i.productId ?? i.product_id;
-        const lineVariantId = i.variantId ?? i.variant_id;
-        return variantId
-          ? lineProductId === productId && lineVariantId === variantId
-          : lineProductId === productId;
-      }),
-    [items, productId, variantId]
-  );
-
-  const isInCart = !!cartLine;
-  const isQuantityLoading =
-    (variantId ? !!loadingItems[variantId] : false) ||
-    (cartLine?.id ? !!loadingItems[cartLine.id] : false);
-
-  const handleAddToCart = useCallback(async () => {
-    if (cardProduct.availableForSale === false) {
-      return;
-    }
-    try {
-      await addItem(buildCartItem(product, cardProduct));
-    } catch (error) {
-      console.error("[HairCareBFFs] addItem failed:", error);
-    }
-  }, [addItem, product, cardProduct]);
-
-  const handleIncrement = useCallback(async () => {
-    if (!cartLine) {
-      return;
-    }
-    try {
-      await incrementItem(cartLine.id, variantId);
-    } catch (error) {
-      console.error("[HairCareBFFs] incrementItem failed:", error);
-    }
-  }, [incrementItem, cartLine, variantId]);
-
-  const handleDecrement = useCallback(async () => {
-    if (!cartLine) {
-      return;
-    }
-    try {
-      await decrementItem(cartLine.id, variantId);
-    } catch (error) {
-      console.error("[HairCareBFFs] decrementItem failed:", error);
-    }
-  }, [decrementItem, cartLine, variantId]);
-
-  return (
-    <ProductCard
-      product={cardProduct}
-      theme={theme}
-      settings={{
-        showAddToCartToast: true,
-        ...(actionButtonText ? { actionButtonText } : {}),
-        ...(soldOutText ? { soldOutText } : {}),
-      }}
-      onAddToCart={handleAddToCart}
-      onIncrement={handleIncrement}
-      onDecrement={handleDecrement}
-      isInCart={isInCart}
-      cartItem={cartLine}
-      isQuantityLoading={isQuantityLoading}
-      className="pl-[12px] min-[992px]:pl-0" // compensate for carousel padding
-    />
-  );
-});
-
-/* ------------------------------------------------------------------ */
 /*  Carousel breakpoints                                               */
 /* ------------------------------------------------------------------ */
 
@@ -378,11 +195,16 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       }
       return (
         <div className={`${itemBorderClass} overflow-hidden`}>
-          <HairCareCard
-            product={product}
+          <CartAwareProductCard
+            apiProduct={product}
             theme={cardTheme}
-            actionButtonText={actionButtonText}
-            soldOutText={soldOutText}
+            settings={{
+              showAddToCartToast: true,
+              ...(actionButtonText ? { actionButtonText } : {}),
+              ...(soldOutText ? { soldOutText } : {}),
+            }}
+            className="pl-[12px] min-[992px]:pl-0"
+            logTag="HairCareBFFs"
           />
         </div>
       );

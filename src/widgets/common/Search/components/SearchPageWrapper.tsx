@@ -10,7 +10,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { ProductResponse } from "../types";
 import {
   AVAILABILITY_OPTION_ID,
   FILTER_ID,
@@ -21,11 +20,7 @@ import {
 import { useInfiniteScroll } from "../hooks/useInfiniteScroll";
 import { useSearchFilter } from "../hooks/useSearchFilter";
 import { getSearchResultsForComponent } from "../services/search-api";
-import {
-  createProductCartHandlers,
-  mapSearchProductToProductResponse,
-} from "../utils/ProductMapper";
-import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
+import { mapSearchProductToProductResponse } from "../utils/ProductMapper";
 import DesktopSortDropdown from "./DesktopSortDropdown";
 import FilterSideBar from "./FilterSideBar";
 import MobileFilterBar from "./MobileFilterBar";
@@ -61,108 +56,10 @@ interface SearchPageWrapperProps {
 const SEARCH_PAGE_CONTAINER_MARGIN_CLASS =
   "mx-0 min-[1400px]:ml-5 min-[1400px]:mr-[7px] min-[1455px]:mx-[27px] min-[1500px]:mx-[50px] min-[1600px]:mx-[100px] min-[1700px]:mx-[150px] min-[1800px]:mx-[200px] min-[1900px]:mx-[250px]";
 
-function buildCartItem(product: ProductResponse): CartItem {
-  return {
-    id: product.variant?.id ?? product.id,
-    productId: product.id,
-    variantId: product.variant?.id,
-    title: product.title,
-    price: { amount: product.price ?? 0, currencyCode: "INR" },
-    compareAtPrice:
-      typeof product.compare_at_price === "number"
-        ? {
-            amount: product.compare_at_price,
-            currencyCode: "INR",
-          }
-        : undefined,
-    quantity: 1,
-    image: product.image_url,
-    product_type: product.productType,
-  };
-}
-
 const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-
-  const items = useCartItems();
-  const loadingItems = useCartStore((s) => s.loadingItems);
-  const addItem = useCartStore((s) => s.addItem);
-  const incrementItem = useCartStore((s) => s.incrementItem);
-  const decrementItem = useCartStore((s) => s.decrementItem);
-
-  const findCartLine = useCallback(
-    (product: ProductResponse) => {
-      const productId = product.id;
-      const variantId = product.variant?.id;
-
-      return items.find((item) => {
-        const lineProductId = item.productId ?? item.product_id;
-        const lineVariantId = item.variantId ?? item.variant_id;
-
-        return variantId
-          ? lineProductId === productId && lineVariantId === variantId
-          : lineProductId === productId;
-      });
-    },
-    [items]
-  );
-
-  const incrementQuantity = useCallback(
-    async (product: ProductResponse) => {
-      const line = findCartLine(product);
-      if (!line) {
-        return;
-      }
-
-      try {
-        await incrementItem(line.id, product.variant?.id);
-      } catch (error) {
-        console.error("[Search] incrementItem failed:", error);
-      }
-    },
-    [findCartLine, incrementItem]
-  );
-
-  const decrementQuantity = useCallback(
-    async (product: ProductResponse) => {
-      const line = findCartLine(product);
-      if (!line) {
-        return;
-      }
-
-      try {
-        await decrementItem(line.id, product.variant?.id);
-      } catch (error) {
-        console.error("[Search] decrementItem failed:", error);
-      }
-    },
-    [decrementItem, findCartLine]
-  );
-
-  const isInCart = useCallback(
-    (product: ProductResponse) => !!findCartLine(product),
-    [findCartLine]
-  );
-
-  const getCartItem = useCallback(
-    (product: ProductResponse) => findCartLine(product),
-    [findCartLine]
-  );
-
-  const isProductLoading = useCallback(
-    (product: ProductResponse) => {
-      const cartLine = findCartLine(product);
-      const variantId = product.variant?.id;
-
-      return (
-        (variantId ? !!loadingItems[variantId] : false) ||
-        (cartLine?.id ? !!loadingItems[cartLine.id] : false)
-      );
-    },
-    [findCartLine, loadingItems]
-  );
 
   const searchQuery = searchParams.get("q") || "";
   const collectionsFromUrl = searchParams.getAll("collection");
@@ -273,14 +170,6 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
     setPage(1);
     setTotalPages(1);
   }, [searchKey]);
-
-  const handleAddToCart = async (product: ProductResponse) => {
-    try {
-      await addItem(buildCartItem(product));
-    } catch (error) {
-      console.error("[Search] addToCart failed:", error);
-    }
-  };
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -876,42 +765,18 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
                 {/* Products Grid: show loaded products, or shimmer only when no products yet */}
                 <div className="grid grid-cols-2 min-[767px]:grid-cols-3 lg:grid-cols-4">
                   {(searchResults?.products?.length ?? 0) > 0
-                    ? searchResults.products.map((product: any) => {
-                        const mappedProduct =
-                          mapSearchProductToProductResponse(product);
-                        const {
-                          productAddToCart,
-                          productIncrement,
-                          productDecrement,
-                        } = createProductCartHandlers(
-                          mappedProduct,
-                          handleAddToCart,
-                          incrementQuantity,
-                          decrementQuantity
-                        );
-
-                        return (
-                          <SearchProductCard
-                            key={product.id}
-                            product={mappedProduct}
-                            onAddToCart={productAddToCart}
-                            onIncrement={productIncrement}
-                            onDecrement={productDecrement}
-                            isInCart={isInCart(mappedProduct)}
-                            cartItem={getCartItem(mappedProduct)}
-                            isQuantityLoading={isProductLoading(mappedProduct)}
-                            settings={{
-                              showAddToCartToast: true,
-                              actionButtonText: settings?.actionButtonText,
-                              actionButtonTextMobile:
-                                settings?.actionButtonTextMobile,
-                              soldOutText: settings?.soldOutText,
-                              soldOutTextMobile: settings?.soldOutTextMobile,
-                            }}
-                            searchProductCard={true}
-                          />
-                        );
-                      })
+                    ? searchResults.products.map((product: any) => (
+                        <SearchProductCard
+                          key={product.id}
+                          product={mapSearchProductToProductResponse(product)}
+                          settings={{
+                            showAddToCartToast: true,
+                            actionButtonText: settings?.actionButtonText,
+                            soldOutText: settings?.soldOutText,
+                          }}
+                          searchProductCard
+                        />
+                      ))
                     : isSearchLoading
                       ? Array.from({ length: 6 }).map((_, index) => (
                           <ShimmerProductCard

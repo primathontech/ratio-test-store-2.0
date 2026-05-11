@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ProductCard } from "@/ui/components/ProductCard";
+import { CartAwareProductCard } from "@/ui/components/CartAwareProductCard";
 import { sortOptions } from "../compounds/sortOptions";
 import { transformProductForCard } from "../adapters/productAdapter";
 import { collectionApiClient } from "../api/client";
-import { TransformedCollection, TransformedProduct } from "../api/types";
+import { TransformedCollection } from "../api/types";
 import { BaseProvider, DefaultContext } from "../base/provider";
 import { IApplyFilter } from "../base/provider/type";
 import { DesktopSortDropdown } from "../compounds/DesktopSortDropDown";
@@ -15,37 +15,8 @@ import { MobileSortDropdown } from "../compounds/MobileSortDropdown";
 import { ApiFilter } from "../constants";
 import { IProps, ISettings, TProps } from "../types";
 
-import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
-import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
 import { LoadMore } from "../compounds/LoadMore";
 import "../style.css";
-
-function buildCartItem(
-  product: ProductCardProduct,
-  variantId?: string
-): CartItem {
-  const lineId =
-    variantId ??
-    product.variantId ??
-    String(product.productId ?? product.id ?? "");
-  return {
-    id: lineId,
-    productId: product.productId ?? String(product.id ?? ""),
-    variantId: variantId ?? product.variantId,
-    title: product.title,
-    price: { amount: Math.round(product.salePrice * 100), currencyCode: "INR" },
-    compareAtPrice:
-      typeof product.originalPrice === "number"
-        ? {
-            amount: Math.round(product.originalPrice * 100),
-            currencyCode: "INR",
-          }
-        : undefined,
-    quantity: 1,
-    image: product.mainImage,
-    product_type: product.category,
-  };
-}
 
 const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
   const safeSettings: ISettings = settings ?? { variant: "v1" };
@@ -63,48 +34,6 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
     sectionTextColor,
     productCardBackgroundColor,
   } = safeSettings;
-
-  const items = useCartItems();
-  const loadingItems = useCartStore((s) => s.loadingItems);
-  const addItem = useCartStore((s) => s.addItem);
-  const incrementItem = useCartStore((s) => s.incrementItem);
-  const decrementItem = useCartStore((s) => s.decrementItem);
-
-  const findCartLine = (product: ProductCardProduct) => {
-    const productId = product.productId ?? String(product.id ?? "");
-    const variantId = product.variantId;
-    return items.find((i) => {
-      const lineProductId = i.productId ?? i.product_id;
-      const lineVariantId = i.variantId ?? i.variant_id;
-      return variantId
-        ? lineProductId === productId && lineVariantId === variantId
-        : lineProductId === productId;
-    });
-  };
-
-  const incrementQuantity = async (product: ProductCardProduct) => {
-    const line = findCartLine(product);
-    if (!line) {
-      return;
-    }
-    try {
-      await incrementItem(line.id, product.variantId);
-    } catch (error) {
-      console.error("[CollectionPage] incrementItem failed:", error);
-    }
-  };
-
-  const decrementQuantity = async (product: ProductCardProduct) => {
-    const line = findCartLine(product);
-    if (!line) {
-      return;
-    }
-    try {
-      await decrementItem(line.id, product.variantId);
-    } catch (error) {
-      console.error("[CollectionPage] decrementItem failed:", error);
-    }
-  };
 
   // UI state
   const [isMobileSortDropdownOpen, setMobileSortDropdownOpen] = useState(false);
@@ -341,16 +270,6 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
       console.error("LoadMore action failed:", error);
     }
   }, [actions]);
-
-  const handleAddToCart = async (product: TransformedProduct) => {
-    const cardProduct = transformProductForCard(product);
-
-    try {
-      await addItem(buildCartItem(cardProduct, product.variant?.id));
-    } catch (error) {
-      console.error("Failed to add product to cart:", error);
-    }
-  };
 
   const totalProducts = collection?.productCount || 0;
 
@@ -687,12 +606,6 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
               >
                 {products.map((product, index) => {
                   const cardProduct = transformProductForCard(product);
-                  const cartLine = findCartLine(cardProduct);
-                  const variantId = cardProduct.variantId;
-                  const isCardLoading =
-                    (variantId ? !!loadingItems[variantId] : false) ||
-                    (cartLine?.id ? !!loadingItems[cartLine.id] : false);
-
                   return (
                     <div
                       key={product.id || index}
@@ -700,14 +613,8 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                       className="product-card-wrapper h-full"
                       style={{ "--index": index } as React.CSSProperties}
                     >
-                      <ProductCard
-                        product={cardProduct}
-                        onAddToCart={() => handleAddToCart(product)}
-                        onIncrement={() => incrementQuantity(cardProduct)}
-                        onDecrement={() => decrementQuantity(cardProduct)}
-                        isInCart={!!cartLine}
-                        cartItem={cartLine}
-                        isQuantityLoading={isCardLoading}
+                      <CartAwareProductCard
+                        cardProduct={cardProduct}
                         settings={{
                           showAddToCartToast: true,
                           showActionButton,
@@ -720,6 +627,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                           color: sectionTextColor,
                         }}
                         className="md:border md:!rounded-lg !border-white md:!border-[#EBEBEB] !pl-0"
+                        logTag="CollectionPage"
                       />
                     </div>
                   );
