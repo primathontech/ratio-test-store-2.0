@@ -1,5 +1,6 @@
 import React from "react";
 import { WidgetProps } from "@/widgets/types";
+import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 
 export interface FooterLink {
   name: string;
@@ -70,7 +71,8 @@ export interface FooterSettings {
  * Footer widget data
  */
 export interface FooterData {
-  // Static content — data is hardcoded in the V1 component
+  success?: boolean;
+  data?: ApiProduct | null;
 }
 
 /**

@@ -5,6 +5,7 @@ import {
   useCartStore,
   useCartToggle,
   useCartTotalQuantity,
+  type CartItem,
 } from "@shopkit/cart";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,6 +32,32 @@ export interface StickyFooterProductData {
     title?: string;
     price?: number;
   }>;
+}
+
+function buildCartItem(
+  product: StickyFooterProductData,
+  selectedVariantId?: string
+): CartItem {
+  const fallbackVariant =
+    product.variants?.find((v) => v.title === "Default Title") ||
+    product.variants?.[0];
+  const selectedVariant = selectedVariantId
+    ? product.variants?.find((v) => v.id === selectedVariantId)
+    : undefined;
+  const activeVariant = selectedVariant || fallbackVariant;
+  const variantId = activeVariant?.id;
+  const lineId = variantId ?? product.id;
+  const priceInPaise = activeVariant?.price ?? 0;
+
+  return {
+    id: lineId,
+    productId: product.id,
+    variantId,
+    title: product.title,
+    price: { amount: priceInPaise, currencyCode: "INR" },
+    quantity: 1,
+    product_type: product.product_type,
+  };
 }
 
 interface StickyFooterProps {
@@ -146,29 +173,24 @@ export const StickyFooter = ({
     return item.icon;
   };
 
-  const defaultTitleVariant = productData?.variants.find(
-    (variant) => variant?.title === "Default Title"
-  );
-  const priceInPaise = defaultTitleVariant?.price ?? 0;
+  const selectedVariant = selectedVariantId
+    ? productData?.variants.find((v) => v.id === selectedVariantId)
+    : undefined;
+  const fallbackVariant =
+    productData?.variants.find((v) => v?.title === "Default Title") ||
+    productData?.variants[0];
+  const activeVariant = selectedVariant || fallbackVariant;
+  const priceInPaise = activeVariant?.price ?? 0;
   const currentPrice = priceInPaise / 100;
 
   const handleAddToCart = async () => {
     if (!productData) {
       return;
     }
-
     try {
-      const variantId = selectedVariantId || productData.variants[0]?.id;
-      await addItem({
-        id: productData.id,
-        productId: productData.id,
-        variantId,
-        quantity: 1,
-        title: productData.title,
-        price: { amount: currentPrice, currencyCode: "INR" },
-      });
+      await addItem(buildCartItem(productData, selectedVariantId));
     } catch (error) {
-      console.error("Failed to add to cart:", error);
+      console.error("[StickyFooter] addItem failed:", error);
     }
   };
 
@@ -237,13 +259,42 @@ export const StickyFooter = ({
               data-testid="sticky-footer-add-to-cart-button"
               onClick={handleAddToCart}
               disabled={isLoading || !productData || !isAvailable || !cartToken}
-              className="md:hidden text-text-lg text-center text-white font-bold px-[42px] py-[17px] w-full rounded-full bg-black disabled:cursor-not-allowed transition-opacity hover:opacity-90"
+              className="md:hidden flex items-center justify-center text-text-lg text-center text-white font-bold px-[42px] py-[17px] w-full rounded-full bg-black disabled:cursor-not-allowed transition-opacity hover:opacity-90"
             >
-              {isLoading
-                ? "Adding..."
-                : !isAvailable
-                  ? soldOutText
-                  : `${addToCartText} - ₹${currentPrice}`}
+              {isLoading ? (
+                <svg
+                  width="18"
+                  height="18"
+                  className="animate-spin text-white"
+                  viewBox="0 0 66 66"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <circle
+                    className="opacity-25"
+                    fill="none"
+                    strokeWidth="6"
+                    stroke="currentColor"
+                    cx="33"
+                    cy="33"
+                    r="30"
+                  />
+                  <circle
+                    fill="none"
+                    strokeWidth="6"
+                    stroke="currentColor"
+                    cx="33"
+                    cy="33"
+                    r="30"
+                    strokeDasharray="164"
+                    strokeDashoffset="120"
+                  />
+                </svg>
+              ) : !isAvailable ? (
+                soldOutText
+              ) : (
+                `${addToCartText} - ₹${currentPrice}`
+              )}
             </button>
           ) : (
             <div

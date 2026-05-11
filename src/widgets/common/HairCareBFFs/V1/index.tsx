@@ -1,6 +1,13 @@
 "use client";
 
-import React, { memo, useState, useRef, useCallback, useMemo } from "react";
+import React, {
+  memo,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+} from "react";
 import Image from "next/image";
 import type {
   HairCareBFFsProps,
@@ -133,6 +140,12 @@ const DEFAULT_HAIR_CARE_BFFS_BREAKPOINTS = [
   { minWidth: 1024, cards: 5, gap: 0 },
   { minWidth: 1440, cards: 5, gap: 0 },
 ];
+const EMPTY_PRODUCTS: ApiProduct[] = [];
+
+const GRID_EXIT_DURATION_MS = 260;
+const GRID_ENTER_DURATION_MS = 320;
+
+type GridAnimationPhase = "idle" | "exiting" | "pre-enter" | "entering";
 
 /* ------------------------------------------------------------------ */
 /*  Main V1 Component                                                  */
@@ -159,23 +172,60 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
   );
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [gridAnimationPhase, setGridAnimationPhase] =
+    useState<GridAnimationPhase>("idle");
   const activeTab = tabs[activeTabIndex];
-  const products = useMemo(
-    () => activeTab?.products || [],
-    [activeTab?.products]
+  const products = activeTab?.products ?? EMPTY_PRODUCTS;
+  const animationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
   );
+  const animationFrameRef = useRef<number | null>(null);
+
+  const clearScheduledAnimation = useCallback(() => {
+    if (animationTimeoutRef.current) {
+      clearTimeout(animationTimeoutRef.current);
+      animationTimeoutRef.current = null;
+    }
+    if (animationFrameRef.current !== null) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+  }, []);
 
   const handleTabClick = useCallback(
     (index: number) => {
       if (index === activeTabIndex) {
         return;
       }
-      setActiveTabIndex(index);
+      clearScheduledAnimation();
+      setGridAnimationPhase("exiting");
+
+      // Let the current grid exit first, then swap the data and animate
+      // the new grid into place from the same offset.
+      animationTimeoutRef.current = setTimeout(() => {
+        setActiveTabIndex(index);
+        setGridAnimationPhase("pre-enter");
+
+        animationFrameRef.current = requestAnimationFrame(() => {
+          animationFrameRef.current = null;
+          setGridAnimationPhase("entering");
+
+          animationTimeoutRef.current = setTimeout(() => {
+            setGridAnimationPhase("idle");
+            animationTimeoutRef.current = null;
+          }, GRID_ENTER_DURATION_MS);
+        });
+      }, GRID_EXIT_DURATION_MS);
     },
-    [activeTabIndex]
+    [activeTabIndex, clearScheduledAnimation]
   );
 
-  const tabsScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(
+    () => () => {
+      clearScheduledAnimation();
+    },
+    [clearScheduledAnimation]
+  );
 
   const cardTheme = ProductCardTheme.DARK;
   const outerBorderClass =
@@ -215,6 +265,11 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
   if (tabs.length === 0) {
     return null;
   }
+
+  const gridAnimationClass =
+    gridAnimationPhase === "entering" || gridAnimationPhase === "idle"
+      ? "translate-y-0 opacity-100"
+      : "translate-y-3 opacity-0";
 
   return (
     <section
@@ -263,7 +318,6 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
           {/* Tab buttons */}
           <div
-            ref={tabsScrollRef}
             className="flex overflow-x-auto hide-scrollbar"
             style={{ gap: "8px", maxWidth: "100%" }}
           >
@@ -296,7 +350,16 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
         {/* Carousel area */}
         <div
-          className={`xl:mx-auto xl:max-w-[1300px] ${outerBorderClass} md:rounded-lg`}
+          className={`xl:mx-auto xl:max-w-[1300px] ${outerBorderClass} md:rounded-lg transition-all ease-out will-change-transform will-change-opacity ${
+            gridAnimationClass
+          } ${gridAnimationPhase !== "idle" ? "pointer-events-none" : ""}`}
+          style={{
+            transitionDuration: `${
+              gridAnimationPhase === "exiting"
+                ? GRID_EXIT_DURATION_MS
+                : GRID_ENTER_DURATION_MS
+            }ms`,
+          }}
         >
           <SwipeCarousel
             itemCount={products.length}

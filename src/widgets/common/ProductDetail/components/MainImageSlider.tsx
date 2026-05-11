@@ -249,7 +249,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
             <div
               className={`pl-2 ${
                 isMobile
-                  ? "text-xs leading-none py-[3px] px-0"
+                  ? "text-sm leading-none py-[3px] px-0"
                   : "text-sm px-1 pr-3"
               }`}
               style={{
@@ -601,7 +601,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
 
       {/* Mobile pagination row — small bars (active = wide black, idle = small grey) */}
       {isMobile && images.length > 1 && (
-        <div className="py-2.5 flex items-center justify-center gap-1">
+        <div className="pt-2 pb-2.5 flex items-center justify-center gap-1">
           {images.map((image, index) => {
             const isActive = index === currentIndex;
             return (

@@ -551,9 +551,9 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
         }}
       >
         {/* Inner container: 60px height + 15px padding on mobile/tablet, 65px + 40px on desktop (≥1100px) */}
-        <div className="w-full max-w-full flex items-center h-[60px] px-[15px] min-[1100px]:h-[65px] min-[1100px]:px-10">
+        <div className="w-full max-w-full flex items-center h-[60px] px-[15px] min-[1100px]:h-[65px] min-[1100px]:px-10 border-b border-primary/60">
           {/* ---- Mobile Hamburger (visible below 1100px) ---- */}
-          <div className="flex items-center mr-3 min-[1100px]:hidden">
+          <div className="flex items-center mr-[15px] min-[1100px]:hidden">
             <button
               className="text-primary"
               onClick={() => setMobileMenuOpen(true)}
@@ -638,7 +638,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               target="_blank"
               rel="noopener noreferrer"
               className="md:hidden transition-all duration-200 ease-in-out flex items-center justify-center px-1.5 py-[3.5px] max-w-[65px] text-xs bg-primary"
-              aria-label={getAppData?.button_text || "Use app"}
+              aria-label={getAppData?.button_text || "Get App"}
               style={{
                 color: "#fff",
                 width: "71px",
@@ -646,7 +646,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                 borderRadius: "100px",
               }}
             >
-              {getAppData?.button_text || "Use app"}
+              Get App
             </Link>
 
             {/* Mobile/Tablet search icon (visible below 1100px) */}
@@ -835,10 +835,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
           {/* Full-width dropdown panel below the input strip — only when the
               user hasn't started typing yet. */}
           {!overlayQuery.trim() && (
-            <div
-              className="absolute left-0 right-0 top-[81px] bg-white z-[22101] overflow-y-auto py-4 px-3 shadow-[0_0_8px_rgba(0,0,0,0.15)]"
-              style={{ maxHeight: "calc(100vh - 100px)" }}
-            >
+            <div className="absolute left-0 right-0 top-[81px] bg-white z-[22101] py-4 px-3 shadow-[0_5px_20px_#8f959a99] max-h-[560px]">
               <TrendingSearches onClose={closeSearchOverlay} />
               <RecommendedProducts />
             </div>
