@@ -164,7 +164,7 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
       />
 
       {/* Carousel wrapper */}
-      <div className="flex items-center pl-1 xl:pl-5 pr-0 xl:pr-[3px]">
+      <div className="flex items-center pl-[14px] xl:pl-5 pr-0 xl:pr-[3px]">
         {/* Prev button — desktop only */}
         <button
           onClick={goPrev}

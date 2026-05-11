@@ -361,7 +361,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
 
       <ContextualMessage data={{}} settings={{ variant: "v1" }} />
 
-      <div className="fixed bottom-[16px] left-[16px] right-[16px] z-[50] block md:hidden">
+      <div className="fixed bottom-[16px] left-[16px] right-[16px] z-[50] block xl:hidden">
         <StickyFooter items={MOBILE_NAVIGATION_ITEMS} />
       </div>
     </footer>

@@ -248,12 +248,11 @@ export const StickyFooter = ({
           ) : (
             <div
               data-testid="sticky-footer-navigation-container"
-              className="grid grid-cols-3 py-[5px] w-full rounded-full h-[58px]"
+              className="grid grid-cols-3 pt-[5px] pb-[9px] w-full rounded-full h-[58px]"
               style={{
                 backdropFilter: "blur(32px)",
                 WebkitBackdropFilter: "blur(32px)",
                 background: "#eeecffb2",
-                border: "1px solid #F8F8F8",
               }}
             >
               {items.map((item) => {
@@ -359,13 +358,12 @@ export const StickyFooter = ({
           <div
             data-testid="sticky-footer-cart-button"
             onClick={() => void toggleCart()}
-            className="relative flex flex-col items-center justify-center w-[59px] h-[59px] px-[10px] rounded-full cursor-pointer hover:scale-105 active:scale-90 overflow-hidden"
+            className="relative flex flex-col items-center justify-center w-[59px] h-[59px] px-[10px] rounded-full cursor-pointer hover:scale-105 active:scale-90 overflow-hidden border border-[#ffffff]/30"
             style={{
               backgroundColor:
                 itemCount > 0 || isAnimating ? "#000000" : "#eeecffb2",
               backdropFilter: "blur(32px)",
               WebkitBackdropFilter: "blur(32px)",
-              border: "1px solid white",
             }}
           >
             <div
