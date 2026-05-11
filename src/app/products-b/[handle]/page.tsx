@@ -1,7 +1,7 @@
 import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
-import { MetaTagGenerator, SEOFactory } from "@shopkit/seo";
+import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
@@ -11,10 +11,6 @@ import { cache } from "react";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
-
-const seoSystem = SEOFactory.createForEnvironment(
-  process.env.NODE_ENV as "development" | "staging" | "production"
-);
 
 export async function generateStaticParams() {
   const homepageFeaturedCollections = process.env.HOMEPAGE_FEATURED_COLLECTIONS;
@@ -45,8 +41,8 @@ export async function generateStaticParams() {
       })
       .then((collectionResponse: any) => {
         if (collectionResponse?.products) {
-          return collectionResponse.collection.products.flatMap(
-            (product: any) => (product?.handle ? [product.handle] : [])
+          return collectionResponse.products.flatMap((product: any) =>
+            product?.handle ? [product.handle] : []
           );
         }
         return [];
@@ -78,81 +74,12 @@ export async function generateMetadata({
 }: {
   params: { handle: string };
 }): Promise<Metadata> {
-  try {
-    const product = await fetchProduct(params.handle);
-    const locale = getStaticLocale();
-
-    if (!product) {
-      return {
-        title: "Product Not Found | Wellevrsed",
-        description: "The requested product could not be found.",
-      };
-    }
-
-    const seoTitle = `${product.seo?.title || product.title}`;
-    const seoDescription = product?.seo?.description;
-
-    // Generate SEO data including structured data
-    const seoData = await seoSystem.generateSEOData({
-      type: "product",
-      data: product,
-      path: `/products/${params.handle}`,
-      locale,
-    });
-
-    const metaTagGenerator = new MetaTagGenerator(seoSystem["config"]);
-    const metadata = metaTagGenerator.generateNextJSMetadata({
-      title: seoTitle,
-      description: seoDescription,
-      type: "website" as "website",
-      canonical: `${process.env.NEXT_PUBLIC_AQUALOGICA_URL || "https://aqualogca.in"}/products/${params.handle}`,
-      image: product.images?.[0]
-        ? {
-            id: `product-${params.handle}`,
-            url: product.images[0].url,
-            altText: product.title,
-            width: product.images[0].width || 800,
-            height: product.images[0].height || 800,
-          }
-        : {
-            id: "wellversed-default",
-            url: "/images/logo/wellversed-logo.svg",
-            altText: product.title,
-            width: 2048,
-            height: 2048,
-          },
-    });
-
-    // Add structured data to the head section to avoid Facebook Pixel conflicts
-    if (seoData.structuredData && seoData.structuredData.length > 0) {
-      const structuredDataScripts = seoData.structuredData.map(
-        (schema, index) => ({
-          type: "application/ld+json" as const,
-          children: JSON.stringify(schema),
-          key: `structured-data-${index}`,
-        })
-      );
-
-      return {
-        ...metadata,
-        other: {
-          ...metadata.other,
-          // Add structured data as script tags in head
-          "script:type=application/ld+json": structuredDataScripts.map(
-            (script) => script.children
-          ),
-        },
-      };
-    }
-
-    return metadata;
-  } catch (error) {
-    console.error("Error generating metadata for product:", error);
-    return {
-      title: "Product | Wellevrsed",
-      description: "Shop our amazing products at Wellevrsed",
-    };
-  }
+  const product = await fetchProduct(params.handle);
+  return resolveCommercePageSEO(
+    "product",
+    product,
+    `/products-b/${params.handle}`
+  );
 }
 
 export default async function ProductPage({
