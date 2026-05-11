@@ -521,7 +521,14 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     setMobileMenuOpen(false);
   }, []);
 
-  const getAppData = settings?.getApp;
+  const getAppData = {
+    title: settings?.getApp_title,
+    description: settings?.getApp_description,
+    button_text: settings?.getApp_button_text,
+    logo_alt: settings?.getApp_logo_alt,
+    logo_url: settings?.getApp_logo_url,
+    app_url: settings?.getApp_app_url,
+  };
 
   const connectWithUsData = [
     { key: "track_order", label: "Track Order", href: "/account" },
@@ -532,7 +539,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
   return (
     <>
       <header
-        className={`sticky top-0 z-[20] ${className ?? ""}`}
+        className={`sticky top-0 z-[20] max-md:!bg-[rgb(255_255_255/0.6)] max-md:[backdrop-filter:blur(16px)] max-md:[-webkit-backdrop-filter:blur(16px)] ${className ?? ""}`}
         style={{
           background:
             backgroundColor === "#ffffff"

@@ -295,7 +295,12 @@ export const template: PageConfig = {
             salon_label: "t:common.header.salon_label",
             salon_href: "t:common.header.salon_href",
             salon_items: "t:common.header.salon_items",
-            getApp: "t:common.header.get_app",
+            getApp_title: "t:common.header.get_app.title",
+            getApp_description: "t:common.header.get_app.description",
+            getApp_button_text: "t:common.header.get_app.button_text",
+            getApp_logo_alt: "t:common.header.get_app.logo_alt",
+            getApp_logo_url: "t:common.header.get_app.logo_url",
+            getApp_app_url: "t:common.header.get_app.app_url",
           },
         },
       ],
@@ -309,9 +314,18 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          mobile: {
+            margin: { top: -58, right: 0, bottom: 0, left: 0 },
+            padding: { top: 0, right: 0, bottom: 0, left: 0 },
+          },
+          tablet: {
+            margin: { top: 0, right: 0, bottom: 0, left: 0 },
+            padding: { top: 0, right: 0, bottom: 0, left: 0 },
+          },
+          desktop: {
+            margin: { top: 0, right: 0, bottom: 0, left: 0 },
+            padding: { top: 0, right: 0, bottom: 0, left: 0 },
+          },
         },
       },
       widgets: [
