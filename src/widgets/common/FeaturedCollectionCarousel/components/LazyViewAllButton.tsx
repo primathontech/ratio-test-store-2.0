@@ -248,7 +248,7 @@ function LazyViewAllButtonContent({
         href={redirectUrl}
         className={LINK_CLASS}
         style={linkStyle}
-        data-testid="featured-carousel-view-all"
+        data-testid="product-grid-v2-view-all-button"
       >
         {!handlesMatch && isLoading ? (
           <div className="flex-shrink-0 w-[60px] h-[24px] bg-gray-200 animate-pulse rounded" />
@@ -256,7 +256,10 @@ function LazyViewAllButtonContent({
           <ThumbnailRow products={displayProducts} />
         )}
 
-        <span className="inline-flex gap-1 items-baseline font-medium">
+        <span
+          data-testid="product-grid-v2-view-all-text"
+          className="inline-flex gap-1 items-baseline font-medium"
+        >
           <span className={themeStyles.textWrapClass}>
             View all{" "}
             {!handlesMatch && isLoading ? (

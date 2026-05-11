@@ -552,14 +552,17 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               onClick={() => setMobileMenuOpen(true)}
               aria-label="Open menu"
               aria-expanded={mobileMenuOpen}
+              data-testid="header-mobile-menu-button"
             >
-              <HamburgerIcon />
+              <span data-testid="header-mobile-menu-button-icon">
+                <HamburgerIcon />
+              </span>
             </button>
           </div>
 
           {/* ---- Logo ---- */}
           <div className="flex items-center py-[5px]">
-            <Link href="/" className="block">
+            <Link href="/" className="block" data-testid="header-brand-logo">
               <Image
                 src={logoSrc}
                 alt={logoAlt}
@@ -572,26 +575,44 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
           </div>
 
           {/* ---- Desktop Navigation (visible from 1100px) ---- */}
-          <nav className="hidden min-[1100px]:flex flex-1 h-full">
-            <ul className="list-none p-0 m-0 inline-flex items-stretch gap-[22px] min-[1450px]:gap-8 pl-[47px] h-full">
-              {navigation.map((item, index) => (
-                <li key={index} className="relative group flex items-center">
-                  <Link
-                    href={item.href}
-                    className="relative flex items-baseline gap-2 text-sm leading-[16.8px] font-bold text-black no-underline whitespace-nowrap after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-px after:bg-black after:origin-right after:scale-x-0 after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
+          <nav
+            className="hidden min-[1100px]:flex flex-1 h-full"
+            data-testid="header-desktop-navigation-wrapper"
+          >
+            <ul
+              className="list-none p-0 m-0 inline-flex items-stretch gap-[22px] min-[1450px]:gap-8 pl-[47px] h-full"
+              data-testid="desktop-navigation-menu"
+            >
+              {navigation.map((item, index) => {
+                const itemKey = item.label.toLowerCase().replace(/\s+/g, "-");
+                return (
+                  <li
+                    key={index}
+                    className="relative group flex items-center"
+                    data-testid={`desktop-navigation-item-${itemKey}`}
                   >
-                    <span>{item.label}</span>
-                    {item.dropdown && (
-                      <ChevronDownIcon className="w-2.5 h-[7px]" />
-                    )}
-                  </Link>
+                    <Link
+                      href={item.href}
+                      className="relative flex items-baseline gap-2 text-sm leading-[16.8px] font-bold text-black no-underline whitespace-nowrap after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-px after:bg-black after:origin-right after:scale-x-0 after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
+                      data-testid={`desktop-navigation-link-${itemKey}`}
+                    >
+                      <span>{item.label}</span>
+                      {item.dropdown && (
+                        <ChevronDownIcon className="w-2.5 h-[7px]" />
+                      )}
+                    </Link>
 
-                  {/* Dropdown */}
-                  {item.dropdown && (
-                    <DesktopNavDropdown groups={item.dropdown} />
-                  )}
-                </li>
-              ))}
+                    {/* Dropdown */}
+                    {item.dropdown && (
+                      <span
+                        data-testid={`desktop-navigation-dropdown-${itemKey}`}
+                      >
+                        <DesktopNavDropdown groups={item.dropdown} />
+                      </span>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 
@@ -599,7 +620,10 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
           <div className="flex-1 min-[1100px]:hidden" />
 
           {/* ---- Right Side: Search / Cart / Account ---- */}
-          <div className="flex items-center gap-3.5 xl:gap-[19px]">
+          <div
+            className="flex items-center gap-3.5 xl:gap-[19px]"
+            data-testid="header-right-section"
+          >
             {/* Get App - Only show on mobile, hide on tablet (md and up) */}
             <Link
               data-testid="header-get-app-button"
@@ -635,12 +659,16 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               }}
               className="text-black min-[1100px]:hidden"
               aria-label="Search"
+              data-testid="header-toggle-mobile-search"
             >
               <SearchIcon />
             </button>
 
             {/* Desktop search input (visible from 1100px). */}
-            <div className="hidden min-[1100px]:block w-[255px]">
+            <div
+              className="hidden min-[1100px]:block w-[255px]"
+              data-testid="header-desktop-search-wrapper"
+            >
               <SearchInputV2
                 searchPlaceholder={searchSuggestions}
                 isMobile={false}
@@ -656,8 +684,9 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               }}
               className="relative flex items-center gap-4 text-black no-underline bg-transparent border-0 p-0 cursor-pointer"
               aria-label={`Cart with ${cartCount} items`}
+              data-testid="header-cart-icon-container"
             >
-              <span className="relative">
+              <span className="relative" data-testid="header-cart-icon">
                 <CartIcon />
                 <CartBadge count={cartCount} />
               </span>
@@ -669,7 +698,10 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
 
             {/* Account: triggers KwikPass login when logged out, shows
                 dropdown (Profile / Order History / Logout) when logged in. */}
-            <div className="hidden md:flex items-center">
+            <div
+              className="hidden md:flex items-center"
+              data-testid="header-user-actions-wrapper"
+            >
               <KwikpassLoginCustom />
             </div>
           </div>
@@ -729,7 +761,10 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
           submit). Trending + recommended panel is rendered separately at
           full viewport width below the input strip. */}
       {isSearchOverlayOpen && (
-        <div className="fixed inset-0 z-[22100] xl:hidden">
+        <div
+          className="fixed inset-0 z-[22100] xl:hidden"
+          data-testid="header-mobile-search-container"
+        >
           {/* Backdrop — closes on outside click */}
           <div
             className="absolute inset-0 z-[22100]"

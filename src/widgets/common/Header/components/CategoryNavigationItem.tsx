@@ -33,11 +33,12 @@ const CategoryNavigationItem: React.FC<{
   };
 
   return (
-    <Box>
+    <Box data-testid={`category-navigation-item-${item.key || item.label}`}>
       <button
         onClick={handleClick}
         aria-expanded={isExpanded}
         className="w-full flex items-center justify-between py-2 pl-4"
+        data-testid={`category-navigation-dropdown-${item.key || item.label}`}
       >
         <p className="text-sm">{item.label}</p>
         {isExpanded ? (
@@ -80,6 +81,7 @@ const CategoryNavigationItem: React.FC<{
             maxHeight: isExpanded ? `${contentHeight}px` : "0px",
             opacity: isExpanded ? 1 : 0,
           }}
+          data-testid={`category-navigation-content-${item.key || item.label}`}
         >
           <div ref={contentRef}>
             {item.items.map((nestedItem, nestedIndex) => (

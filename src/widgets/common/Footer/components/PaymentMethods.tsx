@@ -14,9 +14,12 @@ export const PaymentMethods: React.FC<PaymentMethodsProps> = ({
   }
 
   return (
-    <div className="flex items-center gap-2.5 md:mb-24 xl:mb-0">
+    <div
+      className="flex items-center gap-2.5 md:mb-24 xl:mb-0"
+      data-testid="footer-payment-methods-container"
+    >
       {paymentMethods.map((method, index) => (
-        <div key={index}>
+        <div key={index} data-testid={`footer-payment-method-${index}`}>
           <Image
             src={method.image}
             alt={method.name}

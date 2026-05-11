@@ -18,16 +18,23 @@ export const GetApp = ({ data }: { data?: GetAppData }) => {
   }
 
   return (
-    <div className="app-widget bg-primary p-2 md:px-3 h-[75px] flex justify-between items-center gap-4">
+    <div
+      className="app-widget bg-primary p-2 md:px-3 h-[75px] flex justify-between items-center gap-4"
+      data-testid="get-app-container"
+    >
       <Link
         href={data?.app_url || "#"}
         className="app-widget-inner block no-underline text-white hover:text-white"
         target="_blank"
         rel="noopener noreferrer"
+        data-testid="get-app-link"
       >
         <Flex align="center" justify="center" className="gap-3 md:gap-4">
           {/* App Logo */}
-          <div className="rounded overflow-hidden shrink-0">
+          <div
+            className="rounded overflow-hidden shrink-0"
+            data-testid="get-app-logo-wrapper"
+          >
             {data?.logo_url && (
               <Image
                 src={data.logo_url}
@@ -40,7 +47,7 @@ export const GetApp = ({ data }: { data?: GetAppData }) => {
           </div>
 
           {/* App Widget Header */}
-          <div>
+          <div data-testid="get-app-text-wrapper">
             <h2 className="text-sm font-bold md:leading-tight md:mt-1">
               {data?.title}
             </h2>
@@ -50,7 +57,10 @@ export const GetApp = ({ data }: { data?: GetAppData }) => {
           </div>
 
           {/* App Widget Button */}
-          <p className="app-widget-button h-[33px] w-[65px] text-xs p-3.5 font-bold rounded border whitespace-nowrap shrink-0 flex items-center justify-center">
+          <p
+            className="app-widget-button h-[33px] w-[65px] text-xs p-3.5 font-bold rounded border whitespace-nowrap shrink-0 flex items-center justify-center"
+            data-testid="get-app-button-text"
+          >
             {data?.button_text}
           </p>
         </Flex>

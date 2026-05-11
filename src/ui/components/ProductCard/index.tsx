@@ -99,6 +99,7 @@ const QuantityPill = ({
   buttonRadius: string;
 }) => (
   <div
+    data-testid="product-action-quantity-container"
     className={`flex items-center justify-between w-full h-[32px] md:h-[42px] px-[12px] text-[16px] font-medium border border-[#000000] ${className}`.trim()}
     style={{
       backgroundColor: "#FFFFFF",
@@ -115,11 +116,15 @@ const QuantityPill = ({
       }}
       disabled={isLoading}
       aria-label="Decrease quantity"
+      data-testid="product-action-decrement-button"
       className="px-2 text-[20px] leading-none disabled:opacity-50 cursor-pointer"
     >
       −
     </button>
-    <span className="flex flex-1 items-center justify-center text-center">
+    <span
+      data-testid="product-action-quantity-value"
+      className="flex flex-1 items-center justify-center text-center"
+    >
       <span className="flex h-[30px] w-[30px] items-center justify-center bg-[#F4F6F8] md:h-[40px] md:w-[40px]">
         {quantity}
       </span>
@@ -133,6 +138,7 @@ const QuantityPill = ({
       }}
       disabled={isLoading}
       aria-label="Increase quantity"
+      data-testid="product-action-increment-button"
       className="px-2 text-[20px] leading-none disabled:opacity-50 cursor-pointer"
     >
       +
@@ -311,9 +317,11 @@ export const ProductCard = memo(function ProductCard({
 
   return (
     <div
+      data-testid={`product-card-link-${product.id}`}
       className={`block ${searchProductCard ? "" : "h-full"} ${linkClassName}`.trim()}
     >
       <div
+        data-testid={`product-card-container-${product.id}`}
         className={`flex flex-col ${searchProductCard ? "h-auto !pl-0" : "h-full"} ${className}`.trim()}
         style={{
           backgroundColor: cardBg,
@@ -327,6 +335,7 @@ export const ProductCard = memo(function ProductCard({
         <div className="pl-0 md:pl-[8px] pr-0 md:pr-[8px] pt-0 md:pt-[8px]">
           <Link
             href={product.href}
+            data-testid={`product-card-image-container-${product.id}`}
             className={`relative block overflow-hidden bg-gradient-to-br from-purple-50 via-blue-50 to-purple-100 ${imageClassName}`.trim()}
             style={{ aspectRatio: "1/1" }}
           >
@@ -334,11 +343,11 @@ export const ProductCard = memo(function ProductCard({
             {isSoldOut && (
               <>
                 <div
-                  data-testid={`product-card-sold-out-overlay`}
+                  data-testid={`product-card-sold-out-overlay-${product.id}`}
                   className="absolute z-[2] inset-0 size-full bg-black/10"
                 />
                 <div
-                  data-testid={`product-card-sold-out-badge-container`}
+                  data-testid={`product-card-sold-out-badge-container-${product.id}`}
                   className="absolute z-[3] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2"
                 >
                   <SoldOutBadge />
@@ -349,7 +358,10 @@ export const ProductCard = memo(function ProductCard({
             {/* Promo badge — `badgeBackground` (resolved via getProductLabel)
                 takes precedence over the legacy `badgeVariant` mapping. */}
             {showBadge && product.badge && (
-              <div className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2]">
+              <div
+                data-testid={`product-card-badge-${product.id}`}
+                className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2]"
+              >
                 <div
                   className="relative inline-flex items-center leading-[18px] md:leading-[21px] text-[12px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px]"
                   style={{
@@ -369,6 +381,7 @@ export const ProductCard = memo(function ProductCard({
             {/* Size / weight label */}
             {showNetContent && product.weight && (
               <div
+                data-testid={`product-card-net-content-${product.id}`}
                 className="absolute bottom-[4px] right-[4px] z-[2] p-[4px] text-[10px] text-[#1D1D1D] leading-[12px]"
                 style={{
                   backgroundColor: t.weightBg,
@@ -416,12 +429,14 @@ export const ProductCard = memo(function ProductCard({
 
         {/* Info area */}
         <div
+          data-testid={`product-card-details-${product.id}`}
           className={`flex flex-col flex-1 gap-[5px] md:gap-[8px] mt-[8px] px-0 md:px-[8px] pb-0 md:pb-[8px] ${detailsClassName}`.trim()}
         >
           {/* Category chip */}
           {showProductType && product.category && (
             <div>
               <span
+                data-testid={`product-card-variant-${product.id}`}
                 className={`inline-flex p-[4.5px] md:p-[8px] text-[12px] md:text-[14px] font-[600] leading-[14px] ${categoryChipClassName}`.trim()}
                 style={{
                   color: t.chipColor,
@@ -438,6 +453,7 @@ export const ProductCard = memo(function ProductCard({
           {/* Title */}
           <Link
             href={product.href}
+            data-testid={`product-card-title-${product.id}`}
             className={`text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2  min-h-[33px] md:min-h-[40px] ${titleClassName}`.trim()}
             style={{
               color: textPrimary,
@@ -463,7 +479,7 @@ export const ProductCard = memo(function ProductCard({
 
           {/* Rating */}
           {showRating && (
-            <div>
+            <div data-testid={`product-card-rating-${product.id}`}>
               <StarRating
                 rating={product.rating}
                 reviewCount={product.reviewCount}
@@ -477,9 +493,11 @@ export const ProductCard = memo(function ProductCard({
 
           {/* Price row */}
           <div
+            data-testid={`product-card-price-section-${product.id}`}
             className={`flex flex-col lg:flex-row items-start lg:items-center gap-0 lg:gap-[6px] flex-wrap mt-auto min-h-8 md:min-h-4 ${priceSectionClassName}`.trim()}
           >
             <span
+              data-testid={`product-card-price-${product.id}`}
               className={`text-[14px] md:text-[16px] ${salePriceClassName}`.trim()}
               style={{
                 color: textPrimary,
@@ -491,8 +509,12 @@ export const ProductCard = memo(function ProductCard({
             {product.originalPrice &&
               product.originalPrice > product.salePrice && (
                 <>
-                  <div className="leading-[13px] gap-1">
+                  <div
+                    data-testid={`product-card-price-details-${product.id}`}
+                    className="leading-[13px] gap-1"
+                  >
                     <span
+                      data-testid={`product-card-compare-price-${product.id}`}
                       className={`text-[12px] line-through mr-1 text-[var(--compare-price-mobile)] md:text-[var(--compare-price-desktop)] ${compareAtPriceClassName}`.trim()}
                       style={
                         {
@@ -506,6 +528,7 @@ export const ProductCard = memo(function ProductCard({
                     </span>
                     {product.discount && (
                       <span
+                        data-testid={`product-card-discount-${product.id}`}
                         className={`text-[12px] ${discountClassName}`.trim()}
                         style={{
                           color: t.discountColor,
@@ -561,6 +584,7 @@ export const ProductCard = memo(function ProductCard({
                 disabled={isQuantityLoading || isLoading}
                 onMouseEnter={() => setIsButtonHovered(true)}
                 onMouseLeave={() => setIsButtonHovered(false)}
+                data-testid="product-action-add-to-cart-button"
                 className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] disabled:cursor-not-allowed ${actionButtonClassName}`.trim()}
                 style={{
                   backgroundColor: isButtonHovered
