@@ -48,7 +48,7 @@ const SearchProductCard: React.FC<SearchProductCardProps> = ({
       imageClassName: "!rounded-[10px]",
       detailsClassName: "!gap-[10px] md:!gap-[8px]",
       priceSectionClassName:
-        "!font-semibold [&_span]:!font-medium !text-sm md:!text-base max-h-[16px] md:max-h-[30px]",
+        "!flex-row !items-center !gap-[6px] !font-semibold [&_span]:!font-medium !text-sm md:!text-base md:max-h-[30px] !min-h-[16px]",
       salePriceClassName: "leading-[16px] md:leading-[29px]",
       actionButtonClassName:
         "min-h-8 min-[769px]:min-h-[42px] !mt-0 !rounded-[10px] md:!rounded-[10px] !text-base tracking-[1px]",

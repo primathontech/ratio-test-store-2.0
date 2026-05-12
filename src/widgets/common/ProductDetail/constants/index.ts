@@ -52,7 +52,7 @@ export const GALLERY_CONFIG = {
   // Selection box configuration
   SELECTION_BOX: {
     DEFAULT_SHOW: true,
-    DEFAULT_BORDER_COLOR: "#ffffff",
+    DEFAULT_BORDER_COLOR: "#000000",
     DEFAULT_BORDER_WIDTH: 2,
     DEFAULT_BACKGROUND_OPACITY: 0.2,
   },
