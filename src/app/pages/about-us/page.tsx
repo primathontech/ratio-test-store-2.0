@@ -5,12 +5,18 @@ import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
 import { getRouteTranslations } from "@/utils";
+import { resolvePageSEO } from "@shopkit/seo";
+import { getSEOConfig } from "@/config";
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: "About Us - BBlunt",
-    description: "Learn more about BBlunt.",
-  };
+export function generateMetadata(): Metadata {
+  const { siteUrl, siteName } = getSEOConfig();
+  return resolvePageSEO(
+    {
+      title: "About Us - BBlunt",
+      description: "Learn more about BBlunt.",
+    },
+    { siteUrl, siteName, path: "/pages/about-us" }
+  );
 }
 
 export default async function AboutUsPage() {

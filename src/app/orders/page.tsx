@@ -4,15 +4,17 @@ import { getStaticLocale } from "@/bootstrap/i18n";
 import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
+import { resolvePageSEO } from "@shopkit/seo";
+import { getSEOConfig } from "@/config";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: "Order Confirmation – BBlunt",
-    description:
-      "Thank you for your order! View your order confirmation details.",
-  };
+export function generateMetadata(): Metadata {
+  const { siteUrl, siteName } = getSEOConfig();
+  return resolvePageSEO(
+    { noIndex: true },
+    { siteUrl, siteName, path: "/orders" }
+  );
 }
 
 export default async function ThankYouPage() {

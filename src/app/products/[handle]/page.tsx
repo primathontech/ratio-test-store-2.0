@@ -2,7 +2,7 @@
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
-import { MetaTagGenerator, SEOFactory } from "@shopkit/seo";
+import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
@@ -12,10 +12,6 @@ import { cache } from "react";
 
 export const revalidate = 30;
 export const dynamicParams = true;
-
-const seoSystem = SEOFactory.createForEnvironment(
-  process.env.NODE_ENV as "development" | "staging" | "production"
-);
 
 export async function generateStaticParams() {
   const homepageFeaturedCollections = process.env.HOMEPAGE_FEATURED_COLLECTIONS;
@@ -87,53 +83,12 @@ export async function generateMetadata({
 }: {
   params: { handle: string };
 }): Promise<Metadata> {
-  try {
-    const product = await fetchProduct(params.handle);
-    const locale = getStaticLocale();
-
-    if (!product) {
-      return {
-        title: "Product Not Found",
-        description: "The requested product could not be found.",
-      };
-    }
-
-    // Transform product data for SEO — convert tag objects to strings
-    const productDataForSEO = {
-      ...product,
-      tags: product?.tags
-        ?.map((tag: any) => (typeof tag === "string" ? tag : tag?.name || ""))
-        .filter((tag: string) => tag.length > 0),
-    };
-
-    const baseSeoData = await seoSystem.generateSEOData({
-      type: "product",
-      data: productDataForSEO,
-      path: `/products/${params.handle}`,
-      locale,
-    });
-
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://bblunt.com/";
-    const canonicalUrl = product?.seo_url_handle
-      ? `${baseUrl}/products/${product.seo_url_handle}`
-      : baseSeoData.canonical;
-
-    const seoData = {
-      ...baseSeoData,
-      title: product?.seo_title || baseSeoData.title,
-      description: product?.seo_description || baseSeoData.description,
-      canonical: canonicalUrl,
-    };
-
-    const metaTagGenerator = new MetaTagGenerator(seoSystem["config"]);
-    return metaTagGenerator.generateNextJSMetadata(seoData);
-  } catch (error) {
-    console.error("Error generating metadata for product:", error);
-    return {
-      title: "Product | BBlunt",
-      description: "Shop our amazing products at BBlunt",
-    };
-  }
+  const product = await fetchProduct(params.handle);
+  return resolveCommercePageSEO(
+    "product",
+    product,
+    `/products/${params.handle}`
+  );
 }
 
 export default async function ProductPage({
