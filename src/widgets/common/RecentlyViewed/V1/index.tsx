@@ -113,6 +113,7 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
   const cardSettings = useMemo(
     () => ({
       showActionButton: settings?.showActionButton ?? true,
+      showQuantitySelector: true,
       actionButtonText: settings?.actionButtonText ?? "Add to cart",
       actionButtonTextColor: settings?.actionButtonTextColor,
       showBadge: settings?.showBadge ?? true,
@@ -120,6 +121,7 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
       soldOutText: settings?.soldOutText ?? "Sold Out",
       backgroundColor: settings?.productCardBackgroundColor,
       color: settings?.sectionTextColor,
+      priceSectionClassName: "min-h-[35.6px]",
     }),
     [settings]
   );
@@ -131,7 +133,7 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
         return null;
       }
       return (
-        <div className="md:border-r md:border-[#EBEBEB] overflow-hidden">
+        <div className="md:border-r md:border-[#EBEBEB] overflow-hidden pl-[12px] md:pl-0">
           <CartAwareProductCard
             apiProduct={apiProduct}
             settings={cardSettings}

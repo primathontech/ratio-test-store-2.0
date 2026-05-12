@@ -445,6 +445,7 @@ export const template: PageConfig = {
           id: "bblunt-2-footer",
           name: "Footer",
           type: WIDGET_TYPES.Footer,
+          dataSourceKey: "productData",
           settings: {
             variant: "v1",
             mobileFooterTagline: "t:common.footer.mobileFooterTagline__rich",

@@ -18,10 +18,7 @@ export const SocialLinks: React.FC<SocialLinksProps> = ({
 
   return (
     <div className={className} data-testid="footer-social-links-container">
-      <div
-        className="flex gap-2.5 md:gap-4"
-        data-testid="footer-social-links-wrapper"
-      >
+      <div className="flex gap-2.5" data-testid="footer-social-links-wrapper">
         {socialLinks.map((social, index) => (
           <Link
             key={index}

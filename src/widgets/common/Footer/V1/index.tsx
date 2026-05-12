@@ -17,8 +17,9 @@ import {
 import { FOOTER_CONSTANTS, MOBILE_NAVIGATION_ITEMS } from "../constants";
 import { FooterProps } from "../types";
 
-export const V1 = memo(function V1({ settings = {} }: FooterProps) {
+export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
   const [isMobileAccordionOpen, setIsMobileAccordionOpen] = useState(false);
+  const product = data?.success ? data.data : null;
 
   const {
     backgroundColor = FOOTER_CONSTANTS.DEFAULT_SETTINGS.backgroundColor,
@@ -57,8 +58,8 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
       <div className="mx-auto">
         {/* Main Footer Content */}
         <div
-          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[22px] md:px-0 md:pt-[40px] transition-all duration-300 pb-0 md:pb-[30px] max-w-[1300px] ${
-            isMobileAccordionOpen ? "pb-[100px]" : "pb-[100px] md:pb-[40px]"
+          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[22px] md:px-0 md:pt-[70px] xl:pt-[40px] transition-all duration-300 pb-0 md:pb-[30px] max-w-[1300px] ${
+            isMobileAccordionOpen ? "pb-[117px]" : "pb-[100px] md:pb-[40px]"
           }`}
         >
           {/* Mobile Layout */}
@@ -201,7 +202,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
           {/* Desktop Layout */}
           <div className="hidden md:block px-10 md:px-0 xl:px-0">
             {/* Tablet Layout (768px-1024px) */}
-            <div className="xl:hidden grid grid-cols-2 gap-8">
+            <div className="xl:hidden grid grid-cols-2 gap-y-8">
               {/* Left column: Logo + social, Useful Links, Categories */}
               <div className="flex flex-col gap-8">
                 <div className="flex flex-col items-start">
@@ -325,7 +326,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
             <div className="flex flex-col items-start">
               {/* Payment Protection Text */}
               {paymentProtectionText && (
-                <div className="flex items-center gap-2 text-base text-[#cecece] !leading-[21.28px] font-normal">
+                <div className="flex items-center gap-[6px] text-base text-[#cecece] !leading-[21.28px] font-normal">
                   <span>
                     <svg
                       width="24"
@@ -362,7 +363,10 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
       <ContextualMessage data={{}} settings={{ variant: "v1" }} />
 
       <div className="fixed bottom-[16px] left-[16px] right-[16px] z-[50] block xl:hidden">
-        <StickyFooter items={MOBILE_NAVIGATION_ITEMS} />
+        <StickyFooter
+          items={MOBILE_NAVIGATION_ITEMS}
+          productData={product ?? undefined}
+        />
       </div>
     </footer>
   );
