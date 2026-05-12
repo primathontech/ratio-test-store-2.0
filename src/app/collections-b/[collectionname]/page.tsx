@@ -106,7 +106,7 @@ async function fetchCollection(handle: string): Promise<any | null> {
       handle,
     });
 
-    return collection;
+    return collection.data;
   } catch (error) {
     console.error(`Error fetching collection ${handle}:`, error);
     return null;

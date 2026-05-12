@@ -42,8 +42,8 @@ export async function generateStaticParams() {
       })
       .then((collectionResponse: any) => {
         if (collectionResponse?.products) {
-          return collectionResponse.collection.products.flatMap(
-            (product: any) => (product?.handle ? [product.handle] : [])
+          return collectionResponse.products.flatMap((product: any) =>
+            product?.handle ? [product.handle] : []
           );
         }
         return [];

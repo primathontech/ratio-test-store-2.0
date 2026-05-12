@@ -1,10 +1,9 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
-import { getThemeName } from "@/utils";
+import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
-import { getRouteTranslations } from "@/utils";
 import { resolvePageSEO } from "@shopkit/seo";
 import { getSEOConfig } from "@/config";
 

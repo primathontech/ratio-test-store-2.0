@@ -1,11 +1,10 @@
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
-import { getThemeName } from "@/utils";
+import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { getSEOConfig } from "@/config";
 import { resolvePageSEO } from "@shopkit/seo";
 import { Metadata } from "next";
-import { getRouteTranslations } from "@/utils";
 
 export const revalidate = 30;
 
