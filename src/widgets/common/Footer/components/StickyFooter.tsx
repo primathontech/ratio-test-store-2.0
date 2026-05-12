@@ -5,7 +5,6 @@ import {
   useCartStore,
   useCartToggle,
   useCartTotalQuantity,
-  type CartItem,
 } from "@shopkit/cart";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +12,11 @@ import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
 
 import { CartBadge } from "@/ui/components";
+import {
+  toCartItem,
+  type MappableApiProduct,
+} from "@/ui/components/CartAwareProductCard";
+import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
 import { NAVIGATION_ICONS } from "../constants";
 import { MobileNavigationItem } from "../types";
 
@@ -32,32 +36,6 @@ export interface StickyFooterProductData {
     title?: string;
     price?: number;
   }>;
-}
-
-function buildCartItem(
-  product: StickyFooterProductData,
-  selectedVariantId?: string
-): CartItem {
-  const fallbackVariant =
-    product.variants?.find((v) => v.title === "Default Title") ||
-    product.variants?.[0];
-  const selectedVariant = selectedVariantId
-    ? product.variants?.find((v) => v.id === selectedVariantId)
-    : undefined;
-  const activeVariant = selectedVariant || fallbackVariant;
-  const variantId = activeVariant?.id;
-  const lineId = variantId ?? product.id;
-  const priceInPaise = activeVariant?.price ?? 0;
-
-  return {
-    id: lineId,
-    productId: product.id,
-    variantId,
-    title: product.title,
-    price: { amount: priceInPaise, currencyCode: "INR" },
-    quantity: 1,
-    product_type: product.product_type,
-  };
 }
 
 interface StickyFooterProps {
@@ -187,8 +165,18 @@ export const StickyFooter = ({
     if (!productData) {
       return;
     }
+    const apiProduct: MappableApiProduct = {
+      id: productData.id,
+      title: productData.title,
+      handle: "",
+      product_type: productData.product_type,
+      price: priceInPaise,
+      variant: activeVariant?.id ? { id: activeVariant.id } : undefined,
+    };
     try {
-      await addItem(buildCartItem(productData, selectedVariantId));
+      await addItem(
+        toCartItem(apiProduct, { mainImage: "" } as ProductCardProduct)
+      );
     } catch (error) {
       console.error("[StickyFooter] addItem failed:", error);
     }

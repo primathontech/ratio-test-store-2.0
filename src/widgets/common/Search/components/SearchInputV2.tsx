@@ -305,6 +305,7 @@ export const SearchInputV2: React.FC<SearchInputV2Props> = ({
           placeholder={isMobile ? " " : animatedPlaceholder}
           aria-label="Search"
           autoComplete="off"
+          autoFocus={isMobile}
           className={`
             w-full outline-none transition-all duration-300 ease-in-out
             [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden

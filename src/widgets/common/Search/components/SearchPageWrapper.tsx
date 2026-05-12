@@ -659,7 +659,7 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
           <>
             {/* Mobile Filter and Sort Bar */}
             <div className="min-[769px]:hidden mb-4 min-[769px]:max-[769px]:px-[9px]">
-              <Flex className="items-center !justify-between mb-[15px] px-0 lg:px-[7px]">
+              <Flex className="items-center !justify-between mb-[15px] px-[6px] lg:px-[7px]">
                 {/* Filter Button */}
                 <button
                   onClick={() => setIsMobileFilterOpen(true)}
