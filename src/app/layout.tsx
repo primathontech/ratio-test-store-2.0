@@ -126,6 +126,19 @@ export default async function RootLayout({
           )}
         </AppShell>
 
+        {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            window.gtag = function(){ window.dataLayer.push(arguments); };
+            window.gtag('js', new Date());
+          `}
+        </Script>
+
         {/* V2 Pixel SDKs — self-register with PixelRuntime */}
         <Script src="/scripts/meta-pixel-sdk.js" strategy="afterInteractive" />
         <Script src="/scripts/ga4-pixel-sdk.js" strategy="afterInteractive" />
