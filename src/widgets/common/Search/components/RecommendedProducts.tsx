@@ -204,7 +204,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
 
         <div className="overflow-hidden relative w-full">
           {loading ? (
-            <div className="flex overflow-x-auto gap-[13px] md:gap-6 pb-20 md:pb-4 scrollbar-hide">
+            <div className="recommended-products-scrollbar flex overflow-x-auto gap-[13px] md:gap-6 pb-20 md:pb-4">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div
                   key={i}
@@ -220,7 +220,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
             <div
               ref={scrollRef}
               onScroll={updateArrows}
-              className="flex h-auto overflow-x-auto gap-[13px] md:gap-4 lg:gap-[23.4px] pb-20 md:pb-4 scrollbar-hide px-0 md:px-3"
+              className="recommended-products-scrollbar flex h-auto overflow-x-auto gap-[13px] md:gap-4 lg:gap-[23.4px] pb-8 md:pb-4 px-0 md:px-3"
             >
               {products.map((product, idx) => (
                 <div
@@ -244,12 +244,19 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
       </div>
 
       <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
+        .recommended-products-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #8b8b8b transparent;
         }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+        .recommended-products-scrollbar::-webkit-scrollbar {
+          height: 4px;
+        }
+        .recommended-products-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .recommended-products-scrollbar::-webkit-scrollbar-thumb {
+          background: #8b8b8b;
+          border-radius: 9999px;
         }
       `}</style>
     </div>

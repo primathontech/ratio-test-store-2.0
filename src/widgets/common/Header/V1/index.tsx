@@ -551,7 +551,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
         }}
       >
         {/* Inner container: 60px height + 15px padding on mobile/tablet, 65px + 40px on desktop (≥1100px) */}
-        <div className="w-full max-w-full flex items-center h-[60px] px-[15px] min-[1100px]:h-[65px] min-[1100px]:px-10 border-b border-primary/60">
+        <div className="w-full max-w-full flex items-center h-[60px] px-[15px] min-[1100px]:h-[65px] min-[1100px]:px-10 border-b border-white md:border-primary/60">
           {/* ---- Mobile Hamburger (visible below 1100px) ---- */}
           <div className="flex items-center mr-[15px] min-[1100px]:hidden">
             <button
