@@ -44,7 +44,7 @@ export async function generateMetadata({
   searchParams?: Record<string, string | string[] | undefined>;
 }): Promise<Metadata> {
   const collection = await fetchCollection(params.collectionname);
-  return resolveCommercePageSEO(
+  return await resolveCommercePageSEO(
     "collection",
     collection,
     `/collections/${params.collectionname}`,

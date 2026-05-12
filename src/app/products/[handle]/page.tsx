@@ -84,7 +84,7 @@ export async function generateMetadata({
   params: { handle: string };
 }): Promise<Metadata> {
   const product = await fetchProduct(params.handle);
-  return resolveCommercePageSEO(
+  return await resolveCommercePageSEO(
     "product",
     product,
     `/products/${params.handle}`
