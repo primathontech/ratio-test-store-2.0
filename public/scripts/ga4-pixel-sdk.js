@@ -79,7 +79,7 @@
         return (contents || []).map(function (c) {
           return {
             item_id: c.id,
-            item_name: fallbackName || "",
+            item_name: c.name || fallbackName || "",
             price: c.item_price,
             quantity: c.quantity,
           };
