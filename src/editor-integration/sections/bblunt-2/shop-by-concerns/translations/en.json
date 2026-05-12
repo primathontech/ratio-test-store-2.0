@@ -1,0 +1,45 @@
+{
+  "sections.shop_by_concerns.heading__rich": "Shop by <strong>Concerns</strong>",
+  "sections.shop_by_concerns.tiles": [
+    {
+      "label": "Hair fall fighters",
+      "href": "/collections/hairfall",
+      "image": "/ShopByConcerns/images/hair-fall-fighters.png"
+    },
+    {
+      "label": "Frizz fixers",
+      "href": "/collections/dry-hair",
+      "image": "/ShopByConcerns/images/frizz-fixers.png"
+    },
+    {
+      "label": "Damage repair",
+      "href": "/collections/damaged-hair",
+      "image": "/ShopByConcerns/images/damage-repair.png"
+    },
+    {
+      "label": "Smooth hair essentials",
+      "href": "/collections/advanced-smoothening",
+      "image": "/ShopByConcerns/images/smooth-hair-essentials.png"
+    },
+    {
+      "label": "Dandruff defence",
+      "href": "/collections/anti-dandruff",
+      "image": "/ShopByConcerns/images/dandruff-defence.png"
+    },
+    {
+      "label": "Curl care crew",
+      "href": null,
+      "image": "/ShopByConcerns/images/curl-care-crew.png"
+    },
+    {
+      "label": "Shine boosters",
+      "href": null,
+      "image": "/ShopByConcerns/images/shine-boosters.png"
+    },
+    {
+      "label": "Scalp saviours",
+      "href": null,
+      "image": "/ShopByConcerns/images/scalp-saviours.png"
+    }
+  ]
+}
