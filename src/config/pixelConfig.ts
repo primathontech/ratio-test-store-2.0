@@ -24,9 +24,9 @@ export const pixelConfig: PixelConfigMap = {
     ? { measurementId: process.env.NEXT_PUBLIC_GA_ID }
     : null,
 
-  "google-ads": process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID
+  "google-ads": process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
     ? {
-        conversionId: process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_ID,
+        conversionId: process.env.NEXT_PUBLIC_GOOGLE_ADS_ID,
         conversionLabel:
           process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL || "",
       }
