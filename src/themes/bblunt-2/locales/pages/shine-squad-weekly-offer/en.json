@@ -22,6 +22,42 @@
     },
     "most_loved_grid": {
       "category_title": "Most Loved"
+    },
+    "sale_banner": {
+      "mobileSrc": "/bblunt-2/images/sale-page-background-mobile.webp",
+      "desktopSrc": "/bblunt-2/images/Sale-page-desktop-with-products.webp",
+      "offer": {
+        "title": "Shine Squad Weekly Offer",
+        "price": "30",
+        "currencySymbol": "₹",
+        "couponCode": "WEEKLY30",
+        "expiryText": "Offer ends this week"
+      },
+      "countdown": "Mar 31, 2026 23:59:59",
+      "banner_cta": "How to shop",
+      "how_to_shop_title": "How to shop",
+      "how_to_shop_steps__rich": [
+        {
+          "id": 1,
+          "text": "Add your favourites to your cart"
+        },
+        {
+          "id": 2,
+          "text": "Apply code <strong>WEEKLY30</strong> at checkout"
+        },
+        {
+          "id": 3,
+          "text": "Get <strong>30% OFF</strong> on your order"
+        }
+      ],
+      "terms_and_conditions": {
+        "title": "Terms and conditions",
+        "points": "Exclusive for Shine Squad members. Offer cannot be clubbed with other coupons.Not applicable on kits & combos."
+      },
+      "primary_button": "Got it"
+    },
+    "sale_collection": {
+      "title": "Bestsellers"
     }
   }
 }

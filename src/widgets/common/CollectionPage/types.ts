@@ -32,6 +32,13 @@ export interface ISettings {
   sortDropdownText?: string;
   /** Show or hide the Filter and Sort widgets (default true) */
   showFilterAndSort?: boolean;
+  /**
+   * Override the collection title (`<h1>`). When omitted, the title from
+   * the API response (`collection.title`) is used. Mainly for sale /
+   * category-offer pages where the editor needs to rename the heading
+   * without touching the source collection.
+   */
+  title?: string;
 }
 
 export interface IData {
