@@ -264,7 +264,7 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
         {/* Section heading */}
         <div className="mt-[25px] md:mt-14 mb-4 md:mb-[30px] text-left md:text-center testimonials-animate-on-scroll">
           <h2
-            className="text-2xl xl:text-[28px] leading-[29px] lg:leading-[40px] font-normal text-black m-0 md:inline-block md:text-left lg:block lg:text-center"
+            className="text-2xl xl:text-[28px] leading-[29px] lg:leading-[40px] font-normal text-black m-0 text-left md:text-center [&_strong]:block md:[&_strong]:inline"
             // eslint-disable-next-line no-restricted-syntax
             dangerouslySetInnerHTML={{ __html: heading }}
           />

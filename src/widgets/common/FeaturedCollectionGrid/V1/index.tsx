@@ -80,6 +80,9 @@ export const V1 = memo(function V1({
               <CartAwareProductCard
                 apiProduct={product}
                 logTag="FeaturedCollectionGrid"
+                settings={{
+                  priceSectionClassName: "!min-h-8 md:!min-h-0",
+                }}
               />
             </div>
           ))}

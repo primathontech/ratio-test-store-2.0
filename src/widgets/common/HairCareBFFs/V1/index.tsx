@@ -273,7 +273,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
   return (
     <section
-      className="relative overflow-hidden mt-[25px] md:mt-14 pt-[32.4px] md:pt-14 pb-[32.4px] md:pb-14"
+      className="relative overflow-hidden mt-[25px] md:mt-14 pt-[32.4px] md:pt-14"
       style={{}}
     >
       {/* Background image — mobile */}
@@ -289,7 +289,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       </div>
 
       {/* Background image — desktop */}
-      <div className="absolute inset-0 z-[0] hidden md:block mb-[32.4px] md:mb-14">
+      <div className="absolute inset-0 z-[0] hidden md:block">
         <Image
           src={backgroundImage}
           alt=""
@@ -301,7 +301,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       </div>
 
       {/* Content overlay */}
-      <div className="relative z-[1] mx-auto xl:mx-5 px-1.5 md:px-[30px] xl:px-[50px] mb-8 md:mb-14">
+      <div className="relative z-[1] mx-auto xl:mx-5 px-1.5 md:px-[30px] xl:px-[50px] pb-[32px] md:pb-[47px] lg:pb-[56px]">
         {/* Tabs head: heading + tab buttons */}
         <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px] gap-[15px] md:gap-[30px]">
           {/* Heading — rich HTML; <strong> in the source becomes the bold part. */}

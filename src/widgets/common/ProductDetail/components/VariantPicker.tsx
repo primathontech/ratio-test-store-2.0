@@ -299,7 +299,7 @@ export function VariantPicker({
                   alt={name || "Color swatch"}
                   width={75}
                   height={83}
-                  className="object-cover h-full border-[1.21px] max-h-[91px]"
+                  className="object-cover h-full border-[1.21px] max-h-[91px] min-h-[83px]"
                   style={{ borderRadius: "4px" }}
                 />
               </div>
