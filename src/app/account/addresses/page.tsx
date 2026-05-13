@@ -5,14 +5,17 @@ import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
 import ProtectedRoute from "@/ui/components/ProtectedRoute";
+import { resolvePageSEO } from "@shopkit/seo";
+import { getSEOConfig } from "@/config";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: "My Addresses – BBlunt",
-    description: "Manage your saved BBlunt addresses.",
-  };
+export function generateMetadata(): Metadata {
+  const { siteUrl, siteName } = getSEOConfig();
+  return resolvePageSEO(
+    { noIndex: true },
+    { siteUrl, siteName, path: "/account/addresses" }
+  );
 }
 
 export default async function AddressesPage() {

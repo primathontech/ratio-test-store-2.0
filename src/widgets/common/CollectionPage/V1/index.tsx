@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { ProductCard } from "@/ui/components/ProductCard";
+import { CartAwareProductCard } from "@/ui/components/CartAwareProductCard";
 import { sortOptions } from "../compounds/sortOptions";
 import { transformProductForCard } from "../adapters/productAdapter";
 import { collectionApiClient } from "../api/client";
-import { TransformedCollection, TransformedProduct } from "../api/types";
+import { TransformedCollection } from "../api/types";
 import { BaseProvider, DefaultContext } from "../base/provider";
 import { IApplyFilter } from "../base/provider/type";
 import { DesktopSortDropdown } from "../compounds/DesktopSortDropDown";
@@ -15,37 +15,8 @@ import { MobileSortDropdown } from "../compounds/MobileSortDropdown";
 import { ApiFilter } from "../constants";
 import { IProps, ISettings, TProps } from "../types";
 
-import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
-import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
 import { LoadMore } from "../compounds/LoadMore";
 import "../style.css";
-
-function buildCartItem(
-  product: ProductCardProduct,
-  variantId?: string
-): CartItem {
-  const lineId =
-    variantId ??
-    product.variantId ??
-    String(product.productId ?? product.id ?? "");
-  return {
-    id: lineId,
-    productId: product.productId ?? String(product.id ?? ""),
-    variantId: variantId ?? product.variantId,
-    title: product.title,
-    price: { amount: Math.round(product.salePrice * 100), currencyCode: "INR" },
-    compareAtPrice:
-      typeof product.originalPrice === "number"
-        ? {
-            amount: Math.round(product.originalPrice * 100),
-            currencyCode: "INR",
-          }
-        : undefined,
-    quantity: 1,
-    image: product.mainImage,
-    product_type: product.category,
-  };
-}
 
 const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
   const safeSettings: ISettings = settings ?? { variant: "v1" };
@@ -54,49 +25,15 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
     filterTitle = "Filters",
     sortDropdownText = "Sort by",
     showFilterAndSort = true,
+    showActionButton = true,
+    actionButtonText = "Add to cart",
+    soldOutText = "View",
+    showBadge = true,
+    showRating = true,
+    actionButtonTextColor,
+    sectionTextColor,
+    productCardBackgroundColor,
   } = safeSettings;
-
-  const items = useCartItems();
-  const loadingItems = useCartStore((s) => s.loadingItems);
-  const addItem = useCartStore((s) => s.addItem);
-  const incrementItem = useCartStore((s) => s.incrementItem);
-  const decrementItem = useCartStore((s) => s.decrementItem);
-
-  const findCartLine = (product: ProductCardProduct) => {
-    const productId = product.productId ?? String(product.id ?? "");
-    const variantId = product.variantId;
-    return items.find((i) => {
-      const lineProductId = i.productId ?? i.product_id;
-      const lineVariantId = i.variantId ?? i.variant_id;
-      return variantId
-        ? lineProductId === productId && lineVariantId === variantId
-        : lineProductId === productId;
-    });
-  };
-
-  const incrementQuantity = async (product: ProductCardProduct) => {
-    const line = findCartLine(product);
-    if (!line) {
-      return;
-    }
-    try {
-      await incrementItem(line.id, product.variantId);
-    } catch (error) {
-      console.error("[CollectionPage] incrementItem failed:", error);
-    }
-  };
-
-  const decrementQuantity = async (product: ProductCardProduct) => {
-    const line = findCartLine(product);
-    if (!line) {
-      return;
-    }
-    try {
-      await decrementItem(line.id, product.variantId);
-    } catch (error) {
-      console.error("[CollectionPage] decrementItem failed:", error);
-    }
-  };
 
   // UI state
   const [isMobileSortDropdownOpen, setMobileSortDropdownOpen] = useState(false);
@@ -334,16 +271,6 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
     }
   }, [actions]);
 
-  const handleAddToCart = async (product: TransformedProduct) => {
-    const cardProduct = transformProductForCard(product);
-
-    try {
-      await addItem(buildCartItem(cardProduct, product.variant?.id));
-    } catch (error) {
-      console.error("Failed to add product to cart:", error);
-    }
-  };
-
   const totalProducts = collection?.productCount || 0;
 
   const getProductTypeFilters = () => {
@@ -479,12 +406,13 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
     >
       <div
         data-testid="collection-page-content"
-        className="px-[15px] md:px-12 lg:px-20 xl:px-20 pb-[5.25rem] md:pb-24 lg:pb-28 xl3:px-0"
+        className="px-[15px] md:px-[30px] xl:px-20 pb-[5.25rem] md:pb-24 lg:pb-[130px] xl3:px-0"
       >
         {collection?.title && (
           <h1
             data-testid="collection-page-title"
-            className="text-left xl2:text-center text-primary leading-none text-xl md:text-[32px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
+            className="text-left xl2:text-center leading-none text-[22px] md:text-[32px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
+            style={sectionTextColor ? { color: sectionTextColor } : undefined}
           >
             {collection.title}
           </h1>
@@ -508,7 +436,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
             className={`flex items-center gap-2 overflow-auto hide-scrollbar md:hidden transition-all duration-200 ${
               isFixed
                 ? "fixed top-[58px] left-0 right-0 z-[1200] bg-white shadow-md mb-0 py-2.5"
-                : "relative mb-[25px]"
+                : "relative mb-[16px]"
             }`}
           >
             <MobileFilterDropdown
@@ -606,12 +534,12 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
 
         <div
           data-testid="collection-page-main-layout"
-          className="flex gap-7 md:pt-[26px] xl2:pt-8"
+          className="flex gap-4 md:pt-[26px] xl2:pt-7"
         >
           {showFilterAndSort && (
             <aside
               data-testid="collection-page-desktop-sidebar"
-              className="md:flex-shrink-0 md:w-[calc(21%-(16px/2))] md:pr-3 hidden xl2:block"
+              className="md:flex-shrink-0 md:w-[calc(21%-(16px/2))] md:pr-3 hidden xl2:block max-w-[252px]"
             >
               <FilterSectionDesktop
                 filterTitle={filterTitle}
@@ -638,7 +566,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
             >
               <div
                 data-testid="collection-page-products-header"
-                className="flex justify-between items-center pb-[25px] lg:pb-8"
+                className="flex justify-between items-center pb-[25px] lg:pb-9 mt-[4px]"
               >
                 <p
                   data-testid="collection-page-products-count"
@@ -678,12 +606,6 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
               >
                 {products.map((product, index) => {
                   const cardProduct = transformProductForCard(product);
-                  const cartLine = findCartLine(cardProduct);
-                  const variantId = cardProduct.variantId;
-                  const isCardLoading =
-                    (variantId ? !!loadingItems[variantId] : false) ||
-                    (cartLine?.id ? !!loadingItems[cartLine.id] : false);
-
                   return (
                     <div
                       key={product.id || index}
@@ -691,16 +613,21 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                       className="product-card-wrapper h-full"
                       style={{ "--index": index } as React.CSSProperties}
                     >
-                      <ProductCard
-                        product={cardProduct}
-                        onAddToCart={() => handleAddToCart(product)}
-                        onIncrement={() => incrementQuantity(cardProduct)}
-                        onDecrement={() => decrementQuantity(cardProduct)}
-                        isInCart={!!cartLine}
-                        cartItem={cartLine}
-                        isQuantityLoading={isCardLoading}
-                        settings={{ showAddToCartToast: true }}
-                        className="md:border md:rounded-lg md:border-[#DDD]"
+                      <CartAwareProductCard
+                        cardProduct={cardProduct}
+                        settings={{
+                          showAddToCartToast: true,
+                          showActionButton,
+                          actionButtonText,
+                          soldOutText,
+                          showBadge,
+                          showRating,
+                          actionButtonTextColor,
+                          backgroundColor: productCardBackgroundColor,
+                          color: sectionTextColor,
+                        }}
+                        className="md:border md:!rounded-lg !border-white md:!border-[#EBEBEB] !pl-0"
+                        logTag="CollectionPage"
                       />
                     </div>
                   );

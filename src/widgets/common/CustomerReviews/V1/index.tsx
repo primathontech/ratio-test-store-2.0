@@ -184,7 +184,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
   return (
     <div
       data-testid="review-section-container"
-      className="w-full mx-auto px-[31px] md:px-[45px] xl:px-0 max-w-[1168px]"
+      className="w-full mx-auto px-[15px] md:px-[45px] lg:px-[31px]xl:px-0 max-w-[1168px]"
     >
       <div
         data-testid="review-section-inner-container"
@@ -295,12 +295,12 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                   aria-hidden
                 />
 
-                <div className="flex justify-center mt-10 mb-4 lg:mt-0 lg:mb-0 w-full lg:w-auto">
+                <div className="flex justify-center mt-6 md:mt-10 mb-6 md:mb-4 lg:mt-0 lg:mb-0 w-full lg:w-auto">
                   <button
                     id="write-review"
                     aria-label="Write a review"
                     onClick={toggleReviewForm}
-                    className="w-full lg:w-60 py-2.5 px-5 rounded-[30px] bg-black text-white text-sm font-bold hover:opacity-90 transition-opacity whitespace-nowrap"
+                    className="w-full lg:w-60 py-2.5 px-5 rounded-[30px] bg-black text-white text-sm font-bold hover:opacity-90 transition-opacity whitespace-nowrap leading-[14px]"
                   >
                     {reviewSubmitted
                       ? "Refresh page"

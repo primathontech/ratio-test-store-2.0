@@ -12,17 +12,28 @@ import {
 // Tuned per viewport bucket. SwipeCarousel resolves the active entry
 // from useResponsive's flags. Widgets fall back to their own built-in
 // defaults when this setting is omitted.
+// Mirrors bblunt.com:
+//   <768    → 2.3 cards (mobile)
+//   768–991 → 2.3 cards (lower tablet)
+//   992–1149 → 4 cards (upper tablet)
+//   ≥1150   → 5 cards (desktop)
 const FEATURED_CAROUSEL_BREAKPOINTS = [
   { minWidth: 0, cards: 2.3, gap: 0 },
-  { minWidth: 768, cards: 3, gap: 0 },
-  { minWidth: 1024, cards: 4, gap: 0 },
-  { minWidth: 1440, cards: 5, gap: 0 },
+  { minWidth: 768, cards: 2.3, gap: 0 },
+  { minWidth: 992, cards: 4, gap: 0 },
+  { minWidth: 1150, cards: 5, gap: 0 },
 ];
 
+// Mirrors bblunt.com:
+//   <768    → 2.2 cards (mobile)
+//   768–991 → 2.2 cards (lower tablet)
+//   992–1149 → 4 cards (upper tablet)
+//   ≥1150   → 5 cards (desktop)
 const HAIR_CARE_BFFS_CAROUSEL_BREAKPOINTS = [
-  { minWidth: 0, cards: 2.15, gap: 0 },
-  { minWidth: 1024, cards: 5, gap: 0 },
-  { minWidth: 1440, cards: 5, gap: 0 },
+  { minWidth: 0, cards: 2.2, gap: 0 },
+  { minWidth: 768, cards: 2.2, gap: 0 },
+  { minWidth: 992, cards: 4, gap: 0 },
+  { minWidth: 1150, cards: 5, gap: 0 },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -87,23 +98,102 @@ export const template: PageConfig = {
     hairCareBffsCollections: {
       type: DATA_SOURCE_TYPES.COLLECTION_BY_HANDLES,
       params: {
-        handles: ["shampoo-haircarebffs", "most-loved-home-page"],
+        handles: [
+          "most-loved-home-page",
+          "shampoo-haircarebffs",
+          "shampoo-haircarebffs-copy",
+          "spray-haircarebffs",
+          "salon-haircarebffs",
+          "hair-mask-haircarebffs",
+        ],
       },
       options: { params: { productLimit: 12 } },
       required: false,
     },
-    mostLovedCarousel: {
+    hairFallControlCarousel: {
       type: DATA_SOURCE_TYPES.COLLECTION,
       params: {
-        handle: "most-loved-home-page",
+        handle: "for-hair-fall-control-home-page-1",
       },
       options: { params: { productLimit: 12 } },
       required: false,
     },
-    shampooCarousel: {
+    partyReadyHairAtHomeCarousel: {
       type: DATA_SOURCE_TYPES.COLLECTION,
       params: {
-        handle: "shampoo-haircarebffs",
+        handle: "for-party-ready-hair-at-home-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    dullAndDryHairCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-dull-dry-hair-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    highShineCremeHairColourCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "salon-secret-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    damageRepairCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-damage-repair-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    advancedSmootheningCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-advanced-smoothening-home-page-new",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    extraordinaryShinyHairCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-extraordinary-shiny-hair-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    bondRepairCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-bond-repair-home-page",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    dandruffControlCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-dandruff-control-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    fiveMinuteShampooHairColourCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "5-minute-shampoo-hair-colour-home-page-1",
+      },
+      options: { params: { productLimit: 12 } },
+      required: false,
+    },
+    nourishedAndDefinedCurlCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "for-nourished-defined-curls-home-page-1",
       },
       options: { params: { productLimit: 12 } },
       required: false,
@@ -182,11 +272,35 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.Header,
           settings: {
             variant: "v1",
-            logoSrc: "/Header/images/logo.png",
-            logoAlt: "BBlunt",
-            searchPlaceholder: "Search For Conditioner, Shampoo...",
-            cartHref: "/cart",
-            accountHref: "/account",
+            logoSrc: "t:common.header.logoSrc",
+            searchPlaceholder: "t:common.header.searchPlaceholder",
+            searchSuggestions: "t:common.header.searchSuggestions",
+            product_label: "t:common.header.product_label",
+            product_href: "t:common.header.product_href",
+            product_items: "t:common.header.product_items",
+            hair_care_label: "t:common.header.hair_care_label",
+            hair_care_href: "t:common.header.hair_care_href",
+            hair_care_type_label: "t:common.header.hair_care_type_label",
+            hair_care_type_href: "t:common.header.hair_care_type_href",
+            hair_care_type_items: "t:common.header.hair_care_type_items",
+            hair_care_concern_label: "t:common.header.hair_care_concern_label",
+            hair_care_concern_href: "t:common.header.hair_care_concern_href",
+            hair_care_concern_items: "t:common.header.hair_care_concern_items",
+            hair_colour_label: "t:common.header.hair_colour_label",
+            hair_colour_href: "t:common.header.hair_colour_href",
+            hair_colour_items: "t:common.header.hair_colour_items",
+            hair_styling_label: "t:common.header.hair_styling_label",
+            hair_styling_href: "t:common.header.hair_styling_href",
+            hair_styling_items: "t:common.header.hair_styling_items",
+            salon_label: "t:common.header.salon_label",
+            salon_href: "t:common.header.salon_href",
+            salon_items: "t:common.header.salon_items",
+            getApp_title: "t:common.header.get_app.title",
+            getApp_description: "t:common.header.get_app.description",
+            getApp_button_text: "t:common.header.get_app.button_text",
+            getApp_logo_alt: "t:common.header.get_app.logo_alt",
+            getApp_logo_url: "t:common.header.get_app.logo_url",
+            getApp_app_url: "t:common.header.get_app.app_url",
           },
         },
       ],
@@ -200,9 +314,18 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          mobile: {
+            margin: { top: -58, right: 0, bottom: 0, left: 0 },
+            padding: { top: 0, right: 0, bottom: 0, left: 0 },
+          },
+          tablet: {
+            margin: { top: 0, right: 0, bottom: 0, left: 0 },
+            padding: { top: 0, right: 0, bottom: 0, left: 0 },
+          },
+          desktop: {
+            margin: { top: 0, right: 0, bottom: 0, left: 0 },
+            padding: { top: 0, right: 0, bottom: 0, left: 0 },
+          },
         },
       },
       widgets: [
@@ -327,8 +450,8 @@ export const template: PageConfig = {
       "for-hair-fall-control",
       "For Hair Fall Control",
       "t:bblunt-2_home_default.featured_collection_carousels.for_hair_fall_control__rich",
-      "mostLovedCarousel",
-      "shampoo-haircarebffs"
+      "hairFallControlCarousel",
+      "hairfall"
     ),
 
     // For Party Ready Hair — FeaturedCollectionCarousel #2
@@ -336,7 +459,8 @@ export const template: PageConfig = {
       "for-party-ready-hair",
       "For Party Ready Hair",
       "t:bblunt-2_home_default.featured_collection_carousels.for_party_ready_hair__rich",
-      "shampooCarousel"
+      "partyReadyHairAtHomeCarousel",
+      "hair-styling"
     ),
 
     // For Dull & Dry Hair — FeaturedCollectionCarousel #3
@@ -344,7 +468,8 @@ export const template: PageConfig = {
       "for-dull-dry-hair",
       "For Dull & Dry Hair",
       "t:bblunt-2_home_default.featured_collection_carousels.for_dull_dry_hair__rich",
-      "mostLovedCarousel"
+      "dullAndDryHairCarousel",
+      "dry-hair"
     ),
 
     // High Shine Creme Hair Colour — FeaturedCollectionCarousel #4
@@ -352,7 +477,8 @@ export const template: PageConfig = {
       "high-shine-creme-hair-colour",
       "High Shine Creme Hair Colour",
       "t:bblunt-2_home_default.featured_collection_carousels.high_shine_creme_hair_colour__rich",
-      "mostLovedCarousel"
+      "highShineCremeHairColourCarousel",
+      "salon-secret"
     ),
 
     // For Damage Repair — FeaturedCollectionCarousel #5
@@ -360,7 +486,8 @@ export const template: PageConfig = {
       "for-damage-repair",
       "For Damage Repair",
       "t:bblunt-2_home_default.featured_collection_carousels.for_damage_repair__rich",
-      "mostLovedCarousel"
+      "damageRepairCarousel",
+      "damaged-hair"
     ),
 
     // For Advanced Smoothening — FeaturedCollectionCarousel #6
@@ -368,7 +495,8 @@ export const template: PageConfig = {
       "for-advanced-smoothening",
       "For Advanced Smoothening",
       "t:bblunt-2_home_default.featured_collection_carousels.for_advanced_smoothening__rich",
-      "mostLovedCarousel"
+      "advancedSmootheningCarousel",
+      "advanced-smoothening"
     ),
 
     // For Extraordinary Shiny Hair — FeaturedCollectionCarousel #7
@@ -376,7 +504,8 @@ export const template: PageConfig = {
       "for-extraordinary-shiny-hair",
       "For Extraordinary Shiny Hair",
       "t:bblunt-2_home_default.featured_collection_carousels.for_extraordinary_shiny_hair__rich",
-      "mostLovedCarousel"
+      "extraordinaryShinyHairCarousel",
+      "intense-shine"
     ),
 
     // For Bond Repair — FeaturedCollectionCarousel #8
@@ -384,15 +513,8 @@ export const template: PageConfig = {
       "for-bond-repair",
       "For Bond Repair",
       "t:bblunt-2_home_default.featured_collection_carousels.for_bond_repair__rich",
-      "mostLovedCarousel"
-    ),
-
-    // For Nourished & Defined Curls — FeaturedCollectionCarousel #9
-    carouselSection(
-      "for-nourished-defined-curls",
-      "For Nourished & Defined Curls",
-      "t:bblunt-2_home_default.featured_collection_carousels.for_nourished_defined_curls__rich",
-      "mostLovedCarousel"
+      "bondRepairCarousel",
+      "bond-repair"
     ),
 
     // For Dandruff Control — FeaturedCollectionCarousel #10
@@ -400,7 +522,8 @@ export const template: PageConfig = {
       "for-dandruff-control",
       "For Dandruff Control",
       "t:bblunt-2_home_default.featured_collection_carousels.for_dandruff_control__rich",
-      "mostLovedCarousel"
+      "dandruffControlCarousel",
+      "anti-dandruff"
     ),
 
     // 5 Minute Shampoo Hair Colour — FeaturedCollectionCarousel #11
@@ -408,7 +531,17 @@ export const template: PageConfig = {
       "five-minute-shampoo-hair-colour",
       "5 Minute Shampoo Hair Colour",
       "t:bblunt-2_home_default.featured_collection_carousels.five_minute_shampoo_hair_colour__rich",
-      "mostLovedCarousel"
+      "fiveMinuteShampooHairColourCarousel",
+      "hair-colour-shampoo"
+    ),
+
+    // For Nourished & Defined Curls — FeaturedCollectionCarousel #9
+    carouselSection(
+      "for-nourished-defined-curls",
+      "For Nourished & Defined Curls",
+      "t:bblunt-2_home_default.featured_collection_carousels.for_nourished_defined_curls__rich",
+      "nourishedAndDefinedCurlCarousel",
+      "curly-hair"
     ),
 
     // Shine Academy Banner Section
@@ -477,7 +610,7 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 60, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
           tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
           desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
@@ -487,7 +620,34 @@ export const template: PageConfig = {
           id: "bblunt-2-footer",
           name: "Footer",
           type: WIDGET_TYPES.Footer,
-          settings: { variant: "v1" },
+          settings: {
+            variant: "v1",
+            mobileFooterTagline: "t:common.footer.mobileFooterTagline__rich",
+            logoUrl: "t:common.footer.logoUrl",
+            logoAlt: "t:common.footer.logoAlt",
+            appDownloadText: "t:common.footer.appDownloadText",
+            googlePlayUrl: "t:common.footer.googlePlayUrl",
+            appStoreUrl: "t:common.footer.appStoreUrl",
+            googlePlayImage: "t:common.footer.googlePlayImage",
+            googlePlayAlt: "t:common.footer.googlePlayAlt",
+            appStoreImage: "t:common.footer.appStoreImage",
+            appStoreAlt: "t:common.footer.appStoreAlt",
+            serviceSectionsIcons: "t:common.footer.serviceSectionsIcons",
+            aboutTitle: "t:common.footer.aboutTitle",
+            aboutLinks: "t:common.footer.aboutLinks",
+            usefulLinksTitle: "t:common.footer.usefulLinksTitle",
+            usefulLinks: "t:common.footer.usefulLinks",
+            ourSalonsTitle: "t:common.footer.ourSalonsTitle",
+            ourSalonsLinks: "t:common.footer.ourSalonsLinks",
+            categoriesTitle: "t:common.footer.categoriesTitle",
+            categoriesLinks: "t:common.footer.categoriesLinks",
+            myAccountTitle: "t:common.footer.myAccountTitle",
+            myAccountLinks: "t:common.footer.myAccountLinks",
+            socialLinks: "t:common.footer.socialLinks",
+            paymentProtectionText: "t:common.footer.paymentProtectionText",
+            copyrightText: "t:common.footer.copyrightText",
+            paymentMethods: "t:common.footer.paymentMethods",
+          },
         },
       ],
     },

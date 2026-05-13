@@ -2,7 +2,7 @@
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
-import { MetaTagGenerator, SEOFactory } from "@shopkit/seo";
+import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
@@ -12,10 +12,6 @@ import { cache } from "react";
 
 export const revalidate = 30;
 export const dynamicParams = true;
-
-const seoSystem = SEOFactory.createForEnvironment(
-  process.env.NODE_ENV as "development" | "staging" | "production"
-);
 
 export async function generateStaticParams() {
   const homepageFeaturedCollections = process.env.HOMEPAGE_FEATURED_COLLECTIONS;
@@ -37,26 +33,35 @@ export async function generateStaticParams() {
 
   // Get all product handles from collections in parallel
   const commerceClient = getCommerceClient();
-
-  const collectionPromises = handles.map((handle) =>
-    commerceClient
-      .getCollection({
+  const collectionPromises = handles.map(async (handle) => {
+    try {
+      const collectionResponse = await commerceClient.getCollection({
         handle,
-        first: productsPerCollection,
-      })
-      .then((collectionResponse: any) => {
-        if (collectionResponse?.products) {
-          return collectionResponse.products.flatMap((product: any) =>
-            product?.handle ? [product.handle] : []
-          );
-        }
+        productLimit: productsPerCollection,
+      });
+
+      // Check various possible response structures
+      const collection = collectionResponse?.data || collectionResponse;
+      const products =
+        collection?.products || collection?.products?.edges || [];
+
+      if (!products || products.length === 0) {
+        console.warn(`No products found in collection '${handle}'`);
         return [];
-      })
-      .catch((err: any) => {
-        console.warn(`Collection handle '${handle}' not found, skipping`);
-        return [];
-      })
-  );
+      }
+
+      // Handle both direct products array and Shopify edges format
+      const productHandles = products.flatMap((product: any) => {
+        const productNode = product?.node || product;
+        return productNode?.handle ? [productNode.handle] : [];
+      });
+
+      return productHandles;
+    } catch (err) {
+      console.error(`Error fetching collection '${handle}':`, err);
+      return [];
+    }
+  });
 
   // Wait for all collection requests to complete in parallel
   const collectionResults = await Promise.all(collectionPromises);
@@ -68,7 +73,6 @@ export async function generateStaticParams() {
   const uniqueProductHandles = Array.from(new Set(allProductHandles));
 
   // Return handles directly - the collection API already validated these products exist
-  // Additional validation here would cause excessive API calls during build time
   const allHandles = uniqueProductHandles.map((handle) => ({ handle }));
 
   return allHandles;
@@ -79,53 +83,12 @@ export async function generateMetadata({
 }: {
   params: { handle: string };
 }): Promise<Metadata> {
-  try {
-    const product = await fetchProduct(params.handle);
-    const locale = getStaticLocale();
-
-    if (!product) {
-      return {
-        title: "Product Not Found",
-        description: "The requested product could not be found.",
-      };
-    }
-
-    // Transform product data for SEO — convert tag objects to strings
-    const productDataForSEO = {
-      ...product,
-      tags: product?.tags
-        ?.map((tag: any) => (typeof tag === "string" ? tag : tag?.name || ""))
-        .filter((tag: string) => tag.length > 0),
-    };
-
-    const baseSeoData = await seoSystem.generateSEOData({
-      type: "product",
-      data: productDataForSEO,
-      path: `/products/${params.handle}`,
-      locale,
-    });
-
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://bblunt.com/";
-    const canonicalUrl = product?.seo_url_handle
-      ? `${baseUrl}/products/${product.seo_url_handle}`
-      : baseSeoData.canonical;
-
-    const seoData = {
-      ...baseSeoData,
-      title: product?.seo_title || baseSeoData.title,
-      description: product?.seo_description || baseSeoData.description,
-      canonical: canonicalUrl,
-    };
-
-    const metaTagGenerator = new MetaTagGenerator(seoSystem["config"]);
-    return metaTagGenerator.generateNextJSMetadata(seoData);
-  } catch (error) {
-    console.error("Error generating metadata for product:", error);
-    return {
-      title: "Product | BBlunt",
-      description: "Shop our amazing products at BBlunt",
-    };
-  }
+  const product = await fetchProduct(params.handle);
+  return await resolveCommercePageSEO(
+    "product",
+    product,
+    `/products/${params.handle}`
+  );
 }
 
 export default async function ProductPage({

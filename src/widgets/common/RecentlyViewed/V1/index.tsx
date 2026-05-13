@@ -1,17 +1,14 @@
 "use client";
 
 import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
-import { ProductCard } from "@/ui/components/ProductCard";
-import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
+import { CartAwareProductCard } from "@/ui/components/CartAwareProductCard";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
-import { useCartItem, useCartStore, type CartItem } from "@shopkit/cart";
 import { RecentlyViewedProps } from "../types";
 import {
   type ApiRecentProduct,
   addViewedProduct,
   fetchProductDetails,
   getViewedProductIds,
-  transformApiProductToCardProduct,
 } from "../utils";
 
 /* ------------------------------------------------------------------ */
@@ -47,111 +44,6 @@ const NextArrowIcon = () => (
     />
   </svg>
 );
-
-/* ------------------------------------------------------------------ */
-/*  Cart-aware product card wrapper                                    */
-/* ------------------------------------------------------------------ */
-
-function buildCartItem(
-  product: ApiRecentProduct,
-  cardProduct: ProductCardProduct
-): CartItem {
-  const variantId = cardProduct.variantId;
-  const productId = product.id;
-  const lineId = variantId ?? productId;
-
-  return {
-    id: lineId,
-    productId,
-    variantId,
-    sku: product.variants?.[0]?.sku || product.variant?.sku,
-    title: product.title,
-    price: { amount: product.price ?? 0, currencyCode: "INR" },
-    compareAtPrice:
-      typeof product.compare_at_price === "number"
-        ? { amount: product.compare_at_price, currencyCode: "INR" }
-        : undefined,
-    quantity: 1,
-    image: cardProduct.mainImage,
-    product_type: product.productType || product.product_type,
-  };
-}
-
-interface RecentlyViewedCardProps {
-  apiProduct: ApiRecentProduct;
-  cardSettings: ProductCardProduct extends infer _T
-    ? Parameters<typeof ProductCard>[0]["settings"]
-    : never;
-}
-
-const RecentlyViewedCard = memo(function RecentlyViewedCard({
-  apiProduct,
-  cardSettings,
-}: RecentlyViewedCardProps) {
-  const cardProduct = useMemo(
-    () => transformApiProductToCardProduct(apiProduct),
-    [apiProduct]
-  );
-  const productId = apiProduct.id;
-  const variantId = cardProduct.variantId;
-
-  const cartLine = useCartItem(productId, variantId);
-  const loadingItems = useCartStore((s) => s.loadingItems);
-  const addItem = useCartStore((s) => s.addItem);
-  const incrementItem = useCartStore((s) => s.incrementItem);
-  const decrementItem = useCartStore((s) => s.decrementItem);
-
-  const isInCart = !!cartLine;
-  const isQuantityLoading =
-    (variantId ? !!loadingItems[variantId] : false) ||
-    (cartLine?.id ? !!loadingItems[cartLine.id] : false);
-
-  const handleAddToCart = useCallback(async () => {
-    if (cardProduct.availableForSale === false) {
-      return;
-    }
-    try {
-      await addItem(buildCartItem(apiProduct, cardProduct));
-    } catch (error) {
-      console.error("[RecentlyViewed] addItem failed:", error);
-    }
-  }, [addItem, apiProduct, cardProduct]);
-
-  const handleIncrement = useCallback(async () => {
-    if (!cartLine) {
-      return;
-    }
-    try {
-      await incrementItem(cartLine.id, variantId);
-    } catch (error) {
-      console.error("[RecentlyViewed] incrementItem failed:", error);
-    }
-  }, [incrementItem, cartLine, variantId]);
-
-  const handleDecrement = useCallback(async () => {
-    if (!cartLine) {
-      return;
-    }
-    try {
-      await decrementItem(cartLine.id, variantId);
-    } catch (error) {
-      console.error("[RecentlyViewed] decrementItem failed:", error);
-    }
-  }, [decrementItem, cartLine, variantId]);
-
-  return (
-    <ProductCard
-      product={cardProduct}
-      settings={cardSettings}
-      onAddToCart={handleAddToCart}
-      onIncrement={handleIncrement}
-      onDecrement={handleDecrement}
-      isInCart={isInCart}
-      cartItem={cartLine}
-      isQuantityLoading={isQuantityLoading}
-    />
-  );
-});
 
 /* ------------------------------------------------------------------ */
 /*  Carousel breakpoints — same as FeaturedCollectionCarousel          */
@@ -221,19 +113,15 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
   const cardSettings = useMemo(
     () => ({
       showActionButton: settings?.showActionButton ?? true,
+      showQuantitySelector: true,
       actionButtonText: settings?.actionButtonText ?? "Add to cart",
-      actionButtonTextMobile:
-        settings?.actionButtonTextMobile ??
-        settings?.actionButtonText ??
-        "Add to cart",
       actionButtonTextColor: settings?.actionButtonTextColor,
       showBadge: settings?.showBadge ?? true,
       showRating: settings?.showRating ?? true,
       soldOutText: settings?.soldOutText ?? "Sold Out",
-      soldOutTextMobile:
-        settings?.soldOutTextMobile ?? settings?.soldOutText ?? "Sold",
       backgroundColor: settings?.productCardBackgroundColor,
       color: settings?.sectionTextColor,
+      priceSectionClassName: "min-h-[35.6px]",
     }),
     [settings]
   );
@@ -245,10 +133,11 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
         return null;
       }
       return (
-        <div className="md:border-r md:border-[#EBEBEB] overflow-hidden">
-          <RecentlyViewedCard
+        <div className="md:border-r md:border-[#EBEBEB] overflow-hidden pl-[12px] md:pl-0">
+          <CartAwareProductCard
             apiProduct={apiProduct}
-            cardSettings={cardSettings}
+            settings={cardSettings}
+            logTag="RecentlyViewed"
           />
         </div>
       );
@@ -268,7 +157,7 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
       }}
     >
       {/* Content overlay */}
-      <div className="relative z-[1] max-w-[1300px] mx-auto px-1.5 md:px-[30px] xl:px-[50px]">
+      <div className="relative z-[1] max-w-[1400px] mx-auto px-1.5 md:px-[30px] xl:px-[50px]">
         {/* Heading */}
         <div className="flex flex-col items-start text-center mb-4 md:mb-[30px] px-[15px]">
           <h4

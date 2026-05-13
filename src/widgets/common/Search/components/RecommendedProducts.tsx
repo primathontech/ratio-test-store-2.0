@@ -1,8 +1,10 @@
 "use client";
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ProductCard } from "@/ui/components/ProductCard";
-import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  CartAwareProductCard,
+  type MappableApiProduct,
+} from "@/ui/components/CartAwareProductCard";
 import { getMostLovedProductsForComponent } from "../services/search-api";
 
 export interface RecommendedProductsProps {
@@ -16,78 +18,32 @@ export interface RecommendedProductsProps {
   };
 }
 
-/** Raw product shape returned by /collections/details. Only the fields we use. */
-interface ApiProduct {
-  id?: string | number;
-  title?: string;
-  handle?: string;
-  productType?: string;
-  price?: number | string;
-  compare_at_price?: number | string | null;
-  image_url?: string;
-  images?: Array<{
-    url?: string;
-    src?: string;
-    is_main?: boolean;
-    alt?: string | null;
-  }>;
-  average_rating?: number | string;
-  rating_count?: number | string;
-  tags?: string[];
-  metadata?: Record<string, unknown>;
-}
+/**
+ * Raw API shape returned by /collections/details — only the fields the
+ * shared mapper reads. `id` and `title` are required by `MappableApiProduct`,
+ * everything else is optional and falls back through the standard chain.
+ */
+type RecommendedApiProduct = MappableApiProduct & {
+  // Some search endpoints stringify numeric fields — accepted by the mapper.
+  price?: number;
+  compare_at_price?: number | null;
+};
 
-function toNumber(value: number | string | null | undefined): number {
-  if (typeof value === "number") {
-    return value;
-  }
-  if (typeof value === "string") {
-    const n = parseFloat(value);
-    return Number.isFinite(n) ? n : 0;
-  }
-  return 0;
-}
-
-/** Map an API product → V2 ProductCardProduct (prices from paise → rupees). */
-function transformApiProduct(product: ApiProduct): ProductCardProduct {
-  const salePricePaise = toNumber(product.price);
-  const compareAtPaise = toNumber(product.compare_at_price);
-  const salePrice = salePricePaise / 100;
-  const originalPrice =
-    compareAtPaise > 0 && compareAtPaise !== salePricePaise
-      ? compareAtPaise / 100
-      : undefined;
-
-  let discount: string | undefined;
-  if (originalPrice && originalPrice > salePrice && salePrice > 0) {
-    const pct = Math.round(((originalPrice - salePrice) / originalPrice) * 100);
-    discount = `${pct}% off`;
-  }
-
-  const mainImg =
-    product.images?.find((img) => img?.is_main)?.url ||
-    product.images?.[0]?.url ||
-    product.images?.[0]?.src ||
-    product.image_url ||
-    "";
-  const hoverImg = product.images?.find((img) => !img?.is_main)?.url || mainImg;
-  const alt =
-    product.images?.find((img) => img?.is_main)?.alt ||
-    product.title ||
-    "Product image";
-
+/**
+ * Search-bestseller endpoint occasionally returns price/compare_at_price as
+ * strings; coerce so the shared mapper sees numbers.
+ */
+function coerceNumeric(raw: any): RecommendedApiProduct {
+  const price =
+    typeof raw.price === "string" ? parseFloat(raw.price) : raw.price;
+  const compareAt =
+    typeof raw.compare_at_price === "string"
+      ? parseFloat(raw.compare_at_price)
+      : raw.compare_at_price;
   return {
-    href: product.handle ? `/products/${product.handle}` : "#",
-    title: product.title ?? "",
-    alt,
-    mainImage: mainImg,
-    hoverImage: hoverImg,
-    category: product.productType || "",
-    rating: toNumber(product.average_rating),
-    reviewCount: toNumber(product.rating_count),
-    salePrice,
-    originalPrice,
-    discount,
+    ...raw,
+    price: Number.isFinite(price) ? price : 0,
+    compare_at_price: Number.isFinite(compareAt) ? compareAt : null,
   };
 }
 
@@ -100,7 +56,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
   settings = {},
 }) => {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const [products, setProducts] = useState<ApiProduct[]>([]);
+  const [products, setProducts] = useState<RecommendedApiProduct[]>([]);
   const [loading, setLoading] = useState(true);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -111,7 +67,8 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
       setLoading(true);
       const result = await getMostLovedProductsForComponent(8);
       if (!cancelled) {
-        setProducts((result.products as ApiProduct[]) || []);
+        const raw = (result.products as any[]) || [];
+        setProducts(raw.slice(0, 8).map(coerceNumeric));
         setLoading(false);
       }
     })();
@@ -119,11 +76,6 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
       cancelled = true;
     };
   }, []);
-
-  const transformed = useMemo(
-    () => products.slice(0, 8).map(transformApiProduct),
-    [products]
-  );
 
   const updateArrows = () => {
     const el = scrollRef.current;
@@ -138,7 +90,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
     updateArrows();
     const t = setTimeout(updateArrows, 100);
     return () => clearTimeout(t);
-  }, [transformed.length]);
+  }, [products.length]);
 
   const scrollBy = (direction: "left" | "right") => (e: React.MouseEvent) => {
     e.preventDefault();
@@ -157,7 +109,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
     });
   };
 
-  const isEmpty = !loading && transformed.length === 0;
+  const isEmpty = !loading && products.length === 0;
 
   const productCardSettings = {
     showActionButton: false,
@@ -252,7 +204,7 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
 
         <div className="overflow-hidden relative w-full">
           {loading ? (
-            <div className="flex overflow-x-auto gap-[13px] md:gap-6 pb-20 md:pb-4 scrollbar-hide">
+            <div className="recommended-products-scrollbar flex overflow-x-auto gap-[13px] md:gap-6 pb-20 md:pb-4">
               {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                 <div
                   key={i}
@@ -268,17 +220,18 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
             <div
               ref={scrollRef}
               onScroll={updateArrows}
-              className="flex h-auto overflow-x-auto gap-[13px] md:gap-4 lg:gap-[23.4px] pb-20 md:pb-4 scrollbar-hide px-0 md:px-3"
+              className="recommended-products-scrollbar flex h-auto overflow-x-auto gap-[13px] md:gap-4 lg:gap-[23.4px] pb-8 md:pb-4 px-0 md:px-3"
             >
-              {transformed.map((product, idx) => (
+              {products.map((product, idx) => (
                 <div
-                  key={product.href + idx}
+                  key={(product.handle ?? product.id ?? "") + idx}
                   className="flex-shrink-0 min-w-[48%] max-w-[48%] md:min-w-[calc((100%-48px)/4)] md:max-w-[calc((100%-48px)/4)] lg:min-w-[calc((100%-70.2px)/4)] lg:max-w-[calc((100%-70.2px)/4)] rounded-[10px]"
                 >
-                  <ProductCard
-                    product={product}
+                  <CartAwareProductCard
+                    apiProduct={product}
+                    logTag="RecommendedProducts"
                     settings={productCardSettings}
-                    showProductType={true}
+                    showProductType
                     showNetContent={false}
                     showSubtitle={false}
                     className="md:!border border-faq-border !rounded-[10px] w-full h-full"
@@ -291,12 +244,19 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
       </div>
 
       <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
+        .recommended-products-scrollbar {
+          scrollbar-width: thin;
+          scrollbar-color: #8b8b8b transparent;
         }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+        .recommended-products-scrollbar::-webkit-scrollbar {
+          height: 4px;
+        }
+        .recommended-products-scrollbar::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .recommended-products-scrollbar::-webkit-scrollbar-thumb {
+          background: #8b8b8b;
+          border-radius: 9999px;
         }
       `}</style>
     </div>

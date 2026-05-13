@@ -17,13 +17,26 @@ export const ServiceSections: React.FC<ServiceSectionsProps> = ({
   }
 
   return (
-    <div className={`py-4 ${className}`}>
-      <div className="flex justify-between items-center text-center">
+    <div
+      className={`py-4 ${className}`}
+      data-testid="footer-service-sections-container"
+    >
+      <div
+        className="flex justify-between items-center text-center"
+        data-testid="footer-service-sections-wrapper"
+      >
         {icons.map((section, index) => {
           const inlineSvg = SERVICE_ICON_SVGS[section.name];
           return (
-            <div key={index} className="flex flex-col items-center gap-2">
-              <div className="mb-3 h-8 flex items-center justify-center">
+            <div
+              key={index}
+              className="flex flex-col items-center gap-2"
+              data-testid={`footer-service-section-${index}`}
+            >
+              <div
+                className="mb-3 h-8 flex items-center justify-center"
+                data-testid={`footer-service-section-icon-${index}`}
+              >
                 {inlineSvg
                   ? inlineSvg
                   : section.image && (
@@ -38,7 +51,10 @@ export const ServiceSections: React.FC<ServiceSectionsProps> = ({
                       />
                     )}
               </div>
-              <span className="text-sm text-white tracking-[0.08px] leading-[16.34px]">
+              <span
+                className="text-sm text-white tracking-[0.08px] leading-[16.34px]"
+                data-testid={`footer-service-section-name-${index}`}
+              >
                 {section.name}
               </span>
             </div>

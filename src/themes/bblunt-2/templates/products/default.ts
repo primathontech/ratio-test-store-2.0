@@ -69,11 +69,35 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.Header,
           settings: {
             variant: "v1",
-            logoSrc: "/Header/images/logo.png",
-            logoAlt: "BBlunt",
-            searchPlaceholder: "Search For Conditioner, Shampoo...",
-            cartHref: "/cart",
-            accountHref: "/account",
+            logoSrc: "t:common.header.logoSrc",
+            searchPlaceholder: "t:common.header.searchPlaceholder",
+            searchSuggestions: "t:common.header.searchSuggestions",
+            product_label: "t:common.header.product_label",
+            product_href: "t:common.header.product_href",
+            product_items: "t:common.header.product_items",
+            hair_care_label: "t:common.header.hair_care_label",
+            hair_care_href: "t:common.header.hair_care_href",
+            hair_care_type_label: "t:common.header.hair_care_type_label",
+            hair_care_type_href: "t:common.header.hair_care_type_href",
+            hair_care_type_items: "t:common.header.hair_care_type_items",
+            hair_care_concern_label: "t:common.header.hair_care_concern_label",
+            hair_care_concern_href: "t:common.header.hair_care_concern_href",
+            hair_care_concern_items: "t:common.header.hair_care_concern_items",
+            hair_colour_label: "t:common.header.hair_colour_label",
+            hair_colour_href: "t:common.header.hair_colour_href",
+            hair_colour_items: "t:common.header.hair_colour_items",
+            hair_styling_label: "t:common.header.hair_styling_label",
+            hair_styling_href: "t:common.header.hair_styling_href",
+            hair_styling_items: "t:common.header.hair_styling_items",
+            salon_label: "t:common.header.salon_label",
+            salon_href: "t:common.header.salon_href",
+            salon_items: "t:common.header.salon_items",
+            getApp_title: "t:common.header.get_app.title",
+            getApp_description: "t:common.header.get_app.description",
+            getApp_button_text: "t:common.header.get_app.button_text",
+            getApp_logo_alt: "t:common.header.get_app.logo_alt",
+            getApp_logo_url: "t:common.header.get_app.logo_url",
+            getApp_app_url: "t:common.header.get_app.app_url",
           },
         },
       ],
@@ -102,24 +126,34 @@ export const template: PageConfig = {
             variant: "v1",
 
             // Coupon marquee (between price block and variant picker)
-            showProductMarquee: false,
-            productMarqueeText: "Shop for ₹499 & Get 2 Bestsellers Free",
-            productMarqueeCouponCode: "FREEHF",
-            productMarqueeSpeed: "8s",
+            showProductMarquee:
+              "t:bblunt-2_products_default.product_detail.showProductMarquee",
+            productMarqueeText:
+              "t:bblunt-2_products_default.product_detail.productMarqueeText",
+            productMarqueeCouponCode:
+              "t:bblunt-2_products_default.product_detail.productMarqueeCouponCode",
+            productMarqueeSpeed:
+              "t:bblunt-2_products_default.product_detail.productMarqueeSpeed",
             productMarqueeHref:
-              "https://bblunt.com/pages/shine-squad-weekly-offer",
+              "t:bblunt-2_products_default.product_detail.productMarqueeHref",
 
-            // Right-column copy
-            netContentText: "Net content",
-            inclusiveOfAllTaxesText: "Incl. of all taxes",
-            reviewsText: "reviews",
-            mrp: "M.R.P.",
-            usp: "USP",
-            discount: "% off",
-            selectSizeText: "Select size",
-            soldOutText: "Sold out",
-            rupeeSymbol: "₹",
-            addToCartText: "Add to cart",
+            // Right-column copy (from translations)
+            netContentText:
+              "t:bblunt-2_products_default.product_detail.netContentText",
+            inclusiveOfAllTaxesText:
+              "t:bblunt-2_products_default.product_detail.inclusiveOfAllTaxesText",
+            reviewsText:
+              "t:bblunt-2_products_default.product_detail.reviewsText",
+            mrp: "t:bblunt-2_products_default.product_detail.mrp",
+            usp: "t:bblunt-2_products_default.product_detail.usp",
+            discount: "t:bblunt-2_products_default.product_detail.discount",
+            selectSizeText:
+              "t:bblunt-2_products_default.product_detail.selectSizeText",
+            rupeeSymbol:
+              "t:bblunt-2_products_default.product_detail.rupeeSymbol",
+            // Add-to-cart and sold-out shared across product widgets
+            addToCartText: "t:common.product_card.add_to_cart",
+            soldOutText: "t:common.product_card.sold_out_in_pdp",
 
             productGallery: {
               variant: "v1",
@@ -188,6 +222,8 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
+            sectionTitle:
+              "t:bblunt-2_products_default.reasons_to_love.section_title",
           },
         },
       ],
@@ -240,8 +276,9 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            title: "Product FAQs",
-            defaultExpanded: true,
+            title: "t:bblunt-2_products_default.product_faq.title",
+            defaultExpanded:
+              "t:bblunt-2_products_default.product_faq.defaultExpanded",
           },
         },
       ],
@@ -268,7 +305,11 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            title: "Customer Reviews",
+            title: "t:bblunt-2_products_default.customer_reviews.title",
+            writeReviewButtonText:
+              "t:bblunt-2_products_default.customer_reviews.writeReviewButtonText",
+            cancelReviewButtonText:
+              "t:bblunt-2_products_default.customer_reviews.cancelReviewButtonText",
           },
         },
       ],
@@ -295,19 +336,9 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            heading: "Recently Viewed",
-            maxProducts: 10,
-            showActionButton: true,
-            actionButtonText: "Add to cart",
-            actionButtonTextMobile: "Add",
-            actionButtonTextColor: "#ffffff",
-            showBadge: true,
-            showRating: true,
-            soldOutText: "Sold Out",
-            soldOutTextMobile: "Sold",
-            productCardBackgroundColor: "#ffffff",
-            sectionBackgroundColor: "#ffffff",
-            sectionTextColor: "#1d1d1d",
+            heading: "t:bblunt-2_products_default.recently_viewed.heading",
+            actionButtonText: "t:common.product_card.add_to_cart",
+            soldOutText: "t:common.product_card.sold_out",
           },
         },
       ],
@@ -334,8 +365,9 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            title: "Additional Information",
-            defaultExpanded: false,
+            title: "t:bblunt-2_products_default.additional_information.title",
+            defaultExpanded:
+              "t:bblunt-2_products_default.additional_information.defaultExpanded",
           },
         },
       ],
@@ -362,7 +394,8 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            sectionTitle: "Disclaimer",
+            sectionTitle:
+              "t:bblunt-2_products_default.product_disclaimer.sectionTitle",
           },
         },
       ],
@@ -404,7 +437,7 @@ export const template: PageConfig = {
         responsive: {
           mobile: { padding: { top: 0, right: 0, bottom: 60, left: 0 } },
           tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 80, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 70, left: 0 } },
         },
       },
       widgets: [
@@ -412,7 +445,35 @@ export const template: PageConfig = {
           id: "bblunt-2-footer",
           name: "Footer",
           type: WIDGET_TYPES.Footer,
-          settings: { variant: "v1" },
+          dataSourceKey: "productData",
+          settings: {
+            variant: "v1",
+            mobileFooterTagline: "t:common.footer.mobileFooterTagline__rich",
+            logoUrl: "t:common.footer.logoUrl",
+            logoAlt: "t:common.footer.logoAlt",
+            appDownloadText: "t:common.footer.appDownloadText",
+            googlePlayUrl: "t:common.footer.googlePlayUrl",
+            appStoreUrl: "t:common.footer.appStoreUrl",
+            googlePlayImage: "t:common.footer.googlePlayImage",
+            googlePlayAlt: "t:common.footer.googlePlayAlt",
+            appStoreImage: "t:common.footer.appStoreImage",
+            appStoreAlt: "t:common.footer.appStoreAlt",
+            serviceSectionsIcons: "t:common.footer.serviceSectionsIcons",
+            aboutTitle: "t:common.footer.aboutTitle",
+            aboutLinks: "t:common.footer.aboutLinks",
+            usefulLinksTitle: "t:common.footer.usefulLinksTitle",
+            usefulLinks: "t:common.footer.usefulLinks",
+            ourSalonsTitle: "t:common.footer.ourSalonsTitle",
+            ourSalonsLinks: "t:common.footer.ourSalonsLinks",
+            categoriesTitle: "t:common.footer.categoriesTitle",
+            categoriesLinks: "t:common.footer.categoriesLinks",
+            myAccountTitle: "t:common.footer.myAccountTitle",
+            myAccountLinks: "t:common.footer.myAccountLinks",
+            socialLinks: "t:common.footer.socialLinks",
+            paymentProtectionText: "t:common.footer.paymentProtectionText",
+            copyrightText: "t:common.footer.copyrightText",
+            paymentMethods: "t:common.footer.paymentMethods",
+          },
         },
       ],
     },
@@ -438,8 +499,9 @@ export const template: PageConfig = {
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
-            buttonText: "Add to cart",
-            cartHref: "/cart",
+            buttonText: "t:common.product_card.add_to_cart",
+            inclusiveOfAllTaxesText:
+              "t:bblunt-2_products_default.product_detail.inclusiveOfAllTaxesText",
           },
         },
       ],

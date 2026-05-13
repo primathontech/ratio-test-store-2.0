@@ -52,12 +52,12 @@
           "supportedLanguages": ["en"],
           "routeContext": {
             "templateName": "products",
-            "path": "/products/sample-product",
+            "path": "/products/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
             "params": {
-              "handle": "sample-product"
+              "handle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32"
             },
             "query": {},
-            "productHandle": "sample-product",
+            "productHandle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
             "fetchAPITemplate": true
           }
         }
@@ -74,12 +74,12 @@
           "supportedLanguages": ["en"],
           "routeContext": {
             "templateName": "products-b",
-            "path": "/products-b/sample-product",
+            "path": "/products-b/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
             "params": {
-              "handle": "sample-product"
+              "handle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32"
             },
             "query": {},
-            "productHandle": "sample-product",
+            "productHandle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
             "fetchAPITemplate": true
           }
         }
@@ -96,12 +96,12 @@
           "supportedLanguages": ["en"],
           "routeContext": {
             "templateName": "collection",
-            "path": "/collections/sample",
+            "path": "/collections/colour-bundles",
             "params": {
-              "handle": "sample"
+              "handle": "colour-bundles"
             },
             "query": {},
-            "collectionHandle": "sample",
+            "collectionHandle": "colour-bundles",
             "fetchAPITemplate": true
           }
         }
@@ -118,12 +118,12 @@
           "supportedLanguages": ["en"],
           "routeContext": {
             "templateName": "collection-b",
-            "path": "/collections-b/sample",
+            "path": "/collections-b/colour-bundles",
             "params": {
-              "handle": "sample"
+              "handle": "colour-bundles"
             },
             "query": {},
-            "collectionHandle": "sample",
+            "collectionHandle": "colour-bundles",
             "fetchAPITemplate": true
           }
         }
@@ -194,7 +194,71 @@
           "name": "About Us (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"]
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "about-us",
+            "path": "/pages/about-us",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Privacy Policy",
+      "templates": [
+        {
+          "id": "bblunt-2_privacy-policy_default",
+          "name": "Privacy Policy (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "privacy-policy",
+            "path": "/pages/privacy-policy",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Return Policy",
+      "templates": [
+        {
+          "id": "bblunt-2_return-policy_default",
+          "name": "Return Policy (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "return-policy",
+            "path": "/pages/return-policy",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Terms And Conditions",
+      "templates": [
+        {
+          "id": "bblunt-2_terms-and-conditions_default",
+          "name": "Terms And Conditions (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "terms-and-conditions",
+            "path": "/pages/terms-and-conditions",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
         }
       ]
     }

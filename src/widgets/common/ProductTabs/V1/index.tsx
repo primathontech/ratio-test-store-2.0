@@ -301,14 +301,93 @@ export const V1 = memo(function V1({
     tabs = settings?.tabs || [];
   }
 
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndexes, setOpenIndexes] = useState<Set<number>>(new Set());
 
   const handleToggle = useCallback((index: number) => {
-    setOpenIndex((prev) => (prev === index ? null : index));
+    setOpenIndexes((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
   }, []);
 
   // Hide widget when no tabs are available
   if (tabs.length === 0) {
+    return null;
+  }
+
+  // Filter out tabs with empty title or content
+  const validTabs = tabs.filter((tab) => {
+    // Check if title is empty
+    if (!tab.title || tab.title.trim() === "") {
+      return false;
+    }
+
+    // Check if content is empty based on type
+    if (tab.type === ProductTabType.HTML) {
+      const content = tab.contentHTML;
+      if (!content || content.trim() === "") {
+        return false;
+      }
+    } else if (tab.type === ProductTabType.STEPS) {
+      const content = tab.steps;
+      if (
+        !content ||
+        content.length === 0 ||
+        content.every(
+          (step) =>
+            (!step?.label || step.label.trim() === "") &&
+            (!step?.text || step.text.trim() === "")
+        )
+      ) {
+        return false;
+      }
+    } else if (tab.type === ProductTabType.INGREDIENTS) {
+      const content = tab.ingredients;
+      if (
+        !content ||
+        content.length === 0 ||
+        content.every(
+          (ingredient) =>
+            (!ingredient?.text || ingredient.text.trim() === "") &&
+            (!ingredient?.label || ingredient.label.trim() === "") &&
+            (!ingredient?.image || ingredient.image.trim() === "")
+        )
+      ) {
+        return false;
+      }
+    } else if (tab.type === ProductTabType.LIST) {
+      const content = tab.items;
+      if (
+        !content ||
+        content.length === 0 ||
+        content.every((item) => !item || item.trim() === "")
+      ) {
+        return false;
+      }
+    } else if (tab.type === ProductTabType.INGREDIENTS_LIST) {
+      const content = tab.ingredientListings;
+      if (
+        !content ||
+        content.length === 0 ||
+        content.every(
+          (listing) =>
+            (!listing?.label || listing.label.trim() === "") &&
+            (!listing?.text || listing.text.trim() === "")
+        )
+      ) {
+        return false;
+      }
+    }
+
+    return true;
+  });
+
+  if (validTabs.length === 0) {
     return null;
   }
 
@@ -318,11 +397,11 @@ export const V1 = memo(function V1({
       <div className="mx-auto max-w-[1400px]">
         {/* Accordion items */}
         <div>
-          {tabs.map((tab, index) => (
+          {validTabs.map((tab, index) => (
             <AccordionItem
               key={index}
               tab={tab}
-              isOpen={openIndex === index}
+              isOpen={openIndexes.has(index)}
               onToggle={() => handleToggle(index)}
             />
           ))}

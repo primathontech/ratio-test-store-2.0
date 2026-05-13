@@ -76,7 +76,38 @@ export const template: PageConfig = {
           id: "bblunt-2-header",
           name: "Header",
           type: WIDGET_TYPES.Header,
-          settings: { variant: "v1" },
+          settings: {
+            variant: "v1",
+            logoSrc: "t:common.header.logoSrc",
+            searchPlaceholder: "t:common.header.searchPlaceholder",
+            searchSuggestions: "t:common.header.searchSuggestions",
+            product_label: "t:common.header.product_label",
+            product_href: "t:common.header.product_href",
+            product_items: "t:common.header.product_items",
+            hair_care_label: "t:common.header.hair_care_label",
+            hair_care_href: "t:common.header.hair_care_href",
+            hair_care_type_label: "t:common.header.hair_care_type_label",
+            hair_care_type_href: "t:common.header.hair_care_type_href",
+            hair_care_type_items: "t:common.header.hair_care_type_items",
+            hair_care_concern_label: "t:common.header.hair_care_concern_label",
+            hair_care_concern_href: "t:common.header.hair_care_concern_href",
+            hair_care_concern_items: "t:common.header.hair_care_concern_items",
+            hair_colour_label: "t:common.header.hair_colour_label",
+            hair_colour_href: "t:common.header.hair_colour_href",
+            hair_colour_items: "t:common.header.hair_colour_items",
+            hair_styling_label: "t:common.header.hair_styling_label",
+            hair_styling_href: "t:common.header.hair_styling_href",
+            hair_styling_items: "t:common.header.hair_styling_items",
+            salon_label: "t:common.header.salon_label",
+            salon_href: "t:common.header.salon_href",
+            salon_items: "t:common.header.salon_items",
+            getApp_title: "t:common.header.get_app.title",
+            getApp_description: "t:common.header.get_app.description",
+            getApp_button_text: "t:common.header.get_app.button_text",
+            getApp_logo_alt: "t:common.header.get_app.logo_alt",
+            getApp_logo_url: "t:common.header.get_app.logo_url",
+            getApp_app_url: "t:common.header.get_app.app_url",
+          },
         },
       ],
     },
@@ -102,7 +133,6 @@ export const template: PageConfig = {
           dataSourceKey: "collectionData",
           settings: {
             variant: "v1",
-            bannerCarousel: [],
             autoplay: true,
             autoplayInterval: 5000,
             loop: true,
@@ -137,15 +167,19 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.CollectionTimer,
           settings: {
             variant: "v1",
-            endDateString: "Dec 31, 2026 23:59:59",
-            urgencyText: "Hurry Up!",
-            saleLabel: "Sale ends in:",
-            expiredText: "Oops! Offer is Expired",
             visible: true,
+            endDateString:
+              "t:bblunt-2_collection_default.collection_timer.endDateString",
+            timerInterval: 1000,
+            urgencyText:
+              "t:bblunt-2_collection_default.collection_timer.urgencyText",
+            saleLabel:
+              "t:bblunt-2_collection_default.collection_timer.saleLabel",
+            expiredText:
+              "t:bblunt-2_collection_default.collection_timer.expiredText",
             backgroundColor: "#ffffff",
             textColor: "#1D1D1D",
             urgencyColor: "#FF0000",
-            timerInterval: 1000,
           },
         },
       ],
@@ -172,6 +206,22 @@ export const template: PageConfig = {
           dataSourceKey: "collectionData",
           settings: {
             variant: "v1",
+            autoLoadMore: true,
+
+            // Card settings
+            showActionButton: true,
+            actionButtonText: "t:common.product_card.add_to_cart",
+            soldOutText: "t:common.product_card.sold_out",
+            currencySymbol: "₹",
+            showBadge: true,
+            showRating: true,
+            actionButtonTextColor: "#fff",
+            sectionTextColor: "#1D1D1D",
+
+            // Product Filter And Grid Settings
+            filterTitle: "t:common.collection_page.filter_title",
+            sortDropdownText:
+              "t:common.collection_page.sort_dropdown_button_text",
           },
         },
       ],
@@ -198,7 +248,7 @@ export const template: PageConfig = {
           dataSourceKey: "collectionData",
           settings: {
             variant: "v1",
-            title: "FAQ",
+            title: "t:bblunt-2_collection_default.collection_faq.title",
           },
         },
       ],
@@ -219,7 +269,7 @@ export const template: PageConfig = {
       },
       widgets: [
         {
-          id: "shine-academy-banner-widget",
+          id: "bblunt-2-shine-academy-banner",
           name: "Shine Academy Banner",
           type: WIDGET_TYPES.ShineAcademyBanner,
           settings: {
@@ -234,7 +284,6 @@ export const template: PageConfig = {
         },
       ],
     },
-
     // Testimonials Section
     {
       id: "testimonials-section",
@@ -250,14 +299,12 @@ export const template: PageConfig = {
       },
       widgets: [
         {
-          id: "testimonials-widget",
+          id: "bblunt-2-testimonials",
           name: "Testimonials",
           type: WIDGET_TYPES.Testimonials,
           settings: {
             variant: "v1",
             heading: "t:common.testimonials.heading__rich",
-            cardBackground: "rgb(29, 29, 29)",
-            starColor: "rgb(255, 192, 2)",
             testimonials: "t:common.testimonials.items",
           },
         },
@@ -285,7 +332,8 @@ export const template: PageConfig = {
           dataSourceKey: "collectionData",
           settings: {
             variant: "v2",
-            title: "Additional Information",
+            title:
+              "t:bblunt-2_collection_default.collection_additional_information.title",
           },
         },
       ],
@@ -325,9 +373,9 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 20, right: 0, bottom: 60, left: 0 } },
-          tablet: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
       },
       widgets: [
@@ -335,7 +383,34 @@ export const template: PageConfig = {
           id: "bblunt-2-footer",
           name: "Footer",
           type: WIDGET_TYPES.Footer,
-          settings: { variant: "v1" },
+          settings: {
+            variant: "v1",
+            mobileFooterTagline: "t:common.footer.mobileFooterTagline__rich",
+            logoUrl: "t:common.footer.logoUrl",
+            logoAlt: "t:common.footer.logoAlt",
+            appDownloadText: "t:common.footer.appDownloadText",
+            googlePlayUrl: "t:common.footer.googlePlayUrl",
+            appStoreUrl: "t:common.footer.appStoreUrl",
+            googlePlayImage: "t:common.footer.googlePlayImage",
+            googlePlayAlt: "t:common.footer.googlePlayAlt",
+            appStoreImage: "t:common.footer.appStoreImage",
+            appStoreAlt: "t:common.footer.appStoreAlt",
+            serviceSectionsIcons: "t:common.footer.serviceSectionsIcons",
+            aboutTitle: "t:common.footer.aboutTitle",
+            aboutLinks: "t:common.footer.aboutLinks",
+            usefulLinksTitle: "t:common.footer.usefulLinksTitle",
+            usefulLinks: "t:common.footer.usefulLinks",
+            ourSalonsTitle: "t:common.footer.ourSalonsTitle",
+            ourSalonsLinks: "t:common.footer.ourSalonsLinks",
+            categoriesTitle: "t:common.footer.categoriesTitle",
+            categoriesLinks: "t:common.footer.categoriesLinks",
+            myAccountTitle: "t:common.footer.myAccountTitle",
+            myAccountLinks: "t:common.footer.myAccountLinks",
+            socialLinks: "t:common.footer.socialLinks",
+            paymentProtectionText: "t:common.footer.paymentProtectionText",
+            copyrightText: "t:common.footer.copyrightText",
+            paymentMethods: "t:common.footer.paymentMethods",
+          },
         },
       ],
     },

@@ -1,1 +1,27 @@
-{}
+{
+  "bblunt-2_shine-squad-weekly-offer_default": {
+    "hero_banner": {
+      "desktopImage": "/HeroBanner/images/hero-desktop.jpg",
+      "mobileImage": "/HeroBanner/images/hero-mobile.jpg",
+      "alt": "Hair Fall Control Freebies - Use Code FREEHF - Shop Now",
+      "mobileAspectRatio": "1/1",
+      "desktopAspectRatio": "1440/529"
+    },
+    "how_it_works_banner": {
+      "desktopImage": "/HowItWorksBanner/images/howtoshop-desktop.jpg",
+      "mobileImage": "/HowItWorksBanner/images/howtoshop-mobile.jpg",
+      "alt": "How To Shop: 1. Add favorites worth 499 to cart, 2. Apply code FREEHF at checkout, 3. Free products delivered with your order",
+      "mobileAspectRatio": "1500/1167",
+      "desktopAspectRatio": "5692/692"
+    },
+    "countdown_timer": {
+      "targetDate": "May 8, 2026 23:59:00",
+      "heading": "Hurry Up!",
+      "subheading": "Hurry! Offer Will Expire in",
+      "expiredText": "Oops! Offer is Expired"
+    },
+    "most_loved_grid": {
+      "category_title": "Most Loved"
+    }
+  }
+}

@@ -13,7 +13,7 @@ import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
 //   tablet (768–1149)    : 2 cards, 22px gap   (was w-[calc((100% - 22px)/2)])
 //   desktop (≥1150)      : 3 cards, 22px gap   (was w-[calc((100% - 44px)/3)])
 const DEFAULT_TESTIMONIALS_BREAKPOINTS = [
-  { minWidth: 0, cards: 4 / 3, gap: 15 },
+  { minWidth: 0, cards: 1.4, gap: 15 },
   { minWidth: 768, cards: 2, gap: 22 },
   { minWidth: 1150, cards: 3, gap: 22 },
 ];
@@ -48,13 +48,15 @@ const StarRating = ({
   count,
   starColor,
   starEmptyColor,
+  paddingTopClass,
 }: {
   count: number;
   starColor: string;
   starEmptyColor: string;
+  paddingTopClass: string;
 }) => (
   <div
-    className="flex gap-[7px] min-h-[55px]"
+    className={`flex gap-2.5 min-h-[55px] ${paddingTopClass}`.trim()}
     role="img"
     aria-label={`${count} out of 5 stars`}
   >
@@ -74,21 +76,14 @@ const StarRating = ({
 /* ------------------------------------------------------------------ */
 
 const QuoteMark = () => (
-  <svg
-    width="65"
-    height="52"
-    viewBox="0 0 65 52"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
+  <Image
+    src="/images/testimonials/quotes-icon.svg"
+    alt=""
+    width={65}
+    height={46}
     aria-hidden="true"
     className="hidden md:block"
-    style={{ color: "rgba(255, 255, 255, 0.08)" }}
-  >
-    <path
-      d="M0 52V33.6C0 24.5333 1.73333 16.8 5.2 10.4C8.66667 3.73333 14.2667 0 22 0V9.6C17.6 10.4 14.4 12.5333 12.4 16C10.4 19.2 9.33333 23.0667 9.2 27.6H20V52H0ZM36 52V33.6C36 24.5333 37.7333 16.8 41.2 10.4C44.6667 3.73333 50.2667 0 58 0V9.6C53.6 10.4 50.4 12.5333 48.4 16C46.4 19.2 45.3333 23.0667 45.2 27.6H56V52H36Z"
-      fill="currentColor"
-    />
-  </svg>
+  />
 );
 
 const QuoteMarkMobile = () => (
@@ -130,16 +125,16 @@ const TestimonialCard = memo(function TestimonialCard({
       <div className="relative">
         {/* Dark card body */}
         <div
-          className="relative w-full pl-[1.6rem] md:pl-[2.4rem] pt-[1.6rem] md:pt-[2.4rem] pr-[1.6rem] md:pr-[2.4rem] rounded rounded-bl-none min-h-[217px]"
+          className="relative w-full px-4 pt-4 rounded rounded-bl-none min-h-[217px]"
           style={{ backgroundColor: cardBackground }}
         >
           {/* Title */}
-          <h4 className="font-bold text-lg mb-2 text-secondary m-0">
+          <h4 className="font-semibold text-lg mb-2 text-secondary m-0">
             {item.heading}
           </h4>
 
           {/* Description */}
-          <p className="text-sm md:text-sm leading-[22.5px] font-normal mb-5 md:mb-[2.6rem] text-secondary m-0">
+          <p className="text-sm md:text-sm !leading-[23.4px] font-normal mb-5 md:mb-[26px] text-secondary m-0">
             {item.reviewText}
           </p>
 
@@ -149,6 +144,7 @@ const TestimonialCard = memo(function TestimonialCard({
               count={item.stars}
               starColor={starColor}
               starEmptyColor={starEmptyColor}
+              paddingTopClass="pt-[4px]"
             />
           </div>
 
@@ -170,7 +166,7 @@ const TestimonialCard = memo(function TestimonialCard({
       </div>
 
       {/* Author row */}
-      <div className="flex items-center gap-[1.6rem] ml-[18px] pt-2">
+      <div className="flex items-center gap-4 ml-[18px] pt-2">
         <div className="relative w-[60px] h-[60px] rounded-[50%] overflow-hidden flex-shrink-0">
           <Image
             src={item.avatarSrc}
@@ -196,7 +192,7 @@ const TestimonialCard = memo(function TestimonialCard({
 export const V1 = memo(function V1({ settings }: TestimonialsProps) {
   const heading =
     settings?.heading ?? "What our <strong>customers are saying?</strong>";
-  const cardBackground = settings?.cardBackground ?? "#000000";
+  const cardBackground = settings?.cardBackground ?? "#1D1D1D";
   const starColor = settings?.starColor ?? "#FFC300";
   const starEmptyColor = "#4A4A4A";
   const testimonials = settings?.testimonials ?? [];
@@ -268,7 +264,7 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
         {/* Section heading */}
         <div className="mt-[25px] md:mt-14 mb-4 md:mb-[30px] text-left md:text-center testimonials-animate-on-scroll">
           <h2
-            className="text-2xl xl:text-[28px] leading-[29px] lg:leading-[40px] font-normal text-black m-0 md:inline-block md:text-left lg:block lg:text-center"
+            className="text-2xl xl:text-[28px] leading-[29px] lg:leading-[40px] font-normal text-black m-0 text-left md:text-center [&_strong]:block md:[&_strong]:inline"
             // eslint-disable-next-line no-restricted-syntax
             dangerouslySetInnerHTML={{ __html: heading }}
           />

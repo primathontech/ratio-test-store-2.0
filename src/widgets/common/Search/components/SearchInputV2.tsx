@@ -279,8 +279,15 @@ export const SearchInputV2: React.FC<SearchInputV2Props> = ({
   };
 
   return (
-    <div className="relative" ref={searchContainerRef}>
-      <form onSubmit={handleSearchSubmit}>
+    <div
+      className="relative"
+      ref={searchContainerRef}
+      data-testid="header-search-component"
+    >
+      <form
+        onSubmit={handleSearchSubmit}
+        data-testid="header-search-input-wrapper"
+      >
         <input
           data-testid="header-search-input-container"
           ref={inputRef}
@@ -298,6 +305,7 @@ export const SearchInputV2: React.FC<SearchInputV2Props> = ({
           placeholder={isMobile ? " " : animatedPlaceholder}
           aria-label="Search"
           autoComplete="off"
+          autoFocus={isMobile}
           className={`
             w-full outline-none transition-all duration-300 ease-in-out
             [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden

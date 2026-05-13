@@ -75,39 +75,6 @@ const CartIcon = () => (
   </svg>
 );
 
-const SpinnerIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    className="animate-spin"
-    focusable="false"
-    role="presentation"
-    viewBox="0 0 66 66"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <circle
-      className="opacity-25"
-      fill="none"
-      strokeWidth="6"
-      stroke="currentColor"
-      cx="33"
-      cy="33"
-      r="30"
-    />
-    <circle
-      fill="none"
-      strokeWidth="6"
-      stroke="currentColor"
-      cx="33"
-      cy="33"
-      r="30"
-      strokeDasharray="164"
-      strokeDashoffset="120"
-    />
-  </svg>
-);
-
 /* ------------------------------------------------------------------ */
 /*  V1 -- Sticky Add To Cart Bar                                       */
 /* ------------------------------------------------------------------ */
@@ -123,6 +90,8 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
   const price = product
     ? `\u20B9${Math.round(product.price / 100)}`
     : settings?.price || "";
+  const inclusiveOfAllTaxesText =
+    settings?.inclusiveOfAllTaxesText || "Incl. of all taxes";
   const buttonText = settings?.buttonText || "Add to cart";
   const cartHref = settings?.cartHref || "/cart";
 
@@ -133,7 +102,9 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
   const loadingItems = useCartStore((s) => s.loadingItems);
   const isCartOpen = useCartStore((s) => s.isOpen);
   const items = useCartItems();
-  const isLoading = Boolean(product?.id && loadingItems[product.id]);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const isLoading =
+    isAddingToCart || Boolean(product?.id && loadingItems[product.id]);
 
   const cartLine = product
     ? items.find((i) => (i.productId ?? i.product_id) === product.id)
@@ -206,11 +177,14 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
       pendingTimeoutRef.current = null;
     }, 5000);
 
+    setIsAddingToCart(true);
     try {
       await addItem(buildCartItem(product));
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("[StickyAddToCart] addItem failed:", error);
+    } finally {
+      setIsAddingToCart(false);
     }
   }, [product, addItem, currentQuantity, isInCart]);
 
@@ -221,14 +195,9 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
 
   return (
     <div
-      className={[
-        "fixed bottom-0 left-0 right-0",
-        "z-[3000]",
-        "bg-secondary",
-        "shadow-[0_-4px_10px_rgba(0,0,0,0.05)]",
-        "transition-transform duration-500",
-        isVisible ? "translate-y-0" : "translate-y-[calc(100%+44px)]",
-      ].join(" ")}
+      className={`fixed bottom-0 left-0 right-0 z-[3000] bg-secondary shadow-[0_-4px_10px_rgba(0,0,0,0.05)] transition-transform duration-500 ${
+        isVisible ? "translate-y-0" : "translate-y-[calc(100%+44px)]"
+      }`}
       style={{
         transitionTimingFunction: "cubic-bezier(0.19, 1, 0.22, 1)",
       }}
@@ -236,14 +205,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
       {/* ============================================ */}
       {/* DESKTOP LAYOUT (lg+): thumbnail + info + qty + ATC */}
       {/* ============================================ */}
-      <div
-        className={[
-          "hidden lg:block",
-          "mx-auto",
-          "max-w-[1400px]",
-          "px-[50px]",
-        ].join(" ")}
-      >
+      <div className="hidden md:block mx-auto max-w-[1400px] px-[50px]">
         <div className="flex items-center h-[85px] relative">
           {/* Product thumbnail -- positioned to extend above the bar */}
           <div className="relative w-[120px] min-w-[120px] h-[120px] -mt-11 mr-[15px]">
@@ -257,73 +219,43 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
           </div>
 
           {/* Product info */}
-          <div className="flex-1 min-w-0 py-2.5 pl-[15px]">
+          <div className="flex-1 min-w-0 pb-6 pt-2.5">
             {/* Title */}
-            <h3
-              className={[
-                "",
-                "text-base leading-[19px]",
-                "font-medium",
-                "text-black",
-                "mb-2",
-                "truncate",
-              ].join(" ")}
-            >
+            <h3 className="text-base leading-[19px] font-medium text-black mb-1 truncate">
               {productTitle}
             </h3>
 
             {/* Price row */}
             <div className="flex items-baseline gap-[5px]">
-              <span
-                className={[
-                  "",
-                  "text-sm leading-[14px]",
-                  "font-normal",
-                  "text-[#a3a3a3]",
-                  "tracking-[1px]",
-                ].join(" ")}
-              >
+              <span className="text-sm leading-[14px] font-normal text-[#a3a3a3] tracking-[1px]">
                 {mrpLabel}
               </span>
-              <span
-                className={[
-                  "",
-                  "text-xl leading-[20px]",
-                  "font-bold",
-                  "text-primary",
-                  "tracking-[1px]",
-                ].join(" ")}
-              >
+              <span className="text-xl leading-[20px] font-bold text-primary tracking-[1px]">
                 {price}
+              </span>
+              <span className="text-xs italic text-[#a3a3a3] leading-[19.2px] whitespace-nowrap mt-2">
+                {inclusiveOfAllTaxesText}
               </span>
             </div>
           </div>
 
           {/* ATC button -- desktop shows just "Add to cart" */}
-          <div className="flex items-center ml-auto">
+          <div className="flex items-center ml-auto mb-4">
             <button
               type="button"
               onClick={handleAddToCart}
               disabled={isLoading}
-              className={[
-                "flex items-center justify-center",
-                "w-64 h-[53px]",
-                "bg-black text-secondary",
-                "rounded-[10px]",
-                "border border-black",
-                "",
-                "text-xl leading-[24px]",
-                "font-bold",
-                "text-center",
-                "cursor-pointer",
-                "transition-[background-color,color,border] duration-[250ms] ease-in-out",
-                "hover:bg-[#222222]",
-                "disabled:opacity-70 disabled:cursor-not-allowed",
-                "relative overflow-hidden",
-              ].join(" ")}
+              className="flex items-center justify-center w-64 h-[53px] bg-black text-secondary rounded-[10px] border border-black text-xl leading-[24px] font-bold text-center cursor-pointer transition-[background-color,color,border] duration-[250ms] ease-in-out hover:bg-[#222222] disabled:cursor-not-allowed relative overflow-hidden"
               aria-label={`${buttonText} ${price}`}
             >
-              {isLoading ? <SpinnerIcon /> : <span>{buttonText}</span>}
+              {isLoading ? (
+                <span
+                  data-testid="sticky-add-to-cart-loading-spinner"
+                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+                />
+              ) : (
+                <span>{buttonText}</span>
+              )}
             </button>
           </div>
         </div>

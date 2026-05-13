@@ -2,11 +2,8 @@
 
 import React, { memo, useMemo, useCallback } from "react";
 import type { FeaturedCollectionCarouselProps, ApiProduct } from "../types";
-import { ProductCard } from "@/ui/components/ProductCard";
-import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
-import { getProductLabel } from "@/ui/components/ProductCard/badgeUtils";
+import { CartAwareProductCard } from "@/ui/components/CartAwareProductCard";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
-import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
 import { LazyViewAllButton } from "../components/LazyViewAllButton";
 
 /* ------------------------------------------------------------------ */
@@ -44,65 +41,6 @@ const NextArrowIcon = () => (
 );
 
 /* ------------------------------------------------------------------ */
-/*  Transform: API product → ProductCardProduct                        */
-/* ------------------------------------------------------------------ */
-
-function transformApiProduct(product: ApiProduct): ProductCardProduct {
-  const mainImg =
-    product.images?.find((img) => img.is_main)?.url || product.image_url || "";
-  const hoverImg = product.images?.find((img) => !img.is_main)?.url || mainImg;
-  const alt =
-    product.images?.find((img) => img.is_main)?.alt ||
-    product.title ||
-    "Product image";
-
-  // API prices are in paisa (59900 = ₹599)
-  const salePrice = product.price ? product.price / 100 : 0;
-  const originalPrice = product.compare_at_price
-    ? product.compare_at_price / 100
-    : undefined;
-
-  let discount: string | undefined;
-  if (originalPrice && originalPrice > salePrice && salePrice > 0) {
-    const pct = Math.round(((originalPrice - salePrice) / originalPrice) * 100);
-    discount = `${pct}% off`;
-  }
-
-  // Resolve badge: metafield first, tag fallback (matches bblunt reference).
-  const resolvedBadge = getProductLabel(
-    product.metadata?.product_labels?.value,
-    product.tags
-  );
-
-  return {
-    id: product.id,
-    productId: product.id,
-    variantId: product.variant?.id,
-    availableForSale:
-      typeof product.availableForSale === "boolean"
-        ? product.availableForSale
-        : product.variant?.availableForSale,
-    href: `/products/${product.handle}`,
-    title: product.title,
-    alt,
-    mainImage: mainImg,
-    hoverImage: hoverImg,
-    category: product.productType || "",
-    badge: resolvedBadge?.label,
-    badgeBackground: resolvedBadge?.background,
-    rating: product.average_rating || 0,
-    reviewCount: product.rating_count || 0,
-    salePrice,
-    originalPrice,
-    discount,
-    weight: product.metadata?.product_net_content?.value || "250g",
-    description:
-      product.metadata?.product_subtitle?.value ||
-      "Reduces Up to 93% Hair Fall | Strengthens & Nourishes Hair",
-  };
-}
-
-/* ------------------------------------------------------------------ */
 /*  Extract products from COLLECTION API response                      */
 /* ------------------------------------------------------------------ */
 
@@ -133,129 +71,6 @@ function extractFromData(
     handle: collection?.handle || "",
   };
 }
-
-/* ------------------------------------------------------------------ */
-/*  Cart-aware product card wrapper                                    */
-/* ------------------------------------------------------------------ */
-
-function buildCartItem(
-  product: ApiProduct,
-  cardProduct: ProductCardProduct
-): CartItem {
-  const variantId = product.variant?.id;
-  const productId = product.id;
-  const lineId = variantId ?? productId;
-
-  return {
-    id: lineId,
-    productId,
-    variantId,
-    sku: product.variant?.sku,
-    title: product.title,
-    price: { amount: product.price ?? 0, currencyCode: "INR" },
-    compareAtPrice:
-      typeof product.compare_at_price === "number"
-        ? { amount: product.compare_at_price, currencyCode: "INR" }
-        : undefined,
-    quantity: 1,
-    image: cardProduct.mainImage,
-    product_type: product.productType,
-  };
-}
-
-interface FeaturedCarouselCardProps {
-  product: ApiProduct;
-  actionButtonText?: string;
-  soldOutText?: string;
-}
-
-const FeaturedCarouselCard = memo(function FeaturedCarouselCard({
-  product,
-  actionButtonText,
-  soldOutText,
-}: FeaturedCarouselCardProps) {
-  const cardProduct = useMemo(() => transformApiProduct(product), [product]);
-  const productId = product.id;
-  const variantId = product.variant?.id;
-
-  const items = useCartItems();
-  const cartLine = useMemo(
-    () =>
-      items.find((i) => {
-        const lineProductId = i.productId ?? i.product_id;
-        const lineVariantId = i.variantId ?? i.variant_id;
-        return variantId
-          ? lineProductId === productId && lineVariantId === variantId
-          : lineProductId === productId;
-      }),
-    [items, productId, variantId]
-  );
-  const loadingItems = useCartStore((s) => s.loadingItems);
-  const addItem = useCartStore((s) => s.addItem);
-  const incrementItem = useCartStore((s) => s.incrementItem);
-  const decrementItem = useCartStore((s) => s.decrementItem);
-
-  const isInCart = !!cartLine;
-  const isQuantityLoading =
-    (variantId ? !!loadingItems[variantId] : false) ||
-    (cartLine?.id ? !!loadingItems[cartLine.id] : false);
-
-  const handleAddToCart = useCallback(async () => {
-    if (cardProduct.availableForSale === false) {
-      return;
-    }
-    try {
-      await addItem(buildCartItem(product, cardProduct));
-    } catch (error) {
-      console.error("[FeaturedCollectionCarousel] addItem failed:", error);
-    }
-  }, [addItem, product, cardProduct]);
-
-  const handleIncrement = useCallback(async () => {
-    if (!cartLine) {
-      return;
-    }
-    try {
-      await incrementItem(cartLine.id, variantId);
-    } catch (error) {
-      console.error(
-        "[FeaturedCollectionCarousel] incrementItem failed:",
-        error
-      );
-    }
-  }, [incrementItem, cartLine, variantId]);
-
-  const handleDecrement = useCallback(async () => {
-    if (!cartLine) {
-      return;
-    }
-    try {
-      await decrementItem(cartLine.id, variantId);
-    } catch (error) {
-      console.error(
-        "[FeaturedCollectionCarousel] decrementItem failed:",
-        error
-      );
-    }
-  }, [decrementItem, cartLine, variantId]);
-
-  return (
-    <ProductCard
-      product={cardProduct}
-      settings={{
-        showAddToCartToast: true,
-        ...(actionButtonText ? { actionButtonText } : {}),
-        ...(soldOutText ? { soldOutText } : {}),
-      }}
-      onAddToCart={handleAddToCart}
-      onIncrement={handleIncrement}
-      onDecrement={handleDecrement}
-      isInCart={isInCart}
-      cartItem={cartLine}
-      isQuantityLoading={isQuantityLoading}
-    />
-  );
-});
 
 /* ------------------------------------------------------------------ */
 /*  Carousel breakpoints                                               */
@@ -304,10 +119,15 @@ export const V1 = memo(function V1({
       }
       return (
         <div className="md:border-r md:border-[#EBEBEB] overflow-hidden">
-          <FeaturedCarouselCard
-            product={product}
-            actionButtonText={actionButtonText}
-            soldOutText={soldOutText}
+          <CartAwareProductCard
+            apiProduct={product}
+            settings={{
+              showAddToCartToast: true,
+              ...(actionButtonText ? { actionButtonText } : {}),
+              ...(soldOutText ? { soldOutText } : {}),
+            }}
+            className="pl-[12px] min-[992px]:pl-0"
+            logTag="FeaturedCollectionCarousel"
           />
         </div>
       );
@@ -321,7 +141,8 @@ export const V1 = memo(function V1({
 
   return (
     <section
-      className="relative overflow-hidden pb-[32.4px] md:pb-14"
+      data-testid="featured-collection-container"
+      className="relative overflow-hidden pt-[25px] md:pt-[56px] pb-[24px] md:pb-[47px] lg:pb-[56px]"
       style={{
         backgroundColor: "#ffffff",
       }}
@@ -332,6 +153,7 @@ export const V1 = memo(function V1({
         <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px]">
           {/* Heading — rich HTML; <strong> in the source becomes the bold part. */}
           <h4
+            data-testid="featured-collection-container-heading"
             className="text-2xl xl:text-[28px] leading-[29px] md:leading-[34px] [&_strong]:font-bold"
             style={{
               color: "#1D1D1D",
@@ -344,7 +166,10 @@ export const V1 = memo(function V1({
         </div>
 
         {/* Carousel area */}
-        <div className="group xl:mx-auto xl:max-w-[1300px] md:border md:border-[#EBEBEB] md:rounded-lg overflow-hidden">
+        <div
+          data-testid="featured-collection-container-carousel"
+          className="group xl:mx-auto xl:max-w-[1300px] md:border md:border-[#EBEBEB] md:rounded-lg overflow-hidden"
+        >
           <SwipeCarousel
             itemCount={products.length}
             breakpoints={carouselBreakpoints}

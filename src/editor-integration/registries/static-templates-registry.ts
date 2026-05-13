@@ -1,5 +1,4 @@
 import { THEMES } from "@/editor-integration/theme-constants";
-import { lazy } from "react";
 
 /**
  * Static templates registry with lazy loading.
@@ -12,10 +11,7 @@ import { lazy } from "react";
 // Theme-scoped registry with lazy components (created once)
 export const STATIC_TEMPLATES_REGISTRY = {
   [THEMES.BBLUNT_2.id]: {
-    [THEMES.BBLUNT_2.static_templates.ABOUT_US]: lazy(
-      () => import("@/editor-integration/static-templates/about-us")
-    ),
-    // Add more static templates here, e.g.:
+    // Add static (non-page-builder) templates here, e.g.:
     // [THEMES.BBLUNT_2.static_templates.PRIVACY_POLICY]: lazy(() => import("@/editor-integration/static-templates/privacy-policy")),
   },
 } as const;

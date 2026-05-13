@@ -204,7 +204,7 @@ const MobileFilterBar: React.FC<MobileFilterBarProps> = ({
                                         option
                                       )
                                     }
-                                    className="mt-0.5 mr-3 !border !border-faq-border !w-4 md:!w-6 !h-4 md:!h-6 data-[state=checked]:!bg-loading-blue data-[state=checked]:!text-white pointer-events-none [&>span>svg]:!w-6 [&>span>svg]:!h-6"
+                                    className="mt-0.5 mr-3 !border !border-faq-border !w-4 md:!w-6 !h-4 md:!h-6 data-[state=checked]:!bg-loading-blue data-[state=checked]:!text-white pointer-events-none flex items-center justify-center [&>span]:flex [&>span]:items-center [&>span]:justify-center [&>span>svg]:!w-3 [&>span>svg]:!h-3 md:[&>span>svg]:!w-5 md:[&>span>svg]:!h-5"
                                   />
                                   <Text className="!text-[17px] !text-black !font-medium flex-1 leading-5 pointer-events-none">
                                     {option.label}

@@ -260,7 +260,7 @@ export function VariantPicker({
               key={variant.id}
               data-testid={`variant-card-${variant.id}`}
               onClick={() => onVariantSelect?.(variant)}
-              className={`relative flex flex-row cursor-pointer p-0 rounded transition-colors flex-shrink-0 overflow-visible ${
+              className={`relative flex flex-row cursor-pointer p-0 rounded transition-colors flex-shrink-0 overflow-visible max-h-[105px] md:max-h-[99px] ${
                 matchesRoute
                   ? "border-[1.6px] border-solid border-primary"
                   : "border-[0.8px] border-solid border-[rgba(0,0,0,0.1)]"
@@ -299,7 +299,7 @@ export function VariantPicker({
                   alt={name || "Color swatch"}
                   width={75}
                   height={83}
-                  className="object-cover h-full border-[1.21px]"
+                  className="object-cover h-full border-[1.21px] max-h-[91px] min-h-[83px]"
                   style={{ borderRadius: "4px" }}
                 />
               </div>

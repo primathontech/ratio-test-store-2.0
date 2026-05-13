@@ -26,47 +26,51 @@ export const V1 = memo(function HeroBannerV1({
     settings?.mobileImage || "/HeroBanner/images/hero-mobile.jpg";
   const alt = settings?.alt || "Promotional Hero Banner";
   const href = settings?.href;
-  const desktopWidth = settings?.desktopWidth || 1440;
-  const desktopHeight = settings?.desktopHeight || 529;
-  const mobileWidth = settings?.mobileWidth || 1200;
-  const mobileHeight = settings?.mobileHeight || 1200;
-  const paddingBottom = settings?.paddingBottom ?? 7;
+  const mobileAspectRatio = settings?.mobileAspectRatio || "1 / 1";
+  const desktopAspectRatio = settings?.desktopAspectRatio || "1440 / 529";
+
+  const toCssRatio = (ratio: string) => ratio.replace("/", " / ");
+  const desktopStyle: React.CSSProperties = {
+    aspectRatio: toCssRatio(desktopAspectRatio),
+    height: "auto",
+  };
+  const mobileStyle: React.CSSProperties = {
+    aspectRatio: toCssRatio(mobileAspectRatio),
+    height: "auto",
+  };
 
   const bannerContent = (
     <>
-      {/* Desktop / Tablet image (>=768px) */}
+      {/* Desktop / Tablet image (>=768px). Width/height passed for next/image
+       *  intrinsic-size hint only — actual rendered size is controlled by
+       *  the CSS aspect-ratio + 100% width. */}
       <Image
         src={desktopImage}
         alt={alt}
-        width={desktopWidth}
-        height={desktopHeight}
+        width={1440}
+        height={529}
         priority
-        className="hidden md:block w-full h-auto object-cover"
+        className="hidden md:block w-full object-cover"
         sizes="100vw"
+        style={desktopStyle}
       />
       {/* Mobile image (<768px) */}
       <Image
         src={mobileImage}
         alt={alt}
-        width={mobileWidth}
-        height={mobileHeight}
+        width={1200}
+        height={1200}
         priority
-        className="block md:hidden w-full h-auto object-cover"
+        className="block md:hidden w-full object-cover"
         sizes="100vw"
+        style={mobileStyle}
       />
     </>
   );
 
-  const sectionStyle = paddingBottom
-    ? { paddingBottom: `${paddingBottom}px` }
-    : undefined;
-
   if (href) {
     return (
-      <section
-        className={`w-full overflow-hidden ${className || ""}`}
-        style={sectionStyle}
-      >
+      <section className={`w-full overflow-hidden ${className || ""}`}>
         <Link href={href} className="block w-full">
           {bannerContent}
         </Link>
@@ -75,10 +79,7 @@ export const V1 = memo(function HeroBannerV1({
   }
 
   return (
-    <section
-      className={`w-full overflow-hidden ${className || ""}`}
-      style={sectionStyle}
-    >
+    <section className={`w-full overflow-hidden ${className || ""}`}>
       {bannerContent}
     </section>
   );

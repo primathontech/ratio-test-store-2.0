@@ -46,8 +46,6 @@ export const HoverPreview: React.FC<HoverPreviewProps> = ({
   containerRef,
   containerDimensions,
   sizeMultiplier = GALLERY_CONFIG.HOVER_PREVIEW.DEFAULT_SIZE_MULTIPLIER,
-  borderColor = GALLERY_CONFIG.HOVER_PREVIEW.DEFAULT_BORDER_COLOR,
-  borderWidth = GALLERY_CONFIG.HOVER_PREVIEW.DEFAULT_BORDER_WIDTH,
   opacity = GALLERY_CONFIG.HOVER_PREVIEW.DEFAULT_OPACITY,
   animationDuration = GALLERY_CONFIG.HOVER_PREVIEW.DEFAULT_ANIMATION_DURATION,
   delay = GALLERY_CONFIG.HOVER_PREVIEW.DEFAULT_DELAY,
@@ -128,8 +126,8 @@ export const HoverPreview: React.FC<HoverPreviewProps> = ({
   // Cap preview at 400×400 so very wide source images don't push off-screen.
   const baseWidth = containerDimensions.width * sizeMultiplier;
   const baseHeight = containerDimensions.height * sizeMultiplier;
-  const maxWidth = 400;
-  const maxHeight = 400;
+  const maxWidth = 550;
+  const maxHeight = 500;
   const previewWidth = Math.min(baseWidth, maxWidth);
   const previewHeight = Math.min(baseHeight, maxHeight);
 
@@ -205,6 +203,26 @@ export const HoverPreview: React.FC<HoverPreviewProps> = ({
       ? (clampedY / containerDimensions.height) * 100
       : 50;
 
+  const backdropLeft = containerRect.right + offset;
+  const backdropTop = containerRect.top;
+  const backdropWidth = Math.max(0, viewportWidth - backdropLeft - 20);
+  const backdropHeight = containerRect.height;
+
+  const backdropStyle: React.CSSProperties = {
+    position: "fixed",
+    left: `${backdropLeft}px`,
+    top: `${backdropTop}px`,
+    width: `${backdropWidth}px`,
+    height: `${backdropHeight}px`,
+    backgroundColor: "rgba(255, 255, 255, 0.7)",
+    opacity: shouldRender ? 1 : 0,
+    transition: `opacity ${animationDuration}ms ease-out`,
+    zIndex: 21473,
+    pointerEvents: "none",
+    display: shouldRender ? "block" : "none",
+    visibility: shouldRender ? "visible" : "hidden",
+  };
+
   const previewStyle: React.CSSProperties = {
     position: "fixed",
     left: `${left}px`,
@@ -212,7 +230,7 @@ export const HoverPreview: React.FC<HoverPreviewProps> = ({
     width: `${previewWidth}px`,
     height: `${previewHeight}px`,
     borderRadius: "0",
-    border: `${borderWidth}px solid ${borderColor}`,
+    border: "none",
     boxShadow: "none",
     opacity: shouldRender ? opacity : 0,
     transform: shouldRender ? "scale(1)" : "scale(0.8)",
@@ -224,19 +242,26 @@ export const HoverPreview: React.FC<HoverPreviewProps> = ({
     backgroundSize: `${containerDimensions.width * zoomFactor}px ${containerDimensions.height * zoomFactor}px`,
     backgroundPosition: `${xPercent}% ${yPercent}%`,
     backgroundRepeat: "no-repeat",
+    backgroundColor: "#ffffff",
     isolation: "isolate",
     display: shouldRender ? "block" : "none",
     visibility: shouldRender ? "visible" : "hidden",
-    backgroundColor: shouldRender ? "rgba(255, 255, 255, 0.98)" : "transparent",
   };
 
   const previewElement = (
-    <div
-      className={`hover-preview ${className || ""}`}
-      style={previewStyle}
-      role="img"
-      aria-label={`Magnified view of ${image.altText || "product image"}`}
-    />
+    <>
+      <div
+        className="hover-preview-backdrop"
+        style={backdropStyle}
+        aria-hidden="true"
+      />
+      <div
+        className={`hover-preview ${className || ""}`}
+        style={previewStyle}
+        role="img"
+        aria-label={`Magnified view of ${image.altText || "product image"}`}
+      />
+    </>
   );
 
   if (typeof document !== "undefined" && document.body) {

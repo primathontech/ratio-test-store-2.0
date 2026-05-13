@@ -47,10 +47,14 @@ export const themeRegistry = {
         translationsPath: "/themes/bblunt-2/locales/pages/products",
         routeContext: {
           templateName: "products",
-          path: "/products/sample-product",
-          params: { handle: "sample-product" },
+          path: "/products/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
+          params: {
+            handle:
+              "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
+          },
           query: {},
-          productHandle: "sample-product",
+          productHandle:
+            "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
         },
       },
     },
@@ -61,10 +65,14 @@ export const themeRegistry = {
         translationsPath: "/themes/bblunt-2/locales/pages/products-b",
         routeContext: {
           templateName: "products-b",
-          path: "/products-b/sample-product",
-          params: { handle: "sample-product" },
+          path: "/products-b/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
+          params: {
+            handle:
+              "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
+          },
           query: {},
-          productHandle: "sample-product",
+          productHandle:
+            "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
         },
       },
     },
@@ -75,10 +83,10 @@ export const themeRegistry = {
         translationsPath: "/themes/bblunt-2/locales/pages/collections",
         routeContext: {
           templateName: "collection",
-          path: "/collections/sample",
-          params: { handle: "sample" },
+          path: "/collections/colour-bundles",
+          params: { handle: "colour-bundles" },
           query: {},
-          collectionHandle: "sample",
+          collectionHandle: "colour-bundles",
         },
       },
     },
@@ -89,10 +97,10 @@ export const themeRegistry = {
         translationsPath: "/themes/bblunt-2/locales/pages/collections-b",
         routeContext: {
           templateName: "collection-b",
-          path: "/collections-b/sample",
-          params: { handle: "sample" },
+          path: "/collections-b/colour-bundles",
+          params: { handle: "colour-bundles" },
           query: {},
-          collectionHandle: "sample",
+          collectionHandle: "colour-bundles",
         },
       },
     },
@@ -139,9 +147,56 @@ export const themeRegistry = {
     },
 
     // Static templates (only translationsPath)
-    [THEMES.BBLUNT_2.static_templates.ABOUT_US]: {
+    [TEMPLATE_TYPES["about-us"]]: {
       default: {
+        templatePath: "/themes/bblunt-2/templates/about-us/default.ts",
         translationsPath: "/themes/bblunt-2/locales/pages/about-us",
+        routeContext: {
+          templateName: "about-us",
+          path: "/pages/about-us",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["privacy-policy"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/privacy-policy/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/privacy-policy",
+        routeContext: {
+          templateName: "privacy-policy",
+          path: "/pages/privacy-policy",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["return-policy"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/return-policy/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/return-policy",
+        routeContext: {
+          templateName: "return-policy",
+          path: "/pages/return-policy",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["terms-and-conditions"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/terms-and-conditions/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/terms-and-conditions",
+        routeContext: {
+          templateName: "terms-and-conditions",
+          path: "/pages/terms-and-conditions",
+          params: {},
+          query: {},
+        },
       },
     },
   },

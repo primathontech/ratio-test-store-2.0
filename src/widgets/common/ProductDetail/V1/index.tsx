@@ -77,7 +77,10 @@ export const V1 = memo(function V1({
   };
 
   return (
-    <section className={`w-full bg-secondary ${className ?? ""}`}>
+    <section
+      data-testid="product-gallery-with-info-container"
+      className={`w-full bg-secondary ${className ?? ""}`}
+    >
       <div className="pt-0 pb-0 lg:pt-[47px] xl:pt-14 lg:pb-[27px] xl:pb-8">
         <div className="px-0 md:px-[30px] xl:px-[70px] pt-4 md:pt-0">
           {/* Mobile — info stacks above gallery (gallery slot is rendered
@@ -94,13 +97,16 @@ export const V1 = memo(function V1({
 
           {/* Desktop — two-column layout. */}
           <div className="hidden md:flex gap-4 pt-0 pb-0 md:pt-[47px] lg:pt-0 md:pb-[27px] lg:pb-0 max-w-[1300px] mx-auto">
-            <div className="flex-1 min-w-0">
+            <div
+              data-testid="product-gallery-section-desktop"
+              className="flex-1 min-w-0"
+            >
               <div className="sticky top-[30px]">
                 <ProductGallery images={images} productLabel={productLabel} />
               </div>
             </div>
 
-            <div className="flex-1 min-w-0">
+            <div data-testid="product-info-section" className="flex-1 min-w-0">
               <div className="sticky top-[30px] pl-0 xl:pl-[13px]">
                 <BbluntProductInfo data={product} {...infoProps} />
               </div>

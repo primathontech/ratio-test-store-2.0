@@ -5,14 +5,21 @@ import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
 import ProtectedRoute from "@/ui/components/ProtectedRoute";
+import { resolvePageSEO } from "@shopkit/seo";
+import { getSEOConfig } from "@/config";
 
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata(): Promise<Metadata> {
-  return {
-    title: "Order Details – BBlunt",
-    description: "View your order details from BBlunt.",
-  };
+export function generateMetadata({
+  params,
+}: {
+  params: { id: string };
+}): Metadata {
+  const { siteUrl, siteName } = getSEOConfig();
+  return resolvePageSEO(
+    { noIndex: true },
+    { siteUrl, siteName, path: `/pages/orders/${params.id}` }
+  );
 }
 
 export default async function OrderDetailsPage({

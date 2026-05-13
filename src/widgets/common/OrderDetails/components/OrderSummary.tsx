@@ -178,7 +178,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                     className="flex gap-1"
                   >
                     <p className="text-sm text-primary font-bold">Placed on:</p>
-                    <p className="text-sm font-bold text-primary">
+                    <p className="text-sm font-bold text-primary leading-[22px]">
                       {new Date(order.created_at).toLocaleDateString("en-US", {
                         day: "2-digit",
                         month: "short",
@@ -190,7 +190,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                     data-testid="order-details-order-id"
                     className="flex items-center gap-1"
                   >
-                    <p className="text-xs text-[#727272] font-bold">
+                    <p className="text-xs text-[#727272] font-bold leading-[22px]">
                       Order Id:
                     </p>
                     {order.external_order_name ? (
@@ -211,7 +211,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                         data-testid="order-details-placed-on"
                         className="flex gap-1"
                       >
-                        <p className="text-sm text-primary font-bold">
+                        <p className="text-sm text-primary font-bold leading-[22px]">
                           Est. delivery by:
                         </p>
                       </div>
@@ -219,7 +219,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                         data-testid="order-details-order-id"
                         className="flex"
                       >
-                        <p className="text-xs text-lightest-gray">
+                        <p className="text-xs text-lightest-gray leading-[22px]">
                           {new Date(
                             (currentEddData as any).edd
                           ).toLocaleDateString("en-US", {
@@ -289,7 +289,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
           <div
             data-testid="order-details-body"
-            className="flex flex-col gap-4 py-4 px-4 md:px-6 w-full"
+            className="flex flex-col gap-4 py-4 px-4 md:px-[15px] w-full"
           >
             {/* Order Status Timeline */}
             {trackingStatuses && trackingStatuses.length > 0 && (
@@ -308,7 +308,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             {currentEddData && (currentEddData as any).edd && (
               <div
                 data-testid="order-details-delivery-container"
-                className="pt-[18px] lg:pt-[18px] mb-[15px]"
+                className="pt-[18px] lg:pt-[4px] mb-[15px]"
               >
                 <div
                   data-testid="order-details-delivery-badge"
@@ -319,7 +319,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                     maxWidth: "300px",
                   }}
                 >
-                  <p className="text-white text-xs">
+                  <p className="text-white text-xs leading-[19px]">
                     Delivery by:{" "}
                     {new Date((currentEddData as any).edd).toLocaleDateString(
                       "en-US",
@@ -425,7 +425,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             <div data-testid="order-details-shipping-address">
               <h3
                 data-testid="order-details-shipping-address-title"
-                className="text-sm font-[800] text-black mb-4"
+                className="text-sm font-[800] text-black mb-2.5"
               >
                 Shipping Address
               </h3>
@@ -452,7 +452,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             <div data-testid="order-details-price-details">
               <h3
                 data-testid="order-details-price-details-title"
-                className="text-sm font-[800] text-black mb-4"
+                className="text-sm font-[800] text-black mb-2.5"
               >
                 Price Details
               </h3>

@@ -40,6 +40,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
           height={20}
           loading="lazy"
           data-testid="bblunt-cart-summary-prepaid-icon"
+          unoptimized
         />
         <p
           className="drawer_text text-xs text-success !leading-none"

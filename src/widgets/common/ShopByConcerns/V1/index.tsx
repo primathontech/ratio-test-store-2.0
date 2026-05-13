@@ -97,11 +97,8 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
       return 5;
     }
     const w = window.innerWidth;
-    if (w < 768) {
-      return 2; // CSS shows 2.5 tiles, advance by 2
-    }
     if (w < 1024) {
-      return 3;
+      return 2;
     }
     if (w < 1440) {
       return 4;
@@ -167,7 +164,7 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
       />
 
       {/* Carousel wrapper */}
-      <div className="flex items-center">
+      <div className="flex items-center pl-[14px] xl:pl-5 pr-0 xl:pr-[3px]">
         {/* Prev button — desktop only */}
         <button
           onClick={goPrev}

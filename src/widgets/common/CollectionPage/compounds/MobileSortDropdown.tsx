@@ -72,7 +72,7 @@ export const MobileSortDropdown = ({
         <>
           <div
             data-testid="mobile-sort-dropdown-backdrop"
-            className="fixed inset-0 transition-opacity duration-300 bg-black/80 z-2000"
+            className="fixed inset-0 transition-opacity duration-300 bg-[#000000]/80 z-[2000]"
             onClick={handleClose}
           />
           <div
@@ -90,19 +90,18 @@ export const MobileSortDropdown = ({
               <button
                 data-testid="mobile-sort-dropdown-close-button"
                 onClick={handleClose}
-                className="p-4 flex items-center justify-center border border-grey rounded-full hover:bg-grey transition-colors bg-white"
+                className="flex items-center justify-center text-black"
               >
                 <svg
-                  className="w-8 h-8 text-black"
-                  fill="none"
-                  stroke="currentColor"
+                  width="24"
+                  height="24"
                   viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
                 >
                   <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M6 18L18 6M6 6l12 12"
+                    d="M20.4894 3.51063C15.8086 -1.17014 8.19199 -1.1706 3.51076 3.51063C-1.17048 8.19187 -1.17002 15.808 3.51076 20.4892C8.19153 25.1705 15.8081 25.1705 20.4894 20.4892C25.1701 15.808 25.1701 8.19141 20.4894 3.51063ZM16.7344 16.7343C16.3738 17.0949 15.7892 17.0949 15.4286 16.7343L12.0001 13.3058L8.40855 16.8973C8.04792 17.2579 7.46335 17.2579 7.10272 16.8973C6.74209 16.5366 6.74209 15.9521 7.10272 15.5914L10.6942 11.9999L7.26572 8.57143C6.90509 8.2108 6.90509 7.62576 7.26572 7.2656C7.62635 6.90497 8.21092 6.90497 8.57155 7.2656L12.0001 10.6941L15.2651 7.42906C15.6257 7.06843 16.2103 7.06843 16.5709 7.42906C16.9316 7.78968 16.9316 8.37426 16.5709 8.73489L13.3059 11.9999L16.7344 15.4284C17.095 15.7891 17.095 16.3736 16.7344 16.7343Z"
+                    fill="#CCCCCC"
                   />
                 </svg>
               </button>

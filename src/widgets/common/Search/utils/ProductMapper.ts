@@ -81,17 +81,3 @@ export const mapSearchProductToProductResponse = (
 
   return mappedProduct;
 };
-
-/**
- * Creates cart action handlers for a mapped product
- */
-export const createProductCartHandlers = (
-  mappedProduct: ProductResponse,
-  handleAddToCart: (product: ProductResponse) => void,
-  incrementQuantity: (product: ProductResponse) => void,
-  decrementQuantity: (product: ProductResponse) => void
-) => ({
-  productAddToCart: () => handleAddToCart(mappedProduct),
-  productIncrement: () => incrementQuantity(mappedProduct),
-  productDecrement: () => decrementQuantity(mappedProduct),
-});

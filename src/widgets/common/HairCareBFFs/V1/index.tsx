@@ -1,6 +1,13 @@
 "use client";
 
-import React, { memo, useState, useRef, useCallback, useMemo } from "react";
+import React, {
+  memo,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+  useEffect,
+} from "react";
 import Image from "next/image";
 import type {
   HairCareBFFsProps,
@@ -8,11 +15,9 @@ import type {
   ApiProduct,
   ApiCollectionResult,
 } from "../types";
-import { ProductCard, ProductCardTheme } from "@/ui/components/index";
-import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
-import { getProductLabel } from "@/ui/components/ProductCard/badgeUtils";
+import { ProductCardTheme } from "@/ui/components/index";
+import { CartAwareProductCard } from "@/ui/components/CartAwareProductCard";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
-import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
 import { LazyViewAllButton } from "@/widgets/common/FeaturedCollectionCarousel/components/LazyViewAllButton";
 
 /* ------------------------------------------------------------------ */
@@ -48,65 +53,6 @@ const ChevronLeftIcon = () => (
     />
   </svg>
 );
-
-/* ------------------------------------------------------------------ */
-/*  Transform: API product → ProductCardProduct                        */
-/* ------------------------------------------------------------------ */
-
-function transformApiProduct(product: ApiProduct): ProductCardProduct {
-  const mainImg =
-    product.images?.find((img) => img.is_main)?.url || product.image_url || "";
-  const hoverImg = product.images?.find((img) => !img.is_main)?.url || mainImg;
-  const alt =
-    product.images?.find((img) => img.is_main)?.alt ||
-    product.title ||
-    "Product image";
-
-  // API prices are in paisa (59900 = ₹599)
-  const salePrice = product.price ? product.price / 100 : 0;
-  const originalPrice = product.compare_at_price
-    ? product.compare_at_price / 100
-    : undefined;
-
-  let discount: string | undefined;
-  if (originalPrice && originalPrice > salePrice && salePrice > 0) {
-    const pct = Math.round(((originalPrice - salePrice) / originalPrice) * 100);
-    discount = `${pct}% off`;
-  }
-
-  // Resolve badge: metafield first, tag fallback (matches bblunt reference).
-  const resolvedBadge = getProductLabel(
-    product.metadata?.product_labels?.value,
-    product.tags
-  );
-
-  return {
-    id: product.id,
-    productId: product.id,
-    variantId: product.variant?.id,
-    availableForSale:
-      typeof product.availableForSale === "boolean"
-        ? product.availableForSale
-        : product.variant?.availableForSale,
-    href: `/products/${product.handle}`,
-    title: product.title,
-    alt,
-    mainImage: mainImg,
-    hoverImage: hoverImg,
-    category: product.productType || "",
-    badge: resolvedBadge?.label,
-    badgeBackground: resolvedBadge?.background,
-    rating: product.average_rating || 0,
-    reviewCount: product.rating_count || 0,
-    salePrice,
-    originalPrice,
-    discount,
-    weight: product.metadata?.product_net_content?.value || "250g",
-    description:
-      product.metadata?.product_subtitle?.value ||
-      "Reduces Up to 93% Hair Fall | Strengthens & Nourishes Hair",
-  };
-}
 
 /* ------------------------------------------------------------------ */
 /*  Extract tabs from COLLECTION_BY_HANDLES response                   */
@@ -186,127 +132,6 @@ function buildTabs(
 }
 
 /* ------------------------------------------------------------------ */
-/*  Cart-aware product card wrapper                                    */
-/* ------------------------------------------------------------------ */
-
-interface HairCareCardProps {
-  product: ApiProduct;
-  theme: ProductCardTheme;
-  actionButtonText?: string;
-  soldOutText?: string;
-}
-
-function buildCartItem(
-  product: ApiProduct,
-  cardProduct: ProductCardProduct
-): CartItem {
-  const variantId = product.variant?.id;
-  const productId = product.id;
-  const lineId = variantId ?? productId;
-
-  return {
-    id: lineId,
-    productId,
-    variantId,
-    sku: product.variant?.sku,
-    title: product.title,
-    price: { amount: product.price ?? 0, currencyCode: "INR" },
-    compareAtPrice:
-      typeof product.compare_at_price === "number"
-        ? { amount: product.compare_at_price, currencyCode: "INR" }
-        : undefined,
-    quantity: 1,
-    image: cardProduct.mainImage,
-    product_type: product.productType,
-  };
-}
-
-const HairCareCard = memo(function HairCareCard({
-  product,
-  theme,
-  actionButtonText,
-  soldOutText,
-}: HairCareCardProps) {
-  const cardProduct = useMemo(() => transformApiProduct(product), [product]);
-  const productId = product.id;
-  const variantId = product.variant?.id;
-
-  const items = useCartItems();
-  const loadingItems = useCartStore((s) => s.loadingItems);
-  const addItem = useCartStore((s) => s.addItem);
-  const incrementItem = useCartStore((s) => s.incrementItem);
-  const decrementItem = useCartStore((s) => s.decrementItem);
-
-  const cartLine = useMemo(
-    () =>
-      items.find((i) => {
-        const lineProductId = i.productId ?? i.product_id;
-        const lineVariantId = i.variantId ?? i.variant_id;
-        return variantId
-          ? lineProductId === productId && lineVariantId === variantId
-          : lineProductId === productId;
-      }),
-    [items, productId, variantId]
-  );
-
-  const isInCart = !!cartLine;
-  const isQuantityLoading =
-    (variantId ? !!loadingItems[variantId] : false) ||
-    (cartLine?.id ? !!loadingItems[cartLine.id] : false);
-
-  const handleAddToCart = useCallback(async () => {
-    if (cardProduct.availableForSale === false) {
-      return;
-    }
-    try {
-      await addItem(buildCartItem(product, cardProduct));
-    } catch (error) {
-      console.error("[HairCareBFFs] addItem failed:", error);
-    }
-  }, [addItem, product, cardProduct]);
-
-  const handleIncrement = useCallback(async () => {
-    if (!cartLine) {
-      return;
-    }
-    try {
-      await incrementItem(cartLine.id, variantId);
-    } catch (error) {
-      console.error("[HairCareBFFs] incrementItem failed:", error);
-    }
-  }, [incrementItem, cartLine, variantId]);
-
-  const handleDecrement = useCallback(async () => {
-    if (!cartLine) {
-      return;
-    }
-    try {
-      await decrementItem(cartLine.id, variantId);
-    } catch (error) {
-      console.error("[HairCareBFFs] decrementItem failed:", error);
-    }
-  }, [decrementItem, cartLine, variantId]);
-
-  return (
-    <ProductCard
-      product={cardProduct}
-      theme={theme}
-      settings={{
-        showAddToCartToast: true,
-        ...(actionButtonText ? { actionButtonText } : {}),
-        ...(soldOutText ? { soldOutText } : {}),
-      }}
-      onAddToCart={handleAddToCart}
-      onIncrement={handleIncrement}
-      onDecrement={handleDecrement}
-      isInCart={isInCart}
-      cartItem={cartLine}
-      isQuantityLoading={isQuantityLoading}
-    />
-  );
-});
-
-/* ------------------------------------------------------------------ */
 /*  Carousel breakpoints                                               */
 /* ------------------------------------------------------------------ */
 
@@ -315,6 +140,12 @@ const DEFAULT_HAIR_CARE_BFFS_BREAKPOINTS = [
   { minWidth: 1024, cards: 5, gap: 0 },
   { minWidth: 1440, cards: 5, gap: 0 },
 ];
+const EMPTY_PRODUCTS: ApiProduct[] = [];
+
+const GRID_EXIT_DURATION_MS = 260;
+const GRID_ENTER_DURATION_MS = 320;
+
+type GridAnimationPhase = "idle" | "exiting" | "pre-enter" | "entering";
 
 /* ------------------------------------------------------------------ */
 /*  Main V1 Component                                                  */
@@ -341,23 +172,60 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
   );
 
   const [activeTabIndex, setActiveTabIndex] = useState(0);
+  const [gridAnimationPhase, setGridAnimationPhase] =
+    useState<GridAnimationPhase>("idle");
   const activeTab = tabs[activeTabIndex];
-  const products = useMemo(
-    () => activeTab?.products || [],
-    [activeTab?.products]
+  const products = activeTab?.products ?? EMPTY_PRODUCTS;
+  const animationTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
   );
+  const animationFrameRef = useRef<number | null>(null);
+
+  const clearScheduledAnimation = useCallback(() => {
+    if (animationTimeoutRef.current) {
+      clearTimeout(animationTimeoutRef.current);
+      animationTimeoutRef.current = null;
+    }
+    if (animationFrameRef.current !== null) {
+      cancelAnimationFrame(animationFrameRef.current);
+      animationFrameRef.current = null;
+    }
+  }, []);
 
   const handleTabClick = useCallback(
     (index: number) => {
       if (index === activeTabIndex) {
         return;
       }
-      setActiveTabIndex(index);
+      clearScheduledAnimation();
+      setGridAnimationPhase("exiting");
+
+      // Let the current grid exit first, then swap the data and animate
+      // the new grid into place from the same offset.
+      animationTimeoutRef.current = setTimeout(() => {
+        setActiveTabIndex(index);
+        setGridAnimationPhase("pre-enter");
+
+        animationFrameRef.current = requestAnimationFrame(() => {
+          animationFrameRef.current = null;
+          setGridAnimationPhase("entering");
+
+          animationTimeoutRef.current = setTimeout(() => {
+            setGridAnimationPhase("idle");
+            animationTimeoutRef.current = null;
+          }, GRID_ENTER_DURATION_MS);
+        });
+      }, GRID_EXIT_DURATION_MS);
     },
-    [activeTabIndex]
+    [activeTabIndex, clearScheduledAnimation]
   );
 
-  const tabsScrollRef = useRef<HTMLDivElement>(null);
+  useEffect(
+    () => () => {
+      clearScheduledAnimation();
+    },
+    [clearScheduledAnimation]
+  );
 
   const cardTheme = ProductCardTheme.DARK;
   const outerBorderClass =
@@ -377,11 +245,16 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       }
       return (
         <div className={`${itemBorderClass} overflow-hidden`}>
-          <HairCareCard
-            product={product}
+          <CartAwareProductCard
+            apiProduct={product}
             theme={cardTheme}
-            actionButtonText={actionButtonText}
-            soldOutText={soldOutText}
+            settings={{
+              showAddToCartToast: true,
+              ...(actionButtonText ? { actionButtonText } : {}),
+              ...(soldOutText ? { soldOutText } : {}),
+            }}
+            className="pl-[12px] min-[992px]:pl-0"
+            logTag="HairCareBFFs"
           />
         </div>
       );
@@ -393,9 +266,14 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
     return null;
   }
 
+  const gridAnimationClass =
+    gridAnimationPhase === "entering" || gridAnimationPhase === "idle"
+      ? "translate-y-0 opacity-100"
+      : "translate-y-3 opacity-0";
+
   return (
     <section
-      className="relative overflow-hidden mt-[25px] md:mt-14 pt-[32.4px] md:pt-14 pb-[32.4px] md:pb-14"
+      className="relative overflow-hidden mt-[25px] md:mt-14 pt-[32.4px] md:pt-14"
       style={{}}
     >
       {/* Background image — mobile */}
@@ -411,7 +289,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       </div>
 
       {/* Background image — desktop */}
-      <div className="absolute inset-0 z-[0] hidden md:block mb-[32.4px] md:mb-14">
+      <div className="absolute inset-0 z-[0] hidden md:block">
         <Image
           src={backgroundImage}
           alt=""
@@ -423,7 +301,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       </div>
 
       {/* Content overlay */}
-      <div className="relative z-[1] mx-auto xl:mx-5 px-1.5 md:px-[30px] xl:px-[50px] mb-8 md:mb-14">
+      <div className="relative z-[1] mx-auto xl:mx-5 px-1.5 md:px-[30px] xl:px-[50px] pb-[32px] md:pb-[47px] lg:pb-[56px]">
         {/* Tabs head: heading + tab buttons */}
         <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px] gap-[15px] md:gap-[30px]">
           {/* Heading — rich HTML; <strong> in the source becomes the bold part. */}
@@ -440,7 +318,6 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
           {/* Tab buttons */}
           <div
-            ref={tabsScrollRef}
             className="flex overflow-x-auto hide-scrollbar"
             style={{ gap: "8px", maxWidth: "100%" }}
           >
@@ -473,7 +350,16 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
         {/* Carousel area */}
         <div
-          className={`xl:mx-auto xl:max-w-[1300px] ${outerBorderClass} md:rounded-lg overflow-hidden`}
+          className={`xl:mx-auto xl:max-w-[1300px] ${outerBorderClass} md:rounded-lg transition-all ease-out will-change-transform will-change-opacity ${
+            gridAnimationClass
+          } ${gridAnimationPhase !== "idle" ? "pointer-events-none" : ""}`}
+          style={{
+            transitionDuration: `${
+              gridAnimationPhase === "exiting"
+                ? GRID_EXIT_DURATION_MS
+                : GRID_ENTER_DURATION_MS
+            }ms`,
+          }}
         >
           <SwipeCarousel
             itemCount={products.length}
@@ -485,22 +371,25 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
                 type="button"
                 onClick={onClick}
                 disabled={disabled}
-                className="absolute left-[13px] z-[3] hidden lg:flex items-center justify-center cursor-pointer"
-                style={{
-                  top: "245px",
-                  transform: "translateY(-50%)",
-                  width: "46px",
-                  height: "46px",
-                  borderRadius: "9999px",
-                  backgroundColor: "transparent",
-                  border: "1px solid transparent",
-                  color: disabled ? "rgba(255,255,255,0.4)" : "#ffffff",
-                  opacity: disabled ? 0.4 : 1,
-                  transition: "all 0.2s",
-                }}
+                className={`absolute left-[-30px] top-1/2 -translate-y-1/2 z-[3] items-center justify-center cursor-pointer text-gray-700 hover:text-loading-blue transition-colors duration-300 ${
+                  disabled ? "hidden" : "hidden lg:flex"
+                }`}
                 aria-label="Previous products"
               >
                 <ChevronLeftIcon />
+              </button>
+            )}
+            renderNext={(onClick, disabled) => (
+              <button
+                type="button"
+                onClick={onClick}
+                disabled={disabled}
+                className={`absolute right-[-30px] top-1/2 -translate-y-1/2 z-[3] items-center justify-center cursor-pointer text-gray-700 hover:text-loading-blue transition-colors duration-300 ${
+                  disabled ? "hidden" : "hidden lg:flex"
+                }`}
+                aria-label="Next products"
+              >
+                <ChevronRightIcon />
               </button>
             )}
           />

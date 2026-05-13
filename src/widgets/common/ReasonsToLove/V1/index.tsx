@@ -126,7 +126,7 @@ export const V1 = memo(function V1({
           data-testid="reason-to-love-section-content-wrapper"
           className="w-full flex flex-col justify-center"
         >
-          <p className="text-left text-base md:text-[22px] mt-6 md:mt-8 lg:mt-[30px] lg:text-2xl font-bold text-black mb-8">
+          <p className="text-left text-base md:text-[22px] mt-6 md:mt-8 lg:mt-[33px] lg:text-2xl font-bold text-black mb-[30px]">
             {sectionTitle}
           </p>
 

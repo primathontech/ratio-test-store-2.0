@@ -14,53 +14,43 @@ import {
   SocialLinks,
   StickyFooter,
 } from "../components";
-import {
-  DEFAULT_ABOUT_LINKS,
-  DEFAULT_CATEGORIES_LINKS,
-  DEFAULT_MY_ACCOUNT_LINKS,
-  DEFAULT_OUR_SALONS_LINKS,
-  DEFAULT_PAYMENT_METHODS,
-  DEFAULT_SERVICE_ICONS,
-  DEFAULT_SOCIAL_LINKS,
-  DEFAULT_USEFUL_LINKS,
-  FOOTER_CONSTANTS,
-  MOBILE_NAVIGATION_ITEMS,
-} from "../constants";
+import { FOOTER_CONSTANTS, MOBILE_NAVIGATION_ITEMS } from "../constants";
 import { FooterProps } from "../types";
 
-export const V1 = memo(function V1({ settings = {} }: FooterProps) {
+export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
   const [isMobileAccordionOpen, setIsMobileAccordionOpen] = useState(false);
+  const product = data?.success ? data.data : null;
 
   const {
     backgroundColor = FOOTER_CONSTANTS.DEFAULT_SETTINGS.backgroundColor,
     showSocialLinks = FOOTER_CONSTANTS.DEFAULT_SETTINGS.showSocialLinks,
     showPaymentMethods = FOOTER_CONSTANTS.DEFAULT_SETTINGS.showPaymentMethods,
     showAppDownload = FOOTER_CONSTANTS.DEFAULT_SETTINGS.showAppDownload,
-    mobileFooterTagline = FOOTER_CONSTANTS.DEFAULT_SETTINGS.mobileFooterTagline,
-    logoUrl = "/Footer/images/logo.png",
-    logoAlt = "BBlunt",
-    appDownloadText = "Get the app",
-    googlePlayUrl = "https://onelink.to/zwhyy8",
-    appStoreUrl = "https://onelink.to/zwhyy8",
-    googlePlayImage = "/Footer/images/app-store-android.png",
-    googlePlayAlt = "Download on Google Play",
-    appStoreImage = "/Footer/images/app-store-ios.png",
-    appStoreAlt = "Download on App Store",
-    serviceSectionsIcons = DEFAULT_SERVICE_ICONS,
-    aboutTitle = "About Us",
-    aboutLinks = DEFAULT_ABOUT_LINKS,
-    usefulLinksTitle = "Useful Links",
-    usefulLinks = DEFAULT_USEFUL_LINKS,
-    ourSalonsTitle = "Our Salons",
-    ourSalonsLinks = DEFAULT_OUR_SALONS_LINKS,
-    categoriesTitle = "Categories",
-    categoriesLinks = DEFAULT_CATEGORIES_LINKS,
-    myAccountTitle = "My Account",
-    myAccountLinks = DEFAULT_MY_ACCOUNT_LINKS,
-    socialLinks = DEFAULT_SOCIAL_LINKS,
-    paymentProtectionText = "100% Payment Protection, Easy Return Policy",
-    copyrightText = "© 2026 Honasa Consumer Limited. All rights reserved.",
-    paymentMethods = DEFAULT_PAYMENT_METHODS,
+    mobileFooterTagline = "",
+    logoUrl = "",
+    logoAlt = "",
+    appDownloadText = "",
+    googlePlayUrl = "",
+    appStoreUrl = "",
+    googlePlayImage = "",
+    googlePlayAlt = "",
+    appStoreImage = "",
+    appStoreAlt = "",
+    serviceSectionsIcons = [],
+    aboutTitle = "",
+    aboutLinks = [],
+    usefulLinksTitle = "",
+    usefulLinks = [],
+    ourSalonsTitle = "",
+    ourSalonsLinks = [],
+    categoriesTitle = "",
+    categoriesLinks = [],
+    myAccountTitle = "",
+    myAccountLinks = [],
+    socialLinks = [],
+    paymentProtectionText = "",
+    copyrightText = "",
+    paymentMethods = [],
   } = settings;
 
   return (
@@ -68,8 +58,8 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
       <div className="mx-auto">
         {/* Main Footer Content */}
         <div
-          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[22px] md:px-0 md:pt-[40px] transition-all duration-300 pb-0 md:pb-[30px] max-w-[1300px] ${
-            isMobileAccordionOpen ? "pb-[100px]" : "pb-[100px] md:pb-[40px]"
+          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[22px] md:px-0 md:pt-[70px] xl:pt-[40px] transition-all duration-300 pb-0 md:pb-[30px] max-w-[1300px] ${
+            isMobileAccordionOpen ? "pb-[117px]" : "pb-[100px] md:pb-[40px]"
           }`}
         >
           {/* Mobile Layout */}
@@ -212,7 +202,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
           {/* Desktop Layout */}
           <div className="hidden md:block px-10 md:px-0 xl:px-0">
             {/* Tablet Layout (768px-1024px) */}
-            <div className="xl:hidden grid grid-cols-2 gap-8">
+            <div className="xl:hidden grid grid-cols-2 gap-y-8">
               {/* Left column: Logo + social, Useful Links, Categories */}
               <div className="flex flex-col gap-8">
                 <div className="flex flex-col items-start">
@@ -336,7 +326,7 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
             <div className="flex flex-col items-start">
               {/* Payment Protection Text */}
               {paymentProtectionText && (
-                <div className="flex items-center gap-2 text-base text-[#cecece] !leading-[21.28px] font-normal">
+                <div className="flex items-center gap-[6px] text-base text-[#cecece] !leading-[21.28px] font-normal">
                   <span>
                     <svg
                       width="24"
@@ -372,8 +362,11 @@ export const V1 = memo(function V1({ settings = {} }: FooterProps) {
 
       <ContextualMessage data={{}} settings={{ variant: "v1" }} />
 
-      <div className="fixed bottom-[16px] left-[16px] right-[16px] z-[50] block md:hidden">
-        <StickyFooter items={MOBILE_NAVIGATION_ITEMS} />
+      <div className="fixed bottom-[16px] left-[16px] right-[16px] z-[50] block xl:hidden">
+        <StickyFooter
+          items={MOBILE_NAVIGATION_ITEMS}
+          productData={product ?? undefined}
+        />
       </div>
     </footer>
   );

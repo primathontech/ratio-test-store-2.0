@@ -1,5 +1,6 @@
 "use client";
 
+import { useResponsive } from "@/hooks/useResponsive";
 import Image from "next/image";
 import React, { useEffect, useRef, useState } from "react";
 
@@ -127,19 +128,23 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
   productLabel,
   children,
 }) => {
-  const [isMobile, setIsMobile] = useState(false);
+  // Source mobile flag from the shared hook — its `<768` threshold matches
+  // MOBILE_BREAKPOINT exactly, so this is a semantically lossless swap.
+  const { isMobile } = useResponsive();
   const [containerWidth, setContainerWidth] = useState(MIN_MOBILE_IMAGE_SIZE);
   const videoRefs = useRef<{ [key: string | number]: HTMLVideoElement | null }>(
     {}
   );
 
+  // Container width still needs pixel-perfect viewport measurement (used as
+  // image/video size on mobile). The hook only buckets — keep the dedicated
+  // resize listener for this value.
   useEffect(() => {
     if (typeof window === "undefined") {
       return;
     }
     const handleResize = () => {
       const width = window.innerWidth;
-      setIsMobile(width < MOBILE_BREAKPOINT);
       if (width < MOBILE_BREAKPOINT) {
         setContainerWidth(
           Math.max(MIN_MOBILE_IMAGE_SIZE, width - MOBILE_HORIZONTAL_PADDING)
@@ -244,7 +249,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
             <div
               className={`pl-2 ${
                 isMobile
-                  ? "text-xs leading-none py-[3px] px-0"
+                  ? "text-sm leading-none py-[3px] px-0"
                   : "text-sm px-1 pr-3"
               }`}
               style={{
@@ -596,7 +601,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
 
       {/* Mobile pagination row — small bars (active = wide black, idle = small grey) */}
       {isMobile && images.length > 1 && (
-        <div className="py-2.5 flex items-center justify-center gap-1">
+        <div className="pt-2 pb-2.5 flex items-center justify-center gap-1">
           {images.map((image, index) => {
             const isActive = index === currentIndex;
             return (

@@ -2,7 +2,7 @@
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
-import { MetaTagGenerator, SEOFactory } from "@shopkit/seo";
+import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
@@ -12,120 +12,44 @@ import { Suspense } from "react";
 export const revalidate = 3600;
 export const dynamicParams = true;
 
-const seoSystem = SEOFactory.createForEnvironment(
-  process.env.NODE_ENV as "development" | "staging" | "production"
-);
+// TODO: Implement dynamic route generation based on FEATURED_COLLECTIONS environment variable
+// export async function generateStaticParams() {
+//   const featuredCollections = process.env.FEATURED_COLLECTIONS;
 
-export async function generateStaticParams() {
-  const featuredCollections = process.env.FEATURED_COLLECTIONS;
+//   // Check environment variable
+//   if (!featuredCollections) {
+//     console.error("FEATURED_COLLECTIONS environment variable not found");
+//     return [];
+//   }
 
-  // Check environment variable
-  if (!featuredCollections) {
-    console.error("FEATURED_COLLECTIONS environment variable not found");
-    return [];
-  }
+//   // Split and clean handles
+//   const handles = featuredCollections
+//     .split(",")
+//     .filter(Boolean)
+//     .map((h) => h.trim());
 
-  // Split and clean handles
-  const handles = featuredCollections
-    .split(",")
-    .filter(Boolean)
-    .map((h) => h.trim());
+//   // Return each handle as { collectionname }
+//   const staticParams = handles.map((handle) => ({
+//     collectionname: handle,
+//   }));
 
-  // Return each handle as { collectionname }
-  const staticParams = handles.map((handle) => ({
-    collectionname: handle,
-  }));
-
-  return staticParams;
-}
+//   return staticParams;
+// }
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: { collectionname: string };
+  searchParams?: Record<string, string | string[] | undefined>;
 }): Promise<Metadata> {
-  try {
-    const collection = await fetchCollection(params.collectionname);
-
-    if (!collection) {
-      return {
-        title: "Collection Not Found | BBlunt",
-        description: "The requested collection could not be found.",
-        alternates: {
-          canonical: `${
-            process.env.NEXT_PUBLIC_BASE_URL || "https://bblunt.com"
-          }/collections/${params.collectionname}`,
-        },
-      };
-    }
-
-    const seoTitle = `${collection.seo?.title || collection.title}`;
-    const seoDescription = collection?.seo?.description;
-
-    // Generate SEO data including structured data
-    const locale = getStaticLocale();
-    const seoData = await seoSystem.generateSEOData({
-      type: "collection",
-      data: collection,
-      path: `/collections/${params.collectionname}`,
-      locale,
-    });
-
-    const metaTagGenerator = new MetaTagGenerator(seoSystem["config"]);
-    const metadata = metaTagGenerator.generateNextJSMetadata({
-      title: seoTitle,
-      description: seoDescription,
-      type: "website" as "website",
-      canonical: `${
-        process.env.NEXT_PUBLIC_BASE_URL || "https://bblunt.com"
-      }/collections/${params.collectionname}`,
-      image: collection.image
-        ? {
-            id: `collection-${params.collectionname}`,
-            url: collection.image.url,
-            altText: collection.title,
-            width: collection.image.width || 800,
-            height: collection.image.height || 800,
-          }
-        : {
-            id: "bblunt-default",
-            url: "/bblunt-2/images/bblunt-logo.avif",
-            altText: collection.title,
-            width: 1200,
-            height: 630,
-          },
-    });
-
-    // Add structured data to the head section to avoid Facebook Pixel conflicts
-    if (seoData.structuredData && seoData.structuredData.length > 0) {
-      const structuredDataScripts = seoData.structuredData.map(
-        (schema, index) => ({
-          type: "application/ld+json" as const,
-          children: JSON.stringify(schema),
-          key: `structured-data-${index}`,
-        })
-      );
-
-      return {
-        ...metadata,
-        other: {
-          ...metadata.other,
-          // Add structured data as script tags in head
-          "script:type=application/ld+json": structuredDataScripts.map(
-            (script) => script.children
-          ),
-        },
-      };
-    }
-
-    return metadata;
-  } catch (error) {
-    console.error("Error generating metadata for collection:", error);
-    return {
-      title: "Collection | BBlunt",
-      description: "Shop our amazing collections at BBlunt",
-    };
-  }
+  const collection = await fetchCollection(params.collectionname);
+  return await resolveCommercePageSEO(
+    "collection",
+    collection,
+    `/collections/${params.collectionname}`,
+    { searchParams }
+  );
 }
 
 export default async function CollectionPage({
@@ -182,7 +106,7 @@ async function fetchCollection(handle: string): Promise<any | null> {
       handle,
     });
 
-    return collection;
+    return collection.data;
   } catch (error) {
     console.error(`Error fetching collection ${handle}:`, error);
     return null;
