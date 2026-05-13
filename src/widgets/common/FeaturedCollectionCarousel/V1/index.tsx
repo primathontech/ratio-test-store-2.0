@@ -142,7 +142,7 @@ export const V1 = memo(function V1({
   return (
     <section
       data-testid="featured-collection-container"
-      className="relative overflow-hidden pb-[32.4px] md:pb-14"
+      className="relative overflow-hidden pt-[25px] md:pt-[56px] pb-[24px] md:pb-[47px] lg:pb-[56px]"
       style={{
         backgroundColor: "#ffffff",
       }}

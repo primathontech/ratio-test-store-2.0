@@ -131,10 +131,13 @@ export function BbluntProductInfo({
   const loadingItems = useCartStore((s) => s.loadingItems);
   const cartToken = useCartStore((s) => s.cartToken);
   const items = useCartItems();
-  const isLoading = Boolean(
-    loadingItems[data?.id] ||
-    (selectedVariantId && loadingItems[selectedVariantId])
-  );
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const isLoading =
+    isAddingToCart ||
+    Boolean(
+      loadingItems[data?.id] ||
+      (selectedVariantId && loadingItems[selectedVariantId])
+    );
 
   const productId = data?.id;
   const effectiveVariantId =
@@ -202,11 +205,14 @@ export function BbluntProductInfo({
       pendingTimeoutRef.current = null;
     }, 5000);
 
+    setIsAddingToCart(true);
     try {
       const cartItem = buildCartItem(data, selectedVariantId);
       await addItem(cartItem);
     } catch (error) {
       console.error("[BbluntProductInfo] addItem failed:", error);
+    } finally {
+      setIsAddingToCart(false);
     }
   };
 
@@ -607,17 +613,15 @@ export function BbluntProductInfo({
       {/* Desktop Add to Cart Button */}
       <button
         data-testid="cart-item-add-to-cart"
-        className="hidden md:flex w-full h-12 bg-black text-white rounded-[10px] font-bold text-[22px] leading-[1.2em] items-center justify-center transition-opacity shine-link-button disabled:opacity-50 disabled:cursor-not-allowed"
+        className={`hidden md:flex w-full h-12 bg-black text-white rounded-[10px] font-bold text-[22px] leading-[1.2em] items-center justify-center transition-opacity disabled:cursor-not-allowed ${isLoading ? "" : "shine-link-button"}`}
         onClick={handleAddToCart}
         disabled={isLoading || !data?.availableForSale || !cartToken}
       >
         {isLoading ? (
-          <div
+          <span
             data-testid="add-to-cart-loading-spinner"
-            className="flex items-center justify-center"
-          >
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-          </div>
+            className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+          />
         ) : !data?.availableForSale ? (
           soldOutText
         ) : (

@@ -75,39 +75,6 @@ const CartIcon = () => (
   </svg>
 );
 
-const SpinnerIcon = () => (
-  <svg
-    width="16"
-    height="16"
-    className="animate-spin"
-    focusable="false"
-    role="presentation"
-    viewBox="0 0 66 66"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <circle
-      className="opacity-25"
-      fill="none"
-      strokeWidth="6"
-      stroke="currentColor"
-      cx="33"
-      cy="33"
-      r="30"
-    />
-    <circle
-      fill="none"
-      strokeWidth="6"
-      stroke="currentColor"
-      cx="33"
-      cy="33"
-      r="30"
-      strokeDasharray="164"
-      strokeDashoffset="120"
-    />
-  </svg>
-);
-
 /* ------------------------------------------------------------------ */
 /*  V1 -- Sticky Add To Cart Bar                                       */
 /* ------------------------------------------------------------------ */
@@ -135,7 +102,9 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
   const loadingItems = useCartStore((s) => s.loadingItems);
   const isCartOpen = useCartStore((s) => s.isOpen);
   const items = useCartItems();
-  const isLoading = Boolean(product?.id && loadingItems[product.id]);
+  const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const isLoading =
+    isAddingToCart || Boolean(product?.id && loadingItems[product.id]);
 
   const cartLine = product
     ? items.find((i) => (i.productId ?? i.product_id) === product.id)
@@ -208,11 +177,14 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
       pendingTimeoutRef.current = null;
     }, 5000);
 
+    setIsAddingToCart(true);
     try {
       await addItem(buildCartItem(product));
     } catch (error) {
       // eslint-disable-next-line no-console
       console.error("[StickyAddToCart] addItem failed:", error);
+    } finally {
+      setIsAddingToCart(false);
     }
   }, [product, addItem, currentQuantity, isInCart]);
 
@@ -273,10 +245,17 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               type="button"
               onClick={handleAddToCart}
               disabled={isLoading}
-              className="flex items-center justify-center w-64 h-[53px] bg-black text-secondary rounded-[10px] border border-black text-xl leading-[24px] font-bold text-center cursor-pointer transition-[background-color,color,border] duration-[250ms] ease-in-out hover:bg-[#222222] disabled:opacity-70 disabled:cursor-not-allowed relative overflow-hidden"
+              className="flex items-center justify-center w-64 h-[53px] bg-black text-secondary rounded-[10px] border border-black text-xl leading-[24px] font-bold text-center cursor-pointer transition-[background-color,color,border] duration-[250ms] ease-in-out hover:bg-[#222222] disabled:cursor-not-allowed relative overflow-hidden"
               aria-label={`${buttonText} ${price}`}
             >
-              {isLoading ? <SpinnerIcon /> : <span>{buttonText}</span>}
+              {isLoading ? (
+                <span
+                  data-testid="sticky-add-to-cart-loading-spinner"
+                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+                />
+              ) : (
+                <span>{buttonText}</span>
+              )}
             </button>
           </div>
         </div>

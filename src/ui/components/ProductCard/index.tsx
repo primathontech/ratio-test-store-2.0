@@ -494,11 +494,11 @@ export const ProductCard = memo(function ProductCard({
           {/* Price row */}
           <div
             data-testid={`product-card-price-section-${product.id}`}
-            className={`flex flex-col lg:flex-row items-start lg:items-center gap-0 lg:gap-[6px] flex-wrap mt-auto min-h-8 md:min-h-4 ${priceSectionClassName}`.trim()}
+            className={`flex flex-col lg:flex-row items-start lg:items-center gap-0 lg:gap-[6px] flex-wrap mt-auto min-h-8 lg:min-h-4 ${priceSectionClassName}`.trim()}
           >
             <span
               data-testid={`product-card-price-${product.id}`}
-              className={`text-[14px] md:text-[16px] ${salePriceClassName}`.trim()}
+              className={`text-[14px] md:text-[16px] leading-4 ${salePriceClassName}`.trim()}
               style={{
                 color: textPrimary,
                 fontWeight: 600,

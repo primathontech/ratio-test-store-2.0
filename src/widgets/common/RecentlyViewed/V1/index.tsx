@@ -157,7 +157,7 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
       }}
     >
       {/* Content overlay */}
-      <div className="relative z-[1] max-w-[1300px] mx-auto px-1.5 md:px-[30px] xl:px-[50px]">
+      <div className="relative z-[1] max-w-[1400px] mx-auto px-1.5 md:px-[30px] xl:px-[50px]">
         {/* Heading */}
         <div className="flex flex-col items-start text-center mb-4 md:mb-[30px] px-[15px]">
           <h4

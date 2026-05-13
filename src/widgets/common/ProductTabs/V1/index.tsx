@@ -301,10 +301,18 @@ export const V1 = memo(function V1({
     tabs = settings?.tabs || [];
   }
 
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const [openIndexes, setOpenIndexes] = useState<Set<number>>(new Set());
 
   const handleToggle = useCallback((index: number) => {
-    setOpenIndex((prev) => (prev === index ? null : index));
+    setOpenIndexes((prev) => {
+      const next = new Set(prev);
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+      return next;
+    });
   }, []);
 
   // Hide widget when no tabs are available
@@ -393,7 +401,7 @@ export const V1 = memo(function V1({
             <AccordionItem
               key={index}
               tab={tab}
-              isOpen={openIndex === index}
+              isOpen={openIndexes.has(index)}
               onToggle={() => handleToggle(index)}
             />
           ))}
