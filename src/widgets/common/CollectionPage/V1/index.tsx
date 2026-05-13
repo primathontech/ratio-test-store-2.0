@@ -33,6 +33,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
     actionButtonTextColor,
     sectionTextColor,
     productCardBackgroundColor,
+    title: settingsTitle,
   } = safeSettings;
 
   // UI state
@@ -408,13 +409,16 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
         data-testid="collection-page-content"
         className="px-[15px] md:px-[30px] xl:px-20 pb-[5.25rem] md:pb-24 lg:pb-[130px] xl3:px-0"
       >
-        {collection?.title && (
+        {/* Title — settings override wins (used on sale / category-offer
+            pages where the editor renames the heading); otherwise the
+            collection's own title from the API is shown. */}
+        {(settingsTitle || collection?.title) && (
           <h1
             data-testid="collection-page-title"
             className="text-left xl2:text-center leading-none text-[22px] md:text-[32px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
             style={sectionTextColor ? { color: sectionTextColor } : undefined}
           >
-            {collection.title}
+            {settingsTitle || collection?.title}
           </h1>
         )}
 
