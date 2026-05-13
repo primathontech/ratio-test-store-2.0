@@ -10,7 +10,9 @@
           "name": "Home (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "home",
             "type": "home",
@@ -30,7 +32,9 @@
           "name": "Home B (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "home-b",
             "path": "/home-b",
@@ -49,7 +53,9 @@
           "name": "Products (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "products",
             "path": "/products/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
@@ -71,7 +77,9 @@
           "name": "Products B (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "products-b",
             "path": "/products-b/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
@@ -93,7 +101,9 @@
           "name": "Collection (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "collection",
             "path": "/collections/colour-bundles",
@@ -115,7 +125,9 @@
           "name": "Collection B (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "collection-b",
             "path": "/collections-b/colour-bundles",
@@ -137,7 +149,9 @@
           "name": "Collection List (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "collection-list",
             "path": "/collections",
@@ -156,7 +170,9 @@
           "name": "Orders (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "orders",
             "path": "/orders",
@@ -175,7 +191,9 @@
           "name": "Shine Squad Weekly Offer (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "shine-squad-weekly-offer",
             "path": "/pages/shine-squad-weekly-offer",
@@ -194,7 +212,9 @@
           "name": "About Us (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "about-us",
             "path": "/pages/about-us",
@@ -213,7 +233,9 @@
           "name": "Privacy Policy (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "privacy-policy",
             "path": "/pages/privacy-policy",
@@ -232,7 +254,9 @@
           "name": "Return Policy (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "return-policy",
             "path": "/pages/return-policy",
@@ -251,7 +275,9 @@
           "name": "Terms And Conditions (Default)",
           "variant": "default",
           "isDynamic": true,
-          "supportedLanguages": ["en"],
+          "supportedLanguages": [
+            "en"
+          ],
           "routeContext": {
             "templateName": "terms-and-conditions",
             "path": "/pages/terms-and-conditions",

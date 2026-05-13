@@ -2,7 +2,7 @@
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
-import { MetaTagGenerator, SEOFactory } from "@shopkit/seo";
+import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
@@ -11,10 +11,6 @@ import { Suspense } from "react";
 
 export const revalidate = 30;
 export const dynamicParams = true;
-
-const seoSystem = SEOFactory.createForEnvironment(
-  process.env.NODE_ENV as "development" | "staging" | "production"
-);
 
 export async function generateStaticParams() {
   const featuredCollections = process.env.FEATURED_COLLECTIONS;
@@ -41,50 +37,18 @@ export async function generateStaticParams() {
 
 export async function generateMetadata({
   params,
+  searchParams,
 }: {
   params: { collectionname: string };
+  searchParams?: Record<string, string | string[] | undefined>;
 }): Promise<Metadata> {
-  try {
-    const collection = await fetchCollection(params.collectionname);
-    const locale = getStaticLocale();
-
-    if (!collection || !collection.data) {
-      return {
-        title: "Collection Not Found",
-        description: "The requested collection could not be found.",
-      };
-    }
-
-    const collectionData = collection.data;
-
-    const baseSeoData = await seoSystem.generateSEOData({
-      type: "collection",
-      data: collectionData,
-      path: `/collections/${params.collectionname}`,
-      locale,
-    });
-
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://bblunt.com/";
-    const canonicalUrl = collectionData?.seo_handle
-      ? `${baseUrl}/collections/${collectionData.seo_handle}`
-      : baseSeoData.canonical;
-
-    const seoData = {
-      ...baseSeoData,
-      title: collectionData?.seo_title || baseSeoData.title,
-      description: collectionData?.seo_description || baseSeoData.description,
-      canonical: canonicalUrl,
-    };
-
-    const metaTagGenerator = new MetaTagGenerator(seoSystem["config"]);
-    return metaTagGenerator.generateNextJSMetadata(seoData);
-  } catch (error) {
-    console.error("Error generating metadata for collection:", error);
-    return {
-      title: "Collection | BBlunt",
-      description: "Shop our amazing collections at BBlunt",
-    };
-  }
+  const collection = await fetchCollection(params.collectionname);
+  return await resolveCommercePageSEO(
+    "collection",
+    collection,
+    `/collections/${params.collectionname}`,
+    { searchParams }
+  );
 }
 
 export default async function CollectionPage({
@@ -146,7 +110,7 @@ async function fetchCollection(handle: string): Promise<any | null> {
       handle,
     });
 
-    return collection;
+    return collection.data;
   } catch (error) {
     console.error(`Error fetching collection ${handle}:`, error);
     return null;
