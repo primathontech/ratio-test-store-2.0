@@ -21,7 +21,10 @@ export const pixelConfig: PixelConfigMap = {
     : null,
 
   ga4: process.env.NEXT_PUBLIC_GA_ID
-    ? { measurementId: process.env.NEXT_PUBLIC_GA_ID }
+    ? {
+        measurementId: process.env.NEXT_PUBLIC_GA_ID,
+        isolated: process.env.NEXT_PUBLIC_GA_ISOLATED === "yes",
+      }
     : null,
 
   "google-ads": process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
@@ -29,6 +32,8 @@ export const pixelConfig: PixelConfigMap = {
         conversionId: process.env.NEXT_PUBLIC_GOOGLE_ADS_ID,
         conversionLabel:
           process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL || "",
+        isolated: process.env.NEXT_PUBLIC_GA_ISOLATED === "yes",
+        events: JSON.parse(process.env.NEXT_PUBLIC_GOOGLE_ADS_EVENTS || "{}"),
       }
     : null,
 };
