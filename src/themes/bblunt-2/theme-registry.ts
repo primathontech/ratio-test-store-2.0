@@ -146,6 +146,233 @@ export const themeRegistry = {
       },
     },
 
+    // ── Sale-page templates (all use the same SalePageBanner + CollectionPage layout) ──
+    [TEMPLATE_TYPES["aff-get4-freebies"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/aff-get4-freebies/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/aff-get4-freebies",
+        routeContext: {
+          templateName: "aff-get4-freebies",
+          path: "/pages/aff-get4-freebies",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["affiliate-flat250-off-above698"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/affiliate-flat250-off-above698/default.ts",
+        translationsPath:
+          "/themes/bblunt-2/locales/pages/affiliate-flat250-off-above698",
+        routeContext: {
+          templateName: "affiliate-flat250-off-above698",
+          path: "/pages/affiliate-flat250-off-above698",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["aff-offer-flat250"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/aff-offer-flat250/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/aff-offer-flat250",
+        routeContext: {
+          templateName: "aff-offer-flat250",
+          path: "/pages/aff-offer-flat250",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["bau-offer-page"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/bau-offer-page/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/bau-offer-page",
+        routeContext: {
+          templateName: "bau-offer-page",
+          path: "/pages/bau-offer-page",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["crm-shine-squad-mega"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/crm-shine-squad-mega/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/crm-shine-squad-mega",
+        routeContext: {
+          templateName: "crm-shine-squad-mega",
+          path: "/pages/crm-shine-squad-mega",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["fb-advance-smoothening-category-sale"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/fb-advance-smoothening-category-sale/default.ts",
+        translationsPath:
+          "/themes/bblunt-2/locales/pages/fb-advance-smoothening-category-sale",
+        routeContext: {
+          templateName: "fb-advance-smoothening-category-sale",
+          path: "/pages/fb-advance-smoothening-category-sale",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["fb-hair-colour-category-sale"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/fb-hair-colour-category-sale/default.ts",
+        translationsPath:
+          "/themes/bblunt-2/locales/pages/fb-hair-colour-category-sale",
+        routeContext: {
+          templateName: "fb-hair-colour-category-sale",
+          path: "/pages/fb-hair-colour-category-sale",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["fb-hairfall-category-sale"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/fb-hairfall-category-sale/default.ts",
+        translationsPath:
+          "/themes/bblunt-2/locales/pages/fb-hairfall-category-sale",
+        routeContext: {
+          templateName: "fb-hairfall-category-sale",
+          path: "/pages/fb-hairfall-category-sale",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["fb-heat-protection-category-sale"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/fb-heat-protection-category-sale/default.ts",
+        translationsPath:
+          "/themes/bblunt-2/locales/pages/fb-heat-protection-category-sale",
+        routeContext: {
+          templateName: "fb-heat-protection-category-sale",
+          path: "/pages/fb-heat-protection-category-sale",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["fb-intense-moisture-category-sale"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/fb-intense-moisture-category-sale/default.ts",
+        translationsPath:
+          "/themes/bblunt-2/locales/pages/fb-intense-moisture-category-sale",
+        routeContext: {
+          templateName: "fb-intense-moisture-category-sale",
+          path: "/pages/fb-intense-moisture-category-sale",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES.flat3]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/flat3/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/flat3",
+        routeContext: {
+          templateName: "flat3",
+          path: "/pages/flat3",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES.flat4]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/flat4/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/flat4",
+        routeContext: {
+          templateName: "flat4",
+          path: "/pages/flat4",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["shine-squad-b2g2"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/shine-squad-b2g2/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/shine-squad-b2g2",
+        routeContext: {
+          templateName: "shine-squad-b2g2",
+          path: "/pages/shine-squad-b2g2",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["shine-squad-bb30-offer"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/shine-squad-bb30-offer/default.ts",
+        translationsPath:
+          "/themes/bblunt-2/locales/pages/shine-squad-bb30-offer",
+        routeContext: {
+          templateName: "shine-squad-bb30-offer",
+          path: "/pages/shine-squad-bb30-offer",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["shine-squad-get999"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/shine-squad-get999/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/shine-squad-get999",
+        routeContext: {
+          templateName: "shine-squad-get999",
+          path: "/pages/shine-squad-get999",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES["shine-squad-mega-offer"]]: {
+      default: {
+        templatePath:
+          "/themes/bblunt-2/templates/shine-squad-mega-offer/default.ts",
+        translationsPath:
+          "/themes/bblunt-2/locales/pages/shine-squad-mega-offer",
+        routeContext: {
+          templateName: "shine-squad-mega-offer",
+          path: "/pages/shine-squad-mega-offer",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
     // Static templates (only translationsPath)
     [TEMPLATE_TYPES["about-us"]]: {
       default: {

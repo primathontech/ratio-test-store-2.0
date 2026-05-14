@@ -1,0 +1,63 @@
+{
+  "bblunt-2_fb-intense-moisture-category-sale_default": {
+    "hero_banner": {
+      "desktopImage": "/HeroBanner/images/hero-desktop.jpg",
+      "mobileImage": "/HeroBanner/images/hero-mobile.jpg",
+      "alt": "Intense Moisture Sale",
+      "mobileAspectRatio": "1/1",
+      "desktopAspectRatio": "1440/529"
+    },
+    "how_it_works_banner": {
+      "desktopImage": "/HowItWorksBanner/images/howtoshop-desktop.jpg",
+      "mobileImage": "/HowItWorksBanner/images/howtoshop-mobile.jpg",
+      "alt": "How To Shop: 1. Add favorites to cart, 2. Apply code at checkout, 3. Enjoy your offer",
+      "mobileAspectRatio": "1500/1167",
+      "desktopAspectRatio": "5692/692"
+    },
+    "countdown_timer": {
+      "targetDate": "Mar 31, 2026 23:59:59",
+      "heading": "Hurry Up!",
+      "subheading": "Hurry! Offer Will Expire in",
+      "expiredText": "Oops! Offer is Expired"
+    },
+    "most_loved_grid": {
+      "category_title": "Most Loved"
+    },
+    "sale_banner": {
+      "mobileSrc": "/bblunt-2/images/sale-page-background-mobile.webp",
+      "desktopSrc": "/bblunt-2/images/Sale-page-desktop-with-products.webp",
+      "offer": {
+        "title": "Intense Moisture Sale",
+        "price": "20",
+        "currencySymbol": "%",
+        "couponCode": "MOISTURE20",
+        "expiryText": "Sale ends tonight"
+      },
+      "countdown": "Mar 31, 2026 23:59:59",
+      "banner_cta": "How to shop",
+      "how_to_shop_title": "How to shop",
+      "how_to_shop_steps__rich": [
+        {
+          "id": 1,
+          "text": "Add your favourite <strong>intense moisture</strong> products to your cart"
+        },
+        {
+          "id": 2,
+          "text": "Apply code <strong>MOISTURE20</strong> at checkout"
+        },
+        {
+          "id": 3,
+          "text": "Get <strong>20% OFF</strong> on your order"
+        }
+      ],
+      "terms_and_conditions": {
+        "title": "Terms and conditions",
+        "points": "Offer cannot be clubbed with other coupons.Not applicable on kits & combos."
+      },
+      "primary_button": "Got it"
+    },
+    "sale_collection": {
+      "title": "BestSellers"
+    }
+  }
+}
