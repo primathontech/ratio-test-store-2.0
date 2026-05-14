@@ -33,7 +33,6 @@ declare global {
       };
     };
     TrackierWebSDK?: any;
-
   }
 }
 
