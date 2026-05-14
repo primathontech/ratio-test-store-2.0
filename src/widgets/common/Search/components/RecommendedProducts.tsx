@@ -258,6 +258,16 @@ export const RecommendedProducts: React.FC<RecommendedProductsProps> = ({
           background: #8b8b8b;
           border-radius: 9999px;
         }
+        @media (min-width: 768px) {
+          .recommended-products-scrollbar {
+            scrollbar-width: none;
+          }
+          .recommended-products-scrollbar::-webkit-scrollbar {
+            display: none;
+            height: 0;
+            width: 0;
+          }
+        }
       `}</style>
     </div>
   );
