@@ -74,6 +74,20 @@ export const template: PageConfig = {
       },
       required: false,
     },
+    // Hardcoded sale-page collection feeding the CollectionPage widget.
+    // Mirrors bblunt's `fb-*-category-sale` pattern: the slug is fixed at
+    // the template level instead of being read from route params.
+    saleCollectionData: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: {
+        handle: "most-loved-home-page",
+      },
+      options: {
+        version: "v2",
+        params: { productLimit: 12 },
+      },
+      required: false,
+    },
     // trendingCollection: {
     //   type: DATA_SOURCE_TYPES.COLLECTION_BY_HANDLES,
     //   params: {
@@ -184,78 +198,116 @@ export const template: PageConfig = {
       ],
     },
 
+    // TODO: Enable this section if we are showing the sale banner according bblunt.com
     // Hero Banner Section
-    {
-      id: "hero-banner-section",
-      name: "Hero Banner",
-      type: SECTION_TYPES.CONTENT_SECTION,
-      settings: {
-        layout: SECTION_LAYOUT_OPTIONS.FULL,
-        responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-        },
-      },
-      widgets: [
-        {
-          id: "shine-squad-hero-banner",
-          name: "Hero Banner",
-          type: WIDGET_TYPES.HeroBanner,
-          settings: {
-            variant: "v1",
-            desktopImage:
-              "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.desktopImage",
-            mobileImage:
-              "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.mobileImage",
-            alt: "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.alt",
-            mobileAspectRatio:
-              "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.mobileAspectRatio",
-            desktopAspectRatio:
-              "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.desktopAspectRatio",
-          },
-        },
-      ],
-    },
+    // {
+    //   id: "hero-banner-section",
+    //   name: "Hero Banner",
+    //   type: SECTION_TYPES.CONTENT_SECTION,
+    //   settings: {
+    //     layout: SECTION_LAYOUT_OPTIONS.FULL,
+    //     responsive: {
+    //       mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //       tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //       desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //     },
+    //   },
+    //   widgets: [
+    //     {
+    //       id: "shine-squad-hero-banner",
+    //       name: "Hero Banner",
+    //       type: WIDGET_TYPES.HeroBanner,
+    //       settings: {
+    //         variant: "v1",
+    //         desktopImage:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.desktopImage",
+    //         mobileImage:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.mobileImage",
+    //         alt: "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.alt",
+    //         mobileAspectRatio:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.mobileAspectRatio",
+    //         desktopAspectRatio:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.hero_banner.desktopAspectRatio",
+    //       },
+    //     },
+    //   ],
+    // },
 
+    // TODO: Enable this section if we are showing the sale banner according bblunt.com
     // How It Works Banner Section
-    {
-      id: "how-it-works-banner-section",
-      name: "How It Works Banner",
-      type: SECTION_TYPES.CONTENT_SECTION,
-      settings: {
-        layout: SECTION_LAYOUT_OPTIONS.FULL,
-        responsive: {
-          mobile: { padding: { top: 56, right: 0, bottom: 22, left: 0 } },
-          tablet: { padding: { top: 56, right: 0, bottom: 22, left: 0 } },
-          desktop: { padding: { top: 56, right: 0, bottom: 22, left: 0 } },
-        },
-      },
-      widgets: [
-        {
-          id: "shine-squad-how-it-works-banner",
-          name: "How It Works Banner",
-          type: WIDGET_TYPES.HowItWorksBanner,
-          settings: {
-            variant: "v1",
-            desktopImage:
-              "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.desktopImage",
-            mobileImage:
-              "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.mobileImage",
-            alt: "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.alt",
-            mobileAspectRatio:
-              "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.mobileAspectRatio",
-            desktopAspectRatio:
-              "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.desktopAspectRatio",
-          },
-        },
-      ],
-    },
+    // {
+    //   id: "how-it-works-banner-section",
+    //   name: "How It Works Banner",
+    //   type: SECTION_TYPES.CONTENT_SECTION,
+    //   settings: {
+    //     layout: SECTION_LAYOUT_OPTIONS.FULL,
+    //     responsive: {
+    //       mobile: { padding: { top: 56, right: 0, bottom: 22, left: 0 } },
+    //       tablet: { padding: { top: 56, right: 0, bottom: 22, left: 0 } },
+    //       desktop: { padding: { top: 56, right: 0, bottom: 22, left: 0 } },
+    //     },
+    //   },
+    //   widgets: [
+    //     {
+    //       id: "shine-squad-how-it-works-banner",
+    //       name: "How It Works Banner",
+    //       type: WIDGET_TYPES.HowItWorksBanner,
+    //       settings: {
+    //         variant: "v1",
+    //         desktopImage:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.desktopImage",
+    //         mobileImage:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.mobileImage",
+    //         alt: "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.alt",
+    //         mobileAspectRatio:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.mobileAspectRatio",
+    //         desktopAspectRatio:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.how_it_works_banner.desktopAspectRatio",
+    //       },
+    //     },
+    //   ],
+    // },
 
+    // TODO: Enable this section if we are showing the sale banner according bblunt.com
     // Countdown Timer Section
+    // {
+    //   id: "countdown-timer-section",
+    //   name: "Countdown Timer",
+    //   type: SECTION_TYPES.CONTENT_SECTION,
+    //   settings: {
+    //     layout: SECTION_LAYOUT_OPTIONS.FULL,
+    //     responsive: {
+    //       mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //       tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //       desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //     },
+    //   },
+    //   widgets: [
+    //     {
+    //       id: "shine-squad-countdown-timer",
+    //       name: "Countdown Timer",
+    //       type: WIDGET_TYPES.CountdownTimer,
+    //       settings: {
+    //         variant: "v1",
+    //         targetDate:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.targetDate",
+    //         heading:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.heading",
+    //         subheading:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.subheading",
+    //         expiredText:
+    //           "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.expiredText",
+    //       },
+    //     },
+    //   ],
+    // },
+
+    // ── Sale Page Banner Section ───────────────────────────────────
+    // Ported from bblunt's `fb-heat-protection-category-sale` page:
+    // hero with offer + countdown + "How to shop" modal CTA.
     {
-      id: "countdown-timer-section",
-      name: "Countdown Timer",
+      id: "sale-page-banner-section",
+      name: "Sale Page Banner",
       type: SECTION_TYPES.CONTENT_SECTION,
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
@@ -267,33 +319,54 @@ export const template: PageConfig = {
       },
       widgets: [
         {
-          id: "shine-squad-countdown-timer",
-          name: "Countdown Timer",
-          type: WIDGET_TYPES.CountdownTimer,
+          id: "shine-squad-sale-page-banner",
+          name: "Sale Page Banner",
+          type: WIDGET_TYPES.SalePageBanner,
           settings: {
             variant: "v1",
-            targetDate:
-              "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.targetDate",
-            heading:
-              "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.heading",
-            subheading:
-              "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.subheading",
-            expiredText:
-              "t:bblunt-2_shine-squad-weekly-offer_default.countdown_timer.expiredText",
+            timerInterval: 1000,
+            mobileSrc:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.mobileSrc",
+            desktopSrc:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.desktopSrc",
+            offerTitle:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.offer.title",
+            offerPrice:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.offer.price",
+            currencySymbol:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.offer.currencySymbol",
+            couponCode:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.offer.couponCode",
+            expiryText:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.offer.expiryText",
+            endDateString:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.countdown",
+            bannerCtaLabel:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.banner_cta",
+            howToShopTitle:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.how_to_shop_title",
+            howToShopSteps:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.how_to_shop_steps__rich",
+            termsAndConditionsTitle:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.terms_and_conditions.title",
+            termsAndConditionsPoints:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.terms_and_conditions.points",
+            primaryButtonLabel:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_banner.primary_button",
           },
         },
       ],
     },
 
     // ── 4 Product Category Grid Sections ───────────────────────────
-    categoryGridSection(
-      "most-loved",
-      "Most Loved",
-      "t:bblunt-2_shine-squad-weekly-offer_default.most_loved_grid.category_title",
-      40,
-      "mostLovedCollection",
-      "most-loved-home-page"
-    ),
+    // categoryGridSection(
+    //   "most-loved",
+    //   "Most Loved",
+    //   "t:bblunt-2_shine-squad-weekly-offer_default.most_loved_grid.category_title",
+    //   40,
+    //   "mostLovedCollection",
+    //   "most-loved-home-page"
+    // ),
 
     // categoryGridSection(
     //   "trending",
@@ -321,6 +394,47 @@ export const template: PageConfig = {
     //   "exploreMoreCollection",
     //   "explore-more-single-products"
     // ),
+
+    // ── Collection Page Section ────────────────────────────────────
+    // Full filter + sort + grid view of the configured sale collection.
+    // No filter UI here (showFilterAndSort: false) to keep the sale page focused.
+    {
+      id: "sale-collection-page-section",
+      name: "Sale Collection Page",
+      type: SECTION_TYPES.CONTENT_SECTION,
+      settings: {
+        layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        },
+      },
+      widgets: [
+        {
+          id: "shine-squad-sale-collection-page",
+          name: "Sale Collection Page",
+          type: WIDGET_TYPES.CollectionPage,
+          dataSourceKey: "saleCollectionData",
+          settings: {
+            variant: "v1",
+            autoLoadMore: false,
+            showFilterAndSort: false,
+            showActionButton: true,
+            actionButtonText: "t:common.product_card.add_to_cart",
+            soldOutText: "t:common.product_card.sold_out",
+            showBadge: true,
+            showRating: true,
+            actionButtonTextColor: "#ffffff",
+            sectionTextColor: "#1D1D1D",
+            // Editor-renamable heading for the sale page. Falls back to
+            // the source collection's own title when omitted.
+            title:
+              "t:bblunt-2_shine-squad-weekly-offer_default.sale_collection.title",
+          },
+        },
+      ],
+    },
 
     // Footer Section
     {

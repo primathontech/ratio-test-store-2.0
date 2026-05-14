@@ -475,6 +475,73 @@ const merchantWidgetSchemas = {
       },
     },
   },
+  [WIDGET_TYPES.SalePageBanner]: {
+    type: WIDGET_TYPES.SalePageBanner,
+    name: "Sale Page Banner",
+    description:
+      "Promotional sale banner with offer, countdown timer, coupon code, and 'How to shop' modal",
+    settingsSchema: {
+      mobileSrc: {
+        type: "image" as const,
+        label: "Mobile Background Image",
+        default: "",
+      },
+      desktopSrc: {
+        type: "image" as const,
+        label: "Desktop Background Image",
+        default: "",
+      },
+      offerTitle: { type: "text" as const, label: "Offer Title", default: "" },
+      offerPrice: { type: "text" as const, label: "Offer Price", default: "" },
+      currencySymbol: {
+        type: "text" as const,
+        label: "Currency Symbol",
+        default: "₹",
+      },
+      couponCode: { type: "text" as const, label: "Coupon Code", default: "" },
+      expiryText: {
+        type: "text" as const,
+        label: "Expiry Text",
+        default: "",
+      },
+      endDateString: {
+        type: "text" as const,
+        label: "Countdown End Date (e.g. Jan 22, 2026 12:59:59)",
+        default: "",
+      },
+      bannerCtaLabel: {
+        type: "text" as const,
+        label: "Banner CTA Label",
+        default: "",
+      },
+      howToShopTitle: {
+        type: "text" as const,
+        label: "How To Shop Modal Title",
+        default: "",
+      },
+      howToShopSteps: {
+        type: "objectArray" as const,
+        label: "How To Shop Steps (rich text)",
+        fields: ["id", "text"],
+        default: [],
+      },
+      termsAndConditionsTitle: {
+        type: "text" as const,
+        label: "Terms & Conditions Title",
+        default: "",
+      },
+      termsAndConditionsPoints: {
+        type: "text" as const,
+        label: "Terms & Conditions Points",
+        default: "",
+      },
+      primaryButtonLabel: {
+        type: "text" as const,
+        label: "Modal Primary Button Label",
+        default: "",
+      },
+    },
+  },
   [WIDGET_TYPES.FeaturedCollectionGrid]: {
     type: WIDGET_TYPES.FeaturedCollectionGrid,
     name: "Featured Collection Grid",

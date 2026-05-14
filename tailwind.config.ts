@@ -262,6 +262,11 @@ const config: Config = {
         "30": "var(--z-30)",
         "40": "var(--z-40)",
         "50": "var(--z-50)",
+        // High-priority overlay stack (drawers, modals, bottom sheets).
+        // Literal values (not CSS vars) so they work regardless of theme.
+        "1000": "1000",
+        "2000": "2000",
+        "3000": "3000",
       },
 
       // Animations
