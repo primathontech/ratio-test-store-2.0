@@ -58,8 +58,8 @@ export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
       <div className="mx-auto">
         {/* Main Footer Content */}
         <div
-          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[22px] md:px-0 md:pt-[70px] xl:pt-[40px] transition-all duration-300 pb-0 md:pb-[30px] max-w-[1300px] ${
-            isMobileAccordionOpen ? "pb-[117px]" : "pb-[100px] md:pb-[40px]"
+          className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[35px] md:px-0 md:pt-[70px] xl:pt-[40px] transition-all duration-300 pb-0 md:pb-[30px] max-w-[1300px] ${
+            isMobileAccordionOpen ? "pb-[117px]" : "pb-[117px] md:pb-[40px]"
           }`}
         >
           {/* Mobile Layout */}
@@ -74,7 +74,7 @@ export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
               aria-controls="mobile-footer-content"
             >
               <h3
-                className="text-sm font-medium text-white !leading-none"
+                className="text-sm font-bold text-white !leading-none"
                 // eslint-disable-next-line no-restricted-syntax
                 dangerouslySetInnerHTML={{ __html: mobileFooterTagline }}
               />

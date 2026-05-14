@@ -835,7 +835,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
           {/* Full-width dropdown panel below the input strip — only when the
               user hasn't started typing yet. */}
           {!overlayQuery.trim() && (
-            <div className="absolute left-0 right-0 top-[81px] bg-white z-[22101] py-4 px-3 shadow-[0_5px_20px_#8f959a99] max-h-[560px]">
+            <div className="absolute left-0 right-0 top-[81px] bg-white z-[22101] py-4 px-3 shadow-[0_5px_20px_#8f959a99]">
               <TrendingSearches onClose={closeSearchOverlay} />
               <RecommendedProducts />
             </div>

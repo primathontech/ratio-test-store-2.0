@@ -125,7 +125,7 @@ const TestimonialCard = memo(function TestimonialCard({
       <div className="relative">
         {/* Dark card body */}
         <div
-          className="relative w-full px-4 pt-4 rounded rounded-bl-none min-h-[217px]"
+          className="relative w-full px-4 md:px-6 pt-4 md:pt-6 rounded rounded-bl-none min-h-[217px]"
           style={{ backgroundColor: cardBackground }}
         >
           {/* Title */}
