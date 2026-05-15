@@ -69,11 +69,10 @@ export async function generateStaticParams() {
   return allHandles;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { handle: string };
+export async function generateMetadata(props: {
+  params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const product = await fetchProduct(params.handle);
   return resolveCommercePageSEO(
     "product",
@@ -82,11 +81,10 @@ export async function generateMetadata({
   );
 }
 
-export default async function ProductPage({
-  params,
-}: {
-  params: { handle: string };
+export default async function ProductPage(props: {
+  params: Promise<{ handle: string }>;
 }) {
+  const params = await props.params;
   try {
     const themeName = getThemeName();
 
