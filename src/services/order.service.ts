@@ -171,6 +171,8 @@ export interface OrderListResponse {
 
 export interface CancellableResponse {
   eligible: boolean;
+  reason?: string;
+  cancellationReasonList?: string[];
   [key: string]: unknown;
 }
 
@@ -346,13 +348,16 @@ export async function createEDDForOrder(
 
 /**
  * Check whether a given order is still cancellable.
+ *
+ * In the browser, this goes through the BFF proxy `/api/v1/orders/:id/cancellable`
+ * to sidestep CORS on the upstream cart API. On the server, it calls the
+ * upstream directly using the same code path as before.
  */
 export async function isOrderCancellable(
   orderId: string,
   accessToken?: string | null
 ): Promise<CancellableResponse | null> {
-  const baseURL = getCartBaseUrl();
-  if (!orderId || !baseURL) {
+  if (!orderId) {
     return null;
   }
 
@@ -361,10 +366,34 @@ export async function isOrderCancellable(
     return null;
   }
 
+  if (typeof window !== "undefined") {
+    try {
+      const res = await fetch(`/api/v1/orders/${orderId}/cancellable`, {
+        method: "GET",
+        headers: {
+          accept: "*/*",
+          "gk-access-token": token,
+        },
+      });
+      if (!res.ok) {
+        return null;
+      }
+      return (await res.json()) as CancellableResponse;
+    } catch (error) {
+      console.error("Cancellable check error:", error);
+      return null;
+    }
+  }
+
+  const baseURL = getCartBaseUrl();
+  if (!baseURL) {
+    return null;
+  }
+
   try {
     const client = getCommerceClient();
     const response = await client.fetchRequest({
-      url: `${baseURL}/auth/customers/orders/${orderId}/cancellable`,
+      url: `${baseURL}/api/v1/auth/customers/orders/${orderId}/cancellable`,
       method: "GET",
       headers: {
         accept: "*/*",
@@ -387,12 +416,8 @@ export async function cancelOrder(
   request: CancelOrderRequest,
   accessToken?: string | null
 ): Promise<unknown> {
-  const baseURL = getCartBaseUrl();
   if (!orderId) {
     throw new Error("orderId is required");
-  }
-  if (!baseURL) {
-    throw new Error("Cart API base URL is not configured");
   }
 
   const token = resolveAccessToken(accessToken);
@@ -410,9 +435,34 @@ export async function cancelOrder(
     requestBody.cancelReasonText = request.cancelReasonText;
   }
 
+  if (typeof window !== "undefined") {
+    const res = await fetch(`/api/v1/orders/${orderId}/cancel`, {
+      method: "POST",
+      headers: {
+        accept: "*/*",
+        "gk-access-token": token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(requestBody),
+    });
+    if (!res.ok) {
+      const errPayload = await res.json().catch(() => ({}));
+      throw new Error(
+        (errPayload as { error?: string })?.error ||
+          `Failed to cancel order (${res.status})`
+      );
+    }
+    return await res.json().catch(() => null);
+  }
+
+  const baseURL = getCartBaseUrl();
+  if (!baseURL) {
+    throw new Error("Cart API base URL is not configured");
+  }
+
   const client = getCommerceClient();
   const response = await client.fetchRequest({
-    url: `${baseURL}/auth/customers/orders/${orderId}/cancel`,
+    url: `${baseURL}/api/v1/auth/customers/orders/${orderId}/cancel`,
     method: "POST",
     headers: {
       accept: "*/*",

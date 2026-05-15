@@ -3,7 +3,6 @@
 import { useAuth } from "@shopkit/core/context";
 import { formatPaiseToINR } from "@/utils";
 import {
-  CancellationReason,
   CancellationReasonApiValue,
   OrderStatus,
 } from "@/widgets/common/Orders/enums";
@@ -30,6 +29,7 @@ interface CancellationEligibility {
     eligible: boolean;
     loading: boolean;
     error: string | null;
+    reasons?: string[];
   };
 }
 
@@ -92,6 +92,7 @@ export const OrderHistory: React.FC<OrderHistoryProps> = ({
           eligible: data?.eligible || false,
           loading: false,
           error: null,
+          reasons: data?.cancellationReasonList,
         },
       }));
     } catch (error) {
@@ -170,9 +171,11 @@ export const OrderHistory: React.FC<OrderHistoryProps> = ({
         throw new Error("Access token not found");
       }
 
-      // Build the cancel-order request body
+      // Build the cancel-order request body. Treat any "other"-like reason
+      // (case-insensitive) coming from the API as the free-text branch.
+      const isOtherReason = /^other/i.test(reason);
       const requestBody =
-        reason === CancellationReason.OTHERS && customText
+        isOtherReason && customText
           ? {
               reason: CancellationReasonApiValue.OTHER,
               cancelReasonText: customText,
@@ -533,6 +536,11 @@ export const OrderHistory: React.FC<OrderHistoryProps> = ({
         orderNumber={modalState.orderNumber || ""}
         isLoading={
           modalState.orderId ? cancellingOrders.has(modalState.orderId) : false
+        }
+        reasons={
+          modalState.orderId
+            ? cancellationEligibility[modalState.orderId]?.reasons
+            : undefined
         }
       />
     </div>
