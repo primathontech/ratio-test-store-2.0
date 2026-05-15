@@ -12,7 +12,10 @@ interface CancelOrderModalProps {
   onConfirm: (reason?: string, customText?: string) => void;
   orderNumber: string;
   isLoading?: boolean;
+  reasons?: string[];
 }
+
+const isOtherLikeReason = (reason: string): boolean => /^other/i.test(reason);
 
 export const CancelOrderModal: React.FC<CancelOrderModalProps> = ({
   isOpen,
@@ -20,6 +23,7 @@ export const CancelOrderModal: React.FC<CancelOrderModalProps> = ({
   onConfirm,
   orderNumber,
   isLoading = false,
+  reasons,
 }) => {
   const [isAnimating, setIsAnimating] = useState(false);
   const [currentStep, setCurrentStep] = useState<ModalStep>(
@@ -60,7 +64,7 @@ export const CancelOrderModal: React.FC<CancelOrderModalProps> = ({
         return;
       }
 
-      if (selectedReason === "Others") {
+      if (isOtherLikeReason(selectedReason)) {
         if (!customReason.trim()) {
           return;
         }
@@ -99,6 +103,7 @@ export const CancelOrderModal: React.FC<CancelOrderModalProps> = ({
             isLoading={isLoading}
             customReason={customReason}
             onCustomReasonChange={handleCustomReasonChange}
+            reasons={reasons}
           />
         );
       default:
