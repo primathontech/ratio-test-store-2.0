@@ -17,12 +17,12 @@ import { getStaticLocale } from "@/bootstrap/i18n";
 import { getTheme } from "@/bootstrap/theme";
 import { getMerchantName, getThemeName } from "@/utils";
 import { getMessages } from "next-intl/server";
-import dynamic from "next/dynamic";
 import Script from "next/script";
 import { Inter, Open_Sans } from "next/font/google";
 
 import { AppShell, AppHead } from "@shopkit/app-shell";
 import { AppCartInitializer } from "@/bootstrap/cart";
+import { ClientDynamics } from "./ClientDynamics";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
@@ -42,34 +42,6 @@ const openSans = Open_Sans({
   display: "swap",
   variable: "--font-opensans",
 });
-
-// =============================================================================
-// DYNAMIC IMPORTS
-// =============================================================================
-
-const KwikPassCustom = dynamic(
-  () =>
-    import("@/integrations/kwikpass-custom").then((mod) => ({
-      default: mod.KwikPassCustom,
-    })),
-  { ssr: false }
-);
-
-const CustomCartDrawer = dynamic(
-  () =>
-    import("@/integrations/cart-drawer-custom").then((mod) => ({
-      default: mod.CustomCartDrawer,
-    })),
-  { ssr: false }
-);
-
-const KwikCartRemounter = dynamic(
-  () =>
-    import("@/integrations/kwikcart-custom").then((mod) => ({
-      default: mod.KwikCartRemounter,
-    })),
-  { ssr: false }
-);
 
 // =============================================================================
 // ROOT LAYOUT
@@ -116,14 +88,12 @@ export default async function RootLayout({
             },
           }}
         >
-          <KwikPassCustom />
           <AppCartInitializer merchantName={merchantName} />
           {children}
-          {hasKwikcartDisabled ? (
-            <CustomCartDrawer locale={locale as "en"} />
-          ) : (
-            <KwikCartRemounter />
-          )}
+          <ClientDynamics
+            locale={locale}
+            hasKwikcartDisabled={hasKwikcartDisabled}
+          />
         </AppShell>
 
         {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership */}
