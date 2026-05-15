@@ -688,7 +688,7 @@ export default function KwikpassLoginCustom() {
           ) : (
             <button
               ref={buttonRef as React.RefObject<HTMLButtonElement>}
-              className="h-full flex items-center gap-2 cursor-pointer mb-2"
+              className="h-full flex items-center gap-2 cursor-pointer"
               aria-label="Open user menu"
               onClick={toggleDropdown}
               disabled={isLoggingIn}
