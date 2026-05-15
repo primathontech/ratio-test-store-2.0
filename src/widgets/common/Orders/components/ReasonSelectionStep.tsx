@@ -10,16 +10,10 @@ interface ReasonSelectionStepProps {
   customReason?: string;
   onCustomReasonChange?: (reason: string) => void;
   showValidationError?: boolean;
+  reasons?: string[];
 }
 
-const CANCELLATION_REASONS = [
-  "Change of mind",
-  "Found better price elsewhere",
-  "Ordered by mistake",
-  "Delivery time too long",
-  "Product not needed anymore",
-  "Others",
-];
+const isOtherLikeReason = (reason: string): boolean => /^other/i.test(reason);
 
 export const ReasonSelectionStep: React.FC<ReasonSelectionStepProps> = ({
   selectedReason,
@@ -28,15 +22,18 @@ export const ReasonSelectionStep: React.FC<ReasonSelectionStepProps> = ({
   isLoading,
   customReason = "",
   onCustomReasonChange,
+  reasons,
 }) => {
-  const isConfirmDisabled =
-    selectedReason === "Others"
-      ? !customReason.trim() || isLoading
-      : !selectedReason || isLoading;
+  const cancellationReasons = reasons && reasons.length > 0 ? reasons : [];
+  const isOtherSelected = isOtherLikeReason(selectedReason);
+
+  const isConfirmDisabled = isOtherSelected
+    ? !customReason.trim() || isLoading
+    : !selectedReason || isLoading;
 
   // Error states
   const hasSelectError = !selectedReason;
-  const hasTextareaError = selectedReason === "Others" && !customReason.trim();
+  const hasTextareaError = isOtherSelected && !customReason.trim();
 
   return (
     <>
@@ -56,7 +53,7 @@ export const ReasonSelectionStep: React.FC<ReasonSelectionStepProps> = ({
             className="w-full text-sm p-2.5 border border-[#ccc] rounded-[10px] bg-white text-primary focus:outline-none appearance-none text-left"
           >
             <option value="">Select reason</option>
-            {CANCELLATION_REASONS.map((reason) => (
+            {cancellationReasons.map((reason) => (
               <option key={reason} value={reason}>
                 {reason}
               </option>
@@ -84,7 +81,7 @@ export const ReasonSelectionStep: React.FC<ReasonSelectionStepProps> = ({
           )}
         </div>
 
-        {selectedReason === "Others" && (
+        {isOtherSelected && (
           <div>
             <textarea
               value={customReason}
