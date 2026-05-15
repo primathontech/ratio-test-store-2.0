@@ -1,7 +1,8 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
-import { getThemeName, getRouteTranslations } from "@/utils";
+import { getThemeName } from "@/utils";
+import { getTranslations } from "@/utils/translations";
 import { getPageBuilder } from "@/bootstrap/builder";
 
 export default async function NotFound() {
@@ -13,12 +14,12 @@ export default async function NotFound() {
     path: "/404",
     params: {},
     query: {},
-    fetchAPITemplate: false,
+    fetchAPITemplate: true,
   };
 
-  const messages = await getRouteTranslations({
-    themeName,
-    routeContext,
+  const messages = await getTranslations({
+    themeId: themeName,
+    templateId: "common",
     language: locale,
   });
 
