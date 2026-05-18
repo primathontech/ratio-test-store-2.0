@@ -17,44 +17,16 @@ import { getStaticLocale } from "@/bootstrap/i18n";
 import { getTheme } from "@/bootstrap/theme";
 import { getMerchantName, getThemeName } from "@/utils";
 import { getMessages } from "next-intl/server";
-import dynamic from "next/dynamic";
 import Script from "next/script";
 
 import { AppShell, AppHead } from "@shopkit/app-shell";
 import { AppCartInitializer } from "@/bootstrap/cart";
+import { ClientDynamics } from "./ClientDynamics";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
 import { fontVariables } from "./fonts";
 import LimeChatScript from "./LimeChatScript";
-
-// =============================================================================
-// DYNAMIC IMPORTS
-// =============================================================================
-
-const KwikPassCustom = dynamic(
-  () =>
-    import("@/integrations/kwikpass-custom").then((mod) => ({
-      default: mod.KwikPassCustom,
-    })),
-  { ssr: false }
-);
-
-const CartDrawer = dynamic(
-  () =>
-    import("@/widgets/common/CartDrawer").then((mod) => ({
-      default: mod.CartDrawer,
-    })),
-  { ssr: false }
-);
-
-const KwikCartRemounter = dynamic(
-  () =>
-    import("@/integrations/kwikcart-custom").then((mod) => ({
-      default: mod.KwikCartRemounter,
-    })),
-  { ssr: false }
-);
 
 // =============================================================================
 // ROOT LAYOUT
@@ -101,14 +73,12 @@ export default async function RootLayout({
             },
           }}
         >
-          <KwikPassCustom />
           <AppCartInitializer merchantName={merchantName} />
           {children}
-          {hasKwikcartDisabled ? (
-            <CartDrawer locale={locale as "en"} />
-          ) : (
-            <KwikCartRemounter />
-          )}
+          <ClientDynamics
+            locale={locale}
+            hasKwikcartDisabled={hasKwikcartDisabled}
+          />
         </AppShell>
 
         {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership */}
