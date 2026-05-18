@@ -36,6 +36,22 @@ export const pixelConfig: PixelConfigMap = {
         events: JSON.parse(process.env.NEXT_PUBLIC_GOOGLE_ADS_EVENTS || "{}"),
       }
     : null,
+
+  // GTM (Google Tag Manager) — loads a merchant-controlled container and
+  // mirrors PixelRuntime events into window.dataLayer using GA4 Enhanced
+  // Ecommerce schema. The merchant configures all downstream tags (Meta,
+  // Moengage, custom HTML, etc.) in the GTM web dashboard.
+  //
+  // Optional env vars:
+  //   NEXT_PUBLIC_GTM_AUTH    — GTM Server-Side env auth token
+  //   NEXT_PUBLIC_GTM_PREVIEW — GTM Server-Side env preview name
+  gtm: process.env.NEXT_PUBLIC_GTM_ID
+    ? {
+        containerId: process.env.NEXT_PUBLIC_GTM_ID,
+        auth: process.env.NEXT_PUBLIC_GTM_AUTH || undefined,
+        preview: process.env.NEXT_PUBLIC_GTM_PREVIEW || undefined,
+      }
+    : null,
 };
 
 /**
