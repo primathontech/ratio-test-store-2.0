@@ -1,5 +1,11 @@
 # storefront-starter-app
 
+## 0.1.12
+
+### Enhancements
+
+- **GTM (Google Tag Manager) SDK** — new `gtm-pixel-sdk.js` self-registers with PixelRuntime, loads the merchant's GTM container, and mirrors all 13 standard events to `window.dataLayer` using the GA4 Enhanced Ecommerce schema (`view_item`, `add_to_cart`, `begin_checkout`, `purchase`, etc.). Applies Consent Mode v2 defaults (granted) before the container loads so future cookie-banner integrations can downgrade via `gtag('consent', 'update', …)`. Auto-derives a `page_type` tag (`product` / `collection` / `cart` / `search` / `thank_you` / `home` / `page`) from the URL so merchants can build GTM triggers like _event equals `view_item` AND page_type equals `product`_ without regex matching on paths. Clears `ecommerce: null` before every ecommerce push (GTM best practice — prevents stale-item bleed across SPA navigations). Supports GTM Server-Side env auth/preview via optional `NEXT_PUBLIC_GTM_AUTH` / `NEXT_PUBLIC_GTM_PREVIEW`. New env var: `NEXT_PUBLIC_GTM_ID`.
+
 ## 0.1.11
 
 ### Enhancements
