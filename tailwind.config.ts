@@ -281,6 +281,7 @@ const config: Config = {
           "slideDown var(--transition-duration-slow) var(--transition-timing-out)",
         "scale-in":
           "scaleIn var(--transition-duration-slow) var(--transition-timing-out)",
+        shimmer: "shimmer 1.4s linear infinite",
       },
 
       keyframes: {
