@@ -35,13 +35,12 @@ export async function generateStaticParams() {
   return staticParams;
 }
 
-export async function generateMetadata({
-  params,
-  searchParams,
-}: {
-  params: { collectionname: string };
-  searchParams?: Record<string, string | string[] | undefined>;
+export async function generateMetadata(props: {
+  params: Promise<{ collectionname: string }>;
+  searchParams?: Promise<Record<string, string>>;
 }): Promise<Metadata> {
+  const searchParams = await props.searchParams;
+  const params = await props.params;
   const collection = await fetchCollection(params.collectionname);
   return await resolveCommercePageSEO(
     "collection",
@@ -51,11 +50,10 @@ export async function generateMetadata({
   );
 }
 
-export default async function CollectionPage({
-  params,
-}: {
-  params: { collectionname: string };
+export default async function CollectionPage(props: {
+  params: Promise<{ collectionname: string }>;
 }) {
+  const params = await props.params;
   try {
     const themeName = getThemeName();
     const locale = getStaticLocale();

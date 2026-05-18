@@ -1,5 +1,18 @@
 # storefront-starter-app
 
+## 0.1.11
+
+### Enhancements
+
+- **Google Ads SDK — per-event conversion labels** — `events` config map lets merchants assign a unique conversion label per event (Purchase, AddToCart, BeginCheckout, etc.). Each conversion action in Google Ads has its own label; the SDK now supports them all via one config. Legacy `conversionLabel` still works as Purchase fallback. New env var: `NEXT_PUBLIC_GOOGLE_ADS_EVENTS`.
+- **GA4 SDK — `isolated` flag** — set `isolated: true` to scope GA4 events to GA4 only (via `send_to: measurementId`), preventing fan-out to Google Ads on a shared `window.gtag`. Default is `false` (fan-out enabled) which matches the Shopify Google channel behavior. New env var: `NEXT_PUBLIC_GA_ISOLATED`.
+
+### Bug Fixes
+
+- **Phantom page_view to Google Ads** — gtag.js was auto-firing a page_view to the Ads conversion ID before our explicit `send_page_view: false` config could apply. Fixed by pushing `gtag('set', { send_page_view: false })` as a global default before injecting gtag.js.
+- **Page view routing** — GA4 SDK now uses gtag's built-in `send_page_view: true` (scoped to GA4 measurementId) instead of a manual subscription. Page views land in GA4 only; SPA route changes are handled by GA4 Enhanced Measurement on the property side.
+- **Production-grade hardening of Google Ads SDK** — idempotent registration guard, debug-gated info logs, value coercion to numbers, currency fallback configurable per merchant, CSP / adblock error reporting via `script.onerror`, `gtag('config', ..., { groups: 'google-ads' })` to avoid clobbering GA4 settings.
+
 ## 0.1.10
 
 ### Bug Fixes

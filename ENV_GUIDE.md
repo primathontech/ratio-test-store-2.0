@@ -253,17 +253,31 @@ NEXT_PUBLIC_VIDEO_APP_SDK_URL="https://cdn.example.com/video-sdk.js"
 
 ### Analytics & Tracking
 
-| Variable                        | Required | Description                                               |
-| ------------------------------- | -------- | --------------------------------------------------------- |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional | Google Analytics 4 ID                                     |
-| `NEXT_PUBLIC_GTM_ID`            | Optional | Google Tag Manager ID                                     |
-| `NEXT_PUBLIC_MULTI_PIXEL_IDS`   | Optional | Comma-separated Facebook Pixel IDs                        |
-| `NEXT_PUBLIC_EVENT_DEBUG`       | Optional | Enable event debug logging in production (`true`/`false`) |
+| Variable                                  | Required | Description                                                                                                        |
+| ----------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID`           | Optional | Google Analytics 4 ID                                                                                              |
+| `NEXT_PUBLIC_GA_ISOLATED`                 | Optional | When `"yes"`, scopes GA4 events to GA4 only via `send_to`; prevents fan-out to Google Ads on a shared `gtag`       |
+| `NEXT_PUBLIC_GTM_ID`                      | Optional | Google Tag Manager ID                                                                                              |
+| `NEXT_PUBLIC_GOOGLE_ADS_ID`               | Optional | Google Ads account ID, e.g. `AW-123456789`                                                                         |
+| `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional | Legacy single-label config — applied to Purchase when `NEXT_PUBLIC_GOOGLE_ADS_EVENTS` has no `Purchase` entry      |
+| `NEXT_PUBLIC_GOOGLE_ADS_EVENTS`           | Optional | JSON map of per-event conversion labels: `{"Purchase":"abc","AddToCart":"xyz"}` — each event = a conversion action |
+| `NEXT_PUBLIC_MULTI_PIXEL_IDS`             | Optional | Comma-separated Facebook Pixel IDs                                                                                 |
+| `NEXT_PUBLIC_EVENT_DEBUG`                 | Optional | Enable event debug logging in production (`true`/`false`)                                                          |
 
 ```env
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
 NEXT_PUBLIC_MULTI_PIXEL_IDS=1582841486258190,856034283724150
+
+# Google Ads — per-event conversion labels (one conversion action per event)
+NEXT_PUBLIC_GOOGLE_ADS_ID=AW-123456789
+NEXT_PUBLIC_GOOGLE_ADS_EVENTS={"Purchase":"abc","AddToCart":"xyz","BeginCheckout":"def"}
+
+# Set to "yes" to scope GA4 events to GA4 only (prevents leaking to Ads as
+# remarketing signals). Useful when the Google Ads SDK handles its own
+# conversions and you want to avoid double-counting via GA4 → Ads import.
+# NEXT_PUBLIC_GA_ISOLATED=yes
+
 # Event debug logging (also available via browser console: window.__shopkit_debug = true)
 # NEXT_PUBLIC_EVENT_DEBUG=true
 ```
