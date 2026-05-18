@@ -463,6 +463,43 @@ export const template: PageConfig = {
       "hair-styling"
     ),
 
+    // Lazy-load shimmer placeholder — mirrors bblunt.com's
+    // .lazyload-shimmer--home placeholder shown after the eagerly
+    // rendered "For Party Ready Hair" carousel. Self-hides via
+    // IntersectionObserver so the real sections below take over.
+    {
+      id: "home-lazy-load-shimmer-section",
+      name: "Lazy Load Shimmer",
+      type: SECTION_TYPES.CONTENT_SECTION,
+      settings: {
+        layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        },
+      },
+      widgets: [
+        {
+          id: "bblunt-2-home-lazy-load-shimmer",
+          name: "Lazy Load Shimmer",
+          type: WIDGET_TYPES.LazyLoadShimmer,
+          settings: {
+            variant: "v1",
+            // Negative rootMargin so the shimmer is genuinely visible
+            // before the dismiss timer starts. Tune these two knobs to
+            // adjust how long the user sees the shimmer:
+            //   rootMarginPx: -80 -> shimmer must be ~80px inside the
+            //                        viewport before the timer arms
+            //   minVisibleMs: 900 -> show for at least 900ms once
+            //                        intersection starts (one+ sweep)
+            rootMarginPx: -80,
+            minVisibleMs: 900,
+          },
+        },
+      ],
+    },
+
     // For Dull & Dry Hair — FeaturedCollectionCarousel #3
     carouselSection(
       "for-dull-dry-hair",
