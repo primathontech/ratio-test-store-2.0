@@ -73,11 +73,10 @@ export async function generateStaticParams() {
   return uniquePairs;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { collectionname: string; handle: string };
+export async function generateMetadata(props: {
+  params: Promise<{ collectionname: string; handle: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const product = await fetchProduct(params.handle);
   return await resolveCommercePageSEO(
     "product",
@@ -87,11 +86,10 @@ export async function generateMetadata({
 }
 
 // Main page component
-export default async function CollectionProductPage({
-  params,
-}: {
-  params: { collectionname: string; handle: string };
+export default async function CollectionProductPage(props: {
+  params: Promise<{ collectionname: string; handle: string }>;
 }) {
+  const params = await props.params;
   try {
     const collectionname = params.collectionname;
     const productHandle = params.handle;

@@ -340,7 +340,6 @@ function createNextConfig(options = {}) {
   let config = {
     ...(dockerBuild && { output: "standalone" }),
     reactStrictMode,
-    swcMinify: true,
 
     eslint,
     typescript,
