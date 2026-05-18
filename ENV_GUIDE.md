@@ -253,16 +253,18 @@ NEXT_PUBLIC_VIDEO_APP_SDK_URL="https://cdn.example.com/video-sdk.js"
 
 ### Analytics & Tracking
 
-| Variable                                  | Required | Description                                                                                                        |
-| ----------------------------------------- | -------- | ------------------------------------------------------------------------------------------------------------------ |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID`           | Optional | Google Analytics 4 ID                                                                                              |
-| `NEXT_PUBLIC_GA_ISOLATED`                 | Optional | When `"yes"`, scopes GA4 events to GA4 only via `send_to`; prevents fan-out to Google Ads on a shared `gtag`       |
-| `NEXT_PUBLIC_GTM_ID`                      | Optional | Google Tag Manager ID                                                                                              |
-| `NEXT_PUBLIC_GOOGLE_ADS_ID`               | Optional | Google Ads account ID, e.g. `AW-123456789`                                                                         |
-| `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional | Legacy single-label config — applied to Purchase when `NEXT_PUBLIC_GOOGLE_ADS_EVENTS` has no `Purchase` entry      |
-| `NEXT_PUBLIC_GOOGLE_ADS_EVENTS`           | Optional | JSON map of per-event conversion labels: `{"Purchase":"abc","AddToCart":"xyz"}` — each event = a conversion action |
-| `NEXT_PUBLIC_MULTI_PIXEL_IDS`             | Optional | Comma-separated Facebook Pixel IDs                                                                                 |
-| `NEXT_PUBLIC_EVENT_DEBUG`                 | Optional | Enable event debug logging in production (`true`/`false`)                                                          |
+| Variable                                  | Required | Description                                                                                                                                                                                                                                   |
+| ----------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID`           | Optional | Google Analytics 4 ID                                                                                                                                                                                                                         |
+| `NEXT_PUBLIC_GA_ISOLATED`                 | Optional | When `"yes"`, scopes GA4 events to GA4 only via `send_to`; prevents fan-out to Google Ads on a shared `gtag`                                                                                                                                  |
+| `NEXT_PUBLIC_GTM_ID`                      | Optional | Google Tag Manager container ID (e.g. `GTM-XXXXXXX`). When set, `gtm-pixel-sdk.js` loads the container, applies Consent Mode v2 defaults (granted), and mirrors PixelRuntime events to `window.dataLayer` using GA4 Enhanced Ecommerce schema |
+| `NEXT_PUBLIC_GTM_AUTH`                    | Optional | GTM Server-Side environment auth token (only for non-production GTM SS environments)                                                                                                                                                          |
+| `NEXT_PUBLIC_GTM_PREVIEW`                 | Optional | GTM Server-Side environment preview name, e.g. `env-3` (only for non-production GTM SS environments)                                                                                                                                          |
+| `NEXT_PUBLIC_GOOGLE_ADS_ID`               | Optional | Google Ads account ID, e.g. `AW-123456789`                                                                                                                                                                                                    |
+| `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional | Legacy single-label config — applied to Purchase when `NEXT_PUBLIC_GOOGLE_ADS_EVENTS` has no `Purchase` entry                                                                                                                                 |
+| `NEXT_PUBLIC_GOOGLE_ADS_EVENTS`           | Optional | JSON map of per-event conversion labels: `{"Purchase":"abc","AddToCart":"xyz"}` — each event = a conversion action                                                                                                                            |
+| `NEXT_PUBLIC_MULTI_PIXEL_IDS`             | Optional | Comma-separated Facebook Pixel IDs                                                                                                                                                                                                            |
+| `NEXT_PUBLIC_EVENT_DEBUG`                 | Optional | Enable event debug logging in production (`true`/`false`)                                                                                                                                                                                     |
 
 ```env
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
