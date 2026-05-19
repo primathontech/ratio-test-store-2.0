@@ -426,5 +426,18 @@ export const themeRegistry = {
         },
       },
     },
+
+    [TEMPLATE_TYPES["not-found"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/not-found/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/not-found",
+        routeContext: {
+          templateName: "not-found",
+          path: "/404",
+          params: {},
+          query: {},
+        },
+      },
+    },
   },
 };

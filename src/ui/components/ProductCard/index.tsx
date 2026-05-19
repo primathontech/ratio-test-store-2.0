@@ -64,7 +64,7 @@ const StarRating = ({
         style={{ color: textColor }}
       >
         {" | "}
-        {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+        {reviewCount}
       </span>
     </div>
   );
@@ -149,10 +149,6 @@ const QuantityPill = ({
 /* ------------------------------------------------------------------ */
 /*  Helpers                                                            */
 /* ------------------------------------------------------------------ */
-
-function normalizeImgSrc(url: string): string {
-  return url.startsWith("//") ? `https:${url}` : url;
-}
 
 function badgeColor(variant?: string): string {
   switch (variant) {
@@ -248,6 +244,7 @@ export const ProductCard = memo(function ProductCard({
   isSoldOut: isSoldOutProp,
 }: ProductCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  const [hasHovered, setHasHovered] = useState(false);
   const [isButtonHovered, setIsButtonHovered] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -328,7 +325,10 @@ export const ProductCard = memo(function ProductCard({
           borderRadius: t.cardRadius,
           overflow: t.cardOverflow,
         }}
-        onMouseEnter={() => setIsHovered(true)}
+        onMouseEnter={() => {
+          setIsHovered(true);
+          setHasHovered(true);
+        }}
         onMouseLeave={() => setIsHovered(false)}
       >
         {/* Image area */}
@@ -396,7 +396,7 @@ export const ProductCard = memo(function ProductCard({
 
             {/* Main image */}
             <Image
-              src={normalizeImgSrc(product.mainImage)}
+              src={product.mainImage}
               alt={product.alt}
               width={360}
               height={360}
@@ -407,21 +407,16 @@ export const ProductCard = memo(function ProductCard({
               }}
             />
 
-            {/* Hover image */}
-            {product.hoverImage && (
+            {product.hoverImage && hasHovered && (
               <Image
-                src={normalizeImgSrc(product.hoverImage)}
+                src={product.hoverImage}
                 alt={product.alt}
                 width={360}
                 height={360}
                 loading="lazy"
-                className={`absolute inset-0 w-full h-full object-cover rounded-[2px] ${productImageClassName}`.trim()}
-                style={{
-                  opacity: isHovered ? 1 : 0,
-                  transform: isHovered ? "scale(1.09)" : "scale(1)",
-                  transition:
-                    "opacity 0.5s, transform 2s cubic-bezier(0, 0, 0.44, 1.18)",
-                }}
+                className={`absolute inset-0 w-full h-full object-cover rounded-[2px] ${
+                  isHovered ? "animate-fadeZoomIn" : "animate-fadeZoomOut"
+                } ${productImageClassName}`.trim()}
               />
             )}
           </Link>
