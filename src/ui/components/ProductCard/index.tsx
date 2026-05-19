@@ -64,7 +64,7 @@ const StarRating = ({
         style={{ color: textColor }}
       >
         {" | "}
-        {reviewCount} {reviewCount === 1 ? "review" : "reviews"}
+        {reviewCount}
       </span>
     </div>
   );
