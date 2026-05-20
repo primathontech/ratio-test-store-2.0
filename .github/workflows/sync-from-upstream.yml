@@ -104,9 +104,16 @@ jobs:
         with:
           app-id: ${{ secrets.SYNC_APP_ID }}
           private-key: ${{ secrets.SYNC_APP_PRIVATE_KEY }}
-          # Scope the token to the upstream repo only — least-privilege.
+          # `owner` (no `repositories`) mints a token from the org-level
+          # installation, scoped to every repo the install has access to.
+          # The Storefront Sync Bot is installed org-wide with "All
+          # repositories" access (see docs/SUBTREE_SYNC.md), so this token
+          # can read upstream/core. We don't narrow with `repositories:` —
+          # we tried, and the cross-install resolution path returned a
+          # token that couldn't see the upstream repo. Trade-off: slightly
+          # broader scope, but still gated by the app's defined permissions
+          # (Contents: Read+write only, no admin/secrets/etc).
           owner: primathontech
-          repositories: storefront-starter
 
       - name: Fetch upstream/core
         env:
@@ -120,6 +127,14 @@ jobs:
             echo "::error::Setup instructions: see docs/SUBTREE_SYNC.md → 'Fork sync from upstream/core'."
             exit 1
           fi
+
+          # actions/checkout@v4 configures http.https://github.com/.extraheader
+          # with the fork's GITHUB_TOKEN, and git applies that header to EVERY
+          # github.com remote — including upstream. Without clearing it, our
+          # url-embedded upstream token is ignored, the fork's GITHUB_TOKEN is
+          # sent instead, and the upstream fetch 404s (it can only see the fork).
+          # Unset the extraheader so the url-embedded token is what authenticates.
+          git config --unset-all http.https://github.com/.extraheader || true
 
           # Use the token in the remote URL so git authenticates the fetch.
           # The token never appears in logs (GitHub Actions auto-masks secrets).
@@ -156,7 +171,11 @@ jobs:
           # name is date-stamped, so the same date doesn't get duplicate PRs.
           # If a PR for today's branch is already open, log + exit — our
           # subsequent push to the same branch will update the existing PR.
+          # Pin --repo explicitly: after we added the upstream remote in the
+          # previous step, gh's repo auto-resolution can pick the wrong one
+          # (it scans all remotes). Be explicit and target this fork.
           EXISTING=$(gh pr list \
+            --repo "${{ github.repository }}" \
             --base main \
             --head "${{ steps.meta.outputs.branch }}" \
             --state open \
@@ -233,6 +252,7 @@ jobs:
           EOF
 
           gh pr create \
+            --repo "${{ github.repository }}" \
             --base main \
             --head "${{ steps.meta.outputs.branch }}" \
             --title "chore(sync): upstream/core → main (${{ steps.meta.outputs.sync_date }})" \
