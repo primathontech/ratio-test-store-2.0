@@ -85,8 +85,26 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: Fetch upstream/core
+        env:
+          # PAT or App token with `Contents: Read` on
+          # primathontech/storefront-starter. The fork's default
+          # GITHUB_TOKEN is scoped to the fork only and CANNOT read from
+          # a private upstream — this secret bridges that gap.
+          #
+          # Setup: create an organization secret named UPSTREAM_READ_TOKEN
+          # with access to all fork repos. See docs/SUBTREE_SYNC.md.
+          UPSTREAM_TOKEN: ${{ secrets.UPSTREAM_READ_TOKEN }}
         run: |
-          git remote add upstream https://github.com/primathontech/storefront-starter.git
+          if [ -z "$UPSTREAM_TOKEN" ]; then
+            echo "::error::UPSTREAM_READ_TOKEN secret is not set in this repo or org."
+            echo "::error::The fork-sync workflow needs cross-repo read access to the private upstream."
+            echo "::error::Setup instructions: see docs/SUBTREE_SYNC.md → 'Fork sync from upstream/core'."
+            exit 1
+          fi
+
+          # Use the token in the remote URL so git authenticates the fetch.
+          # The token never appears in logs (GitHub Actions auto-masks secrets).
+          git remote add upstream "https://x-access-token:${UPSTREAM_TOKEN}@github.com/primathontech/storefront-starter.git"
           git fetch upstream core
 
       - name: Compute sync metadata
