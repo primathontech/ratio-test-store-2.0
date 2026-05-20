@@ -39,6 +39,7 @@ export enum ProductTabType {
 export enum ProductTabHandlePrefix {
   HOW_TO_USE = "how-to-use",
   HERO_INGREDIENT = "hero-ingredient",
+  POWER_INGREDIENTS = "power-ingredients",
   SUITABLE_FOR = "suitable-for",
   INGREDIENTS_LIST = "ingredients-list",
 }
