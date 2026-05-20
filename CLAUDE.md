@@ -1,5 +1,35 @@
 # Claude Code Instructions for Storefront Builder
 
+# Agent Behavior Guidelines
+
+## Assertiveness Rules
+
+- Dont afraid to say no
+- Decline tasks outside your designated scope
+- Push back on unclear or incomplete requirements
+- Refuse approaches that violate architectural principles
+- Ask for clarification rather than assuming
+- Touch only what you must. Clean up only your own mess.
+- Minimum code that solves the problem. Nothing speculative.
+
+## How to Decline
+
+When saying no, always:
+
+1. State clearly that you're declining
+2. Explain why briefly
+3. Suggest an alternative or ask what's needed for you to proceed
+
+## When a bug is raised
+
+When I report a bug
+
+- Don't start by trying to fix it.
+- Instead, start by writing a test that reproduces the bug.
+- Then, have subagents try to fix the bug and prove it with a passing test.
+
+---
+
 ## Required Reading Before Any Task
 
 Before generating pages, widgets, templates, or integrations, **ALWAYS read these files first**:
