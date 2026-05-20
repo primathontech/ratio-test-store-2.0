@@ -92,7 +92,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
 
   return (
     <section
-      className="relative mt-[25px] md:mt-14"
+      className="relative sbc-cat-container mt-[25px] md:mt-14"
       aria-label="Shop by Categories"
     >
       {/* Section Heading */}
@@ -127,9 +127,9 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
         {/* Scrollable viewport */}
         <div
           ref={viewportRef}
-          className="px-2.5 md:px-[30px] lg:px-[30px] xl:px-[70px] overflow-x-auto hide-scrollbar"
+          className="px-2.5 md:px-[30px] lg:px-[30px] xl:px-[50px] overflow-x-auto hide-scrollbar"
         >
-          <div className="sbc-cat-container flex">
+          <div className="flex">
             {tiles.map((tile, i) => (
               <div
                 key={i}
