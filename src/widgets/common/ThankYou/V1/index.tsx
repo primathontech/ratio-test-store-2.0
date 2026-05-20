@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useAuth } from "@shopkit/core/context";
+import { useCheckoutToken } from "@/integrations/kwikpass-custom";
 
 import { EDDResponse, OrderApiResponse, ThankYouProps } from "../types";
 import { getOrderById, getOrderTracking } from "@/services/order.service";
@@ -20,7 +20,7 @@ import { GuestUserStorage } from "./utils/guestUserStorage";
 
 export const V1: React.FC<ThankYouProps> = () => {
   const router = useRouter();
-  const { accessToken } = useAuth();
+  const gkToken = useCheckoutToken();
 
   const [orderData, setOrderData] = useState<OrderApiResponse | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,27 +46,16 @@ export const V1: React.FC<ThankYouProps> = () => {
     }
   }, []);
 
-  const getToken = useCallback((): string | null => {
-    if (accessToken) {
-      return typeof accessToken === "string"
-        ? accessToken
-        : accessToken?.accessToken || accessToken?.token || null;
-    }
-    const guestData = GuestUserStorage.getGuestUserData();
-    return guestData?.user_token || null;
-  }, [accessToken]);
-
   // Redirect to home if no auth/guest token after a short grace period
   useEffect(() => {
     const timeOut = setTimeout(() => {
-      const token = getToken();
-      if (!token) {
+      if (!gkToken) {
         router.push("/");
       }
     }, 500);
 
     return () => clearTimeout(timeOut);
-  }, [accessToken, router, getToken]);
+  }, [router, gkToken]);
 
   // Fetch order on mount
   useEffect(() => {
@@ -75,7 +64,6 @@ export const V1: React.FC<ThankYouProps> = () => {
       const orderId = searchParams.get("orderId");
       const requestId = searchParams.get("requestId");
       const customerId = searchParams.get("customerId");
-      const token = getToken();
 
       if (orderId) {
         try {
@@ -87,7 +75,7 @@ export const V1: React.FC<ThankYouProps> = () => {
             requestId: requestId || undefined,
             customerId: customerId || undefined,
             phone: phone || undefined,
-            accessToken: token,
+            accessToken: gkToken,
           });
 
           if (data?.order) {
@@ -134,7 +122,6 @@ export const V1: React.FC<ThankYouProps> = () => {
 
         const guestData = GuestUserStorage.getGuestUserData();
         const phone = guestData?.phone || "";
-        const token = getToken();
         const requestId = searchParams.get("requestId");
         const customerId = searchParams.get("customerId");
 
@@ -143,7 +130,7 @@ export const V1: React.FC<ThankYouProps> = () => {
           requestId: requestId || undefined,
           customerId: customerId || undefined,
           phone: phone || undefined,
-          accessToken: token,
+          accessToken: gkToken,
         });
         if (data?.order?.external_order_name) {
           setOrderData((prev) => {
@@ -178,7 +165,7 @@ export const V1: React.FC<ThankYouProps> = () => {
         clearTimeout(pollingRef.current);
       }
     };
-  }, [orderData?.order, getToken]);
+  }, [orderData?.order, gkToken]);
 
   // Loading state
   if (loading) {
