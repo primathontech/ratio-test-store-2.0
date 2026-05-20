@@ -154,7 +154,7 @@ type GridAnimationPhase = "idle" | "exiting" | "pre-enter" | "entering";
 export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
   const headingRich = settings?.heading || "Hair Care <strong>BFFs</strong>";
   const backgroundImage =
-    settings?.backgroundImage || "/HairCareBFFs/images/bg-watermark.png";
+    settings?.backgroundImage || "/HairCareBFFs/images/bg-watermark.webp";
   const backgroundImageMobile =
     settings?.backgroundImageMobile ||
     "/HairCareBFFs/images/bg-mobile-watermark.webp";
