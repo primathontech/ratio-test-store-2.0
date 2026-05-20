@@ -51,19 +51,7 @@ jobs:
             ${{ runner.os }}-bun-
 
       - name: Install dependencies
-        # The visual editor lives at `src/app/editor` as a git submodule
-        # pointing at a private repo. We deliberately don't authenticate
-        # this submodule on the synced target (would require distributing
-        # credentials), so the directory shows up empty after checkout and
-        # bun's workspace resolution fails with "Workspace not found".
-        # Stub it with a minimal package.json so bun is satisfied. Same
-        # workaround the source monorepo's root ci.yml has been using.
-        run: |
-          if [ ! -d "src/app/editor" ] || [ ! -f "src/app/editor/package.json" ]; then
-            mkdir -p src/app/editor
-            echo '{"name":"storefront-editor","version":"0.0.0","private":true}' > src/app/editor/package.json
-          fi
-          bun install --frozen-lockfile
+        run: bun install --frozen-lockfile
 
       # ─────────────────────────────────────────────
       # Get changed files in this PR
