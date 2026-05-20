@@ -175,28 +175,32 @@ const AccordionItem = ({
         </span>
       </button>
 
-      {/* Content panel */}
+      {/* Content panel — pure Tailwind grid-rows trick for auto-height animation */}
       <div
-        className={`px-5 overflow-hidden transition-all duration-300 ease-in-out ${
-          isOpen ? "max-h-[2000px] opacity-100 pb-5" : "max-h-0 opacity-0 pb-0"
+        className={`grid transition-[grid-template-rows,opacity] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${
+          isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
         }`}
       >
-        {tab.type === ProductTabType.HTML && tab.contentHTML && (
-          <SafeHtmlContent html={tab.contentHTML} />
-        )}
-        {tab.type === ProductTabType.STEPS && tab.steps && (
-          <StepsContent steps={tab.steps} />
-        )}
-        {tab.type === ProductTabType.INGREDIENTS && tab.ingredients && (
-          <IngredientsContent ingredients={tab.ingredients} />
-        )}
-        {tab.type === ProductTabType.LIST && tab.items && (
-          <ListContent items={tab.items} />
-        )}
-        {tab.type === ProductTabType.INGREDIENTS_LIST &&
-          tab.ingredientListings && (
-            <IngredientsListContent listings={tab.ingredientListings} />
-          )}
+        <div className="overflow-hidden">
+          <div className={`px-5 ${isOpen ? "pb-5" : "pb-0"}`}>
+            {tab.type === ProductTabType.HTML && tab.contentHTML && (
+              <SafeHtmlContent html={tab.contentHTML} />
+            )}
+            {tab.type === ProductTabType.STEPS && tab.steps && (
+              <StepsContent steps={tab.steps} />
+            )}
+            {tab.type === ProductTabType.INGREDIENTS && tab.ingredients && (
+              <IngredientsContent ingredients={tab.ingredients} />
+            )}
+            {tab.type === ProductTabType.LIST && tab.items && (
+              <ListContent items={tab.items} />
+            )}
+            {tab.type === ProductTabType.INGREDIENTS_LIST &&
+              tab.ingredientListings && (
+                <IngredientsListContent listings={tab.ingredientListings} />
+              )}
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -238,13 +242,16 @@ function transformApiTabs(apiTabs: ApiProductDetailTab[]): ProductTab[] {
         })),
       };
     }
-    if (handle.startsWith(ProductTabHandlePrefix.HERO_INGREDIENT)) {
+    if (
+      handle.startsWith(ProductTabHandlePrefix.HERO_INGREDIENT) ||
+      handle.startsWith(ProductTabHandlePrefix.POWER_INGREDIENTS)
+    ) {
       return {
         title,
         type: ProductTabType.INGREDIENTS,
         ingredients: cards.map((card) => ({
           image: pickFirstString(card.fields.image?.value),
-          label: "",
+          label: pickFirstString(card.fields.title?.value),
           text: pickFirstString(card.fields.content?.value),
         })),
       };

@@ -139,27 +139,27 @@ const FAQAccordionItem = ({
 }) => (
   <div
     data-testid="product-faq-item"
-    className={`pb-2.5 mb-2.5 ${isFirst ? "" : "border-t border-[rgba(29,29,29,0.12)]"} ${isLast ? "border-b border-[rgba(29,29,29,0.12)] !mb-0" : ""}`}
+    className="pb-2.5 mb-2.5 border-b border-[#DDDDDD]"
   >
     <button
       type="button"
       onClick={onToggle}
       aria-expanded={isOpen}
-      className={`w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none pb-3.5 px-0 text-left ${isFirst ? "pt-0" : "pt-3.5"}`}
+      className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none px-0 text-left"
     >
-      <span className="text-base leading-[22px] md:text-lg md:leading-[26px] font-medium md:font-bold text-primary pr-4">
+      <span className="text-[16px] leading-[25.6px] font-medium md:text-[18px] md:leading-[28.8px] md:font-bold text-[#1d1d1d] mr-[15px] pb-2.5 md:py-3.5">
         {item.question}
       </span>
-      <span className="flex items-center justify-center shrink-0 text-black">
+      <span className="flex items-center justify-center shrink-0 text-black mt-1">
         <PlusMinusIcon isOpen={isOpen} />
       </span>
     </button>
 
     <div
-      className={`overflow-hidden transition-all duration-[400ms] ease-in-out ${isOpen ? "max-h-[2000px] opacity-100" : "max-h-0 opacity-0"}`}
+      className={`grid transition-[grid-template-rows,opacity] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${isOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
     >
-      <div className="pt-6 pb-[22px] px-0">
-        <p className="leading-[19px] text-sm md:leading-[22.4px] font-normal text-[#555555] m-0">
+      <div className="overflow-hidden">
+        <p className="text-[14px] leading-[22.4px] md:text-[16px] md:leading-[25.6px] font-normal text-[#555555] m-0 pb-3.5">
           {item.answer}
         </p>
       </div>
@@ -211,14 +211,14 @@ export const V1 = memo(function V1({
       data-testid="product-faq-section-container"
       className={`bg-[#F4F6F8] xl:px-[30px] ${className || ""}`}
     >
-      <Box className="max-w-[1400px] mx-auto px-4 md:px-6 rounded-[15px] bg-white border-b border-faq-border">
+      <Box className="max-w-[1400px] mx-auto rounded-[15px] bg-white mb-2 md:mb-4">
         <button
           type="button"
           onClick={handleToggleSection}
           aria-expanded={isSectionOpen}
-          className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none py-6 md:py-[38px] text-left"
+          className="w-full flex items-center justify-between cursor-pointer bg-transparent border-0 outline-none px-4 py-6 md:px-6 md:py-[38px] text-left"
         >
-          <h5 className="text-base md:text-2xl leading-[19.2px] md:leading-[29px] font-normal md:font-bold text-black m-0 ">
+          <h5 className="text-[16px] leading-[25.6px] font-normal md:text-[24px] md:leading-[38.4px] md:font-bold text-black m-0">
             {title}
           </h5>
           <span className="flex items-center justify-center w-[12px] md:w-[18px] h-[12px] md:h-[18px] text-primary shrink-0 ml-4">
@@ -227,18 +227,20 @@ export const V1 = memo(function V1({
         </button>
 
         <div
-          className={`overflow-hidden transition-all duration-[400ms] ease-in-out ${isSectionOpen ? "max-h-[5000px] opacity-100" : "max-h-0 opacity-0"}`}
+          className={`grid transition-[grid-template-rows,opacity] duration-[400ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${isSectionOpen ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"}`}
         >
-          {items.map((item, index) => (
-            <FAQAccordionItem
-              key={index}
-              item={item}
-              isOpen={Boolean(openItems[index])}
-              onToggle={() => handleToggleItem(index)}
-              isFirst={index === 0}
-              isLast={index === items.length - 1}
-            />
-          ))}
+          <div className="overflow-hidden px-4 md:px-6 md:-mt-4">
+            {items.map((item, index) => (
+              <FAQAccordionItem
+                key={index}
+                item={item}
+                isOpen={Boolean(openItems[index])}
+                onToggle={() => handleToggleItem(index)}
+                isFirst={index === 0}
+                isLast={index === items.length - 1}
+              />
+            ))}
+          </div>
         </div>
       </Box>
     </div>
