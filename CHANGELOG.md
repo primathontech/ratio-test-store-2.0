@@ -1,5 +1,11 @@
 # storefront-starter-app
 
+## 0.1.13
+
+### Bug Fixes
+
+- **Declare 5 `@radix-ui/*` packages that were pulled transitively** — `@radix-ui/react-checkbox`, `react-label`, `react-select`, `react-slot`, `react-tabs` are imported directly from storefront-starter source (admin theme blocks, builder UI) but were never declared in `package.json`. They worked locally because the monorepo's workspace hoisting surfaced them anyway; on the synced standalone target (and consumer forks) `bun install` failed with undeclared-dep errors. Declared at the same versions used by sibling apps (e.g. momsco). No code change required.
+
 ## 0.1.12
 
 ### Enhancements
