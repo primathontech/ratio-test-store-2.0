@@ -5,7 +5,7 @@
     "description": "Welcome to the Home page.",
     "hair_care_bffs": {
       "heading__rich": "Hair Care <strong>BFFs</strong>",
-      "backgroundImage": "/HairCareBFFs/images/bg-watermark.png",
+      "backgroundImage": "/HairCareBFFs/images/bg-watermark.webp",
       "collections": [
         {
           "label": "Most Loved",
@@ -52,7 +52,7 @@
         "type": "IMAGE",
         "href": "/pages/shine-squad-bb30-offer",
         "desktopSrc": "/BannerCarousel/images/slide1-desktop.webp",
-        "mobileSrc": "/BannerCarousel/images/slide1-mobile.png",
+        "mobileSrc": "/BannerCarousel/images/slide1-mobile.webp",
         "alt": "Get 3 Freebies on orders above Rs499 - Code FREETRIO",
         "indicatorHeading": "Free 3-Step\nRoutine",
         "indicatorSubHeading": "Shop our"
@@ -64,42 +64,42 @@
         {
           "label": "Hair fall fighters",
           "href": "/collections/hairfall",
-          "image": "/ShopByConcerns/images/hair-fall-fighters.png"
+          "image": "/ShopByConcerns/images/hair-fall-fighters.webp"
         },
         {
           "label": "Frizz fixers",
           "href": "/collections/dry-hair",
-          "image": "/ShopByConcerns/images/frizz-fixers.png"
+          "image": "/ShopByConcerns/images/frizz-fixers.webp"
         },
         {
           "label": "Damage repair",
           "href": "/collections/damaged-hair",
-          "image": "/ShopByConcerns/images/damage-repair.png"
+          "image": "/ShopByConcerns/images/damage-repair.webp"
         },
         {
           "label": "Smooth hair essentials",
           "href": "/collections/advanced-smoothening",
-          "image": "/ShopByConcerns/images/smooth-hair-essentials.png"
+          "image": "/ShopByConcerns/images/smooth-hair-essentials.webp"
         },
         {
           "label": "Dandruff defence",
           "href": "/collections/anti-dandruff",
-          "image": "/ShopByConcerns/images/dandruff-defence.png"
+          "image": "/ShopByConcerns/images/dandruff-defence.webp"
         },
         {
           "label": "Curl care crew",
           "href": null,
-          "image": "/ShopByConcerns/images/curl-care-crew.png"
+          "image": "/ShopByConcerns/images/curl-care-crew.webp"
         },
         {
           "label": "Shine boosters",
           "href": null,
-          "image": "/ShopByConcerns/images/shine-boosters.png"
+          "image": "/ShopByConcerns/images/shine-boosters.webp"
         },
         {
           "label": "Scalp saviours",
           "href": null,
-          "image": "/ShopByConcerns/images/scalp-saviours.png"
+          "image": "/ShopByConcerns/images/scalp-saviours.webp"
         }
       ]
     },
@@ -109,32 +109,32 @@
         {
           "label": "Shampoo",
           "href": "/collections/shampoo",
-          "desktopImage": "/ShopByCategories/images/shampoo-desktop.png",
-          "mobileImage": "/ShopByCategories/images/shampoo-mobile.png"
+          "desktopImage": "/ShopByCategories/images/shampoo-desktop.webp",
+          "mobileImage": "/ShopByCategories/images/shampoo-mobile.webp"
         },
         {
           "label": "Conditioner",
           "href": "/collections/conditioner",
-          "desktopImage": "/ShopByCategories/images/conditioner-desktop.png",
-          "mobileImage": "/ShopByCategories/images/conditioner-mobile.png"
+          "desktopImage": "/ShopByCategories/images/conditioner-desktop.webp",
+          "mobileImage": "/ShopByCategories/images/conditioner-mobile.webp"
         },
         {
           "label": "Hair spray",
           "href": "/collections/sprays",
-          "desktopImage": "/ShopByCategories/images/hair-spray-desktop.png",
-          "mobileImage": "/ShopByCategories/images/hair-spray-mobile.png"
+          "desktopImage": "/ShopByCategories/images/hair-spray-desktop.webp",
+          "mobileImage": "/ShopByCategories/images/hair-spray-mobile.webp"
         },
         {
           "label": "Hair colour",
           "href": "/collections/hair-colour",
-          "desktopImage": "/ShopByCategories/images/hair-colour-desktop.png",
-          "mobileImage": "/ShopByCategories/images/hair-colour-mobile.png"
+          "desktopImage": "/ShopByCategories/images/hair-colour-desktop.webp",
+          "mobileImage": "/ShopByCategories/images/hair-colour-mobile.webp"
         },
         {
           "label": "Hair serum",
           "href": "/collections/serum",
-          "desktopImage": "/ShopByCategories/images/hair-serum-desktop.png",
-          "mobileImage": "/ShopByCategories/images/hair-serum-mobile.png"
+          "desktopImage": "/ShopByCategories/images/hair-serum-desktop.webp",
+          "mobileImage": "/ShopByCategories/images/hair-serum-mobile.webp"
         }
       ]
     },
