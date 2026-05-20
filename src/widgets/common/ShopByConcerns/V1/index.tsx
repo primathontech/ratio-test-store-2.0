@@ -52,6 +52,7 @@ const Tile = ({ tile }: { tile: ConcernTile }) => {
         src={tile.image}
         alt={tile.label}
         fill
+        loading="lazy"
         sizes="(max-width: 767px) 42vw, (max-width: 1023px) 30vw, (max-width: 1439px) 23vw, 245px"
         className="object-cover"
       />
