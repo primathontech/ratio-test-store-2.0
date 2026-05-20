@@ -84,20 +84,39 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+      # Mint a short-lived (1h) installation token from the "Storefront Sync
+      # Bot" GitHub App. The app must be installed on BOTH this fork and the
+      # upstream `primathontech/storefront-starter` repo, with `Contents: Read`
+      # on upstream.
+      #
+      # Why an app instead of a PAT:
+      #   * Tokens are short-lived (1h) — no long-lived credentials in secrets
+      #   * Single rotation point (the app's private key) for all forks
+      #   * Audit trail tied to the app, not a person's PAT
+      #
+      # Setup: see docs/SUBTREE_SYNC.md → "Fork sync from upstream/core".
+      # Required secrets on each fork (or as org secrets on Team plan+):
+      #   * SYNC_APP_ID            — the GitHub App's App ID
+      #   * SYNC_APP_PRIVATE_KEY   — full `.pem` private key contents
+      - name: Mint upstream-read token via GitHub App
+        id: upstream_token
+        uses: actions/create-github-app-token@v1
+        with:
+          app-id: ${{ secrets.SYNC_APP_ID }}
+          private-key: ${{ secrets.SYNC_APP_PRIVATE_KEY }}
+          # Scope the token to the upstream repo only — least-privilege.
+          owner: primathontech
+          repositories: storefront-starter
+
       - name: Fetch upstream/core
         env:
-          # PAT or App token with `Contents: Read` on
-          # primathontech/storefront-starter. The fork's default
-          # GITHUB_TOKEN is scoped to the fork only and CANNOT read from
-          # a private upstream — this secret bridges that gap.
-          #
-          # Setup: create an organization secret named UPSTREAM_READ_TOKEN
-          # with access to all fork repos. See docs/SUBTREE_SYNC.md.
-          UPSTREAM_TOKEN: ${{ secrets.UPSTREAM_READ_TOKEN }}
+          UPSTREAM_TOKEN: ${{ steps.upstream_token.outputs.token }}
         run: |
           if [ -z "$UPSTREAM_TOKEN" ]; then
-            echo "::error::UPSTREAM_READ_TOKEN secret is not set in this repo or org."
-            echo "::error::The fork-sync workflow needs cross-repo read access to the private upstream."
+            echo "::error::Failed to mint upstream-read token from the GitHub App."
+            echo "::error::Verify SYNC_APP_ID and SYNC_APP_PRIVATE_KEY secrets are set on this fork,"
+            echo "::error::and that the 'Storefront Sync Bot' app is installed on both this fork and"
+            echo "::error::primathontech/storefront-starter with Contents:Read."
             echo "::error::Setup instructions: see docs/SUBTREE_SYNC.md → 'Fork sync from upstream/core'."
             exit 1
           fi
