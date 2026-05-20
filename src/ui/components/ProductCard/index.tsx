@@ -449,7 +449,7 @@ export const ProductCard = memo(function ProductCard({
           <Link
             href={product.href}
             data-testid={`product-card-title-${product.id}`}
-            className={`text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2  min-h-[33px] md:min-h-[40px] ${titleClassName}`.trim()}
+            className={`text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2  min-h-[33px] md:min-h-[40px] transition-colors duration-200 cursor-pointer hover:!text-[#0089bf] ${titleClassName}`.trim()}
             style={{
               color: textPrimary,
               fontWeight: 400,
