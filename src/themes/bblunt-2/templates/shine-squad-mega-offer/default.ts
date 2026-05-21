@@ -79,7 +79,7 @@ export const template: PageConfig = {
       },
       options: {
         version: "v2",
-        params: { productLimit: 24 },
+        params: { first: 12 },
       },
       required: false,
     },

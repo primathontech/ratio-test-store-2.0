@@ -89,7 +89,7 @@ export interface ProductNode {
   compareAtPriceRange: PriceRange;
   product_availability: boolean;
   availableForSale: boolean;
-  variant: ProductVariant;
+  variant: ProductVariant | null;
   metadata: ProductMetadata;
   average_rating: string;
   rating_count: string;
@@ -156,7 +156,7 @@ export interface TransformedProduct {
   rating_count: string;
   labels: string[];
   subtitle: string;
-  variant: ProductVariant;
+  variant: ProductVariant | null;
   netContent: string;
   tags: string[];
 }

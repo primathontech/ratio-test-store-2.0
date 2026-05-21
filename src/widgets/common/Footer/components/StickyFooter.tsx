@@ -10,6 +10,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import React, { useEffect, useRef, useState } from "react";
+import { useAuth } from "@shopkit/core/context";
+import { handleKwikpassLogin } from "@/integrations/kwikpass-custom";
 
 import { CartBadge } from "@/ui/components";
 import {
@@ -63,6 +65,8 @@ export const StickyFooter = ({
   const addItem = useCartStore((s) => s.addItem);
   const loadingItems = useCartStore((s) => s.loadingItems);
   const toggleCart = useCartToggle();
+  const { accessToken } = useAuth();
+  const isLoggedIn = !!accessToken;
 
   const [showGreenTransition, setShowGreenTransition] = useState(false);
   const [showBlackTransition, setShowBlackTransition] = useState(false);
@@ -121,7 +125,11 @@ export const StickyFooter = ({
 
   const handleAccountClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    router.push("/account");
+    if (isLoggedIn) {
+      router.push("/account");
+      return;
+    }
+    handleKwikpassLogin();
   };
 
   const handleChatClick = () => {

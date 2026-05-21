@@ -54,16 +54,16 @@ const StarRating = ({
         <StarIcon filled={rating > 0} />
       </span>
       <span
-        className={`text-[12px] md:text-[10px] leading-[16px] ${valueClassName}`.trim()}
+        className={`text-[10px] leading-[14px] ${valueClassName}`.trim()}
         style={{ color: textColor }}
       >
         {rating.toFixed(1)}
+        {" | "}
       </span>
       <span
-        className={`text-[14px] leading-[16px] ${reviewCountClassName}`.trim()}
+        className={`text-[14px] leading-[19.6px] ${reviewCountClassName}`.trim()}
         style={{ color: textColor }}
       >
-        {" | "}
         {reviewCount}
       </span>
     </div>
@@ -100,7 +100,7 @@ const QuantityPill = ({
 }) => (
   <div
     data-testid="product-action-quantity-container"
-    className={`flex items-center justify-between w-full h-[32px] md:h-[42px] px-[12px] text-[16px] font-medium border border-[#000000] ${className}`.trim()}
+    className={`flex items-center justify-between w-full mt-[5px] h-[32px] md:h-[36px] lg:h-[40px] px-[12px] text-[16px] font-medium border border-[#000000] ${className}`.trim()}
     style={{
       backgroundColor: "#FFFFFF",
       color: "#000000",
@@ -125,7 +125,7 @@ const QuantityPill = ({
       data-testid="product-action-quantity-value"
       className="flex flex-1 items-center justify-center text-center"
     >
-      <span className="flex h-[30px] w-[30px] items-center justify-center bg-[#F4F6F8] md:h-[40px] md:w-[40px]">
+      <span className="flex h-[30px] w-[30px] items-center justify-center bg-[#F4F6F8] md:h-[34px] md:w-[34px] lg:h-[38px] lg:w-[38px]">
         {quantity}
       </span>
     </span>
@@ -218,7 +218,7 @@ const DARK_THEME = {
   buttonHoverBg: "rgb(56,56,56)",
   buttonHoverColor: "#ffffff",
   buttonHoverBorder: "2px solid #000000",
-  discountColor: "rgb(0, 200, 0)",
+  discountColor: "#f04438",
   imageRadius: "10px",
   buttonRadius: "4px",
 };
@@ -325,11 +325,6 @@ export const ProductCard = memo(function ProductCard({
           borderRadius: t.cardRadius,
           overflow: t.cardOverflow,
         }}
-        onMouseEnter={() => {
-          setIsHovered(true);
-          setHasHovered(true);
-        }}
-        onMouseLeave={() => setIsHovered(false)}
       >
         {/* Image area */}
         <div className="pl-0 md:pl-[8px] pr-0 md:pr-[8px] pt-0 md:pt-[8px]">
@@ -338,6 +333,11 @@ export const ProductCard = memo(function ProductCard({
             data-testid={`product-card-image-container-${product.id}`}
             className={`relative block overflow-hidden bg-gradient-to-br from-purple-50 via-blue-50 to-purple-100 ${imageClassName}`.trim()}
             style={{ aspectRatio: "1/1" }}
+            onMouseEnter={() => {
+              setIsHovered(true);
+              setHasHovered(true);
+            }}
+            onMouseLeave={() => setIsHovered(false)}
           >
             {/* Sold-out overlay + center badge */}
             {isSoldOut && (
@@ -363,7 +363,7 @@ export const ProductCard = memo(function ProductCard({
                 className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2]"
               >
                 <div
-                  className="relative inline-flex items-center leading-[18px] md:leading-[21px] text-[12px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px]"
+                  className="relative inline-flex items-center leading-[15px] md:leading-[21px] text-[10px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px]"
                   style={{
                     backgroundColor:
                       product.badgeBackground ??
@@ -382,7 +382,7 @@ export const ProductCard = memo(function ProductCard({
             {showNetContent && product.weight && (
               <div
                 data-testid={`product-card-net-content-${product.id}`}
-                className="absolute bottom-[4px] right-[4px] z-[2] p-[4px] text-[10px] text-[#1D1D1D] leading-[12px]"
+                className="absolute bottom-[4px] right-[4px] z-[2] p-[4px] text-[10px] leading-[10px]"
                 style={{
                   backgroundColor: t.weightBg,
                   color: t.weightColor,
@@ -394,31 +394,41 @@ export const ProductCard = memo(function ProductCard({
               </div>
             )}
 
-            {/* Main image */}
-            <Image
-              src={product.mainImage}
-              alt={product.alt}
-              width={360}
-              height={360}
-              loading="lazy"
-              className={`absolute inset-0 w-full h-full object-cover rounded-[2px] ${productImageClassName}`.trim()}
-              style={{
-                opacity: 1,
-              }}
-            />
-
-            {product.hoverImage && hasHovered && (
+            {/* Main image — skip rendering when src is empty; next/image
+                warns + re-fetches the page when passed "". */}
+            {product.mainImage ? (
               <Image
-                src={product.hoverImage}
+                src={product.mainImage}
                 alt={product.alt}
                 width={360}
                 height={360}
                 loading="lazy"
-                className={`absolute inset-0 w-full h-full object-cover rounded-[2px] ${
-                  isHovered ? "animate-fadeZoomIn" : "animate-fadeZoomOut"
-                } ${productImageClassName}`.trim()}
+                className={`absolute inset-0 w-full h-full object-cover rounded-[2px] ${productImageClassName}`.trim()}
+                style={{
+                  opacity: 1,
+                }}
+              />
+            ) : (
+              <div
+                aria-hidden="true"
+                className={`absolute inset-0 w-full h-full bg-[#f4f6f8] rounded-[2px] ${productImageClassName}`.trim()}
               />
             )}
+
+            {product.hoverImage &&
+              product.hoverImage !== product.mainImage &&
+              hasHovered && (
+                <Image
+                  src={product.hoverImage}
+                  alt={product.alt}
+                  width={360}
+                  height={360}
+                  loading="lazy"
+                  className={`absolute inset-0 w-full h-full object-cover rounded-[2px] ${
+                    isHovered ? "animate-fadeZoomIn" : "animate-fadeZoomOut"
+                  } ${productImageClassName}`.trim()}
+                />
+              )}
           </Link>
         </div>
 
@@ -429,30 +439,27 @@ export const ProductCard = memo(function ProductCard({
         >
           {/* Category chip */}
           {showProductType && product.category && (
-            <div>
-              <span
-                data-testid={`product-card-variant-${product.id}`}
-                className={`inline-flex p-[4.5px] md:p-[8px] text-[12px] md:text-[14px] font-[600] leading-[14px] ${categoryChipClassName}`.trim()}
-                style={{
-                  color: t.chipColor,
-                  backgroundColor: t.chipBg,
-                  border: t.chipBorder,
-                  borderRadius: "4px",
-                }}
-              >
-                {product.category}
-              </span>
-            </div>
+            <span
+              data-testid={`product-card-variant-${product.id}`}
+              className={`inline-flex w-fit p-[4.5px] md:p-[8px] text-[10px] md:text-[14px] font-[600] leading-[10px] md:leading-[14px] ${categoryChipClassName}`.trim()}
+              style={{
+                color: t.chipColor,
+                backgroundColor: t.chipBg,
+                border: t.chipBorder,
+                borderRadius: "4px",
+              }}
+            >
+              {product.category}
+            </span>
           )}
 
           {/* Title */}
           <Link
             href={product.href}
             data-testid={`product-card-title-${product.id}`}
-            className={`text-[14px] md:text-[16px] leading-[16.6px] md:leading-[20px] no-underline line-clamp-2  min-h-[33px] md:min-h-[40px] transition-colors duration-200 cursor-pointer hover:!text-[#0089bf] ${titleClassName}`.trim()}
+            className={`text-[12px] md:text-[16px] leading-[14.4px] md:leading-[19.2px] font-[600] md:font-[400] no-underline line-clamp-2  min-h-[29px] md:min-h-[40px] transition-colors duration-200 cursor-pointer hover:!text-[#0089bf] ${titleClassName}`.trim()}
             style={{
               color: textPrimary,
-              fontWeight: 400,
               transition: "color 0.25s",
             }}
           >
@@ -462,7 +469,7 @@ export const ProductCard = memo(function ProductCard({
           {/* Description */}
           {showSubtitle && product.description && (
             <p
-              className="text-[12px] md:text-[13px] leading-[16px] line-clamp-2 min-h-[32px]"
+              className="text-[10px] md:text-[13px] leading-[12px] md:leading-[15.6px] line-clamp-2 min-h-[24px] md:min-h-[32px]"
               style={{
                 color: "#727272",
                 fontWeight: 400,
@@ -524,7 +531,7 @@ export const ProductCard = memo(function ProductCard({
                     {product.discount && (
                       <span
                         data-testid={`product-card-discount-${product.id}`}
-                        className={`text-[12px] ${discountClassName}`.trim()}
+                        className={`text-[12px] md:text-[14px] ${discountClassName}`.trim()}
                         style={{
                           color: t.discountColor,
                           fontWeight: 600,
@@ -555,7 +562,7 @@ export const ProductCard = memo(function ProductCard({
                 href={product.href}
                 onMouseEnter={() => setIsButtonHovered(true)}
                 onMouseLeave={() => setIsButtonHovered(false)}
-                className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] ${actionButtonClassName}`.trim()}
+                className={`flex items-center justify-center w-full mt-[5px] text-[16px] md:text-[18px] cursor-pointer font-[700] h-[32px] md:h-[36px] lg:h-[40px] ${actionButtonClassName}`.trim()}
                 style={{
                   backgroundColor: isButtonHovered
                     ? t.buttonHoverBg
@@ -580,7 +587,7 @@ export const ProductCard = memo(function ProductCard({
                 onMouseEnter={() => setIsButtonHovered(true)}
                 onMouseLeave={() => setIsButtonHovered(false)}
                 data-testid="product-action-add-to-cart-button"
-                className={`flex items-center justify-center w-full text-[18px] cursor-pointer font-[700] h-[32px] md:h-[42px] disabled:cursor-not-allowed ${actionButtonClassName}`.trim()}
+                className={`flex items-center justify-center w-full mt-[5px] text-[16px] md:text-[18px] cursor-pointer font-[700] h-[32px] md:h-[36px] lg:h-[40px] disabled:cursor-not-allowed ${actionButtonClassName}`.trim()}
                 style={{
                   backgroundColor: isButtonHovered
                     ? t.buttonHoverBg

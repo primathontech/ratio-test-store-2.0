@@ -88,17 +88,17 @@
         },
         {
           "label": "Curl care crew",
-          "href": null,
+          "href": "/collections/curly-hair",
           "image": "/ShopByConcerns/images/curl-care-crew.webp"
         },
         {
           "label": "Shine boosters",
-          "href": null,
+          "href": "/collections/intense-shine",
           "image": "/ShopByConcerns/images/shine-boosters.webp"
         },
         {
           "label": "Scalp saviours",
-          "href": null,
+          "href": "/collections/scalp-hair-tonics",
           "image": "/ShopByConcerns/images/scalp-saviours.webp"
         }
       ]

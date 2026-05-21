@@ -142,7 +142,7 @@ export const V1 = memo(function V1({
   return (
     <section
       data-testid="featured-collection-container"
-      className="relative overflow-hidden pt-[25px] md:pt-[56px] pb-[24px] md:pb-[47px] lg:pb-[56px]"
+      className="relative overflow-hidden"
       style={{
         backgroundColor: "#ffffff",
       }}
@@ -154,7 +154,7 @@ export const V1 = memo(function V1({
           {/* Heading — rich HTML; <strong> in the source becomes the bold part. */}
           <h4
             data-testid="featured-collection-container-heading"
-            className="text-2xl xl:text-[28px] leading-[29px] md:leading-[34px] [&_strong]:font-bold"
+            className="text-[22px] md:text-[24px] lg:text-[28px] leading-[26.4px] md:leading-[28.8px] lg:leading-[33.6px] [&_strong]:font-bold"
             style={{
               color: "#1D1D1D",
               fontWeight: 400,

@@ -7,11 +7,21 @@ import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
+import { ApiProduct } from "@/widgets/common/ProductDetail/types";
 
 export const revalidate = 30;
 export const dynamicParams = true;
+
+const HIDDEN_PRODUCT_TAG = "hide__products";
+
+function isProductHidden(product: ApiProduct | null | undefined): boolean {
+  const tags = product?.tags
+    ?.map((tag: any) => (typeof tag === "string" ? tag : tag?.name || ""))
+    .filter((tag: string) => tag.length > 0);
+  return Array.isArray(tags) && tags.includes(HIDDEN_PRODUCT_TAG);
+}
 
 export async function generateStaticParams() {
   const homepageFeaturedCollections = process.env.HOMEPAGE_FEATURED_COLLECTIONS;
@@ -94,10 +104,19 @@ export default async function ProductPage(props: {
   params: Promise<{ handle: string }>;
 }) {
   const params = await props.params;
+
+  const product = await fetchProduct(params.handle);
+
+  if (!product) {
+    notFound();
+  }
+
+  if (isProductHidden(product as ApiProduct)) {
+    redirect("/");
+  }
+
   try {
     const themeName = getThemeName();
-
-    // Get locale first, then run other operations in parallel
     const locale = getStaticLocale();
 
     const routeContext = {
@@ -108,20 +127,12 @@ export default async function ProductPage(props: {
       fetchAPITemplate: true,
     };
 
-    const [messages, product] = await Promise.all([
-      getRouteTranslations({
-        themeName,
-        routeContext,
-        language: locale,
-      }),
-      fetchProduct(params.handle),
-    ]);
+    const messages = await getRouteTranslations({
+      themeName,
+      routeContext,
+      language: locale,
+    });
 
-    if (!product) {
-      notFound();
-    }
-
-    // Get the page builder with widget manifest
     const pageBuilder = getPageBuilder();
 
     // Note: The builder uses "merchantName" internally for loading themes/templates

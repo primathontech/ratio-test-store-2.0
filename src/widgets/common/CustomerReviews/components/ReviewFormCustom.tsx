@@ -303,7 +303,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                           {isFilled ? (
                             <svg
                               className="w-4 h-4"
-                              fill="##FBC210"
+                              fill="#FBC210"
                               viewBox="0 0 20 20"
                               aria-hidden
                             >
