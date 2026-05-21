@@ -1,4 +1,5 @@
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
+import { getProductLabel } from "@/ui/components/ProductCard/badgeUtils";
 import type { TransformedProduct } from "../api/types";
 
 /**
@@ -10,13 +11,15 @@ import type { TransformedProduct } from "../api/types";
 export function transformProductForCard(
   product: TransformedProduct
 ): ProductCardProduct {
+  const validImages = (product.images || []).filter(
+    (img) => typeof img?.url === "string" && img.url.trim() !== ""
+  );
   const mainImg =
-    product.images.find((img) => img.is_main)?.url ||
-    product.images[0]?.url ||
-    "";
-  const hoverImg = product.images.find((img) => !img.is_main)?.url || mainImg;
+    validImages.find((img) => img.is_main)?.url || validImages[0]?.url || "";
+  const hoverImg =
+    validImages.find((img) => !img.is_main)?.url || mainImg || "";
   const alt =
-    product.images.find((img) => img.is_main)?.alt ||
+    validImages.find((img) => img.is_main)?.alt ||
     product.title ||
     "Product image";
 
@@ -31,6 +34,9 @@ export function transformProductForCard(
     discount = `${pct}% off`;
   }
 
+  // Badge — metafield first, tag fallback (mirrors toCardProduct used on homepage)
+  const resolvedBadge = getProductLabel(product.labels?.[0], product.tags);
+
   return {
     id: product.id,
     productId: product.id,
@@ -42,7 +48,8 @@ export function transformProductForCard(
     mainImage: mainImg,
     hoverImage: hoverImg,
     category: product.productType || "",
-    badge: product.labels[0],
+    badge: resolvedBadge?.label,
+    badgeBackground: resolvedBadge?.background,
     rating: Number(product.average_rating) || 0,
     reviewCount: Number(product.rating_count) || 0,
     salePrice,

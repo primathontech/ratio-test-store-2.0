@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
 import { ProductCardToast } from "@/ui/components/ProductCard/Toast";
 import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
+import { calculateDiscountPercentage } from "@/widgets/common/ProductDetail/utils/productInfoHelpers";
 import { StickyAddToCartProps } from "../types";
 
 /**
@@ -82,18 +83,22 @@ const CartIcon = () => (
 export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
   const product = data?.success ? data.data : null;
 
-  const productTitle = product?.title ?? settings?.productTitle ?? "";
-  const productImage = product?.image?.url ?? settings?.productImage ?? "";
-  const productImageAlt =
-    product?.image?.alt_text ?? settings?.productImageAlt ?? "";
+  const productTitle = product?.title ?? "";
+  const productImage = product?.image?.url ?? "";
+  const productImageAlt = product?.image?.alt_text ?? product?.title ?? "";
   const mrpLabel = settings?.mrpLabel || "M.R.P.";
-  const price = product
-    ? `\u20B9${Math.round(product.price / 100)}`
-    : settings?.price || "";
+  const currentPrice = product ? Math.round(product.price / 100) : 0;
+  const compareAtPrice =
+    product?.compare_at_price != null
+      ? Math.round(product.compare_at_price / 100)
+      : 0;
+  const hasDiscount = compareAtPrice > 0 && compareAtPrice > currentPrice;
+  const price = product ? `\u20B9${currentPrice}` : "";
   const inclusiveOfAllTaxesText =
     settings?.inclusiveOfAllTaxesText || "Incl. of all taxes";
   const buttonText = settings?.buttonText || "Add to cart";
-  const cartHref = settings?.cartHref || "/cart";
+  const soldOutText = settings?.soldOutText || "Sold Out";
+  const isAvailable = product?.availableForSale ?? true;
 
   const [isVisible, setIsVisible] = useState(false);
   const [showToast, setShowToast] = useState(false);
@@ -189,7 +194,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
   }, [product, addItem, currentQuantity, isInCart]);
 
   // Hide widget when no product data and no settings fallback
-  if (!product && !settings?.productTitle) {
+  if (!product) {
     return null;
   }
 
@@ -226,17 +231,38 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
             </h3>
 
             {/* Price row */}
-            <div className="flex items-baseline gap-[5px]">
-              <span className="text-sm leading-[14px] font-normal text-[#a3a3a3] tracking-[1px]">
-                {mrpLabel}
-              </span>
-              <span className="text-xl leading-[20px] font-bold text-primary tracking-[1px]">
-                {price}
-              </span>
-              <span className="text-xs italic text-[#a3a3a3] leading-[19.2px] whitespace-nowrap mt-2">
-                {inclusiveOfAllTaxesText}
-              </span>
-            </div>
+            {hasDiscount ? (
+              <div className="flex flex-wrap items-baseline gap-2">
+                <span className="text-xl leading-[20px] font-bold text-primary tracking-[1px]">
+                  ₹{Number(currentPrice).toLocaleString()}
+                </span>
+                <span className="text-sm font-normal text-[#a3a3a3] leading-[14px]">
+                  {mrpLabel}{" "}
+                  <span className="line-through">
+                    ₹{Number(compareAtPrice).toLocaleString()}
+                  </span>
+                </span>
+                <span className="text-sm font-bold text-[#D6322C]">
+                  {calculateDiscountPercentage(compareAtPrice, currentPrice)}%
+                  Off
+                </span>
+                <span className="text-xs italic text-[#a3a3a3] leading-[19.2px] whitespace-nowrap">
+                  {inclusiveOfAllTaxesText}
+                </span>
+              </div>
+            ) : (
+              <div className="flex items-baseline gap-[5px]">
+                <span className="text-sm leading-[14px] font-normal text-[#a3a3a3] tracking-[1px]">
+                  {mrpLabel}
+                </span>
+                <span className="text-xl leading-[20px] font-bold text-primary tracking-[1px]">
+                  {price}
+                </span>
+                <span className="text-xs italic text-[#a3a3a3] leading-[19.2px] whitespace-nowrap mt-2">
+                  {inclusiveOfAllTaxesText}
+                </span>
+              </div>
+            )}
           </div>
 
           {/* ATC button -- desktop shows just "Add to cart" */}
@@ -244,15 +270,17 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
             <button
               type="button"
               onClick={handleAddToCart}
-              disabled={isLoading}
+              disabled={isLoading || !isAvailable}
               className="flex items-center justify-center w-64 h-[53px] bg-black text-secondary rounded-[10px] border border-black text-xl leading-[24px] font-bold text-center cursor-pointer transition-[background-color,color,border] duration-[250ms] ease-in-out hover:bg-[#222222] disabled:cursor-not-allowed relative overflow-hidden"
-              aria-label={`${buttonText} ${price}`}
+              aria-label={`${isAvailable ? buttonText : soldOutText} ${price}`}
             >
               {isLoading ? (
                 <span
                   data-testid="sticky-add-to-cart-loading-spinner"
                   className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
                 />
+              ) : !isAvailable ? (
+                <span>{soldOutText}</span>
               ) : (
                 <span>{buttonText}</span>
               )}

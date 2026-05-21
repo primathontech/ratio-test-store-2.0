@@ -381,9 +381,9 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 20, right: 0, bottom: 20, left: 0 } },
+          tablet: { padding: { top: 32, right: 0, bottom: 32, left: 0 } },
+          desktop: { padding: { top: 64, right: 0, bottom: 64, left: 0 } },
         },
       },
       widgets: [
@@ -500,6 +500,7 @@ export const template: PageConfig = {
           settings: {
             variant: "v1",
             buttonText: "t:common.product_card.add_to_cart",
+            soldOutText: "t:common.product_card.sold_out_in_pdp",
             inclusiveOfAllTaxesText:
               "t:bblunt-2_products_default.product_detail.inclusiveOfAllTaxesText",
           },

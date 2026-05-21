@@ -1,5 +1,20 @@
 # storefront-starter-app
 
+## 0.1.12
+
+### Enhancements
+
+- **GTM (Google Tag Manager) SDK** — new `gtm-pixel-sdk.js` self-registers with PixelRuntime, loads the merchant's GTM container, and mirrors all 13 standard events to `window.dataLayer` using the GA4 Enhanced Ecommerce schema (`view_item`, `add_to_cart`, `begin_checkout`, `purchase`, etc.).
+  - Applies **Consent Mode v2 defaults (granted)** before the container loads so future cookie-banner integrations can downgrade via `gtag('consent', 'update', …)`. Consent values are validated — invalid entries (e.g. `"yes"` instead of `"granted"`) log an error rather than being silently dropped.
+  - **`page_type` auto-attached to every dataLayer push** (`product` / `collection` / `cart` / `search` / `thank_you` / `home` / `page`, derived from the URL at push time). Lets merchants build triggers like _event equals `view_item` AND page_type equals `product`_ without regex matching on paths or data-layer-variable scoping tricks. Auto-attach skips the no-event `{ ecommerce: null }` clear pushes and any payload that already sets its own `page_type`.
+  - **Ecommerce clear pushes follow Google's official pattern** — `{ ecommerce: null }` with no `event` field — preventing merchants from accidentally binding tags to a `_clear` event.
+  - **Debug-gated logging.** Production-grade: `[GTMSDK]` debug/info logs are silent in production by default. Auto-enables on `localhost` / `window.__shopkit_debug === true`, or force-on via `NEXT_PUBLIC_GTM_DEBUG=true`. Errors are always emitted via `console.error` (Sentry-compatible).
+  - **Configurable default currency.** Multi-merchant deployments override via `NEXT_PUBLIC_CURRENCY` (default `INR`).
+  - **Resilient container injection.** On `script.onerror` (adblock / CSP block / network) the `__OPEN_STORE_GTM_LOADED__` idempotency flag is reset so a later SPA re-hydration can retry. Errors logged with the container ID for fast diagnosis.
+  - **Custom `dataLayerName` honored end-to-end.** When a merchant overrides the default dataLayer name, consent commands route through a private gtag that pushes to the correct dataLayer (not `window.dataLayer`).
+  - **Push wrapper is non-mutating** — clones payloads before adding `page_type` so callers passing shared/frozen objects don't break.
+  - Supports GTM Server-Side env auth/preview via optional `NEXT_PUBLIC_GTM_AUTH` / `NEXT_PUBLIC_GTM_PREVIEW`. New env vars: `NEXT_PUBLIC_GTM_ID`, `NEXT_PUBLIC_CURRENCY`, `NEXT_PUBLIC_GTM_DEBUG`.
+
 ## 0.1.11
 
 ### Enhancements

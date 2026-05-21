@@ -92,7 +92,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
 
   return (
     <section
-      className="relative sbc-cat-container mt-[25px] md:mt-14"
+      className="relative sbc-cat-container"
       aria-label="Shop by Categories"
     >
       {/* Section Heading */}
@@ -166,9 +166,8 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
                   </div>
                   {/* Label — visible only on mobile (<768px) */}
                   <div
-                    className="sbc-cat-label mt-2 md:hidden text-sm"
+                    className="sbc-cat-label mt-2 md:hidden text-[12px] min-[375px]:text-[14px] leading-[19.2px] min-[375px]:leading-[22.4px]"
                     style={{
-                      lineHeight: "19px",
                       fontWeight: 500,
                       color: "#000000",
                     }}

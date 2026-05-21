@@ -101,6 +101,7 @@ export default async function RootLayout({
           src="/scripts/google-ads-pixel-sdk.js"
           strategy="afterInteractive"
         />
+        <Script src="/scripts/gtm-pixel-sdk.js" strategy="afterInteractive" />
         <LimeChatScript />
       </body>
     </html>
