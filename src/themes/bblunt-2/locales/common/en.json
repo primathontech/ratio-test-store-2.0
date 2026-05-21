@@ -160,7 +160,7 @@
       "aboutTitle": "About Us",
       "aboutLinks": [
         { "name": "Our Story", "href": "/pages/about-us" },
-        { "name": "Blogs", "href": "/blogs/news" }
+        { "name": "Blogs", "href": "https://bblunt.com/blogs/news" }
       ],
       "usefulLinksTitle": "Useful Links",
       "usefulLinks": [

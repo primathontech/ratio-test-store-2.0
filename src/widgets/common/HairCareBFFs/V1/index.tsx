@@ -273,7 +273,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
   return (
     <section
-      className="relative overflow-hidden mt-[25px] md:mt-14 pt-[32.4px] md:pt-14"
+      className="relative overflow-hidden pt-[32.4px] md:pt-14"
       style={{}}
     >
       {/* Background image — mobile */}
@@ -306,7 +306,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
         <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px] gap-[15px] md:gap-[30px]">
           {/* Heading — rich HTML; <strong> in the source becomes the bold part. */}
           <h4
-            className="text-2xl xl:text-[28px] leading-[29px] md:leading-[34px] [&_strong]:font-bold"
+            className="text-[22px] md:text-[24px] lg:text-[28px] leading-[26.4px] md:leading-[28.8px] lg:leading-[33.6px] [&_strong]:font-bold"
             style={{
               color: "#ffffff",
               fontWeight: 400,

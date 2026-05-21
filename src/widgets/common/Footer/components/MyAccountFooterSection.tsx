@@ -1,7 +1,10 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { useAuth } from "@shopkit/core/context";
+import { handleKwikpassLogin } from "@/integrations/kwikpass-custom";
 import { FooterLink } from "../types";
 import { AccordionToggleIcon } from "./AccordionToggleIcon";
 
@@ -17,10 +20,25 @@ export const MyAccountFooterSection: React.FC<MyAccountFooterSectionProps> = ({
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const router = useRouter();
+  const { accessToken } = useAuth();
+  const isLoggedIn = !!accessToken;
 
   if (!title || links.length === 0) {
     return null;
   }
+
+  const handleLinkClick = (e: React.MouseEvent, href: string) => {
+    if (!href?.startsWith("/account")) {
+      return;
+    }
+    e.preventDefault();
+    if (isLoggedIn) {
+      router.push(href);
+      return;
+    }
+    handleKwikpassLogin();
+  };
 
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
@@ -51,6 +69,7 @@ export const MyAccountFooterSection: React.FC<MyAccountFooterSectionProps> = ({
           <li key={index} className="basis-1/2 flex-shrink-0">
             <Link
               href={link.href}
+              onClick={(e) => handleLinkClick(e, link.href)}
               className="text-sm max-w-[152px] text-[#E7E7E7] hover:text-loading-blue block font-normal cursor-pointer"
             >
               {link.name}

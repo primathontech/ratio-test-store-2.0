@@ -81,6 +81,15 @@ export const OrdersV1: React.FC<OrdersProps> = ({
       return;
     }
 
+    // Avoid the "no phone" flash on refresh: when `accessToken` flips from
+    // null→truthy, AccountDataContext hasn't re-run its fetch yet so
+    // `customer` is still null. Keep showing the spinner until the customer
+    // record actually arrives; only then can we tell that phone is truly
+    // missing.
+    if (!customer) {
+      return;
+    }
+
     if (!phone) {
       setError("Unable to retrieve phone number for fetching orders");
       setLoading(false);
@@ -88,7 +97,7 @@ export const OrdersV1: React.FC<OrdersProps> = ({
     }
 
     fetchOrdersData();
-  }, [accountLoading, accessToken, fetchOrdersData, phone]);
+  }, [accountLoading, accessToken, customer, fetchOrdersData, phone]);
 
   // Poll for external_order_name if any order is missing it
   const hasMissingOrderName = ordersData?.orders?.some(

@@ -74,10 +74,25 @@ export class CollectionApiClient {
   ): TransformedCollection {
     const collection = apiResponse.data.data.collectionByHandle;
 
-    const transformedProducts: TransformedProduct[] =
-      collection.products.edges.map((edge: ProductEdge) =>
-        this.transformProduct(edge.node)
-      );
+    // Defensive: if a single product fails to transform we drop it instead
+    // of aborting the whole batch (which would otherwise leave the previous
+    // page stuck and silently kill infinite scroll for the entire collection).
+    const transformedProducts: TransformedProduct[] = (
+      collection.products?.edges ?? []
+    )
+      .map((edge: ProductEdge) => {
+        try {
+          return this.transformProduct(edge.node);
+        } catch (err) {
+          // eslint-disable-next-line no-console
+          console.error(
+            `[CollectionApiClient] Skipping product ${edge?.node?.id} — transform failed:`,
+            err
+          );
+          return null;
+        }
+      })
+      .filter((p): p is TransformedProduct => p !== null);
 
     return {
       id: collection.id,
@@ -85,11 +100,11 @@ export class CollectionApiClient {
       handle: collection.handle,
       description: collection.description,
       products: transformedProducts,
-      productCount: collection.products.productCount,
-      hasNextPage: collection.products.pageInfo.hasNextPage,
-      hasPreviousPage: collection.products.pageInfo.hasPreviousPage,
-      startCursor: collection.products.pageInfo.startCursor,
-      endCursor: collection.products.pageInfo.endCursor,
+      productCount: collection.products?.productCount ?? 0,
+      hasNextPage: collection.products?.pageInfo?.hasNextPage ?? false,
+      hasPreviousPage: collection.products?.pageInfo?.hasPreviousPage ?? false,
+      startCursor: collection.products?.pageInfo?.startCursor ?? "",
+      endCursor: collection.products?.pageInfo?.endCursor ?? "",
     };
   }
 
@@ -97,41 +112,45 @@ export class CollectionApiClient {
    * Transform individual product data
    */
   private transformProduct(product: ProductNode): TransformedProduct {
-    // Extract images
-    const images = product.images.edges.map((edge) => ({
-      url: edge.node.src,
-      is_main: edge.node.isMain,
-      alt: edge.node.altText ?? null,
+    // Extract images — `images.edges` may be missing for partially-set-up products
+    const images = (product.images?.edges ?? []).map((edge) => ({
+      url: edge.node?.src ?? "",
+      is_main: edge.node?.isMain ?? false,
+      alt: edge.node?.altText ?? null,
     }));
 
-    // Extract labels
-    const labels = product.metadata.product_labels?.value
-      ? [product.metadata.product_labels.value]
+    // `metadata` can be `{}` (or even missing) for products like QWERTY MIGRATED.
+    const metadata = product.metadata ?? {};
+
+    const labels = metadata.product_labels?.value
+      ? [metadata.product_labels.value]
       : [];
 
-    // Extract subtitle
-    const subtitle = product.metadata.product_subtitle?.value || "";
+    const subtitle = metadata.product_subtitle?.value || "";
+    const netContent = metadata.product_net_content?.value || "";
 
-    // Extract net content
-    const netContent = product.metadata.product_net_content?.value || "";
+    // `variant` is `null` for products like "7 in 1 Hair Revival Combo" in
+    // the all-collection feed. Dereferencing it crashed the whole batch
+    // transform and aborted the load-more append — see commit history.
+    const variant = product.variant ?? null;
 
     return {
       id: product.id,
       title: product.title,
       handle: product.handle,
       productType: product.productType,
-      price: product.variant.price,
-      compareAtPrice: product.variant.compare_at_price,
+      price: variant?.price ?? 0,
+      compareAtPrice: variant?.compare_at_price ?? null,
       availableForSale: product.availableForSale,
-      availableQuantity: product.variant.availableQuantity,
+      availableQuantity: variant?.availableQuantity ?? 0,
       images,
       average_rating: product.average_rating,
       rating_count: product.rating_count,
       labels,
       subtitle,
       netContent,
-      variant: product.variant,
-      tags: product.tags,
+      variant,
+      tags: product.tags ?? [],
     };
   }
 

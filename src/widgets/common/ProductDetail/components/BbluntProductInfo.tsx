@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import React, { useEffect, useRef, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
 
 import { useResponsive } from "@/hooks/useResponsive";
@@ -17,6 +17,10 @@ import {
 } from "./VariantPicker";
 import { ProductCardToast } from "@/ui/components/ProductCard/Toast";
 import {
+  ProductRatingSummary,
+  ProductRatingSummaryFallback,
+} from "./ProductRatingSummary";
+import {
   calculateDiscountPercentage,
   ensureArray,
   getUnitPrice,
@@ -26,8 +30,6 @@ import {
 
 export interface BbluntProductInfoProps {
   data: ApiProduct;
-  /** Optional precomputed reviews — if omitted, derived from product metadata. */
-  reviews?: { total: number | null; average: number | null };
   /** Slot-rendered above the price block on mobile (the gallery). */
   renderGallery?: React.ReactNode;
 
@@ -100,7 +102,6 @@ function buildCartItem(product: ApiProduct, variantId?: string): CartItem {
  */
 export function BbluntProductInfo({
   data,
-  reviews: reviewsProp,
   renderGallery,
   addToCartText = "Add to cart",
   netContentText = "Net content",
@@ -233,17 +234,6 @@ export function BbluntProductInfo({
 
   const isEditor = pathname?.includes("/editor") || false;
 
-  // Derive review counts from metadata if the parent didn't pass `reviews`
-  // (skips the extra `getProductAverageRating` API call from the reference).
-  const reviews = reviewsProp ?? {
-    average: data?.metadata?.[ProductMetadataKey.RATING]?.value
-      ? Number(data.metadata[ProductMetadataKey.RATING]!.value)
-      : null,
-    total: data?.metadata?.[ProductMetadataKey.RATING_COUNT]?.value
-      ? Number(data.metadata[ProductMetadataKey.RATING_COUNT]!.value)
-      : null,
-  };
-
   const productMetaTags = ensureArray<string>(
     data?.metadata?.[PRODUCT_INFO_METAFIELD_KEYS.PRODUCT_TAGS_MERA]?.value as
       | string
@@ -327,52 +317,13 @@ export function BbluntProductInfo({
   /* ------------------------------------------------------------------ */
 
   const ratingSection = (
-    <div
-      className="flex items-center gap-0.5 lg:justify-start !mt-0 mb-3 md:!mb-6"
-      data-testid="bblunt-product-all-details-rating-section"
-    >
-      <svg
-        className="w-[20px] h-[20px] flex-shrink-0 pr-0.5"
-        fill="#FBC210"
-        viewBox="0 0 16 16"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path d="M8 1.33L9.87 5.67L14.67 6.33L11.33 9.67L12 14.67L8 12L4 14.67L4.67 9.67L1.33 6.33L6.13 5.67L8 1.33Z" />
-      </svg>
-      <span
-        className="font-medium text-sm md:text-base leading-[1.4em] cursor-pointer hover:opacity-70 transition-opacity text-primary"
-        onClick={scrollToReviewsSection}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            scrollToReviewsSection();
-          }
-        }}
-        aria-label="Scroll to reviews section"
-      >
-        {reviews?.average ?? "—"}
-      </span>
-      <span className="text-sm md:text-base font-medium mx-[2px] text-primary">
-        ┃
-      </span>
-      <span
-        className="text-[#3C4CFF] font-medium text-sm md:text-base leading-[1.4em] cursor-pointer hover:opacity-70 transition-opacity"
-        onClick={scrollToReviewsSection}
-        role="button"
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            scrollToReviewsSection();
-          }
-        }}
-        aria-label="Scroll to reviews section"
-      >
-        {reviews?.total ?? 0} {reviewsText}
-      </span>
-    </div>
+    <Suspense fallback={<ProductRatingSummaryFallback />}>
+      <ProductRatingSummary
+        productId={data.id}
+        reviewsText={reviewsText}
+        onScrollToReviews={scrollToReviewsSection}
+      />
+    </Suspense>
   );
 
   const productTitle = (

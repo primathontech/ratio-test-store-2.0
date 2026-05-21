@@ -35,7 +35,7 @@ export const V1 = memo(function V1({
   }
 
   return (
-    <Box className={`max-w-[1400px] mx-6 md:mx-auto mb-20 ${className || ""}`}>
+    <Box className={`max-w-[1400px] mx-6 md:mx-auto ${className || ""}`}>
       {sectionTitle && (
         <h3 className="text-[22px] md:text-[32px] text-black text-center font-normal">
           <span className="relative after:content-[''] after:absolute after:h-0.5 after:bottom-[-2px] after:left-[-2rem] after:right-[-2rem] after:bg-black">
@@ -44,7 +44,7 @@ export const V1 = memo(function V1({
         </h3>
       )}
 
-      <ol className="list-decimal list-inside ps-[15px] md:ps-10 py-8 border-b-8 border-b-surface-4 border-t-2 border-t-[#d6d6d6]">
+      <ol className="list-decimal list-inside ps-[15px] md:ps-10 pt-8 border-b-8 border-b-surface-4 border-t-2 border-t-[#d6d6d6]">
         {disclaimerList.map((item, index) => (
           <li key={index} className="text-text-base text-black font-normal">
             {item}
