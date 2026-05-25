@@ -1,8 +1,16 @@
 "use client";
 
-import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { CartAwareProductCard } from "@/ui/components/CartAwareProductCard";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
+import { getProductAverageRating } from "@/widgets/common/CustomerReviews/utils/get-review-api";
 import { RecentlyViewedProps } from "../types";
 import {
   type ApiRecentProduct,
@@ -10,6 +18,28 @@ import {
   fetchProductDetails,
   getViewedProductIds,
 } from "../utils";
+
+/* ------------------------------------------------------------------ */
+/*  Idle scheduler — yields rating fetches to browser idle time so they */
+/*  don't compete with above-the-fold paint / hydration.                */
+/* ------------------------------------------------------------------ */
+
+function runWhenIdle(fn: () => void): void {
+  if (typeof window === "undefined") {
+    fn();
+    return;
+  }
+  const ric: typeof window.requestIdleCallback | undefined = (
+    window as unknown as {
+      requestIdleCallback?: typeof window.requestIdleCallback;
+    }
+  ).requestIdleCallback;
+  if (typeof ric === "function") {
+    ric(() => fn(), { timeout: 1500 });
+    return;
+  }
+  setTimeout(fn, 0);
+}
 
 /* ------------------------------------------------------------------ */
 /*  SVG Icons                                                          */
@@ -69,6 +99,11 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
   const maxProducts = settings?.maxProducts ?? 10;
 
   const [products, setProducts] = useState<ApiRecentProduct[]>([]);
+  // `shouldLoad` flips to true only when the section approaches the
+  // viewport. Until then we render nothing and fire no network calls —
+  // critical above-the-fold work owns the main thread alone.
+  const [shouldLoad, setShouldLoad] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
 
   // 1. Track current product visit (with 1s debounce so accidental hits are skipped)
   useEffect(() => {
@@ -81,9 +116,42 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
     return () => clearTimeout(t);
   }, [currentProductId, currentVariantId]);
 
-  // 2. Fetch details for previously viewed products (excluding current)
+  // 2. Lazy-mount: only start fetching once the section is within
+  //    400px of the viewport. RecentlyViewed sits at the bottom of
+  //    most pages — many users never scroll there, so this avoids
+  //    the fetch entirely for those sessions.
   useEffect(() => {
+    if (shouldLoad) {
+      return;
+    }
+    const node = sectionRef.current;
+    if (!node || typeof IntersectionObserver === "undefined") {
+      // Environment without IO (older browsers, SSR shim) — load anyway.
+      setShouldLoad(true);
+      return;
+    }
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) {
+          setShouldLoad(true);
+          io.disconnect();
+        }
+      },
+      { rootMargin: "400px 0px" }
+    );
+    io.observe(node);
+    return () => io.disconnect();
+  }, [shouldLoad]);
+
+  // 3. Fetch product details, then overlay the live average-rating API
+  //    so cards show authoritative rating/count instead of stale
+  //    metafield values. Runs only after `shouldLoad` flips true.
+  useEffect(() => {
+    if (!shouldLoad) {
+      return;
+    }
     let cancelled = false;
+
     const run = async () => {
       let ids = getViewedProductIds(maxProducts + 1);
       if (currentProductId) {
@@ -99,15 +167,56 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
       }
 
       const result = await fetchProductDetails(ids);
-      if (!cancelled) {
-        setProducts(result);
+      if (cancelled) {
+        return;
       }
+      // First paint: render with whatever the product API returned —
+      // no waiting on N parallel rating calls. Users see the carousel
+      // immediately; rating values are refined as the API resolves.
+      setProducts(result);
+
+      // Defer rating fetches to browser idle time so they don't fight
+      // hydration / paint for main-thread cycles. Each call is wrapped
+      // in .catch so one failure can't break the whole Promise.all.
+      runWhenIdle(async () => {
+        if (cancelled) {
+          return;
+        }
+        const ratings = await Promise.all(
+          result.map((p) =>
+            p?.id ? getProductAverageRating(p.id).catch(() => null) : null
+          )
+        );
+        if (cancelled) {
+          return;
+        }
+        // Merge in-place; products without a successful rating response
+        // keep whatever value the product API returned (graceful degrade).
+        const merged = result.map((p, i) => {
+          const r = ratings[i];
+          if (!r) {
+            return p;
+          }
+          return {
+            ...p,
+            average_rating:
+              typeof r.average_rating === "number"
+                ? r.average_rating
+                : p.average_rating,
+            rating_count:
+              typeof r.total_ratings === "number"
+                ? r.total_ratings
+                : p.rating_count,
+          };
+        });
+        setProducts(merged);
+      });
     };
     run();
     return () => {
       cancelled = true;
     };
-  }, [currentProductId, maxProducts]);
+  }, [shouldLoad, currentProductId, maxProducts]);
 
   // 3. Product card settings
   const cardSettings = useMemo(
@@ -145,12 +254,20 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
     [products, cardSettings]
   );
 
+  // Until products resolve, mount a zero-height sentinel so the
+  // IntersectionObserver has a real node to watch. Once products are
+  // ready we swap to the full section. Without this the observer
+  // would have nothing to fire against and the lazy-mount would
+  // never trigger.
   if (products.length === 0) {
-    return null;
+    return (
+      <section ref={sectionRef} aria-hidden="true" style={{ height: 1 }} />
+    );
   }
 
   return (
     <section
+      ref={sectionRef}
       className="relative overflow-hidden mx-auto"
       style={{
         backgroundColor: settings?.sectionBackgroundColor || "#ffffff",
