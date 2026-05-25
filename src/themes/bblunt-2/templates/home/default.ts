@@ -18,8 +18,8 @@ import {
 //   992–1149 → 4 cards (upper tablet)
 //   ≥1150   → 5 cards (desktop)
 const FEATURED_CAROUSEL_BREAKPOINTS = [
-  { minWidth: 0, cards: 2.3, gap: 0 },
-  { minWidth: 768, cards: 2.3, gap: 0 },
+  { minWidth: 0, cards: 2.25, gap: 0 },
+  { minWidth: 768, cards: 2.25, gap: 0 },
   { minWidth: 992, cards: 4, gap: 0 },
   { minWidth: 1150, cards: 5, gap: 0 },
 ];
@@ -30,8 +30,8 @@ const FEATURED_CAROUSEL_BREAKPOINTS = [
 //   992–1149 → 4 cards (upper tablet)
 //   ≥1150   → 5 cards (desktop)
 const HAIR_CARE_BFFS_CAROUSEL_BREAKPOINTS = [
-  { minWidth: 0, cards: 2.2, gap: 0 },
-  { minWidth: 768, cards: 2.2, gap: 0 },
+  { minWidth: 0, cards: 2.1, gap: 0 },
+  { minWidth: 768, cards: 2.1, gap: 0 },
   { minWidth: 992, cards: 4, gap: 0 },
   { minWidth: 1150, cards: 5, gap: 0 },
 ];

@@ -242,7 +242,7 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
         return null;
       }
       return (
-        <div className="md:border-r md:border-[#EBEBEB] overflow-hidden pl-[12px] md:pl-0">
+        <div className="md:border-r md:border-[#EBEBEB] overflow-hidden pl-[6px] pr-[6px] min-[992px]:pl-0 min-[992px]:pr-0">
           <CartAwareProductCard
             apiProduct={apiProduct}
             settings={cardSettings}
@@ -274,7 +274,7 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
       }}
     >
       {/* Content overlay */}
-      <div className="relative z-[1] max-w-[1400px] mx-auto px-1.5 md:px-[30px] xl:px-[50px]">
+      <div className="relative z-[1] max-w-[1400px] mx-auto md:px-[30px] xl:px-[50px]">
         {/* Heading */}
         <div className="flex flex-col items-start text-center mb-4 md:mb-[30px] px-[15px]">
           <h4
@@ -295,6 +295,7 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
             itemCount={products.length}
             breakpoints={CAROUSEL_BREAKPOINTS}
             renderItem={renderProduct}
+            className="pl-[12px] pr-[12px] min-[992px]:pl-0 min-[992px]:pr-0"
             renderPrev={(onClick, disabled) => (
               <button
                 type="button"
