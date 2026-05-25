@@ -22,6 +22,8 @@ export interface PaymentMethod {
 export interface ServiceIconItem {
   name: string;
   image: string;
+  /** Icon alt text (auto-filled by editor image picker). Falls back to name. */
+  alt?: string;
 }
 
 export interface MobileNavigationItem {
@@ -41,14 +43,14 @@ export interface FooterSettings {
   showPaymentMethods?: boolean;
   showAppDownload?: boolean;
   mobileFooterTagline?: string;
-  logoUrl?: string;
+  logoUrl?: { src: string; alt: string } | string;
   logoAlt?: string;
   appDownloadText?: string;
   googlePlayUrl?: string;
   appStoreUrl?: string;
-  googlePlayImage?: string;
+  googlePlayImage?: { src: string; alt: string } | string;
   googlePlayAlt?: string;
-  appStoreImage?: string;
+  appStoreImage?: { src: string; alt: string } | string;
   appStoreAlt?: string;
   serviceSectionsIcons?: ServiceIconItem[];
   aboutTitle?: string;

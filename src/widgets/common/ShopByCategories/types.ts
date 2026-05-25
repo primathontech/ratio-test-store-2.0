@@ -12,6 +12,8 @@ export interface CategoryTile {
   desktopImage: string;
   /** Mobile image path (taller crop, used at < 768px) */
   mobileImage: string;
+  /** Image alt text (auto-filled by editor image picker). Falls back to label. */
+  alt?: string;
 }
 
 /**

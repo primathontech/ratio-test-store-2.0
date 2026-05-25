@@ -10,6 +10,8 @@ export interface ConcernTile {
   href: string | null;
   /** Image path relative to public/ */
   image: string;
+  /** Image alt text (auto-filled by editor image picker). Falls back to label. */
+  alt?: string;
 }
 
 /**

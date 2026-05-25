@@ -433,6 +433,8 @@ export const template: PageConfig = {
             heading: "t:bblunt-2_home_default.hair_care_bffs.heading__rich",
             backgroundImage:
               "t:bblunt-2_home_default.hair_care_bffs.backgroundImage",
+            backgroundImageMobile:
+              "t:bblunt-2_home_default.hair_care_bffs.backgroundImageMobile",
             actionButtonText: "t:common.product_card.add_to_cart",
             soldOutText: "t:common.product_card.sold_out",
             collections: "t:bblunt-2_home_default.hair_care_bffs.collections",

@@ -42,7 +42,7 @@ export const ServiceSections: React.FC<ServiceSectionsProps> = ({
                   : section.image && (
                       <Image
                         src={section.image}
-                        alt={section.name}
+                        alt={section.alt || section.name}
                         width={32}
                         height={32}
                         className="w-full aspect-square object-fill"

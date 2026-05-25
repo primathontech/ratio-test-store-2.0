@@ -94,12 +94,12 @@ const merchantWidgetSchemas = {
       backgroundImage: {
         type: "image" as const,
         label: "Background Image (desktop)",
-        default: "",
+        default: { src: "", alt: "" },
       },
       backgroundImageMobile: {
         type: "image" as const,
         label: "Background Image (mobile)",
-        default: "",
+        default: { src: "", alt: "" },
       },
       collections: {
         type: "objectArray" as const,
@@ -173,18 +173,13 @@ const merchantWidgetSchemas = {
           "id",
           "type",
           "href",
-          "desktopSrc",
-          "mobileSrc",
-          "posterSrc",
+          "image:desktopSrc",
+          "image:mobileSrc",
+          "image:posterSrc",
           "alt",
           "indicatorHeading",
           "indicatorSubHeading",
         ],
-        fieldTypes: {
-          desktopSrc: "image",
-          mobileSrc: "image",
-          posterSrc: "image",
-        },
         default: [],
       },
     },
@@ -195,15 +190,21 @@ const merchantWidgetSchemas = {
     description: "Customer testimonial cards with rich heading",
     settingsSchema: {
       heading: {
-        type: "richtext" as const,
+        type: "text" as const,
         label: "Section Heading (rich text)",
         default: "",
       },
       testimonials: {
         type: "objectArray" as const,
         label: "Testimonials",
-        fields: ["heading", "reviewText", "authorName", "avatarSrc", "stars"],
-        fieldTypes: { avatarSrc: "image" },
+        fields: [
+          "heading",
+          "reviewText",
+          "authorName",
+          "image:avatarSrc",
+          "alt",
+          "stars",
+        ],
         default: [],
       },
     },
@@ -644,7 +645,7 @@ const merchantWidgetSchemas = {
       logoSrc: {
         type: "image" as const,
         label: "Logo Image",
-        default: "",
+        default: { src: "", alt: "" },
       },
       logoAlt: {
         type: "text" as const,
@@ -659,12 +660,12 @@ const merchantWidgetSchemas = {
       mosaicSrcDesktop: {
         type: "image" as const,
         label: "Mosaic Image (desktop)",
-        default: "",
+        default: { src: "", alt: "" },
       },
       mosaicSrcMobile: {
         type: "image" as const,
         label: "Mosaic Image (mobile)",
-        default: "",
+        default: { src: "", alt: "" },
       },
       mosaicAlt: {
         type: "text" as const,
@@ -691,7 +692,7 @@ const merchantWidgetSchemas = {
       tiles: {
         type: "objectArray" as const,
         label: "Concern Tiles",
-        fields: ["label", "href", "image"],
+        fields: ["href", "image:image", "alt"],
         fieldTypes: { image: "image" },
         default: [],
       },
@@ -710,8 +711,13 @@ const merchantWidgetSchemas = {
       tiles: {
         type: "objectArray" as const,
         label: "Category Tiles",
-        fields: ["label", "href", "desktopImage", "mobileImage"],
-        fieldTypes: { desktopImage: "image", mobileImage: "image" },
+        fields: [
+          "label",
+          "href",
+          "image:desktopImage",
+          "image:mobileImage",
+          "alt",
+        ],
         default: [],
       },
     },
@@ -727,7 +733,11 @@ const merchantWidgetSchemas = {
         label: "Mobile Footer Tagline (rich text)",
         default: "",
       },
-      logoUrl: { type: "image" as const, label: "Logo Image", default: "" },
+      logoUrl: {
+        type: "image" as const,
+        label: "Logo Image",
+        default: { src: "", alt: "" },
+      },
       logoAlt: { type: "text" as const, label: "Logo Alt Text", default: "" },
 
       appDownloadText: {
@@ -748,7 +758,7 @@ const merchantWidgetSchemas = {
       googlePlayImage: {
         type: "image" as const,
         label: "Google Play Badge Image",
-        default: "",
+        default: { src: "", alt: "" },
       },
       googlePlayAlt: {
         type: "text" as const,
@@ -758,7 +768,7 @@ const merchantWidgetSchemas = {
       appStoreImage: {
         type: "image" as const,
         label: "App Store Badge Image",
-        default: "",
+        default: { src: "", alt: "" },
       },
       appStoreAlt: {
         type: "text" as const,
@@ -769,8 +779,7 @@ const merchantWidgetSchemas = {
       serviceSectionsIcons: {
         type: "objectArray" as const,
         label: "Service Icons (Free Shipping, etc.)",
-        fields: ["name", "image"],
-        fieldTypes: { image: "image" },
+        fields: ["name", "image:image", "alt"],
         default: [],
       },
 
@@ -865,7 +874,11 @@ const merchantWidgetSchemas = {
     name: "Header",
     description: "Site header with logo, navigation, search, and cart",
     settingsSchema: {
-      logoSrc: { type: "image" as const, label: "Logo Image", default: "" },
+      logoSrc: {
+        type: "image" as const,
+        label: "Logo Image",
+        default: { src: "", alt: "" },
+      },
       searchPlaceholder: {
         type: "text" as const,
         label: "Search Placeholder",
@@ -1017,7 +1030,7 @@ const merchantWidgetSchemas = {
       getApp_logo_url: {
         type: "image" as const,
         label: "Get App: Logo Image",
-        default: "",
+        default: { src: "", alt: "" },
       },
       getApp_app_url: {
         type: "text" as const,

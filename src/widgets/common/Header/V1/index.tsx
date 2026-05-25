@@ -18,6 +18,7 @@ import { CartBadge } from "../components/CartBadge";
 import { MobileNavigationDrawer } from "../components/MobileDrawer";
 import { DropdownAccordion } from "../components/DropdownAccordion";
 import { KwikpassLoginCustom } from "@/integrations/kwikpass-custom";
+import { resolveImage } from "@/widgets/utils/resolveImageSrc";
 import { MobileSearchOverlay } from "@/widgets/common/Search/components/MobileSearchOverlay";
 import { SearchInputV2 } from "@/widgets/common/Search/components/SearchInputV2";
 import { TrendingSearches } from "@/widgets/common/Search/components/TrendingSearches";
@@ -510,8 +511,16 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     return items;
   }, [settings]);
 
-  const logoSrc = settings?.logoSrc ?? "";
-  const logoAlt = settings?.logoAlt ?? "BBlunt";
+  const logo = resolveImage(settings?.logoSrc, {
+    src: "",
+    alt: settings?.logoAlt || "BBlunt",
+  });
+  const logoSrc = logo.src;
+  const logoAlt = logo.alt;
+  const getAppLogo = resolveImage(settings?.getApp_logo_url, {
+    src: "",
+    alt: settings?.getApp_logo_alt || "",
+  });
   const cartCount = useCartTotalQuantity();
   const openCart = useCartStore((s) => s.openCart);
   const backgroundColor = settings?.backgroundColor ?? "#ffffff";
@@ -525,8 +534,8 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     title: settings?.getApp_title,
     description: settings?.getApp_description,
     button_text: settings?.getApp_button_text,
-    logo_alt: settings?.getApp_logo_alt,
-    logo_url: settings?.getApp_logo_url,
+    logo_alt: getAppLogo.alt,
+    logo_url: getAppLogo.src,
     app_url: settings?.getApp_app_url,
   };
 

@@ -40,10 +40,10 @@ export interface HairCareBFFsSettings {
    * via `dangerouslySetInnerHTML`.
    */
   heading?: string;
-  /** Background image path (desktop) */
-  backgroundImage?: string;
-  /** Background image path (mobile) */
-  backgroundImageMobile?: string;
+  /** Background image (desktop) — `{ src, alt }` shape for editor image picker */
+  backgroundImage?: { src: string; alt: string } | string;
+  /** Background image (mobile) — `{ src, alt }` shape for editor image picker */
+  backgroundImageMobile?: { src: string; alt: string } | string;
   /**
    * Optional per-tab presentation overrides, in the same order as the
    * data source's `handles` array. Each entry only carries label / View All
