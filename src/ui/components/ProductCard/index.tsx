@@ -235,6 +235,7 @@ export const ProductCard = memo(function ProductCard({
   showProductType = true,
   showNetContent = true,
   showSubtitle = true,
+  showDualBadges = false,
   onAddToCart,
   onIncrement,
   onDecrement,
@@ -277,6 +278,7 @@ export const ProductCard = memo(function ProductCard({
     compareAtPriceClassName = "",
     discountClassName = "",
     actionButtonClassName = "",
+    secondaryBadgeClassName = "",
   } = settings;
   const cardBg = bgOverride ?? t.cardBg;
   const textPrimary = colorOverride ?? t.textPrimary;
@@ -356,8 +358,46 @@ export const ProductCard = memo(function ProductCard({
             )}
 
             {/* Promo badge — `badgeBackground` (resolved via getProductLabel)
-                takes precedence over the legacy `badgeVariant` mapping. */}
-            {showBadge && product.badge && (
+                takes precedence over the legacy `badgeVariant` mapping.
+                Dual-badge mode stacks tag + metafield badges (e.g. Bestseller
+                from metafield + "20% off" from tag). Single-badge mode uses
+                the resolved primary badge as before. */}
+            {showBadge &&
+              showDualBadges &&
+              (product.tagBadge || product.metaBadge) && (
+                <div
+                  data-testid={`product-card-badge-${product.id}`}
+                  className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2] flex flex-col items-start gap-[4px]"
+                >
+                  {product.tagBadge && (
+                    <div
+                      className="relative inline-flex items-center leading-[15px] md:leading-[21px] text-[10px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px]"
+                      style={{
+                        backgroundColor: product.tagBadge.background,
+                        color: "#ffffff",
+                        clipPath:
+                          "polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%)",
+                      }}
+                    >
+                      {product.tagBadge.label}
+                    </div>
+                  )}
+                  {product.metaBadge && (
+                    <div
+                      className={`relative inline-flex items-center leading-[15px] md:leading-[21px] text-[10px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px] ${secondaryBadgeClassName}`.trim()}
+                      style={{
+                        backgroundColor: product.metaBadge.background,
+                        color: "#ffffff",
+                        clipPath:
+                          "polygon(0 0, 100% 0, calc(100% - 8px) 50%, 100% 100%, 0 100%)",
+                      }}
+                    >
+                      {product.metaBadge.label}
+                    </div>
+                  )}
+                </div>
+              )}
+            {showBadge && !showDualBadges && product.badge && (
               <div
                 data-testid={`product-card-badge-${product.id}`}
                 className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2]"

@@ -32,6 +32,9 @@ interface CommonProps {
   showNetContent?: boolean;
   /** Show the subtitle / description line — defaults to true. */
   showSubtitle?: boolean;
+  /** Render BOTH the tag-resolved badge and the metafield-resolved badge
+   *  stacked on the image (e.g. Bestseller + 20% off). Defaults to false. */
+  showDualBadges?: boolean;
 }
 
 /**
@@ -65,6 +68,7 @@ export const CartAwareProductCard = memo(function CartAwareProductCard(
     showProductType,
     showNetContent,
     showSubtitle,
+    showDualBadges,
   } = props;
 
   // Resolve the card product — either map from API or use the pre-mapped one.
@@ -96,6 +100,7 @@ export const CartAwareProductCard = memo(function CartAwareProductCard(
       showProductType={showProductType}
       showNetContent={showNetContent}
       showSubtitle={showSubtitle}
+      showDualBadges={showDualBadges}
       onAddToCart={cart.handleAddToCart}
       onIncrement={cart.handleIncrement}
       onDecrement={cart.handleDecrement}
