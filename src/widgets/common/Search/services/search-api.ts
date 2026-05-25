@@ -228,6 +228,28 @@ export async function searchProducts(
           ? firstVariant.compareAtPrice
           : null;
       const mainImage = product.mainImage ?? product.image ?? "";
+
+      // Pass tags through so the shared ProductCard badge resolver
+      // (`getProductLabel` → handleized tag lookup) can pick up
+      // "Best Seller", "Trending", "New Launch", etc. Search API returns
+      // tags in human form, e.g. "Best Seller" → handleized to
+      // "best-seller" → matched against PRODUCT_TAG_LABELS_MAP.
+      const tags: string[] = Array.isArray(product.tags) ? product.tags : [];
+
+      // Reshape the search API's flat `metafields: [{namespace, key, value}]`
+      // array into the `metadata.{key}.value` map shape that
+      // `toCardProduct` reads (mirrors how the collection / PDP APIs
+      // expose metafields). Empty array → empty object, badge logic
+      // falls through to the tag map cleanly.
+      const metadata: Record<string, { value: unknown }> = {};
+      if (Array.isArray(product.metafields)) {
+        for (const m of product.metafields) {
+          if (m && typeof m.key === "string") {
+            metadata[m.key] = { value: m.value };
+          }
+        }
+      }
+
       return {
         id: product.productId,
         title: product.title,
@@ -247,6 +269,8 @@ export async function searchProducts(
         isInStock: product.inStock,
         variantId,
         variant,
+        tags,
+        metadata,
       };
     });
     const transformedFilters: any[] = [];

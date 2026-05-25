@@ -37,6 +37,18 @@ export interface ProductCardProduct {
    * (metafield default = #82c341, tag map = per-entry color).
    */
   badgeBackground?: string;
+  /**
+   * Tag-only resolved badge (from product tags, ignoring metafields).
+   * Populated by `toCardProduct` so the card can render two badges when
+   * `showDualBadges` is enabled. Stays undefined when no tag matches.
+   */
+  tagBadge?: { label: string; background: string };
+  /**
+   * Metafield-only resolved badge (from `metadata.product_labels.value`,
+   * ignoring tags). Counterpart to `tagBadge` — together they drive the
+   * dual-badge render path used by search NoResult cards.
+   */
+  metaBadge?: { label: string; background: string };
   /** Star rating (e.g. 4.85) */
   rating: number;
   /** Number of reviews */
@@ -122,6 +134,12 @@ export interface ProductCardSettings {
   discountClassName?: string;
   /** Classes appended to the Add to cart button */
   actionButtonClassName?: string;
+  /**
+   * Classes appended to the SECOND badge when `showDualBadges` is on.
+   * Used to nudge the secondary pill (e.g. small `mt-1` spacing) so the
+   * two badges read as a stack rather than two overlapping shapes.
+   */
+  secondaryBadgeClassName?: string;
 }
 
 /** Props for the ProductCard component */
@@ -139,6 +157,13 @@ export interface ProductCardProps {
   showNetContent?: boolean;
   /** Show the subtitle / description line — defaults to true */
   showSubtitle?: boolean;
+  /**
+   * When true, render BOTH the tag-resolved badge and the metafield-resolved
+   * badge stacked on the image (e.g. "Bestseller" + "20% off"). Falls back
+   * to the single-badge render path when only one of the two resolves, or
+   * to nothing when neither does. Defaults to false (single-badge mode).
+   */
+  showDualBadges?: boolean;
 
   /* ─── Cart wiring (all optional — opt-in per consumer) ─────────────── */
 
