@@ -145,7 +145,7 @@ export const V1 = memo(function V1({ settings }: LazyLoadShimmerProps) {
     <div
       ref={rootRef}
       aria-hidden="true"
-      className="flex flex-col gap-7 py-6 overflow-hidden"
+      className="flex flex-col gap-7 py-6 overflow-hidden mt-[25px] md:mt-14"
     >
       <div className="w-full max-w-[1280px] mx-auto px-4 md:px-6 flex flex-col gap-7">
         {/* ── Products skeleton ── */}

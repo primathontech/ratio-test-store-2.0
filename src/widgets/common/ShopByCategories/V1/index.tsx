@@ -92,7 +92,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
 
   return (
     <section
-      className="relative sbc-cat-container"
+      className="relative sbc-cat-container !mt-[25px] md:mt-14"
       aria-label="Shop by Categories"
     >
       {/* Section Heading */}

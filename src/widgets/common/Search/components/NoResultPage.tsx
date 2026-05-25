@@ -7,27 +7,24 @@ import { getMostLovedProductsForComponent } from "../services/search-api";
 import { ShimmerProductCard } from "./ShimmerProductCard";
 import SearchProductCard from "./SearchProductCard";
 
-const BADGE_TAG_KEYS = new Set([
-  "best-seller",
-  "bestseller",
-  "new",
-  "new-launch",
-  "trending",
-  "deal",
-  "offer",
-]);
-
-const normalizeTag = (tag: string) =>
-  tag
-    .toLowerCase()
-    .replace(/[^a-z0-9\s-]/g, "")
-    .trim()
-    .replace(/\s+/g, "-");
-
-const withFallbackBadgeTag = (tags: string[]) => {
-  const hasBadgeTag = tags.some((tag) => BADGE_TAG_KEYS.has(normalizeTag(tag)));
-  return hasBadgeTag ? tags : [...tags, "best-seller"];
-};
+/**
+ * Every card in this section comes from the `bestseller` collection, so
+ * the section heading reads "HERE ARE SOME OF OUR BESTSELLING PRODUCTS".
+ * We force the Bestseller pill on every card by injecting the
+ * `"best-seller"` tag — the shared `getProductLabel` resolver in
+ * `badgeUtils.ts` maps that handleized key to the pink #ff5b6f badge
+ * via `PRODUCT_TAG_LABELS_MAP`. Going through the tag path (rather than
+ * the metafield path, which is hardcoded to green #82c341) keeps the
+ * Bestseller pill pink here without changing the homepage Bestseller
+ * (which is metafield-driven and stays green).
+ *
+ * Combined with `showDualBadges`, the tag slot always resolves to
+ * Bestseller pink, while the metafield slot can still surface any
+ * merchant-set label (e.g. "20% off") alongside it. The dedup in
+ * `toCardProduct` collapses the case where both sources happen to
+ * resolve to the same "Bestseller" label.
+ */
+const BESTSELLER_TAG = "best-seller";
 
 interface NoResultPageProps {
   query?: string;
@@ -98,7 +95,10 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
         title: product.title,
         handle: product.handle,
         status: product.status || "active",
-        tags: withFallbackBadgeTag(product.tags || []),
+        // Inject the bestseller tag — resolves to the pink #ff5b6f
+        // badge via PRODUCT_TAG_LABELS_MAP. See BESTSELLER_TAG comment
+        // above for why this is preferred over the metafield path.
+        tags: [...(product.tags || []), BESTSELLER_TAG],
         productType: product.productType || "",
         price,
         compare_at_price: compareAtPrice || null,
@@ -185,6 +185,8 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
                   <SearchProductCard
                     key={product.id || index}
                     product={product}
+                    showDualBadges
+                    secondaryBadgeClassName="!mt-[2px] min-[768px]:!mt-[4px]"
                     settings={{
                       showAddToCartToast: true,
                       actionButtonText: "Add to cart",

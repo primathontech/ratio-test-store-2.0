@@ -91,12 +91,34 @@ export function toCardProduct(product: MappableApiProduct): ProductCardProduct {
   const reviewNum =
     product.rating_count != null ? Number(product.rating_count) : 0;
 
-  /* ---------- Badge — metafield first, tag fallback ---------- */
+  /* ---------- Badge — resolve each source in isolation, derive the
+   * combined badge from them.
+   *
+   * `tagOnlyBadge`  = result from product tags only.
+   * `metaOnlyBadge` = result from `metadata.product_labels.value` only.
+   * `resolvedBadge` = metafield-first / tag-fallback, semantically the
+   *                   same as `getProductLabel(meta, tags)`. Single-badge
+   *                   consumers read this; dual-badge consumers read the
+   *                   two source-specific fields. */
   const productLabelsRaw = (
     product.metadata as Record<string, { value?: unknown } | undefined> | null
   )?.product_labels?.value;
   const tagStrings = normalizeTags(product.tags);
-  const resolvedBadge = getProductLabel(productLabelsRaw, tagStrings);
+  const rawTagBadge = getProductLabel(undefined, tagStrings);
+  const metaOnlyBadge = getProductLabel(productLabelsRaw, undefined);
+  // Drop the tag-derived badge when it labels the same thing as the
+  // metafield-derived one (e.g. metafield "Bestseller" + tag "Best Seller"
+  // both resolve to label "Bestseller"). Without this dedup the dual-badge
+  // render shows two identical pills stacked on top of each other —
+  // exactly the bug from the search NoResult screenshot. Comparison is
+  // case-insensitive so "Bestseller" vs "BESTSELLER" still dedupes.
+  const sameLabel =
+    !!rawTagBadge &&
+    !!metaOnlyBadge &&
+    rawTagBadge.label.trim().toLowerCase() ===
+      metaOnlyBadge.label.trim().toLowerCase();
+  const tagOnlyBadge = sameLabel ? undefined : rawTagBadge;
+  const resolvedBadge = metaOnlyBadge ?? tagOnlyBadge;
 
   return {
     id: product.id,
@@ -111,6 +133,12 @@ export function toCardProduct(product: MappableApiProduct): ProductCardProduct {
     category: product.productType || product.product_type || "",
     badge: resolvedBadge?.label,
     badgeBackground: resolvedBadge?.background,
+    tagBadge: tagOnlyBadge
+      ? { label: tagOnlyBadge.label, background: tagOnlyBadge.background }
+      : undefined,
+    metaBadge: metaOnlyBadge
+      ? { label: metaOnlyBadge.label, background: metaOnlyBadge.background }
+      : undefined,
     rating: Number.isFinite(ratingNum) ? ratingNum : 0,
     reviewCount: Number.isFinite(reviewNum) ? reviewNum : 0,
     salePrice,

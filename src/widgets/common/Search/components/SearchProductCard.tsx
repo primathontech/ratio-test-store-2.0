@@ -14,6 +14,10 @@ interface SearchProductCardProps {
   product: ProductResponse;
   settings?: SearchProductCardSettings;
   searchProductCard?: boolean;
+  /** Render BOTH tag + metafield badges stacked on the image. */
+  showDualBadges?: boolean;
+  /** Classes for the 2nd (lower) badge in dual-badge mode. */
+  secondaryBadgeClassName?: string;
 }
 
 /**
@@ -28,11 +32,15 @@ const SearchProductCard: React.FC<SearchProductCardProps> = ({
   product,
   settings,
   searchProductCard = true,
+  showDualBadges = false,
+  secondaryBadgeClassName,
 }) => (
   <CartAwareProductCard
     apiProduct={product}
     logTag="Search"
+    showDualBadges={showDualBadges}
     settings={{
+      ...(secondaryBadgeClassName ? { secondaryBadgeClassName } : {}),
       showActionButton: true,
       showQuantitySelector: false,
       showAddToCartToast: settings?.showAddToCartToast ?? false,
