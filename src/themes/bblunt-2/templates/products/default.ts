@@ -503,6 +503,7 @@ export const template: PageConfig = {
             soldOutText: "t:common.product_card.sold_out_in_pdp",
             inclusiveOfAllTaxesText:
               "t:bblunt-2_products_default.product_detail.inclusiveOfAllTaxesText",
+            mrpLabel: "t:bblunt-2_products_default.product_detail.mrp",
           },
         },
       ],

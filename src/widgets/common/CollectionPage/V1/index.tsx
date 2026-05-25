@@ -415,7 +415,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
         {(settingsTitle || collection?.title) && (
           <h1
             data-testid="collection-page-title"
-            className="text-left xl2:text-center leading-none text-[22px] md:text-[32px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
+            className="text-left xl2:text-center text-[20px] md:text-[32px] leading-[24px] md:leading-[38.4px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
             style={sectionTextColor ? { color: sectionTextColor } : undefined}
           >
             {settingsTitle || collection?.title}

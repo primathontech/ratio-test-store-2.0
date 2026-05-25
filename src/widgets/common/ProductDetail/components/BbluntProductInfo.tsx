@@ -107,7 +107,7 @@ export function BbluntProductInfo({
   netContentText = "Net content",
   inclusiveOfAllTaxesText = "Incl. of all taxes",
   reviewsText = "reviews",
-  mrp = "M.R.P.",
+  mrp = "MRP",
   discount = "% off",
   usp = "USP",
   rupeeSymbol = "₹",
@@ -361,7 +361,7 @@ export function BbluntProductInfo({
               className="flex-shrink-0"
               unoptimized
             />
-            <span className="text-sm md:text-base font-medium leading-[1.6em] text-primary">
+            <span className="text-[12px] min-[375px]:text-[14px] md:text-[16px] font-medium leading-[1.6em] text-primary">
               {tag}
             </span>
           </div>
@@ -402,55 +402,59 @@ export function BbluntProductInfo({
       >
         {compareAtPrice && compareAtPrice > currentPrice ? (
           <>
-            {/* MOBILE: single line */}
+            {/* MOBILE (<768): single inline row.
+                Live order: sale price → MRP+strike → discount% → incl.tax,
+                all items-center aligned with gap-x-2.5. */}
             <div
               data-testid="price-mobile-line"
-              className="flex flex-wrap items-center gap-2 md:hidden"
+              className="flex flex-wrap items-baseline gap-x-2.5 gap-y-1 md:hidden"
             >
-              <span className="text-[22px] font-bold text-primary leading-[1em]">
+              <span className="text-[20px] min-[375px]:text-[22px] font-bold text-primary leading-none">
                 {rupeeSymbol}
-                {currentPrice}
+                {Number(currentPrice).toLocaleString()}
               </span>
-              <span className="text-sm font-normal text-[#a3a3a3] leading-[14px] mt-4">
+              <span className="text-[12px] font-normal text-[#a3a3a3] leading-none">
                 {mrp}{" "}
-                <span className="line-through mt-2">
+                <span className="line-through">
                   {rupeeSymbol}
-                  {compareAtPrice}
+                  {Number(compareAtPrice).toLocaleString()}
                 </span>
               </span>
-              <span className="text-sm font-bold text-[#D6322C] mt-4">
+              <span className="text-[12px] font-bold text-[#D6322C] leading-none">
                 {calculateDiscountPercentage(compareAtPrice, currentPrice)}
                 {discount}
               </span>
-              <span className="text-xs italic text-[#a3a3a3] leading-[19.2px] whitespace-nowrap mt-4">
+              <span className="text-[12px] italic text-[#a3a3a3] leading-none">
                 {inclusiveOfAllTaxesText}
               </span>
             </div>
 
-            {/* DESKTOP: two-line layout */}
+            {/* DESKTOP (≥768): two stacked rows. Live wraps the price block
+                here. Row 1 = price + discount; row 2 = MRP+strike + incl.tax.
+                Strike weight jumps to 600 on desktop per live. */}
             <div
               data-testid="price-desktop-container"
-              className="hidden md:flex flex-col"
+              className="hidden md:flex md:flex-col md:gap-1"
             >
-              <div className="flex items-center gap-2.5 leading-[17px] md:leading-[16px] xl:leading-[14px]">
-                <span className="text-[26px] font-bold text-primary leading-[26px]">
+              <div className="flex items-center gap-2.5">
+                <span className="text-[26px] font-bold text-primary leading-none">
                   {rupeeSymbol}
                   {Number(currentPrice).toLocaleString()}
                 </span>
-                <span className="text-sm font-bold text-[#D6322C] mt-2.5">
+                <span className="text-[14px] font-bold text-[#D6322C] leading-none">
                   {calculateDiscountPercentage(compareAtPrice, currentPrice)}
                   {discount}
                 </span>
               </div>
-              <div className="flex items-center">
-                <span className="text-sm font-normal text-[#a3a3a3] leading-[14px]">
+              <div className="flex items-center gap-2">
+                <span className="text-[14px] font-normal text-[#a3a3a3] leading-none">
                   {mrp}{" "}
-                  <span className="line-through">
+                  <span className="line-through font-semibold">
                     {rupeeSymbol}
                     {Number(compareAtPrice).toLocaleString()}
                   </span>
                 </span>
-                <span className="text-xs ml-2 italic text-[#a3a3a3] leading-[19.2px] mt-1">
+                <span className="text-[12px] italic text-[#a3a3a3] leading-none">
                   {inclusiveOfAllTaxesText}
                 </span>
               </div>
@@ -459,16 +463,16 @@ export function BbluntProductInfo({
         ) : (
           <div
             data-testid="price-no-discount-line"
-            className="flex flex-wrap items-baseline gap-1"
+            className="flex flex-wrap items-center gap-x-2 gap-y-1"
           >
-            <span className="text-sm font-normal text-[#a3a3a3] leading-[20px] mt-2">
+            <span className="text-[12px] md:text-[14px] font-normal text-[#a3a3a3] leading-none">
               {mrp}
             </span>
-            <span className="text-[22px] md:text-[26px] font-bold text-primary leading-[1em]">
+            <span className="text-[20px] min-[375px]:text-[22px] md:text-[26px] font-bold text-primary leading-none">
               {rupeeSymbol}
               {currentPrice}
             </span>
-            <span className="text-xs italic text-[#a3a3a3] leading-[19.2px] whitespace-nowrap mt-2">
+            <span className="text-[12px] italic text-[#a3a3a3] leading-none whitespace-nowrap">
               {inclusiveOfAllTaxesText}
             </span>
           </div>

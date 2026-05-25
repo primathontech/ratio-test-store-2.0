@@ -218,7 +218,8 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
     };
   }, [shouldLoad, currentProductId, maxProducts]);
 
-  // 3. Product card settings
+  // 3. Product card settings — kept lean so cards render identically to
+  //    FeaturedCollectionCarousel (same shared ProductCard, same defaults).
   const cardSettings = useMemo(
     () => ({
       showActionButton: settings?.showActionButton ?? true,
@@ -278,10 +279,10 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
         {/* Heading */}
         <div className="flex flex-col items-start text-center mb-4 md:mb-[30px] px-[15px]">
           <h4
-            className="text-2xl leading-[29px] md:leading-[34px]"
+            className="text-[20px] min-[375px]:text-[22px] md:text-[24px] lg:text-[28px] leading-[24px] min-[375px]:leading-[26.4px] md:leading-[28.8px] lg:leading-[33.6px] [&_strong]:font-bold"
             style={{
               color: settings?.sectionTextColor || "#000000",
-              fontWeight: 700,
+              fontWeight: 400,
               margin: 0,
             }}
           >

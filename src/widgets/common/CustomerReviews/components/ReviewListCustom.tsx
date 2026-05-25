@@ -349,7 +349,7 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                     </div>
                     <span
                       data-testid={`review-date-${review.id}`}
-                      className="text-xs text-[#666666] shrink-0"
+                      className="text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#7b7b7b] shrink-0"
                     >
                       {formatDate(review.date)}
                     </span>
@@ -363,7 +363,7 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                     />
                     <span
                       data-testid={`review-user-name-${review.id}`}
-                      className="font-medium text-xs text-[#333333]"
+                      className="font-normal text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#000000]"
                     >
                       {displayName}
                     </span>
@@ -379,14 +379,14 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                   {(review.title ?? "").trim() !== "" && (
                     <h3
                       data-testid={`review-title-${review.id}`}
-                      className="font-bold text-xs text-[#222222] mb-2"
+                      className="font-bold text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] mb-2"
                     >
                       {review.title}
                     </h3>
                   )}
                   <div
                     data-testid={`review-text-${review.id}`}
-                    className={`text-xs text-[#222222] leading-relaxed ${
+                    className={`text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] ${
                       isLong && !isExpanded ? "md:line-clamp-2" : ""
                     }`}
                   >
@@ -396,7 +396,7 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                     <button
                       type="button"
                       onClick={() => setExpandedReviewId(review.id)}
-                      className="text-xs text-[#222222] hover:underline font-normal mt-1"
+                      className="text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] hover:underline font-normal mt-1"
                     >
                       Read more
                     </button>
@@ -405,7 +405,7 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                     <button
                       type="button"
                       onClick={() => setExpandedReviewId(null)}
-                      className="text-xs text-[#222222] hover:underline font-normal mt-1"
+                      className="text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] hover:underline font-normal mt-1"
                     >
                       Show less
                     </button>
