@@ -1,8 +1,10 @@
 {
   "bblunt-2_about-us_default": {
     "hero": {
-      "imageSrc": "https://cdn.shopify.com/s/files/1/0616/4994/4654/files/About-us.jpg?v=1729494426",
-      "imageAlt": "About Us Banner",
+      "imageSrc": {
+        "src": "https://cdn.shopify.com/s/files/1/0616/4994/4654/files/About-us.jpg?v=1729494426",
+        "alt": "About Us Banner"
+      },
       "href": "/products"
     },
     "story": {
@@ -29,13 +31,13 @@
       "items": [
         {
           "iconSrc": "/AboutUsValues/images/about-us-1.svg",
-          "iconAlt": "Designed for Indian Hair",
+          "alt": "Designed for Indian Hair",
           "heading": "Designed for Indian Hair",
           "body": "Indian water, pollution, and the environment can be hard on hair. But we work harder to protect Indian hair."
         },
         {
           "iconSrc": "/AboutUsValues/images/about-us-2.svg",
-          "iconAlt": "Cruelty-free",
+          "alt": "Cruelty-free",
           "heading": "Cruelty-free",
           "body": "25 million+ animals are used for testing and research. Not a single one by us."
         }

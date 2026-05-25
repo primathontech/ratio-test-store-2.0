@@ -3,6 +3,7 @@
 import React, { memo } from "react";
 import Image from "next/image";
 import { HowItWorksBannerProps } from "../types";
+import { resolveImage } from "@/widgets/utils/resolveImageSrc";
 
 /**
  * HowItWorksBanner V1
@@ -19,13 +20,21 @@ export const V1 = memo(function HowItWorksBannerV1({
   settings,
   className,
 }: HowItWorksBannerProps) {
-  const desktopImage =
-    settings?.desktopImage || "/HowItWorksBanner/images/howtoshop-desktop.jpg";
-  const mobileImage =
-    settings?.mobileImage || "/HowItWorksBanner/images/howtoshop-mobile.jpg";
-  const alt =
+  const fallbackAlt =
     settings?.alt ||
     "How To Shop: 1. Add favorites worth 499 to cart, 2. Apply code FREEHF at checkout, 3. Free products delivered with your order";
+  const desktop = resolveImage(settings?.desktopImage, {
+    src: "/HowItWorksBanner/images/howtoshop-desktop.jpg",
+    alt: fallbackAlt,
+  });
+  const mobile = resolveImage(settings?.mobileImage, {
+    src: "/HowItWorksBanner/images/howtoshop-mobile.jpg",
+    alt: fallbackAlt,
+  });
+  const desktopImage = desktop.src;
+  const mobileImage = mobile.src;
+  const desktopAlt = desktop.alt;
+  const mobileAlt = mobile.alt;
   const mobileAspectRatio = settings?.mobileAspectRatio || "1500 / 1167";
   const desktopAspectRatio = settings?.desktopAspectRatio || "5692 / 692";
 
@@ -47,7 +56,7 @@ export const V1 = memo(function HowItWorksBannerV1({
         {/* Desktop / Tablet image (>=768px) — sized via CSS aspect-ratio. */}
         <Image
           src={desktopImage}
-          alt={alt}
+          alt={desktopAlt}
           width={5692}
           height={692}
           loading="lazy"
@@ -58,7 +67,7 @@ export const V1 = memo(function HowItWorksBannerV1({
         {/* Mobile image (<768px) */}
         <Image
           src={mobileImage}
-          alt={alt}
+          alt={mobileAlt}
           width={1500}
           height={1167}
           loading="lazy"

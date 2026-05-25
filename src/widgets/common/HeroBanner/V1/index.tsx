@@ -4,6 +4,7 @@ import React, { memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { HeroBannerProps } from "../types";
+import { resolveImage } from "@/widgets/utils/resolveImageSrc";
 
 /**
  * HeroBanner V1
@@ -20,11 +21,18 @@ export const V1 = memo(function HeroBannerV1({
   settings,
   className,
 }: HeroBannerProps) {
-  const desktopImage =
-    settings?.desktopImage || "/HeroBanner/images/hero-desktop.jpg";
-  const mobileImage =
-    settings?.mobileImage || "/HeroBanner/images/hero-mobile.jpg";
-  const alt = settings?.alt || "Promotional Hero Banner";
+  const desktop = resolveImage(settings?.desktopImage, {
+    src: "/HeroBanner/images/hero-desktop.jpg",
+    alt: settings?.alt || "Promotional Hero Banner",
+  });
+  const mobile = resolveImage(settings?.mobileImage, {
+    src: "/HeroBanner/images/hero-mobile.jpg",
+    alt: settings?.alt || "Promotional Hero Banner",
+  });
+  const desktopImage = desktop.src;
+  const mobileImage = mobile.src;
+  const desktopAlt = desktop.alt;
+  const mobileAlt = mobile.alt;
   const href = settings?.href;
   const mobileAspectRatio = settings?.mobileAspectRatio || "1 / 1";
   const desktopAspectRatio = settings?.desktopAspectRatio || "1440 / 529";
@@ -46,7 +54,7 @@ export const V1 = memo(function HeroBannerV1({
        *  the CSS aspect-ratio + 100% width. */}
       <Image
         src={desktopImage}
-        alt={alt}
+        alt={desktopAlt}
         width={1440}
         height={529}
         priority
@@ -57,7 +65,7 @@ export const V1 = memo(function HeroBannerV1({
       {/* Mobile image (<768px) */}
       <Image
         src={mobileImage}
-        alt={alt}
+        alt={mobileAlt}
         width={1200}
         height={1200}
         priority

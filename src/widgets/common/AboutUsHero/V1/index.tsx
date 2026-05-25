@@ -4,6 +4,7 @@ import React, { memo } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AboutUsHeroProps } from "../types";
+import { resolveImage } from "@/widgets/utils/resolveImageSrc";
 
 /* ------------------------------------------------------------------ */
 /*  V1 -- AboutUsHero                                                  */
@@ -16,10 +17,12 @@ export const V1 = memo(function AboutUsHeroV1({
   settings,
   className,
 }: AboutUsHeroProps) {
-  const imageSrc =
-    settings?.imageSrc ||
-    "https://cdn.shopify.com/s/files/1/0616/4994/4654/files/About-us.jpg?v=1729494426";
-  const imageAlt = settings?.imageAlt || "About Us Banner";
+  const banner = resolveImage(settings?.imageSrc, {
+    src: "https://cdn.shopify.com/s/files/1/0616/4994/4654/files/About-us.jpg?v=1729494426",
+    alt: settings?.imageAlt || "About Us Banner",
+  });
+  const imageSrc = banner.src;
+  const imageAlt = banner.alt;
   const href = settings?.href || "/products";
   const imageWidth = settings?.imageWidth || 1522;
   const imageHeight = settings?.imageHeight || 476;

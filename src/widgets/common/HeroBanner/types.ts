@@ -6,11 +6,11 @@ import { WidgetProps } from "@/widgets/types";
 export interface HeroBannerSettings {
   /** Widget variant */
   variant?: string;
-  /** Desktop banner image path (used at >=768px) */
-  desktopImage?: string;
-  /** Mobile banner image path (used at <768px) */
-  mobileImage?: string;
-  /** Alt text for the banner image */
+  /** Desktop banner image — `{ src, alt }` shape for editor image picker */
+  desktopImage?: { src: string; alt: string } | string;
+  /** Mobile banner image — `{ src, alt }` shape for editor image picker */
+  mobileImage?: { src: string; alt: string } | string;
+  /** Alt text for the banner image (legacy fallback — prefer the image's embedded alt) */
   alt?: string;
   /** Optional link URL wrapping the entire banner */
   href?: string;
