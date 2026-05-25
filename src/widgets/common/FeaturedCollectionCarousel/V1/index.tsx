@@ -118,7 +118,7 @@ export const V1 = memo(function V1({
         return null;
       }
       return (
-        <div className="md:border-r md:border-[#EBEBEB] overflow-hidden">
+        <div className="md:border-r md:border-[#EBEBEB] overflow-hidden pl-[6px] pr-[6px] min-[992px]:pl-0 min-[992px]:pr-0">
           <CartAwareProductCard
             apiProduct={product}
             settings={{
@@ -126,7 +126,6 @@ export const V1 = memo(function V1({
               ...(actionButtonText ? { actionButtonText } : {}),
               ...(soldOutText ? { soldOutText } : {}),
             }}
-            className="pl-[12px] min-[992px]:pl-0"
             logTag="FeaturedCollectionCarousel"
           />
         </div>
@@ -148,7 +147,7 @@ export const V1 = memo(function V1({
       }}
     >
       {/* Content overlay */}
-      <div className="relative z-[1] mx-auto xl:mx-5 px-1.5 md:px-[30px] xl:px-[50px]">
+      <div className="relative z-[1] mx-auto xl:mx-5 md:px-[30px] xl:px-[50px]">
         {/* Heading */}
         <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px]">
           {/* Heading — rich HTML; <strong> in the source becomes the bold part. */}
@@ -174,6 +173,7 @@ export const V1 = memo(function V1({
             itemCount={products.length}
             breakpoints={carouselBreakpoints}
             renderItem={renderProduct}
+            className="pl-[12px] pr-[12px] min-[992px]:pl-0 min-[992px]:pr-0"
             renderPrev={(onClick, disabled) => (
               <button
                 type="button"

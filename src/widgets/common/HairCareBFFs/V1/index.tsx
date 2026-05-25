@@ -244,7 +244,9 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
         return null;
       }
       return (
-        <div className={`${itemBorderClass} overflow-hidden`}>
+        <div
+          className={`${itemBorderClass} overflow-hidden pl-[6px] pr-[6px] min-[992px]:pl-0 min-[992px]:pr-0`}
+        >
           <CartAwareProductCard
             apiProduct={product}
             theme={cardTheme}
@@ -253,7 +255,6 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
               ...(actionButtonText ? { actionButtonText } : {}),
               ...(soldOutText ? { soldOutText } : {}),
             }}
-            className="pl-[12px] min-[992px]:pl-0"
             logTag="HairCareBFFs"
           />
         </div>
@@ -301,7 +302,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       </div>
 
       {/* Content overlay */}
-      <div className="relative z-[1] mx-auto xl:mx-5 px-1.5 md:px-[30px] xl:px-[50px] pb-[32px] md:pb-[47px] lg:pb-[56px]">
+      <div className="relative z-[1] mx-auto xl:mx-5 md:px-[30px] xl:px-[50px] pb-[32px] md:pb-[47px] lg:pb-[56px]">
         {/* Tabs head: heading + tab buttons */}
         <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px] gap-[15px] md:gap-[30px]">
           {/* Heading — rich HTML; <strong> in the source becomes the bold part. */}
@@ -366,6 +367,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
             breakpoints={carouselBreakpoints}
             resetKey={activeTabIndex}
             renderItem={renderProduct}
+            className="pl-[12px] pr-[12px] min-[992px]:pl-0 min-[992px]:pr-0"
             renderPrev={(onClick, disabled) => (
               <button
                 type="button"
