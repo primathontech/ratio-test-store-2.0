@@ -121,7 +121,7 @@ function getLinkStyle(theme: LazyViewAllButtonTheme): React.CSSProperties {
 }
 
 const LINK_CLASS =
-  "inline-flex items-center no-underline text-sm md:text-lg pl-4 md:pl-[42px] pr-4 md:pr-[55px] w-full md:w-auto mx-4 md:mx-0 p-1.5 md:p-0 justify-center";
+  "inline-flex items-center no-underline text-sm md:text-lg pl-4 md:pl-[42px] pr-4 md:pr-[55px] w-full md:w-auto mx-2.5 md:mx-0 p-1.5 md:p-0 justify-center";
 
 function ThumbnailRow({ products }: { products: ApiProduct[] }) {
   const slice = products.slice(0, 3);

@@ -306,7 +306,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
         <div className="flex flex-col items-start md:items-center text-center mb-6 md:mb-[30px] px-[15px] gap-[15px] md:gap-[30px]">
           {/* Heading — rich HTML; <strong> in the source becomes the bold part. */}
           <h4
-            className="text-[22px] md:text-[24px] lg:text-[28px] leading-[26.4px] md:leading-[28.8px] lg:leading-[33.6px] [&_strong]:font-bold"
+            className="text-[20px] min-[375px]:text-[22px] md:text-[24px] lg:text-[28px] leading-[24px] min-[375px]:leading-[26.4px] md:leading-[28.8px] lg:leading-[33.6px] [&_strong]:font-bold"
             style={{
               color: "#ffffff",
               fontWeight: 400,
@@ -326,7 +326,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
                 key={tab.handle}
                 type="button"
                 onClick={() => handleTabClick(idx)}
-                className="flex-shrink-0 cursor-pointer text-sm md:text-base"
+                className="flex-shrink-0 cursor-pointer text-xs min-[375px]:text-sm md:text-base"
                 style={{
                   color: "#ffffff",
                   backgroundColor: "transparent",
