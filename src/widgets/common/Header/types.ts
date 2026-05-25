@@ -31,9 +31,9 @@ export interface NavItem {
 export interface HeaderSettings {
   /** Widget variant */
   variant?: string;
-  /** Logo image URL */
-  logoSrc?: string;
-  /** Logo alt text */
+  /** Logo image — `{ src, alt }` shape for editor image picker */
+  logoSrc?: { src: string; alt: string } | string;
+  /** Logo alt text (legacy fallback — prefer logoSrc.alt) */
   logoAlt?: string;
   /** Search placeholder text */
   searchPlaceholder?: string;
@@ -73,7 +73,7 @@ export interface HeaderSettings {
   getApp_description?: string;
   getApp_button_text?: string;
   getApp_logo_alt?: string;
-  getApp_logo_url?: string;
+  getApp_logo_url?: { src: string; alt: string } | string;
   getApp_app_url?: string;
 }
 

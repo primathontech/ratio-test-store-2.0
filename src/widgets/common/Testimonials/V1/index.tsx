@@ -170,7 +170,7 @@ const TestimonialCard = memo(function TestimonialCard({
         <div className="relative w-[60px] h-[60px] rounded-[50%] overflow-hidden flex-shrink-0">
           <Image
             src={item.avatarSrc}
-            alt={item.authorName}
+            alt={item.alt || item.authorName}
             fill
             className="object-cover"
             sizes="60px"

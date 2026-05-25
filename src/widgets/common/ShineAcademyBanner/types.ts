@@ -6,19 +6,19 @@ import { WidgetProps } from "@/widgets/types";
 export interface ShineAcademyBannerSettings {
   /** Widget variant */
   variant?: string;
-  /** Logo image path */
-  logoSrc?: string;
-  /** Logo alt text */
+  /** Logo image — `{ src, alt }` shape for editor image picker */
+  logoSrc?: { src: string; alt: string } | string;
+  /** Logo alt text (legacy fallback — prefer logoSrc.alt) */
   logoAlt?: string;
   /** Tagline text displayed below the logo */
   tagline?: string;
   /** Mosaic collage image path (fallback) */
-  mosaicSrc?: string;
-  /** Mosaic collage image path for mobile */
-  mosaicSrcMobile?: string;
-  /** Mosaic collage image path for desktop */
-  mosaicSrcDesktop?: string;
-  /** Mosaic alt text */
+  mosaicSrc?: { src: string; alt: string } | string;
+  /** Mosaic collage image (mobile) — `{ src, alt }` shape */
+  mosaicSrcMobile?: { src: string; alt: string } | string;
+  /** Mosaic collage image (desktop) — `{ src, alt }` shape */
+  mosaicSrcDesktop?: { src: string; alt: string } | string;
+  /** Mosaic alt text (legacy fallback — prefer mosaicSrcDesktop.alt) */
   mosaicAlt?: string;
   /** Section background color */
   backgroundColor?: string;

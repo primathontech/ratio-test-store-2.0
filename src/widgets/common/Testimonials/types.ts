@@ -9,6 +9,8 @@ export interface TestimonialItem {
   reviewText: string;
   authorName: string;
   avatarSrc: string;
+  /** Avatar alt text (auto-filled by editor image picker). Falls back to authorName. */
+  alt?: string;
   stars: number;
 }
 

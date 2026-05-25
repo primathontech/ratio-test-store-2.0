@@ -3,6 +3,7 @@
 import React, { memo, useEffect, useRef } from "react";
 import Image from "next/image";
 import { ShineAcademyBannerProps } from "../types";
+import { resolveImage } from "@/widgets/utils/resolveImageSrc";
 
 /* ------------------------------------------------------------------ */
 /*  V1 -- ShineAcademyBanner                                           */
@@ -11,22 +12,33 @@ import { ShineAcademyBannerProps } from "../types";
 /* ------------------------------------------------------------------ */
 
 export const V1 = memo(function V1({ settings }: ShineAcademyBannerProps) {
-  const logoSrc =
-    settings?.logoSrc || "/images/shine-academy/shine-academy-logo.webp";
-  const logoAlt = settings?.logoAlt || "BBlunt Shine Academy";
+  const logo = resolveImage(settings?.logoSrc, {
+    src: "/images/shine-academy/shine-academy-logo.webp",
+    alt: settings?.logoAlt || "BBlunt Shine Academy",
+  });
+  const logoSrc = logo.src;
+  const logoAlt = logo.alt;
   const tagline =
     settings?.tagline ||
     "Every time you buy from our website, you play a significant role in impacting a woman\u2019s life by empowering her to shine on.";
-  const mosaicSrcDesktop =
-    settings?.mosaicSrcDesktop ||
-    "/images/shine-academy/home-shine-academy-desktop.webp";
-  const mosaicSrcMobile =
-    settings?.mosaicSrcMobile ||
-    settings?.mosaicSrcDesktop ||
-    "/images/shine-academy/home-shine-academy-desktop.webp";
-  const mosaicAlt =
-    settings?.mosaicAlt ||
-    "BBlunt Shine Academy - salon stylists and trainees collage";
+  const mosaicDesktop = resolveImage(settings?.mosaicSrcDesktop, {
+    src: "/images/shine-academy/home-shine-academy-desktop.webp",
+    alt:
+      settings?.mosaicAlt ||
+      "BBlunt Shine Academy - salon stylists and trainees collage",
+  });
+  const mosaicMobile = resolveImage(
+    settings?.mosaicSrcMobile ?? settings?.mosaicSrcDesktop,
+    {
+      src: "/images/shine-academy/home-shine-academy-desktop.webp",
+      alt:
+        settings?.mosaicAlt ||
+        "BBlunt Shine Academy - salon stylists and trainees collage",
+    }
+  );
+  const mosaicSrcDesktop = mosaicDesktop.src;
+  const mosaicSrcMobile = mosaicMobile.src;
+  const mosaicAlt = mosaicDesktop.alt;
 
   /* ---- Scroll fade-in animation ---- */
   const sectionRef = useRef<HTMLElement>(null);

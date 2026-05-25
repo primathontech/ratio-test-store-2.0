@@ -149,25 +149,6 @@
       ]
     },
     {
-      "name": "Orders",
-      "templates": [
-        {
-          "id": "bblunt-2_orders_default",
-          "name": "Orders (Default)",
-          "variant": "default",
-          "isDynamic": true,
-          "supportedLanguages": ["en"],
-          "routeContext": {
-            "templateName": "orders",
-            "path": "/orders",
-            "params": {},
-            "query": {},
-            "fetchAPITemplate": true
-          }
-        }
-      ]
-    },
-    {
       "name": "Shine Squad Weekly Offer",
       "templates": [
         {
