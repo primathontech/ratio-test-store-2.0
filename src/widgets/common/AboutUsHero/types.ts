@@ -6,9 +6,9 @@ import { WidgetProps } from "@/widgets/types";
 export interface AboutUsHeroSettings {
   /** Widget variant */
   variant?: string;
-  /** Banner image URL */
-  imageSrc?: string;
-  /** Banner image alt text */
+  /** Banner image — `{ src, alt }` shape for editor image picker */
+  imageSrc?: { src: string; alt: string } | string;
+  /** Banner image alt text (legacy fallback — prefer imageSrc.alt) */
   imageAlt?: string;
   /** Link destination */
   href?: string;

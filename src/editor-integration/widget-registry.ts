@@ -568,12 +568,7 @@ const merchantWidgetSchemas = {
       imageSrc: {
         type: "image" as const,
         label: "Banner Image",
-        default: "",
-      },
-      imageAlt: {
-        type: "text" as const,
-        label: "Image Alt Text",
-        default: "",
+        default: { src: "", alt: "" },
       },
       href: {
         type: "text" as const,
@@ -603,8 +598,7 @@ const merchantWidgetSchemas = {
       items: {
         type: "objectArray" as const,
         label: "Value Items",
-        fields: ["iconSrc", "iconAlt", "heading", "body"],
-        fieldTypes: { iconSrc: "image" },
+        fields: ["image:iconSrc", "alt", "heading", "body"],
         default: [],
       },
     },
