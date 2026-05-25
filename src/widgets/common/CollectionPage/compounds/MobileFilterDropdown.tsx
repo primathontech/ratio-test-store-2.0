@@ -32,7 +32,6 @@ export const MobileFilterDropdown = ({
   onApplyFilters,
   onDraftFiltersChange,
 }: MobileFilterDropdownProps) => {
-  console.log("Rendering MobileFilterDropdown with filters:", filters);
   const { showContent, isTextClosing, isDropdownClosing, handleClose } =
     useMobileDropdown(isOpen, onToggle);
 

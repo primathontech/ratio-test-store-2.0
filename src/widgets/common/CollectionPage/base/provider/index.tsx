@@ -50,7 +50,23 @@ export const DefaultContext = createContext<ProviderContext>({
 });
 
 export function BaseProvider({ children, data }: ProviderProps) {
-  const hasFiltersFetchedRef = useRef(false);
+  /**
+   * Dedup key for the LOAD_FILTERS effect. Tracks the (handle, actions)
+   * pair instead of just the handle because the Zustand store is rebuilt
+   * via `useMemo(() => createActionStore(...), [normalizedData, …])`
+   * whenever the user navigates to a new collection — and even a soft
+   * re-click of the same header link can land here with a fresh `data`
+   * prop reference, re-creating the store. A handle-only ref would say
+   * "already fetched" while the brand-new store has `filterData: null`,
+   * leaving the sidebar empty (the exact symptom of this bug).
+   *
+   * `actions` is a unique function reference per store, so including it
+   * in the dedup key naturally invalidates whenever the store rebuilds.
+   */
+  const lastFetchedRef = useRef<{
+    handle: string;
+    actions: unknown;
+  } | null>(null);
   const pathname = usePathname();
   const updateUrl = useMemo(() => createUrlUpdater(), []);
 
@@ -121,12 +137,30 @@ export function BaseProvider({ children, data }: ProviderProps) {
   const feedback = useStore((state) => state.feedback);
   const state = useStore((state) => state.state);
 
-  // Trigger filter loading when component mounts (filters come from client-side calls)
+  // Trigger filter loading whenever:
+  //   1. The collection handle changes (user navigated to a new collection)
+  //   2. The store has been rebuilt (new `actions` reference) — this catches
+  //      the case where the user clicks the same header link and Next.js
+  //      hands us a new `data` prop, which causes `useStore` to be
+  //      recreated with `filterData: null`. A handle-only guard would
+  //      miss this and leave the sidebar empty.
+  //
+  // Dedup against React StrictMode double-mount + rapid re-renders by
+  // comparing both halves of the key against the last fired pair.
   useEffect(() => {
-    if (collectionHandle && actions && !hasFiltersFetchedRef.current) {
-      hasFiltersFetchedRef.current = true;
-      actions("LOAD_FILTERS", collectionHandle);
+    if (!collectionHandle || !actions) {
+      return;
     }
+    const prev = lastFetchedRef.current;
+    const alreadyFetched =
+      prev !== null &&
+      prev.handle === collectionHandle &&
+      prev.actions === actions;
+    if (alreadyFetched) {
+      return;
+    }
+    lastFetchedRef.current = { handle: collectionHandle, actions };
+    actions("LOAD_FILTERS", collectionHandle);
   }, [collectionHandle, actions]);
 
   const contextValue: ProviderContext = { actions, feedback, state };

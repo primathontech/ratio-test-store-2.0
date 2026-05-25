@@ -367,7 +367,7 @@ export const ProductCard = memo(function ProductCard({
               (product.tagBadge || product.metaBadge) && (
                 <div
                   data-testid={`product-card-badge-${product.id}`}
-                  className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2] flex flex-col items-start gap-[4px]"
+                  className="absolute top-0 left-[4px] md:top-[8px] md:left-[10px] z-[2] flex flex-col items-start gap-[4px]"
                 >
                   {product.tagBadge && (
                     <div
@@ -400,7 +400,7 @@ export const ProductCard = memo(function ProductCard({
             {showBadge && !showDualBadges && product.badge && (
               <div
                 data-testid={`product-card-badge-${product.id}`}
-                className="absolute top-[4px] left-[4px] md:top-[8px] md:left-[10px] z-[2]"
+                className="absolute top-0 left-[4px] md:top-[8px] md:left-[10px] z-[2]"
               >
                 <div
                   className="relative inline-flex items-center leading-[15px] md:leading-[21px] text-[10px] md:text-[14px] font-[500] rounded-l-[4px] pl-[4px] pr-[15px]"
@@ -481,7 +481,7 @@ export const ProductCard = memo(function ProductCard({
           {showProductType && product.category && (
             <span
               data-testid={`product-card-variant-${product.id}`}
-              className={`inline-flex w-fit p-[4.5px] md:p-[8px] text-[10px] md:text-[14px] font-[600] leading-[10px] md:leading-[14px] ${categoryChipClassName}`.trim()}
+              className={`inline-flex w-fit p-[4.5px] md:p-[8px] text-[10px] min-[375px]:text-[12px] md:text-[14px] font-[600] leading-[10px] md:leading-[14px] ${categoryChipClassName}`.trim()}
               style={{
                 color: t.chipColor,
                 backgroundColor: t.chipBg,
@@ -557,7 +557,7 @@ export const ProductCard = memo(function ProductCard({
                   >
                     <span
                       data-testid={`product-card-compare-price-${product.id}`}
-                      className={`text-[12px] line-through mr-1 text-[var(--compare-price-mobile)] md:text-[var(--compare-price-desktop)] ${compareAtPriceClassName}`.trim()}
+                      className={`text-[10px] md:text-[12px] leading-[10px] md:leading-[12px] line-through mr-1 text-[var(--compare-price-mobile)] md:text-[var(--compare-price-desktop)] ${compareAtPriceClassName}`.trim()}
                       style={
                         {
                           "--compare-price-mobile": t.comparePriceMobile,
@@ -571,10 +571,9 @@ export const ProductCard = memo(function ProductCard({
                     {product.discount && (
                       <span
                         data-testid={`product-card-discount-${product.id}`}
-                        className={`text-[12px] md:text-[14px] ${discountClassName}`.trim()}
+                        className={`text-[10px] md:text-[14px] leading-[10px] md:leading-[14px] font-bold md:font-semibold ${discountClassName}`.trim()}
                         style={{
                           color: t.discountColor,
-                          fontWeight: 600,
                         }}
                       >
                         {product.discount}
