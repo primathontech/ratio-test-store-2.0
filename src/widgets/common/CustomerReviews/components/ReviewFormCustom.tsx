@@ -248,10 +248,10 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 </svg>
               </div>
             </div>
-            <p className="text-text-sm font-bold font-Poppins text-[#636E6E] mb-4">
+            <p className="text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] font-bold font-Poppins text-[#636E6E] mb-4">
               Review Submitted!
             </p>
-            <p className="text-sm text-[#636E6E] font-Poppins mx-auto mb-6 max-w-[568px] pb-6 border-b border-[#E0E0E0]">
+            <p className="text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#636E6E] font-Poppins mx-auto mb-6 max-w-[568px] pb-6 border-b border-[#E0E0E0]">
               Thank you! Please refresh the page in a few moments to see your
               review. You can remove or edit your review by logging into{" "}
               <a
@@ -273,13 +273,13 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 : "p-8 rounded-2xl w-full mx-auto mt-4 bg-white shadow-[0px_4px_16px_rgba(0,0,0,0.1)]"
             }
           >
-            <h2 className="text-sm font-bold font-Poppins text-[#333333] text-center mb-4">
+            <h2 className="text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] font-bold font-Poppins text-[#333333] text-center mb-4">
               Write a review
             </h2>
 
             <form onSubmit={handleSubmit}>
               <div data-testid="review-form-rating-field" className="mb-6">
-                <label className="block text-center text-sm font-system text-[#333333] font-normal mb-2">
+                <label className="block text-center text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] font-system text-[#333333] font-normal mb-2">
                   Rating
                 </label>
                 <div>
@@ -330,7 +330,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                   {touched.rating && errors.rating && (
                     <div
                       data-testid="review-form-rating-error"
-                      className="w-full md:w-[568px] mx-auto bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-sm leading-4 mt-3 p-2 rounded-sm flex items-center justify-start"
+                      className="w-full md:w-[568px] mx-auto bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] mt-3 p-2 rounded-sm flex items-center justify-start"
                     >
                       <svg
                         className="mr-1 w-5 h-5 text-[#F28478] flex-shrink-0"
@@ -354,7 +354,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 data-testid="review-form-title-field"
                 className="mb-6 md:flex md:flex-col md:items-center"
               >
-                <label className="block text-sm font-system text-[#333333] font-normal mb-2 text-center">
+                <label className="block text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] font-system text-[#333333] font-normal mb-2 text-center">
                   Review Title{title.length > 0 && `(${100 - title.length})`}
                 </label>
                 <input
@@ -362,12 +362,12 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                   value={title}
                   onChange={(e) => handleChange("title", e.target.value)}
                   placeholder="Give your review a title"
-                  className="w-full md:w-[568px] rounded-[20px] border border-gray-200 px-4 py-2 text-sm text-[#333333] placeholder:text-sm placeholder:text-[#636E6E] focus:outline-none focus:border-[#636E6E] focus:ring-1 focus:ring-[#636E6E]/30"
+                  className="w-full md:w-[568px] rounded-[20px] border border-gray-200 px-4 py-2 text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] placeholder:text-[12px] min-[375px]:placeholder:text-[14px] placeholder:text-[#636E6E] focus:outline-none focus:border-[#636E6E] focus:ring-1 focus:ring-[#636E6E]/30"
                 />
                 {title.length > 100 && (
                   <div
                     data-testid="review-form-title-error"
-                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-sm leading-4 mt-3 p-2 rounded-sm flex items-center max-h-[33.6px]"
+                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] mt-3 p-2 rounded-sm flex items-center max-h-[33.6px]"
                   >
                     <svg
                       className="mr-1 w-5 h-5 text-[#F28478] flex-shrink-0"
@@ -390,7 +390,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 data-testid="review-form-comment-field"
                 className="mb-6 md:flex md:flex-col md:items-center"
               >
-                <label className="block text-sm font-normal mb-2 text-center text-[#333333]">
+                <label className="block text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] font-normal mb-2 text-center text-[#333333]">
                   Review Content
                   {comment.length > 0 && `(${5000 - comment.length})`}
                 </label>
@@ -400,12 +400,12 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                   onBlur={() => handleBlur("comment")}
                   placeholder="Start writing here..."
                   rows={5}
-                  className="w-full md:w-[568px] rounded-3xl py-2 px-4 border border-gray-200 text-[#333333] placeholder:text-sm placeholder:text-[#636E6E] focus:outline-none focus:border-[#636E6E] focus:ring-1 focus:ring-[#636E6E]/30 max-h-[115px]"
+                  className="w-full md:w-[568px] rounded-3xl py-2 px-4 border border-gray-200 text-[#333333] placeholder:text-[12px] min-[375px]:placeholder:text-[14px] placeholder:text-[#636E6E] focus:outline-none focus:border-[#636E6E] focus:ring-1 focus:ring-[#636E6E]/30 max-h-[115px]"
                 />
                 {touched.comment && errors.comment && (
                   <div
                     data-testid="review-form-comment-error"
-                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-sm leading-4 mt-3 p-2 rounded-sm flex items-center max-h-[33.6px]"
+                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] mt-3 p-2 rounded-sm flex items-center max-h-[33.6px]"
                   >
                     <svg
                       className="mr-1 w-5 h-5 text-[#F28478] flex-shrink-0"
@@ -427,13 +427,13 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 data-testid="review-form-name-field"
                 className="mb-6 pt-6 md:flex md:flex-col md:items-center"
               >
-                <label className="block text-sm font-system text-[#333333] font-normal mb-2 text-center">
+                <label className="block text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] font-system text-[#333333] font-normal mb-2 text-center">
                   Display Name (displayed publicly like{" "}
                   <span className="inline-flex items-center text-nowrap">
                     <select
                       value={displayNameOption}
                       onChange={(e) => setDisplayNameOption(e.target.value)}
-                      className="inline text-text-sm text-[#333333] bg-transparent border-none focus:outline-none cursor-pointer appearance-none"
+                      className="inline text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] bg-transparent border-none focus:outline-none cursor-pointer appearance-none"
                       style={{
                         backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 12 12'%3E%3Cpath d='M6 8L1 3h10z' fill='%23666'/%3E%3C/svg%3E")`,
                         backgroundRepeat: "no-repeat",
@@ -456,12 +456,12 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                   onChange={(e) => handleChange("name", e.target.value)}
                   onBlur={() => handleBlur("name")}
                   placeholder="Display name"
-                  className="w-full md:w-[568px] rounded-[20px] border border-gray-200 px-4 py-2 text-sm text-[#333333] placeholder:text-sm placeholder:text-[#636E6E] focus:outline-none focus:border-[#636E6E] focus:ring-1 focus:ring-[#636E6E]/30"
+                  className="w-full md:w-[568px] rounded-[20px] border border-gray-200 px-4 py-2 text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] placeholder:text-[12px] min-[375px]:placeholder:text-[14px] placeholder:text-[#636E6E] focus:outline-none focus:border-[#636E6E] focus:ring-1 focus:ring-[#636E6E]/30"
                 />
                 {touched.name && errors.name && (
                   <div
                     data-testid="review-form-name-error"
-                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-sm leading-4 mt-3 p-2 rounded-sm flex items-center max-h-[33.6px]"
+                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] mt-3 p-2 rounded-sm flex items-center max-h-[33.6px]"
                   >
                     <svg
                       className="mr-1 w-5 h-5 text-[#F28478] flex-shrink-0"
@@ -484,7 +484,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 data-testid="review-form-email-field"
                 className="mb-6 md:flex md:flex-col md:items-center"
               >
-                <label className="block text-sm font-normal text-[#333333] mb-2 text-center">
+                <label className="block text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] font-normal text-[#333333] mb-2 text-center">
                   Email address
                 </label>
                 <input
@@ -493,12 +493,12 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                   onChange={(e) => handleChange("email", e.target.value)}
                   onBlur={() => handleBlur("email")}
                   placeholder="Your email address"
-                  className="w-full md:w-[568px] rounded-[20px] border border-gray-200 px-4 py-2 text-sm text-[#333333] placeholder:text-sm placeholder:text-[#636E6E] focus:outline-none focus:border-[#636E6E] focus:ring-1 focus:ring-[#636E6E]/30"
+                  className="w-full md:w-[568px] rounded-[20px] border border-gray-200 px-4 py-2 text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] placeholder:text-[12px] min-[375px]:placeholder:text-[14px] placeholder:text-[#636E6E] focus:outline-none focus:border-[#636E6E] focus:ring-1 focus:ring-[#636E6E]/30"
                 />
                 {touched.email && errors.email && (
                   <div
                     data-testid="review-form-email-error"
-                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-sm leading-4 mt-3 p-2 rounded-sm flex items-center max-h-[33.6px]"
+                    className="w-full md:w-[568px] bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] mt-3 p-2 rounded-sm flex items-center max-h-[33.6px]"
                   >
                     <svg
                       className="mr-1 w-5 h-5 text-[#F28478] flex-shrink-0"
@@ -520,7 +520,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
               {errors.submit && (
                 <div
                   data-testid="review-form-submit-error"
-                  className="bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-sm leading-4 mt-1 py-1 px-2 mb-6 flex items-center justify-center"
+                  className="bg-[#F2847D1A] border border-[#F2847D] text-[#333333] font-Poppins text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] mt-1 py-1 px-2 mb-6 flex items-center justify-center"
                 >
                   <svg
                     className="mr-1 w-5 h-5 text-[#F28478] flex-shrink-0"
@@ -538,7 +538,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                 </div>
               )}
 
-              <p className="text-sm text-[#333333] text-center mb-6 mx-auto md:w-[568px]">
+              <p className="text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] text-center mb-6 mx-auto md:w-[568px]">
                 How we use your data: We&apos;ll only contact you about the
                 review you left, and only if necessary. By submitting your
                 review, you agree to Judge.me&apos;s{" "}
@@ -580,13 +580,13 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                   aria-label="cancel-review"
                   type="button"
                   onClick={handleClose}
-                  className="w-full max-w-[142px] text-sm px-5 py-2.5 rounded-3xl border-2 border-[#636E6E] text-[#636E6E] font-medium hover:opacity-80 transition-colors max-h-[37.2px] items-center justify-center flex"
+                  className="w-full max-w-[142px] text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] px-5 py-2.5 rounded-3xl border-2 border-[#636E6E] text-[#636E6E] font-bold hover:opacity-80 transition-colors max-h-[37.2px] items-center justify-center flex"
                 >
                   Cancel review
                 </button>
                 <button
                   type="submit"
-                  className={`w-full max-w-[149px] text-sm px-5 py-2.5 rounded-3xl bg-[#636E6E] text-white font-medium transition-colors max-h-[37.2px] items-center justify-center flex ${
+                  className={`w-full max-w-[149px] text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] px-5 py-2.5 rounded-3xl bg-[#636E6E] text-white font-bold transition-colors max-h-[37.2px] items-center justify-center flex ${
                     isSubmitting ? "opacity-70 cursor-not-allowed" : ""
                   }`}
                   disabled={isSubmitting}

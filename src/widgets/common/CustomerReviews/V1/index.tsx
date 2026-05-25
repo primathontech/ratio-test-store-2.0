@@ -275,7 +275,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                             </svg>
                           );
                         })}
-                        <span className="ml-2 text-text-sm text-[#222222] whitespace-nowrap">
+                        <span className="ml-2 text-sm text-[#333333] whitespace-nowrap">
                           {rating.toFixed(2)} out of 5
                         </span>
                       </div>

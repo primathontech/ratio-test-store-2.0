@@ -327,7 +327,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
                 key={tab.handle}
                 type="button"
                 onClick={() => handleTabClick(idx)}
-                className="flex-shrink-0 cursor-pointer text-xs min-[375px]:text-sm md:text-base"
+                className="flex-shrink-0 cursor-pointer text-[12px] leading-[14.4px] min-[375px]:text-[14px] min-[375px]:leading-[16.8px] md:text-[16px] md:leading-[19.2px]"
                 style={{
                   color: "#ffffff",
                   backgroundColor: "transparent",
