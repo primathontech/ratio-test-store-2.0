@@ -129,12 +129,12 @@ const TestimonialCard = memo(function TestimonialCard({
           style={{ backgroundColor: cardBackground }}
         >
           {/* Title */}
-          <h4 className="font-semibold text-lg mb-2 text-secondary m-0">
+          <h4 className="font-semibold text-[14px] min-[375px]:text-[16px] md:text-[18px] lg:text-[16px] leading-[22.4px] min-[375px]:leading-[25.6px] md:leading-[28.8px] lg:leading-[25.6px] mb-2 text-secondary m-0">
             {item.heading}
           </h4>
 
           {/* Description */}
-          <p className="text-sm md:text-sm !leading-[23.4px] font-normal mb-5 md:mb-[26px] text-secondary m-0">
+          <p className="text-[12px] md:text-[14px] !leading-[19.2px] md:!leading-[22.4px] font-normal mb-5 md:mb-[26px] text-secondary m-0">
             {item.reviewText}
           </p>
 
@@ -177,7 +177,7 @@ const TestimonialCard = memo(function TestimonialCard({
             loading="lazy"
           />
         </div>
-        <h3 className="font-semibold text-sm text-primary m-0">
+        <h3 className="font-semibold text-[14px] leading-[22.4px] text-primary m-0">
           {item.authorName}
         </h3>
       </div>
@@ -257,14 +257,14 @@ export const V1 = memo(function V1({ settings }: TestimonialsProps) {
   return (
     <section
       ref={sectionRef}
-      className="w-full pb-[24.6px] md:pb-[46.7px] xl:pb-14 pt-0"
+      className="w-full pb-[24.6px] md:pb-[46.7px] xl:pb-14 pt-[25px] md:pt-14"
       aria-label="Customer testimonials"
     >
       <div className="mx-auto max-w-[1400px] pl-[15px] md:pl-[30px] pr-0 md:pr-[30px] xl:px-[50px]">
         {/* Section heading */}
         <div className="mt-[25px] md:mt-14 mb-4 md:mb-[30px] text-left md:text-center testimonials-animate-on-scroll">
           <h2
-            className="text-2xl xl:text-[28px] leading-[29px] lg:leading-[40px] font-normal text-black m-0 text-left md:text-center [&_strong]:block md:[&_strong]:inline"
+            className="text-[20px] min-[375px]:text-[22px] md:text-[24px] lg:text-[28px] leading-[24px] min-[375px]:leading-[26.4px] md:leading-[28.8px] lg:leading-[33.6px] font-normal text-black m-0 text-left md:text-center [&_strong]:block md:[&_strong]:inline [&_strong]:font-bold"
             // eslint-disable-next-line no-restricted-syntax
             dangerouslySetInnerHTML={{ __html: heading }}
           />

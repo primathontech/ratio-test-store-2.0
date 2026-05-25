@@ -64,10 +64,12 @@ function carouselSection(
     type: SECTION_TYPES.CONTENT_SECTION,
     settings: {
       layout: SECTION_LAYOUT_OPTIONS.FULL,
+      // Spacing now lives inside the FeaturedCollectionCarousel widget
+      // (`mt-[25px] md:mt-14`), so the section wrapper stays at 0 padding.
       responsive: {
-        mobile: { padding: { top: 25, right: 0, bottom: 0, left: 0 } },
-        tablet: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
-        desktop: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
+        mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
       },
     },
     widgets: [
@@ -357,10 +359,11 @@ export const template: PageConfig = {
       type: SECTION_TYPES.CONTENT_SECTION,
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
+        // Spacing now lives inside the ShopByConcerns widget.
         responsive: {
-          mobile: { padding: { top: 25, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
       },
       widgets: [
@@ -384,10 +387,11 @@ export const template: PageConfig = {
       type: SECTION_TYPES.CONTENT_SECTION,
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
+        // Spacing now lives inside the ShopByCategories widget.
         responsive: {
-          mobile: { padding: { top: 25, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
       },
       widgets: [
@@ -411,10 +415,11 @@ export const template: PageConfig = {
       type: SECTION_TYPES.CONTENT_SECTION,
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
+        // Spacing now lives inside the HairCareBFFs widget.
         responsive: {
-          mobile: { padding: { top: 25, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
       },
       widgets: [
@@ -473,10 +478,11 @@ export const template: PageConfig = {
       type: SECTION_TYPES.CONTENT_SECTION,
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
+        // Spacing now lives inside the LazyLoadShimmer widget.
         responsive: {
-          mobile: { padding: { top: 25, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
       },
       widgets: [
@@ -589,9 +595,9 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 25, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
       },
       widgets: [
@@ -620,9 +626,9 @@ export const template: PageConfig = {
       settings: {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
-          mobile: { padding: { top: 25, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 56, right: 0, bottom: 0, left: 0 } },
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
         },
       },
       widgets: [

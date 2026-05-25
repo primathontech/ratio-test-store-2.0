@@ -273,7 +273,7 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
 
   return (
     <section
-      className="relative overflow-hidden pt-[32.4px] md:pt-14"
+      className="relative overflow-hidden mt-[25px] md:mt-14 pt-[32.4px] md:pt-14"
       style={{}}
     >
       {/* Background image — mobile */}

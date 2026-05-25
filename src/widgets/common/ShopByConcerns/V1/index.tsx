@@ -149,7 +149,7 @@ export const V1 = memo(function V1({ settings }: ShopByConcernsProps) {
 
   return (
     <section
-      className="relative bg-secondary max-w-[1400px] mx-auto overflow-hidden"
+      className="relative bg-secondary max-w-[1400px] mx-auto overflow-hidden mt-[25px] md:mt-14"
       aria-label="Shop by Concerns"
     >
       {/* Section Heading */}

@@ -74,7 +74,7 @@ export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
               aria-controls="mobile-footer-content"
             >
               <h3
-                className="text-sm font-bold text-white !leading-none"
+                className="text-sm font-bold text-white !leading-[16.8px]"
                 // eslint-disable-next-line no-restricted-syntax
                 dangerouslySetInnerHTML={{ __html: mobileFooterTagline }}
               />
@@ -130,7 +130,7 @@ export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
                 {/* Get the app */}
                 {showAppDownload && appDownloadText && (
                   <div className="py-6 border-b border-[#424242]">
-                    <h6 className="text-lg font-bold md:font-medium text-white !leading-none mb-4">
+                    <h6 className="text-base font-bold md:font-medium text-white !leading-[19.2px] mb-4">
                       {appDownloadText}
                     </h6>
                     <div className="flex gap-4 justify-between">
