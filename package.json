@@ -1,6 +1,6 @@
 {
   "name": "storefront-starter-app",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "private": true,
   "workspaces": [
     "src/app/editor"
@@ -60,8 +60,8 @@
     "@radix-ui/themes": "^3.2.1",
     "@shopify/hydrogen-react": "^2025.5.0",
     "@shopify/storefront-api-client": "^1.0.8",
-    "@shopkit/events": "^0.9.5",
-    "@shopkit/app-shell": "^1.0.5",
+    "@shopkit/events": "^0.10.0",
+    "@shopkit/app-shell": "^2.0.0",
     "@shopkit/asset-cache": "^1.0.1",
     "@shopkit/builder": "^0.1.4",
     "@shopkit/cart": "^0.1.4",
