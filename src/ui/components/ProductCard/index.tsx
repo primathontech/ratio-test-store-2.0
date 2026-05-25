@@ -61,7 +61,7 @@ const StarRating = ({
         {" | "}
       </span>
       <span
-        className={`text-[14px] leading-[19.6px] ${reviewCountClassName}`.trim()}
+        className={`text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] ${reviewCountClassName}`.trim()}
         style={{ color: textColor }}
       >
         {reviewCount}
