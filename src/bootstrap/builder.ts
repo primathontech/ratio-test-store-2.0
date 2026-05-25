@@ -55,12 +55,18 @@ import {
 } from "@shopkit/builder";
 
 // App-specific imports - these are WHY this file must be separate from the package
-import { WIDGET_MANIFEST } from "@/widgets/.generated/manifest";
+import { WIDGET_MANIFEST as PROD_WIDGET_MANIFEST } from "@/widgets/.generated/manifest";
+// Editor manifest — every widget routed through a "use client" shim, picked when isEditor is true.
+import { WIDGET_MANIFEST as EDITOR_WIDGET_MANIFEST } from "@/widgets/.generated/manifest.editor";
 import { getCommerceClient } from "@/config/commerce";
 import { SectionWrapper } from "@/ui/layout/SectionWrapper";
 
-// Editor integration — only wired in when NEXT_PUBLIC_ENABLE_EDITOR_CHANGES is set
+// Editor integration — only wired in when NEXT_PUBLIC_ENABLE_EDITOR_CHANGES is "true".
 import { editorTemplateLoader } from "@/editor-integration/template-load-pipeline";
+
+const isEditorChangesEnabled =
+  String(process.env.NEXT_PUBLIC_ENABLE_EDITOR_CHANGES).toLowerCase() ===
+  "true";
 
 // =============================================================================
 // COMMERCE CLIENT
@@ -220,18 +226,19 @@ const sectionRenderer = createSectionRendererFromComponent(SectionWrapper);
  * @internal
  */
 const pageBuilderOptions: FileSystemPresetOptions = {
-  widgets: WIDGET_MANIFEST,
+  widgets: PROD_WIDGET_MANIFEST,
   commerceClient: getBuilderCommerceClient(),
   themeLoader,
-  templateLoader: process.env.NEXT_PUBLIC_ENABLE_EDITOR_CHANGES
+  templateLoader: isEditorChangesEnabled
     ? editorTemplateLoader
     : templateLoader,
   sectionRenderer,
   defaultLocale: "en",
 };
 
-/** Singleton instance - created on first access */
+/** Singleton instances — separate cache per manifest variant. */
 let pageBuilderInstance: PageBuilder | null = null;
+let editorPageBuilderInstance: PageBuilder | null = null;
 
 /**
  * Get the configured page builder instance.
@@ -258,7 +265,18 @@ let pageBuilderInstance: PageBuilder | null = null;
  * });
  * ```
  */
-export function getPageBuilder(): PageBuilder {
+export function getPageBuilder({
+  isEditor = false,
+}: { isEditor?: boolean } = {}): PageBuilder {
+  if (isEditor) {
+    if (!editorPageBuilderInstance) {
+      editorPageBuilderInstance = getPageBuilderCore({
+        ...pageBuilderOptions,
+        widgets: EDITOR_WIDGET_MANIFEST,
+      });
+    }
+    return editorPageBuilderInstance;
+  }
   if (!pageBuilderInstance) {
     pageBuilderInstance = getPageBuilderCore(pageBuilderOptions);
   }
@@ -273,4 +291,8 @@ export function getPageBuilder(): PageBuilder {
  */
 export function resetPageBuilder(): void {
   pageBuilderInstance = null;
+  editorPageBuilderInstance = null;
 }
+
+// Alias expected by shopkit route validator (S8 rule)
+export const createPageBuildingEngine = getPageBuilder;

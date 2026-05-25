@@ -10,6 +10,13 @@
  * @module bootstrap/next-config
  */
 
+const {
+  buildFrameAncestorsHeaders: buildFrameAncestorsFromPackage,
+} = require("@shopkit/editor-bridge/next");
+const {
+  ALLOWED_EDITOR_ORIGINS,
+} = require("../editor-integration/editor-bridge-config");
+
 // =============================================================================
 // DEFAULT CONFIGURATIONS
 // =============================================================================
@@ -243,6 +250,17 @@ function buildApiHeaders(cache = {}) {
 }
 
 /**
+ * Build CSP `frame-ancestors` header gating who can iframe this storefront.
+ * Reads the allowlist from editor-bridge-config so the build-time CSP and
+ * the runtime origin gate consume the same constants.
+ */
+function buildFrameAncestorsHeaders() {
+  return buildFrameAncestorsFromPackage({
+    allowedEditorOrigins: ALLOWED_EDITOR_ORIGINS,
+  });
+}
+
+/**
  * Build service worker headers.
  */
 function buildServiceWorkerHeaders() {
@@ -332,6 +350,7 @@ function createNextConfig(options = {}) {
     ...buildCorsStaticHeaders(),
     ...buildDynamicContentHeaders(cache),
     ...buildApiHeaders(cache),
+    ...buildFrameAncestorsHeaders(),
     ...buildServiceWorkerHeaders(),
     ...additionalHeaders,
   ];

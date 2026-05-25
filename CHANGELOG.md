@@ -1,5 +1,23 @@
 # storefront-starter-app
 
+## 0.2.0
+
+### Enhancements
+
+- **Editor-bridge wireup via `@shopkit/editor-bridge`.** Every merchant cloned from this version of starter ships editor preview support.
+  - `<EditorHostMount />` mounts once in `app/layout.tsx`. EditorHost gates internally on `?editor=true`, so customer traffic pays only the ~500 B gate; the bridge runtime lazy-loads only inside editor iframes.
+  - `app/api/editor-preview/cache/route.ts` exports `createPreviewCacheRoute()`. The cache singleton lives inside the package; `createPreviewCacheRoute` (writer) and `readEditorPreviewState` (reader) share the same instance. Same-origin POST, no CORS.
+  - `app/editor-preview/static/page.tsx` exports `createStaticPreviewPage(...)` for the deprecated static-template lane.
+  - `bootstrap/next-config.js` composes the `frame-ancestors` CSP via `buildFrameAncestorsHeaders` from `@shopkit/editor-bridge/next`. CSP and the runtime origin gate read the same constants from `editor-integration/editor-bridge-config.js`.
+  - `bootstrap/builder.ts` splits widget manifests by editor vs production. The editor manifest routes every widget through a `"use client"` shim so the page builder renders client components inside the editor iframe; the production manifest stays server-rendered. `getPageBuilder({ isEditor })` picks the cache.
+  - `ui/layout/SectionWrapper.tsx` imports `SectionWrapperEditor` from the package; the local copy is deleted. Selection between editor and core wrapper continues to read `NEXT_PUBLIC_ENABLE_EDITOR_CHANGES` (`"true"` → editor wrapper, otherwise → core), matching the existing convention.
+- **New required env var**: `NEXT_PUBLIC_EDITOR_ORIGIN`. Sets the one allowed editor origin. Unset → empty allowlist → bridge fails closed.
+- **New dependency**: `@shopkit/editor-bridge` at `^0.2.0`.
+
+### Theme-team follow-ups (per editable template)
+
+- Thread `readEditorPreviewState<PageConfig>(searchParams)` into each editable `page.tsx` you want the editor to drive. Cache miss falls through to the normal template-load path silently.
+
 ## 0.1.12
 
 ### Enhancements
