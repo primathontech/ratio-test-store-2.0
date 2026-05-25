@@ -113,8 +113,25 @@ export const SwipeCarousel = memo(function SwipeCarousel({
   // breakpoint switching — no `window.innerWidth` access here.
   const { isMobile, isTablet, isTabletWide } = useResponsive();
 
-  /* ---------- Resolve carousel breakpoint from flags ---------- */
-  const bp = pickBreakpoint(breakpoints, { isMobile, isTablet, isTabletWide });
+  /* ---------- Resolve carousel breakpoint from flags ----------
+   *
+   * Pre-hydration default = the smallest (mobile) breakpoint.
+   *
+   * Why: `useResponsive` returns `isDesktop: true` on the server and
+   * during the first client render before its mount effect fires. Without
+   * this guard `pickBreakpoint` would resolve to the desktop card count
+   * (e.g. 5 cards) on SSR, then snap to the real value (e.g. 2.3 cards)
+   * once useResponsive measures the viewport — producing a visible reflow
+   * on mobile page refresh. By forcing the smallest breakpoint until
+   * `mounted` flips true, mobile users (the majority) get the correct
+   * 2.3-cards layout on first paint. Desktop users still see a one-frame
+   * mobile layout before snapping to desktop, but that direction is less
+   * jarring (uniform-width cards just multiply in count). */
+  const bp = !mounted
+    ? breakpoints.length > 0
+      ? [...breakpoints].sort((a, b) => a.minWidth - b.minWidth)[0]
+      : { minWidth: 0, cards: 1, gap: 0 }
+    : pickBreakpoint(breakpoints, { isMobile, isTablet, isTabletWide });
 
   useEffect(() => {
     setMounted(true);
@@ -141,17 +158,28 @@ export const SwipeCarousel = memo(function SwipeCarousel({
       if (!viewportRef.current) {
         return;
       }
-      const vw = viewportRef.current.offsetWidth;
-      const cw = (vw - gapPx * (Math.floor(visibleCards) - 1)) / visibleCards;
+      const el = viewportRef.current;
+      const cs = getComputedStyle(el);
+      // Viewport horizontal padding acts as an edge gutter: cards sit at
+      // x=padL initially but can scroll OVER the padding area (overflow:hidden
+      // clips at the padding box edge, not the content edge). This matches
+      // the "16px gutter on first/last only" pattern used by e.g. bblunt.com.
+      const padL = parseFloat(cs.paddingLeft) || 0;
+      const padR = parseFloat(cs.paddingRight) || 0;
+      const vw = el.offsetWidth;
+      const innerW = vw - padL - padR;
+      const cw =
+        (innerW - gapPx * (Math.floor(visibleCards) - 1)) / visibleCards;
       setCardWidth(cw);
-      const desired = -(safeIndex * (cw + gapPx));
-      // Clamp so the final position never overshoots — when itemCount minus
-      // visibleCards is fractional (e.g. 10 − 2.2 = 7.8), `maxIndex = ceil(7.8) = 8`
-      // would translate -8×cw and leave a 0.2-card empty gap on the right.
-      // Stop at -(totalContent − viewport) so the last card's right edge
-      // meets the viewport's right edge.
+      // Index 0: keep track at content-box origin so the first card sits at
+      // x=padL (the visible left gutter). Index > 0: shift by an extra padL
+      // so the active card snaps flush to viewport x=0 — the gutter only
+      // exists at the start, not on every step.
+      const desired = safeIndex === 0 ? 0 : -(padL + safeIndex * (cw + gapPx));
+      // Clamp so the final position aligns the last card's right edge with
+      // x = viewport_width - padR (the visible right gutter).
       const totalContent = itemCount * cw + Math.max(0, itemCount - 1) * gapPx;
-      const maxScroll = Math.max(0, totalContent - vw);
+      const maxScroll = Math.max(0, padL + totalContent + padR - vw);
       setTransformPx(Math.max(desired, -maxScroll));
     };
     compute();
@@ -299,7 +327,10 @@ export const SwipeCarousel = memo(function SwipeCarousel({
               key={idx}
               className="flex-shrink-0"
               style={{
-                width: `calc((100% - ${gapPx * (Math.floor(visibleCards) - 1)}px) / ${visibleCards})`,
+                width:
+                  cardWidth > 0
+                    ? `${cardWidth}px`
+                    : `calc((100% - ${gapPx * (Math.floor(visibleCards) - 1)}px) / ${visibleCards})`,
               }}
             >
               {renderItem(idx, cardWidth)}
