@@ -232,7 +232,7 @@ export const MainImageSlider: React.FC<MainImageSliderProps> = ({
           paint above a z-20 ribbon. */}
       {productLabel && (
         <div
-          className="absolute z-[30] font-medium text-white pointer-events-none"
+          className="absolute z-[10] font-medium text-white pointer-events-none"
           style={{
             fontSize: "12px",
             ...(isMobile
