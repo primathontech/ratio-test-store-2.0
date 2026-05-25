@@ -161,7 +161,10 @@ export const MobileNavigationDrawer: React.FC<MobileNavigationDrawerProps> = ({
             </nav>
           </Box>
 
-          <ConnectWithUs items={connectWithUs} />
+          <ConnectWithUs
+            items={connectWithUs}
+            onTrackOrderClick={handleAccountClick}
+          />
         </Box>
 
         {/* User Actions */}

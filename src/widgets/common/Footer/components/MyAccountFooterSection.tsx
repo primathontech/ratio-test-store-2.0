@@ -29,7 +29,7 @@ export const MyAccountFooterSection: React.FC<MyAccountFooterSectionProps> = ({
   }
 
   const handleLinkClick = (e: React.MouseEvent, href: string) => {
-    if (!href?.startsWith("/account")) {
+    if (!href) {
       return;
     }
     e.preventDefault();

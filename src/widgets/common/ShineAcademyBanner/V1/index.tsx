@@ -66,7 +66,7 @@ export const V1 = memo(function V1({ settings }: ShineAcademyBannerProps) {
   return (
     <section
       ref={sectionRef}
-      className="overflow-hidden bg-gradient-to-b from-[#F7F0FF] to-white md:from-[#F3F9FF]"
+      className="overflow-hidden bg-gradient-to-b from-[#F7F0FF] to-white md:from-[#F3F9FF] mt-[25px] md:mt-14"
     >
       {/* Outer container -- max-width 1400px */}
       <div className="mx-auto max-w-[1400px]">
