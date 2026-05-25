@@ -145,7 +145,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
                   <div className="sbc-cat-img-desktop hidden md:flex justify-center items-center h-[120px]  pl-1 lg:pl-[15px]">
                     <Image
                       src={tile.desktopImage}
-                      alt={tile.label}
+                      alt={tile.alt || tile.label}
                       width={400}
                       height={236}
                       className="h-[120px] w-auto object-contain"
@@ -156,7 +156,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
                   <div className="sbc-cat-img-mobile flex justify-center md:hidden">
                     <Image
                       src={tile.mobileImage}
-                      alt={tile.label}
+                      alt={tile.alt || tile.label}
                       width={228}
                       height={297}
                       className="w-full h-auto"

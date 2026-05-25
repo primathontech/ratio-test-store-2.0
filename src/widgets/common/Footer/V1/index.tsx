@@ -16,6 +16,7 @@ import {
 } from "../components";
 import { FOOTER_CONSTANTS, MOBILE_NAVIGATION_ITEMS } from "../constants";
 import { FooterProps } from "../types";
+import { resolveImage } from "@/widgets/utils/resolveImageSrc";
 
 export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
   const [isMobileAccordionOpen, setIsMobileAccordionOpen] = useState(false);
@@ -27,15 +28,15 @@ export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
     showPaymentMethods = FOOTER_CONSTANTS.DEFAULT_SETTINGS.showPaymentMethods,
     showAppDownload = FOOTER_CONSTANTS.DEFAULT_SETTINGS.showAppDownload,
     mobileFooterTagline = "",
-    logoUrl = "",
-    logoAlt = "",
+    logoUrl: logoUrlRaw,
+    logoAlt: logoAltRaw,
     appDownloadText = "",
     googlePlayUrl = "",
     appStoreUrl = "",
-    googlePlayImage = "",
-    googlePlayAlt = "",
-    appStoreImage = "",
-    appStoreAlt = "",
+    googlePlayImage: googlePlayImageRaw,
+    googlePlayAlt: googlePlayAltRaw,
+    appStoreImage: appStoreImageRaw,
+    appStoreAlt: appStoreAltRaw,
     serviceSectionsIcons = [],
     aboutTitle = "",
     aboutLinks = [],
@@ -52,6 +53,22 @@ export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
     copyrightText = "",
     paymentMethods = [],
   } = settings;
+
+  const logo = resolveImage(logoUrlRaw, { src: "", alt: logoAltRaw || "" });
+  const logoUrl = logo.src;
+  const logoAlt = logo.alt;
+  const googlePlayImg = resolveImage(googlePlayImageRaw, {
+    src: "",
+    alt: googlePlayAltRaw || "",
+  });
+  const googlePlayImage = googlePlayImg.src;
+  const googlePlayAlt = googlePlayImg.alt;
+  const appStoreImg = resolveImage(appStoreImageRaw, {
+    src: "",
+    alt: appStoreAltRaw || "",
+  });
+  const appStoreImage = appStoreImg.src;
+  const appStoreAlt = appStoreImg.alt;
 
   return (
     <footer className="w-full rounded-t" style={{ backgroundColor }}>

@@ -19,6 +19,7 @@ import { ProductCardTheme } from "@/ui/components/index";
 import { CartAwareProductCard } from "@/ui/components/CartAwareProductCard";
 import { SwipeCarousel } from "@/ui/components/SwipeCarousel";
 import { LazyViewAllButton } from "@/widgets/common/FeaturedCollectionCarousel/components/LazyViewAllButton";
+import { resolveImage } from "@/widgets/utils/resolveImageSrc";
 
 /* ------------------------------------------------------------------ */
 /*  SVG Icons                                                          */
@@ -153,11 +154,14 @@ type GridAnimationPhase = "idle" | "exiting" | "pre-enter" | "entering";
 
 export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
   const headingRich = settings?.heading || "Hair Care <strong>BFFs</strong>";
-  const backgroundImage =
-    settings?.backgroundImage || "/HairCareBFFs/images/bg-watermark.webp";
-  const backgroundImageMobile =
-    settings?.backgroundImageMobile ||
-    "/HairCareBFFs/images/bg-mobile-watermark.webp";
+  const backgroundImage = resolveImage(settings?.backgroundImage, {
+    src: "/HairCareBFFs/images/bg-watermark.webp",
+    alt: "Hair Care BFFs section background",
+  });
+  const backgroundImageMobile = resolveImage(settings?.backgroundImageMobile, {
+    src: "/HairCareBFFs/images/bg-mobile-watermark.webp",
+    alt: "Hair Care BFFs section background",
+  });
 
   const collectionsConfig = settings?.collections;
   const actionButtonText = settings?.actionButtonText;
@@ -280,8 +284,8 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       {/* Background image — mobile */}
       <div className="absolute inset-0 z-[0] md:hidden">
         <Image
-          src={backgroundImageMobile}
-          alt=""
+          src={backgroundImageMobile.src}
+          alt={backgroundImageMobile.alt}
           fill
           className="object-cover"
           loading="lazy"
@@ -292,8 +296,8 @@ export const V1 = memo(function V1({ data, settings }: HairCareBFFsProps) {
       {/* Background image — desktop */}
       <div className="absolute inset-0 z-[0] hidden md:block">
         <Image
-          src={backgroundImage}
-          alt=""
+          src={backgroundImage.src}
+          alt={backgroundImage.alt}
           fill
           className="object-cover"
           loading="lazy"

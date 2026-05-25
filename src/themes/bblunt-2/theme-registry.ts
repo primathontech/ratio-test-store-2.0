@@ -118,19 +118,6 @@ export const themeRegistry = {
       },
     },
 
-    [TEMPLATE_TYPES.orders]: {
-      default: {
-        templatePath: "/themes/bblunt-2/templates/orders/default.ts",
-        translationsPath: "/themes/bblunt-2/locales/pages/orders",
-        routeContext: {
-          templateName: "orders",
-          path: "/orders",
-          params: {},
-          query: {},
-        },
-      },
-    },
-
     [TEMPLATE_TYPES["shine-squad-weekly-offer"]]: {
       default: {
         templatePath:

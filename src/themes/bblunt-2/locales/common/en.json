@@ -8,7 +8,10 @@
       "sold_out_in_pdp": "Sold Out"
     },
     "header": {
-      "logoSrc": "/Header/images/logo.png",
+      "logoSrc": {
+        "src": "/Header/images/logo.png",
+        "alt": "BBlunt"
+      },
       "searchPlaceholder": "Search For Conditioner, Shampoo...",
       "searchSuggestions": [
         "Search for Shampoo",
@@ -104,7 +107,10 @@
         "description": "For better experience and exclusive features",
         "button_text": "Use app",
         "logo_alt": "App Logo",
-        "logo_url": "https://bblunt.com/cdn/shop/files/bbluntIcon.webp?v=1760440322",
+        "logo_url": {
+          "src": "https://bblunt.com/cdn/shop/files/bbluntIcon.webp?v=1760440322",
+          "alt": "BBlunt App Logo"
+        },
         "app_url": "https://onelink.to/zwhyy8"
       }
     },
@@ -116,6 +122,7 @@
           "reviewText": "So easy peasy to use! In just 5 minutes like shampoo I can apply and it leaves my hair so shiny and wonderful!! Totally recommended for people like me who can’t get roots touched up every other week! Thanks BBLUNT!",
           "authorName": "Amaira Joe",
           "avatarSrc": "/Testimonials/images/amaira-joe.jpg",
+          "alt": "Amaira Joe — BBlunt customer testimonial",
           "stars": 5
         },
         {
@@ -123,6 +130,7 @@
           "reviewText": "My friend suggested me use this hair colour, and I tried it. Guess what? I was shocked as it gives a smooth glossy & nourished finish, covers grey hairs, and looks natural. The colour easily lasted for more than two months, unlike other brands in the market.",
           "authorName": "Nikita Advani",
           "avatarSrc": "/Testimonials/images/nikita-advani.jpg",
+          "alt": "Nikita Advani — BBlunt customer testimonial",
           "stars": 5
         },
         {
@@ -130,6 +138,7 @@
           "reviewText": "The first impression after using the shampoo is really impressive. It gives smoothness & hydration and also helps to reduce dryness from my dry and color-treated hair. I highly recommend it to everyone with dry and damaged hair.",
           "authorName": "Anita Agrawal",
           "avatarSrc": "/Testimonials/images/anita-agrawal.jpg",
+          "alt": "Anita Agrawal — BBlunt customer testimonial",
           "stars": 5
         },
         {
@@ -137,25 +146,35 @@
           "reviewText": "This BBLUNT Curly Hair Shampoo & Conditioner is the best combo for people with curly hair. It makes our hair frizz free and smooth, and even it makes it bounce that looks so gorgeous every time. Use both products together to get the best result.",
           "authorName": "Tarini Menon",
           "avatarSrc": "/Testimonials/images/tarini-menon.jpg",
+          "alt": "Tarini Menon — BBlunt customer testimonial",
           "stars": 5
         }
       ]
     },
     "footer": {
       "mobileFooterTagline__rich": "India&apos;s Go-To Hair care - <strong>Bblunt</strong>",
-      "logoUrl": "/Footer/images/logo.png",
+      "logoUrl": {
+        "src": "/Footer/images/logo.png",
+        "alt": "BBlunt Footer Logo"
+      },
       "logoAlt": "BBlunt Footer Logo",
       "appDownloadText": "Get the app",
       "googlePlayUrl": "https://onelink.to/zwhyy8",
       "appStoreUrl": "https://onelink.to/zwhyy8",
-      "googlePlayImage": "/Footer/images/app-store-android.png",
+      "googlePlayImage": {
+        "src": "/Footer/images/app-store-android.png",
+        "alt": "Download BBlunt on Google Play"
+      },
       "googlePlayAlt": "Download BBlunt on Google Play",
-      "appStoreImage": "/Footer/images/app-store-ios.png",
+      "appStoreImage": {
+        "src": "/Footer/images/app-store-ios.png",
+        "alt": "Download BBlunt on Apple App Store"
+      },
       "appStoreAlt": "Download BBlunt on Apple App Store",
       "serviceSectionsIcons": [
-        { "name": "Free Shipping", "image": "" },
-        { "name": "Easy Return", "image": "" },
-        { "name": "COD Available", "image": "" }
+        { "name": "Free Shipping", "image": "", "alt": "Free Shipping icon" },
+        { "name": "Easy Return", "image": "", "alt": "Easy Return icon" },
+        { "name": "COD Available", "image": "", "alt": "COD Available icon" }
       ],
       "aboutTitle": "About Us",
       "aboutLinks": [
@@ -272,11 +291,20 @@
       ]
     },
     "shine_academy_banner": {
-      "logoSrc": "/images/shine-academy/shine-academy-logo.webp",
+      "logoSrc": {
+        "src": "/images/shine-academy/shine-academy-logo.webp",
+        "alt": "BBlunt Shine Academy"
+      },
       "logoAlt": "BBlunt Shine Academy",
       "tagline": "Every time you buy from our website, you play a significant role in impacting a woman’s life by empowering her to shine on.",
-      "mosaicSrcDesktop": "/images/shine-academy/mosaic-collage.webp",
-      "mosaicSrcMobile": "/images/shine-academy/mosaic-collage.webp",
+      "mosaicSrcDesktop": {
+        "src": "/images/shine-academy/mosaic-collage.webp",
+        "alt": "BBlunt Shine Academy - salon stylists and trainees collage"
+      },
+      "mosaicSrcMobile": {
+        "src": "/images/shine-academy/mosaic-collage.webp",
+        "alt": "BBlunt Shine Academy - salon stylists and trainees collage"
+      },
       "mosaicAlt": "BBlunt Shine Academy - salon stylists and trainees collage"
     },
     "announcement_bar__rich": [
