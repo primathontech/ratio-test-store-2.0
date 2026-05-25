@@ -1,5 +1,13 @@
 # storefront-starter-app
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [d939fba]
+  - @shopkit/events@0.10.0
+  - @shopkit/app-shell@2.0.0
+
 ## 0.1.14
 
 ### Enhancements
