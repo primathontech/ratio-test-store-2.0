@@ -1,16 +1,26 @@
 {
   "bblunt-2_bau-offer-page_default": {
     "hero_banner": {
-      "desktopImage": "/HeroBanner/images/hero-desktop.jpg",
-      "mobileImage": "/HeroBanner/images/hero-mobile.jpg",
-      "alt": "Buy 2 for",
+      "desktopImage": {
+        "src": "/HeroBanner/images/hero-desktop.jpg",
+        "alt": "Buy 2 for"
+      },
+      "mobileImage": {
+        "src": "/HeroBanner/images/hero-mobile.jpg",
+        "alt": "Buy 2 for"
+      },
       "mobileAspectRatio": "1/1",
       "desktopAspectRatio": "1440/529"
     },
     "how_it_works_banner": {
-      "desktopImage": "/HowItWorksBanner/images/howtoshop-desktop.jpg",
-      "mobileImage": "/HowItWorksBanner/images/howtoshop-mobile.jpg",
-      "alt": "How To Shop: 1. Add favorites to cart, 2. Apply code at checkout, 3. Enjoy your offer",
+      "desktopImage": {
+        "src": "/HowItWorksBanner/images/howtoshop-desktop.jpg",
+        "alt": "How To Shop: 1. Add favorites to cart, 2. Apply code at checkout, 3. Enjoy your offer"
+      },
+      "mobileImage": {
+        "src": "/HowItWorksBanner/images/howtoshop-mobile.jpg",
+        "alt": "How To Shop: 1. Add favorites to cart, 2. Apply code at checkout, 3. Enjoy your offer"
+      },
       "mobileAspectRatio": "1500/1167",
       "desktopAspectRatio": "5692/692"
     },
@@ -24,8 +34,14 @@
       "category_title": "Most Loved"
     },
     "sale_banner": {
-      "mobileSrc": "/bblunt-2/images/sale-page-background-mobile.webp",
-      "desktopSrc": "/bblunt-2/images/Sale-page-desktop-with-products.webp",
+      "mobileSrc": {
+        "src": "/bblunt-2/images/sale-page-background-mobile.webp",
+        "alt": "Sale Banner"
+      },
+      "desktopSrc": {
+        "src": "/bblunt-2/images/Sale-page-desktop-with-products.webp",
+        "alt": "Sale Banner"
+      },
       "offer": {
         "title": "Buy 2 for",
         "price": "599",

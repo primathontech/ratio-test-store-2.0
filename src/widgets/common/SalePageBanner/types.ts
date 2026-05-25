@@ -18,9 +18,9 @@ export interface ITermsAndConditions {
 export interface SalePageBannerSettings {
   variant?: VariantType | string;
 
-  // Image
-  mobileSrc?: string;
-  desktopSrc?: string;
+  // Image — `{ src, alt }` shape for editor image picker (string accepted for backward compat)
+  mobileSrc?: { src: string; alt: string } | string;
+  desktopSrc?: { src: string; alt: string } | string;
 
   // Offer
   offerTitle?: string;

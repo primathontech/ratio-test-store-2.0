@@ -404,14 +404,13 @@ const merchantWidgetSchemas = {
       desktopImage: {
         type: "image" as const,
         label: "Desktop Image",
-        default: "",
+        default: { src: "", alt: "" },
       },
       mobileImage: {
         type: "image" as const,
         label: "Mobile Image",
-        default: "",
+        default: { src: "", alt: "" },
       },
-      alt: { type: "text" as const, label: "Image Alt Text", default: "" },
       href: {
         type: "text" as const,
         label: "Link URL (optional)",
@@ -447,14 +446,13 @@ const merchantWidgetSchemas = {
       desktopImage: {
         type: "image" as const,
         label: "Desktop Image",
-        default: "",
+        default: { src: "", alt: "" },
       },
       mobileImage: {
         type: "image" as const,
         label: "Mobile Image",
-        default: "",
+        default: { src: "", alt: "" },
       },
-      alt: { type: "text" as const, label: "Image Alt Text", default: "" },
     },
   },
   [WIDGET_TYPES.CountdownTimer]: {
@@ -485,12 +483,12 @@ const merchantWidgetSchemas = {
       mobileSrc: {
         type: "image" as const,
         label: "Mobile Background Image",
-        default: "",
+        default: { src: "", alt: "" },
       },
       desktopSrc: {
         type: "image" as const,
         label: "Desktop Background Image",
-        default: "",
+        default: { src: "", alt: "" },
       },
       offerTitle: { type: "text" as const, label: "Offer Title", default: "" },
       offerPrice: { type: "text" as const, label: "Offer Price", default: "" },
@@ -568,12 +566,7 @@ const merchantWidgetSchemas = {
       imageSrc: {
         type: "image" as const,
         label: "Banner Image",
-        default: "",
-      },
-      imageAlt: {
-        type: "text" as const,
-        label: "Image Alt Text",
-        default: "",
+        default: { src: "", alt: "" },
       },
       href: {
         type: "text" as const,
@@ -603,8 +596,7 @@ const merchantWidgetSchemas = {
       items: {
         type: "objectArray" as const,
         label: "Value Items",
-        fields: ["iconSrc", "iconAlt", "heading", "body"],
-        fieldTypes: { iconSrc: "image" },
+        fields: ["image:iconSrc", "alt", "heading", "body"],
         default: [],
       },
     },

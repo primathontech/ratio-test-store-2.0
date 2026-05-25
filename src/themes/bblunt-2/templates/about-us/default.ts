@@ -114,7 +114,6 @@ export const template: PageConfig = {
           settings: {
             variant: "v1",
             imageSrc: "t:bblunt-2_about-us_default.hero.imageSrc",
-            imageAlt: "t:bblunt-2_about-us_default.hero.imageAlt",
             href: "t:bblunt-2_about-us_default.hero.href",
           },
         },

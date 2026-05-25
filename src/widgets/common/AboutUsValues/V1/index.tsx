@@ -29,7 +29,7 @@ export const V1 = memo(function AboutUsValuesV1({
             {/* Icon */}
             <Image
               src={item.iconSrc}
-              alt={item.iconAlt}
+              alt={item.alt || item.iconAlt || ""}
               width={109}
               height={126}
               className="mx-auto block max-w-full"
