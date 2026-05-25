@@ -5,6 +5,7 @@ import Image from "next/image";
 import type { SalePageBannerProps } from "../types";
 import { HowToShopModal } from "./components/HowToShopModal";
 import { Timer } from "./components/Timer";
+import { resolveImage } from "@/widgets/utils/resolveImageSrc";
 
 /**
  * SalePageBanner V1
@@ -24,8 +25,18 @@ export const V1 = memo(function SalePageBannerV1({
 }: SalePageBannerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const mobileSrc = settings?.mobileSrc;
-  const desktopSrc = settings?.desktopSrc;
+  const mobile = resolveImage(settings?.mobileSrc, {
+    src: "",
+    alt: "Sale Banner",
+  });
+  const desktop = resolveImage(settings?.desktopSrc, {
+    src: "",
+    alt: "Sale Banner",
+  });
+  const mobileSrc = mobile.src;
+  const desktopSrc = desktop.src;
+  const mobileAlt = mobile.alt;
+  const desktopAlt = desktop.alt;
   const offerTitle = settings?.offerTitle;
   const offerPrice = settings?.offerPrice;
   const currencySymbol = settings?.currencySymbol;
@@ -65,7 +76,7 @@ export const V1 = memo(function SalePageBannerV1({
           >
             <Image
               src={mobileSrc}
-              alt="Sale Banner"
+              alt={mobileAlt}
               fill
               className="object-cover"
               priority
@@ -80,7 +91,7 @@ export const V1 = memo(function SalePageBannerV1({
           >
             <Image
               src={desktopSrc}
-              alt="Sale Banner"
+              alt={desktopAlt}
               fill
               className="object-cover"
               priority

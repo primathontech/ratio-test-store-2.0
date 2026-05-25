@@ -6,11 +6,11 @@ import { WidgetProps } from "@/widgets/types";
 export interface HowItWorksBannerSettings {
   /** Widget variant */
   variant?: string;
-  /** Desktop banner image path (shown at >=768px) */
-  desktopImage?: string;
-  /** Mobile banner image path (shown at <768px) */
-  mobileImage?: string;
-  /** Alt text for the banner images */
+  /** Desktop banner image — `{ src, alt }` shape for editor image picker */
+  desktopImage?: { src: string; alt: string } | string;
+  /** Mobile banner image — `{ src, alt }` shape for editor image picker */
+  mobileImage?: { src: string; alt: string } | string;
+  /** Alt text for the banner images (legacy fallback — prefer the image's embedded alt) */
   alt?: string;
   /** Mobile aspect ratio (e.g. "1500/1167") — controls image height on mobile */
   mobileAspectRatio?: string;
