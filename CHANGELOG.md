@@ -1,5 +1,12 @@
 # storefront-starter-app
 
+## 0.1.14
+
+### Enhancements
+
+- **Affiliate / UTM attribution wired end-to-end via `@shopkit/events/affiliate`** — mount `<AffiliateTracker autoCapture />` in the root layout to capture UTM parameters and platform click IDs (`gclid`, `fbclid`, `msclkid`, `ttclid`, `twclid`, `li_fat_id`) on landing. Captured data lands in `sessionStorage` under the `affiliate_data` key, where the existing `userEnricherMiddleware` already reads from — so every pixel event (Meta, GA4, Google Ads, GTM) gets attribution context attached automatically with no per-pixel wiring.
+- **GoKwik checkout now carries affiliate context.** `CustomCheckoutService.initializeCheckout` reads `getAffiliateParams()` and passes the snapshot as `attributes` on the `commerceClient.createCheckout` payload, so the merchant's checkout API receives the attribution data alongside the cart token.
+
 ## 0.1.13
 
 ### Bug Fixes
