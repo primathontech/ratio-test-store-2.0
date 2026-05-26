@@ -34,11 +34,11 @@ const commonWidgetSchemas = {
     type: WIDGET_TYPES.CustomHtml,
     name: "Custom HTML",
     description:
-      "Rich-text content block (long-form formatted text for policy pages and similar)",
+      "Rich-text page (heading + long-form body) for policy pages and similar",
     settingsSchema: {
-      html: {
+      body: {
         type: "richtext" as const,
-        label: "Content (rich text)",
+        label: "Body (rich text)",
         default: "",
       },
     },

@@ -113,7 +113,7 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.CustomHtml,
           settings: {
             variant: "v1",
-            html: "t:bblunt-2_return-policy_default.content__rich",
+            body: "t:bblunt-2_return-policy_default.content__rich",
           },
         },
       ],
