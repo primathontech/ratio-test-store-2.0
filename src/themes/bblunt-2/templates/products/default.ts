@@ -201,6 +201,37 @@ export const template: PageConfig = {
       ],
     },
 
+    // Video App Section — shoppable-video rail (SDK-driven, lazy-loaded
+    // 1s after PDP mount). Filters videos to the current product.
+    {
+      id: "video-app-section",
+      name: "Video App",
+      type: SECTION_TYPES.CONTENT_SECTION,
+      settings: {
+        layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        },
+      },
+      widgets: [
+        {
+          id: "bblunt-2-video-app",
+          name: "Video App",
+          type: WIDGET_TYPES.VideoApp,
+          dataSourceKey: "productData",
+          settings: {
+            variant: "v1",
+            title: "Watch & Shop",
+            layout: "grid",
+            itemsPerRow: 4,
+            enableCtaButton: false,
+          },
+        },
+      ],
+    },
+
     // Reasons to Love Section
     {
       id: "reasons-to-love-section",
@@ -310,6 +341,34 @@ export const template: PageConfig = {
               "t:bblunt-2_products_default.customer_reviews.writeReviewButtonText",
             cancelReviewButtonText:
               "t:bblunt-2_products_default.customer_reviews.cancelReviewButtonText",
+          },
+        },
+      ],
+    },
+
+    // FBT (Frequently Bought Together) Section — SDK-driven bundle rail.
+    // The widget self-hides if the SDK reports no bundle for this product.
+    {
+      id: "fbt-section",
+      name: "Frequently Bought Together",
+      type: SECTION_TYPES.CONTENT_SECTION,
+      settings: {
+        layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        },
+      },
+      widgets: [
+        {
+          id: "bblunt-2-fbt",
+          name: "Frequently Bought Together",
+          type: WIDGET_TYPES.FBT,
+          dataSourceKey: "productData",
+          settings: {
+            variant: "v1",
+            title: "Frequently Bought Together",
           },
         },
       ],
