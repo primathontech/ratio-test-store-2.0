@@ -183,8 +183,23 @@ export const SwipeCarousel = memo(function SwipeCarousel({
       setTransformPx(Math.max(desired, -maxScroll));
     };
     compute();
+    // Editor-preview case: the iframe element's CSS width updates in the
+    // same React commit as `visibleCards`, but the iframe's inner layout
+    // pass (which determines `viewportRef.current.offsetWidth`) lands a
+    // frame later. `window.resize` inside the iframe fires too — but only
+    // after layout, by which point compute has already run with stale
+    // dimensions. ResizeObserver fires AFTER the box actually changes,
+    // so compute gets the correct width on the next callback.
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== "undefined" && viewportRef.current !== null) {
+      ro = new ResizeObserver(compute);
+      ro.observe(viewportRef.current);
+    }
     window.addEventListener("resize", compute);
-    return () => window.removeEventListener("resize", compute);
+    return () => {
+      ro?.disconnect();
+      window.removeEventListener("resize", compute);
+    };
   }, [safeIndex, visibleCards, gapPx, itemCount]);
 
   /* ---------- Prev / Next (scroll by full visible page) ---------- */
@@ -327,10 +342,16 @@ export const SwipeCarousel = memo(function SwipeCarousel({
               key={idx}
               className="flex-shrink-0"
               style={{
-                width:
-                  cardWidth > 0
-                    ? `${cardWidth}px`
-                    : `calc((100% - ${gapPx * (Math.floor(visibleCards) - 1)}px) / ${visibleCards})`,
+                // CSS calc is reactive to the flex container's content-box
+                // width, so cards re-size automatically when the iframe (or
+                // any ancestor) changes width. Pixel widths read from JS are
+                // stale inside the editor iframe during device-switch — the
+                // inner layout pass lands a frame later than React commit.
+                // `cardWidth` from JS is still used for the translateX
+                // calculation (prev/next paging) where a px value is needed.
+                width: `calc((100% - ${
+                  gapPx * (Math.floor(visibleCards) - 1)
+                }px) / ${visibleCards})`,
               }}
             >
               {renderItem(idx, cardWidth)}
