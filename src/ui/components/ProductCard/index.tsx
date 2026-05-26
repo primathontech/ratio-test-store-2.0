@@ -497,7 +497,7 @@ export const ProductCard = memo(function ProductCard({
           <Link
             href={product.href}
             data-testid={`product-card-title-${product.id}`}
-            className={`text-[12px] md:text-[16px] leading-[14.4px] md:leading-[19.2px] font-[600] md:font-[400] no-underline line-clamp-2  min-h-[29px] md:min-h-[40px] transition-colors duration-200 cursor-pointer hover:!text-[#0089bf] ${titleClassName}`.trim()}
+            className={`text-[12px] min-[425px]:text-[14px] md:text-[16px] leading-[14.4px] min-[425px]:leading-[16.8px] md:leading-[19.2px] font-[600] md:font-[400] no-underline line-clamp-2  min-h-[29px] md:min-h-[40px] transition-colors duration-200 cursor-pointer hover:!text-[#0089bf] ${titleClassName}`.trim()}
             style={{
               color: textPrimary,
               transition: "color 0.25s",
@@ -509,7 +509,7 @@ export const ProductCard = memo(function ProductCard({
           {/* Description */}
           {showSubtitle && product.description && (
             <p
-              className="text-[10px] md:text-[13px] leading-[12px] md:leading-[15.6px] line-clamp-2 min-h-[24px] md:min-h-[32px]"
+              className="text-[10px] min-[425px]:text-[12px] md:text-[13px] leading-[12px] min-[425px]:leading-[14.4px] md:leading-[15.6px] line-clamp-2 min-h-[24px] md:min-h-[32px]"
               style={{
                 color: "#727272",
                 fontWeight: 400,
@@ -557,7 +557,7 @@ export const ProductCard = memo(function ProductCard({
                   >
                     <span
                       data-testid={`product-card-compare-price-${product.id}`}
-                      className={`text-[10px] md:text-[12px] leading-[10px] md:leading-[12px] line-through mr-1 text-[var(--compare-price-mobile)] md:text-[var(--compare-price-desktop)] ${compareAtPriceClassName}`.trim()}
+                      className={`text-[10px] min-[425px]:text-[12px] md:text-[12px] leading-[10px] min-[425px]:leading-[12px] md:leading-[12px] line-through mr-1 text-[var(--compare-price-mobile)] md:text-[var(--compare-price-desktop)] ${compareAtPriceClassName}`.trim()}
                       style={
                         {
                           "--compare-price-mobile": t.comparePriceMobile,

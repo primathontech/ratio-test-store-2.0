@@ -340,7 +340,7 @@ export function VariantPicker({
                 {variantUnitWithPrice && (
                   <div
                     data-testid={`variant-unit-price-${variant.id}`}
-                    className="text-left text-xs font-bold leading-[19.2px] text-black p-2"
+                    className="text-left text-xs font-bold !leading-none text-black p-2 bg-gradient-to-b from-[#F4F6F8] to-white overflow-hidden"
                   >
                     ({rupeeSymbol}
                     {variantUnitWithPrice})

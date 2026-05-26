@@ -97,7 +97,7 @@ export const V1 = memo(function V1({ settings }: ShopByCategoriesProps) {
     >
       {/* Section Heading */}
       <h3
-        className="text-start md:text-center mb-4 px-4 lg:mb-[30px] text-[20px] min-[375px]:text-[22px] md:text-[24px] lg:text-[28px] leading-[24px] min-[375px]:leading-[26.4px] md:leading-[28.8px] lg:leading-[33.6px]"
+        className="text-start md:text-center mb-4 px-4 lg:mb-[30px] text-[20px] min-[375px]:text-[22px] min-[425px]:text-[24px] min-[1150px]:text-[28px] leading-[24px] min-[375px]:leading-[26.4px] min-[425px]:leading-[28.8px] min-[1150px]:leading-[33.6px]"
         style={{
           fontWeight: 400,
           color: "#1D1D1D",

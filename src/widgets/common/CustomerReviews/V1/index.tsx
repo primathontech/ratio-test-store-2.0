@@ -229,7 +229,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                                 viewBox="0 0 25 25"
                                 fill="none"
                                 xmlns="http://www.w3.org/2000/svg"
-                                className="shrink-0 w-4 h-[11px] md:w-3 md:h-3"
+                                className="shrink-0 w-[18px] h-[16px]"
                               >
                                 <path d={starPath} fill="#FBC210" />
                               </svg>
@@ -239,13 +239,13 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                             return (
                               <div
                                 key={i}
-                                className="relative shrink-0 w-4 h-[11px] md:w-3 md:h-3"
+                                className="relative shrink-0 w-[18px] h-[16px]"
                               >
                                 <svg
                                   viewBox="0 0 25 25"
                                   fill="none"
                                   xmlns="http://www.w3.org/2000/svg"
-                                  className="absolute inset-0 w-3 h-[11px]"
+                                  className="absolute inset-0 w-[18px] h-[16px]"
                                 >
                                   <path d={starPath} fill="#E5E5E5" />
                                 </svg>
@@ -253,7 +253,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                                   viewBox="0 0 25 25"
                                   fill="none"
                                   xmlns="http://www.w3.org/2000/svg"
-                                  className="absolute inset-0 overflow-visible w-3 h-[11px]"
+                                  className="absolute inset-0 overflow-visible w-[18px] h-[16px]"
                                   style={{
                                     clipPath: `inset(0 ${100 - partial * 100}% 0 0)`,
                                   }}
@@ -269,7 +269,7 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                               viewBox="0 0 25 25"
                               fill="none"
                               xmlns="http://www.w3.org/2000/svg"
-                              className="shrink-0 w-3 h-[11px]"
+                              className="shrink-0 w-[18px] h-[16px]"
                             >
                               <path d={starPath} fill="#E5E5E5" />
                             </svg>

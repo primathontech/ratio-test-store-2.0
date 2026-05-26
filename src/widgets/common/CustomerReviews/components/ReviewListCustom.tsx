@@ -305,7 +305,7 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                           <span
                             key={star}
                             data-testid={`review-star-${review.id || index}-${star}`}
-                            className={`jdgm-star shrink-0 inline-block ${isFilled ? "jdgm--on" : ""} w-4 h-[11px] md:w-3 md:h-[11px]`}
+                            className={`jdgm-star shrink-0 inline-block ${isFilled ? "jdgm--on" : ""} w-[18px] h-[16px]`}
                             style={{
                               ...jdgmStarStyle,
                             }}

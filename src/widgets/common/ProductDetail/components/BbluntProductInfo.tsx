@@ -463,7 +463,7 @@ export function BbluntProductInfo({
         ) : (
           <div
             data-testid="price-no-discount-line"
-            className="flex flex-wrap items-center gap-x-2 gap-y-1"
+            className="flex flex-wrap items-baseline gap-x-2 gap-y-1"
           >
             <span className="text-[12px] md:text-[14px] font-normal text-[#a3a3a3] leading-none">
               {mrp}
