@@ -33,11 +33,12 @@ const commonWidgetSchemas = {
   [WIDGET_TYPES.CustomHtml]: {
     type: WIDGET_TYPES.CustomHtml,
     name: "Custom HTML",
-    description: "Raw HTML snippet with support for <style> and <script> tags",
+    description:
+      "Rich-text content block (long-form formatted text for policy pages and similar)",
     settingsSchema: {
       html: {
-        type: "html" as const,
-        label: "HTML (supports <style> and <script>)",
+        type: "richtext" as const,
+        label: "Content (rich text)",
         default: "",
       },
     },
