@@ -723,3 +723,34 @@ section.bblunt-shimmer-host ~ section {
 .animate-fadeZoomOut {
   animation: fadeZoomOut 0.4s linear forwards;
 }
+
+/* Responsive section visibility — mobile-first, min-width only */
+
+/* hidden-mobile: hide on mobile, restore on tablet+ */
+.hidden-mobile {
+  display: none;
+}
+@media (min-width: 768px) {
+  .hidden-mobile {
+    display: revert;
+  }
+}
+
+/* hidden-tablet: hide from tablet breakpoint, restore on desktop */
+@media (min-width: 768px) {
+  .hidden-tablet {
+    display: none;
+  }
+}
+@media (min-width: 1024px) {
+  .hidden-tablet {
+    display: revert;
+  }
+}
+
+/* hidden-desktop: hide from desktop breakpoint onwards */
+@media (min-width: 1024px) {
+  .hidden-desktop {
+    display: none;
+  }
+}

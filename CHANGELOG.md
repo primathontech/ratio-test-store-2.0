@@ -1,5 +1,26 @@
 # storefront-starter-app
 
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies [d939fba]
+  - @shopkit/events@0.10.0
+  - @shopkit/app-shell@2.0.0
+
+## 0.1.14
+
+### Enhancements
+
+- **Affiliate / UTM attribution wired end-to-end via `@shopkit/events/affiliate`** — mount `<AffiliateTracker autoCapture />` in the root layout to capture UTM parameters and platform click IDs (`gclid`, `fbclid`, `msclkid`, `ttclid`, `twclid`, `li_fat_id`) on landing. Captured data lands in `sessionStorage` under the `affiliate_data` key, where the existing `userEnricherMiddleware` already reads from — so every pixel event (Meta, GA4, Google Ads, GTM) gets attribution context attached automatically with no per-pixel wiring.
+- **GoKwik checkout now carries affiliate context.** `CustomCheckoutService.initializeCheckout` reads `getAffiliateParams()` and passes the snapshot as `attributes` on the `commerceClient.createCheckout` payload, so the merchant's checkout API receives the attribution data alongside the cart token.
+
+## 0.1.13
+
+### Bug Fixes
+
+- **Declare 5 `@radix-ui/*` packages that were pulled transitively** — `@radix-ui/react-checkbox`, `react-label`, `react-select`, `react-slot`, `react-tabs` are imported directly from storefront-starter source (admin theme blocks, builder UI) but were never declared in `package.json`. They worked locally because the monorepo's workspace hoisting surfaced them anyway; on the synced standalone target (and consumer forks) `bun install` failed with undeclared-dep errors. Declared at the same versions used by sibling apps (e.g. momsco). No code change required.
+
 ## 0.1.12
 
 ### Enhancements

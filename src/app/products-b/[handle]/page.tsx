@@ -75,10 +75,10 @@ export async function generateMetadata(props: {
 }): Promise<Metadata> {
   const params = await props.params;
   const product = await fetchProduct(params.handle);
-  return await resolveCommercePageSEO(
+  return resolveCommercePageSEO(
     "product",
     product,
-    `/products/${params.handle}`
+    `/products-b/${params.handle}`
   );
 }
 
