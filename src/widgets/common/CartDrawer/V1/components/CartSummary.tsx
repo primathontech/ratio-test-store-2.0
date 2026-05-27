@@ -43,7 +43,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
           unoptimized
         />
         <p
-          className="drawer_text text-xs text-success !leading-none"
+          className="drawer_text text-xs text-primary !leading-none"
           data-testid="bblunt-cart-summary-prepaid-text"
         >
           Pay online and get extra 5% off
