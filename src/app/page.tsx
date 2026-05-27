@@ -1,11 +1,14 @@
-// app/page.tsx
-import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
+// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
+import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getMerchantName, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
 import { getRouteTranslations } from "@/utils";
+
+/** ISR — revalidate collection data every 30 seconds */
+export const revalidate = 30;
 
 // Generate metadata for home page
 export async function generateMetadata(): Promise<Metadata> {

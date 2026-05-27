@@ -77,9 +77,9 @@ bun run perf:check           # Run all validations
 
 ### New Page
 
-1. Template: `src/themes/dawn/templates/{page-name}/default.ts`
+1. Template: `src/themes/bblunt-2/templates/{page-name}/default.ts`
 2. Next.js Page: `src/app/{page-name}/page.tsx`
-3. Translations (optional): `src/themes/dawn/locales/pages/{page-name}/en.json`
+3. Translations (optional): `src/themes/bblunt-2/locales/pages/{page-name}/en.json`
 
 ### New Widget
 

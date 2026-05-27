@@ -6,6 +6,7 @@
  */
 
 import { DefaultCartStorage } from "@shopkit/cart";
+import { getAffiliateParams } from "@shopkit/events/affiliate";
 import {
   dispatchCartViewEvent,
   dispatchCheckoutCompleteEvent,
@@ -13,6 +14,7 @@ import {
 } from "./events";
 import { getCommerceClient } from "@/config";
 import { getCheckoutConfig } from "./config";
+import { GuestUserStorage } from "@/widgets/common/ThankYou/V1/utils/guestUserStorage";
 
 // Global window interface for GoKwik
 declare global {
@@ -160,6 +162,7 @@ export class CustomCheckoutService {
         payload: {
           cart_token: cartToken,
           checkout_id: "",
+          attributes: getAffiliateParams() ?? undefined,
         },
       });
 
@@ -276,6 +279,7 @@ export class CustomCheckoutService {
         total_price: number;
         payment_method: string;
         discounts: any[];
+        shipping_address?: { pincode?: string };
       }) => {
         const orderId = order?.merchant_order_id || `temp-${Date.now()}`;
         // Trigger Trackier conversion tracking (same as Shopify)
@@ -308,8 +312,24 @@ export class CustomCheckoutService {
             finalRedirectPath += `&customerId=${customerId}`;
           }
 
+          // Fire EDD without awaiting so it doesn't delay the redirect.
+          if (orderId && order.shipping_address?.pincode) {
+            this.createEDDForOrder(
+              orderId,
+              order.shipping_address.pincode
+            ).catch((err) => console.error("EDD creation failed:", err));
+          }
+
           this.currentEventHandlers.navigate!(finalRedirectPath);
         }, 2000);
+      }
+    );
+
+    window.gokwikSdk?.on(
+      "user-login-successful",
+      (data: { userId?: string; userName?: string; email?: string }) => {
+        GuestUserStorage.saveGuestUserData(data);
+        this.currentEventHandlers.onUserLogin?.(data);
       }
     );
 
@@ -418,6 +438,31 @@ export class CustomCheckoutService {
    */
   private static getCurrentcartToken(): string {
     return window.merchantInfo?.cart?.id || "";
+  }
+
+  /**
+   * Seed the order-tracking record (EDD) for a newly placed order.
+   * Fire-and-forget — never throws, never blocks the redirect.
+   */
+  private static async createEDDForOrder(
+    orderId: string,
+    pincode: string
+  ): Promise<void> {
+    try {
+      if (!orderId || !pincode) {
+        console.warn("Missing order ID or pincode for EDD creation");
+        return;
+      }
+      // Lazy-import the service so this file remains tree-shake-friendly
+      // and to avoid a static import cycle through @/services.
+      const { createEDDForOrder } = await import("@/services/order.service");
+      await createEDDForOrder({
+        orderNumber: orderId,
+        deliveryPincode: pincode,
+      });
+    } catch (error) {
+      console.error("Error creating EDD for order:", error);
+    }
   }
 
   /**

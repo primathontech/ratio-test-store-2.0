@@ -37,6 +37,7 @@ export {
   fireUserEngagementEvent,
   handleKwikpassLogin,
   getCartToken,
+  clearKwikpassAuthStorage,
 } from "./utils";
 
 // Hooks

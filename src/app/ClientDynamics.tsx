@@ -12,8 +12,8 @@ const KwikPassCustom = dynamic(
 
 const CustomCartDrawer = dynamic(
   () =>
-    import("@/integrations/cart-drawer-custom").then((mod) => ({
-      default: mod.CustomCartDrawer,
+    import("@/widgets/common/CartDrawer").then((mod) => ({
+      default: mod.CartDrawer,
     })),
   { ssr: false }
 );

@@ -2,8 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import ReactDOM from "react-dom";
-import { fireUserEngagementEvent } from "./utils";
+import { fireUserEngagementEvent, clearKwikpassAuthStorage } from "./utils";
 import { useAuth } from "@shopkit/core/context";
 
 // Constants
@@ -69,7 +68,7 @@ const WalletIcon = ({ className }: IconProps) => (
 
 const UserIcon = ({ className }: IconProps) => (
   <img
-    src="/dawn/images/static/user_icon.svg"
+    src="/bblunt-2/images/static/user_icon.svg"
     alt="User"
     width="19"
     height="22"
@@ -141,7 +140,7 @@ const MyHistoryIcon = ({ className }: { className?: string }) => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className={`h-8 w-8 ${className || ""}`}
+    className={`h-5 w-5 ${className || ""}`}
   >
     <path
       d="M4.6 2.20033L3.3 3.93366C3.04251 4.27697 2.91377 4.44863 2.91676 4.59232C2.91936 4.71736 2.97799 4.83462 3.07646 4.91172C3.18962 5.00032 3.40419 5.00032 3.83333 5.00032H16.1667C16.5958 5.00032 16.8104 5.00032 16.9235 4.91172C17.022 4.83462 17.0806 4.71736 17.0832 4.59232C17.0862 4.44863 16.9575 4.27697 16.7 3.93366L15.4 2.20033M4.6 2.20033C4.74667 2.00477 4.82 1.90699 4.91294 1.83647C4.99525 1.77401 5.08846 1.72741 5.18782 1.69903C5.3 1.66699 5.42222 1.66699 5.66667 1.66699H14.3333C14.5778 1.66699 14.7 1.66699 14.8122 1.69903C14.9115 1.72741 15.0047 1.77401 15.0871 1.83647C15.18 1.90699 15.2533 2.00477 15.4 2.20033M4.6 2.20033L3.03333 4.28921C2.83545 4.55306 2.73651 4.68498 2.66625 4.83026C2.6039 4.95917 2.55843 5.09559 2.53096 5.23612C2.5 5.3945 2.5 5.55941 2.5 5.88921L2.5 15.667C2.5 16.6004 2.5 17.0671 2.68166 17.4236C2.84144 17.7372 3.09641 17.9922 3.41002 18.152C3.76654 18.3337 4.23325 18.3337 5.16667 18.3337L14.8333 18.3337C15.7668 18.3337 16.2335 18.3337 16.59 18.152C16.9036 17.9922 17.1586 17.7372 17.3183 17.4236C17.5 17.0671 17.5 16.6004 17.5 15.667V5.88921C17.5 5.55941 17.5 5.3945 17.469 5.23613C17.4416 5.09559 17.3961 4.95918 17.3338 4.83026C17.2635 4.68498 17.1646 4.55306 16.9667 4.28921L15.4 2.20033M13.3333 8.33366C13.3333 9.21771 12.9821 10.0656 12.357 10.6907C11.7319 11.3158 10.8841 11.667 10 11.667C9.11594 11.667 8.2681 11.3158 7.64298 10.6907C7.01786 10.0656 6.66667 9.21771 6.66667 8.33366"
@@ -160,7 +159,7 @@ const ArrowRightIcon = ({ className }: { className?: string }) => (
     viewBox="0 0 20 20"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className="text-text-base font-bold justify-center mx-4 rounded  text-gray-700"
+    className="text-sm font-bold justify-center mx-4 rounded  text-gray-700"
   >
     <path
       d="M15 6.66667L18.3334 10M18.3334 10L15 13.3333M18.3334 10H7.50002M12.5 3.50337C11.4377 2.86523 10.2044 2.5 8.88891 2.5C4.90019 2.5 1.66669 5.85786 1.66669 10C1.66669 14.1421 4.90019 17.5 8.88891 17.5C10.2044 17.5 11.4377 17.1348 12.5 16.4966"
@@ -201,7 +200,7 @@ export const KwikPassLogo: React.FC<KwikPassLogoProps> = ({
 }) => {
   return (
     <img
-      src="/dawn/images/static/user_icon.svg"
+      src="/bblunt-2/images/static/user_icon.svg"
       alt="User"
       width={width}
       height={height}
@@ -247,20 +246,20 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
     [onClose, onItemClick]
   );
 
-  if (typeof window === "undefined" || !document.body) {
+  if (typeof window === "undefined") {
     return null;
   }
 
-  return ReactDOM.createPortal(
+  // Render dropdown relative to the parent container (no portal needed)
+  return (
     <div
       ref={dropdownRef}
-      className="p-4 overflow-hidden rounded-b-[8px] border w-[170px] h-[140px] border-gray-100 mt-4 md:mt-3 fixed bg-white"
+      className="absolute top-full right-0 md:right-[25px] p-4 overflow-hidden rounded-b-[8px] border w-[170px] h-[140px] border-gray-100 mt-6 md:mt-4 bg-white shadow-[0_0_30px_rgba(0,0,0,0.3)]"
       style={{
-        // boxShadow: "0px 0px 32px 0px rgba(16, 24, 40, 0.32)",
         width: `${DROPDOWN_WIDTH}`,
-        top: position.top,
-        left: position.left,
         zIndex: 99999,
+        transform: "translateX(30px)",
+        marginTop: "21px",
       }}
       // onKeyDown={handleKeyDown}
       // tabIndex={-1}
@@ -272,7 +271,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         {items.map((item) => (
           <button
             key={item.id}
-            className="flex items-center gap-2 text-text-base text-black"
+            className="flex items-center gap-2 text-sm text-black"
             onClick={() => handleItemClick(item)}
             data-testid={item.testId}
             role="menuitem"
@@ -284,7 +283,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
         {showLogout && onLogout && (
           <button
             id="logout"
-            className="flex items-center text-text-base  justify-center w-full p-2 border border-gray-300 rounded text-gray-700 mt-4"
+            className="flex items-center text-sm  justify-center w-full p-2 border border-gray-300 rounded text-gray-700 mt-4"
             aria-label="Logout"
             onClick={() => {
               onLogout();
@@ -293,12 +292,11 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
             data-test-id="logout-button"
           >
             Logout
-            <ArrowRightIcon className="ml-2 h-8 w-8" />
+            <ArrowRightIcon className="ml-2 h-5 w-5" />
           </button>
         )}
       </div>
-    </div>,
-    document.body
+    </div>
   );
 };
 // Menu Items Configuration (unchanged)
@@ -314,7 +312,7 @@ const LOGGED_OUT_MENU_ITEMS: DropdownMenuItem[] = [
 const LOGGED_IN_MENU_ITEMS: DropdownMenuItem[] = [
   {
     id: "account",
-    label: "My Account",
+    label: "Your Profile",
     icon: MyProfileIcon,
     testId: "account-option-1",
     path: "/account",
@@ -363,6 +361,41 @@ export default function KwikpassLoginCustom() {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement | HTMLDivElement>(null);
   const router = useRouter();
+
+  // Check if user is authenticated via any source (useAuth OR GoKwik guest data)
+  const [isAuthenticated, setIsAuthenticated] = useState(!!accessToken);
+
+  useEffect(() => {
+    if (accessToken) {
+      setIsAuthenticated(true);
+      return;
+    }
+    if (typeof window === "undefined") {
+      return;
+    }
+    try {
+      const guestRaw = localStorage.getItem("GUESTUSERDATA");
+      if (guestRaw) {
+        const guestData = JSON.parse(guestRaw);
+        if (guestData?.user_token) {
+          login(guestData.user_token);
+          setIsAuthenticated(true);
+          return;
+        }
+      }
+      const gkToken =
+        sessionStorage.getItem("gk_access_token") ||
+        sessionStorage.getItem("gkAccessToken");
+      if (gkToken) {
+        login(gkToken);
+        setIsAuthenticated(true);
+        return;
+      }
+    } catch {
+      // storage unavailable
+    }
+    setIsAuthenticated(!!accessToken);
+  }, [accessToken, login]);
 
   // Detect touch device on mount
   useEffect(() => {
@@ -434,12 +467,15 @@ export default function KwikpassLoginCustom() {
    */
   const doLogout = () => {
     try {
-      if (typeof window !== "undefined" && window.handleLogout) {
-        window.handleLogout("/");
+      if (typeof window !== "undefined") {
+        clearKwikpassAuthStorage();
+        if (window.handleLogout) {
+          window.handleLogout("/");
+        }
+        logout();
+        setIsAuthenticated(false);
+        window.location.replace("/");
       }
-      logout();
-      setOpen(false);
-      router.push("/");
     } catch (error) {
       console.error("Logout failed:", error);
     }
@@ -485,7 +521,7 @@ export default function KwikpassLoginCustom() {
    * Get menu items based on auth state
    */
   const getMenuItems = useCallback((): DropdownMenuItem[] => {
-    if (accessToken) {
+    if (isAuthenticated) {
       return LOGGED_IN_MENU_ITEMS;
     }
 
@@ -493,38 +529,38 @@ export default function KwikpassLoginCustom() {
       ...item,
       onClick: handleLogin,
     }));
-  }, [accessToken, handleLogin]);
+  }, [isAuthenticated, handleLogin]);
 
   /**
    * Toggle dropdown on click (both mobile and desktop when logged in)
    */
   const toggleDropdown = useCallback(() => {
     // When logged in, always toggle on click (both mobile and desktop)
-    if (accessToken) {
+    if (isAuthenticated) {
       setOpen((prev) => !prev);
     } else if (isTouchDevice) {
       // When logged out, only toggle on mobile
       setOpen((prev) => !prev);
     }
-  }, [accessToken, isTouchDevice]);
+  }, [isAuthenticated, isTouchDevice]);
 
   /**
    * Open dropdown for desktop (hover) - only used when logged out
    */
   const openDropdown = useCallback(() => {
-    if (!isTouchDevice && !accessToken) {
+    if (!isTouchDevice && !isAuthenticated) {
       setOpen(true);
     }
-  }, [isTouchDevice, accessToken]);
+  }, [isTouchDevice, isAuthenticated]);
 
   /**
    * Close dropdown for desktop (hover out) - only used when logged out
    */
   const closeDropdown = useCallback(() => {
-    if (!isTouchDevice && !accessToken) {
+    if (!isTouchDevice && !isAuthenticated) {
       setOpen(false);
     }
-  }, [isTouchDevice, accessToken]);
+  }, [isTouchDevice, isAuthenticated]);
 
   const onOrderHistory = () => {
     fireUserEngagementEvent();
@@ -604,21 +640,21 @@ export default function KwikpassLoginCustom() {
   }, [open]);
 
   const menuItems = getMenuItems();
-  const showDropdown = open && dropdownPosition && accessToken;
+  const showDropdown = open && dropdownPosition && isAuthenticated;
   return (
     <div
-      className="relative flex items-center flex-col w-[100px]"
+      className="relative flex items-center flex-col"
       data-testid="kwikpass-login"
-      onMouseEnter={!accessToken ? openDropdown : undefined}
-      onMouseLeave={!accessToken ? closeDropdown : undefined}
+      onMouseEnter={!isAuthenticated ? openDropdown : undefined}
+      onMouseLeave={!isAuthenticated ? closeDropdown : undefined}
     >
-      {accessToken ? (
+      {isAuthenticated ? (
         // Logged in state
         <>
           {open ? (
             <div
               ref={buttonRef as React.RefObject<HTMLDivElement>}
-              className="h-full flex items-center gap-2 w-[100px]"
+              className="h-full flex items-center gap-2"
             >
               <div
                 className="flex items-center justify-start cursor-pointer"
@@ -640,7 +676,7 @@ export default function KwikpassLoginCustom() {
               >
                 <Close currentColor="#1d1d1d" />
                 <span
-                  className="text-text-base ml-2 font-normal leading-normal whitespace-nowrap"
+                  className="text-sm ml-2 font-normal leading-normal whitespace-nowrap"
                   style={{
                     color: "#1d1d1d",
                   }}
@@ -652,7 +688,7 @@ export default function KwikpassLoginCustom() {
           ) : (
             <button
               ref={buttonRef as React.RefObject<HTMLButtonElement>}
-              className="h-full flex items-center gap-2 cursor-pointer w-[100px]"
+              className="h-full flex items-center gap-2 cursor-pointer"
               aria-label="Open user menu"
               onClick={toggleDropdown}
               disabled={isLoggingIn}
@@ -660,7 +696,7 @@ export default function KwikpassLoginCustom() {
             >
               <KwikPassLogo height="22" width="19" currentColor="#fcfced99" />
               <span
-                className="text-text-base font-normal leading-normal whitespace-nowrap"
+                className="text-sm font-normal leading-normal whitespace-nowrap"
                 style={{
                   color: "#1d1d1d",
                 }}
@@ -674,7 +710,7 @@ export default function KwikpassLoginCustom() {
         // Logged out state - no dropdown, just icon that triggers login
         <div className="relative pt-1.5">
           <button
-            className="h-full flex items-center gap-4 cursor-pointer"
+            className="h-full flex items-center gap-2 cursor-pointer mb-2"
             aria-label="Login"
             onClick={handleLogin}
             disabled={isLoggingIn}
@@ -682,7 +718,7 @@ export default function KwikpassLoginCustom() {
           >
             <KwikPassLogo height="22" width="19" currentColor="#04040499" />
             <span
-              className="hidden lg:block text-text-base font-normal"
+              className="hidden md:block text-sm font-normal"
               style={{
                 color: "#1d1d1d",
               }}
@@ -702,7 +738,7 @@ export default function KwikpassLoginCustom() {
           dropdownRef={dropdownRef}
           onItemClick={handleDropdownItemClick}
           onLogout={doLogout}
-          showLogout={!!accessToken}
+          showLogout={!!isAuthenticated}
         />
       )}
     </div>

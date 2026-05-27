@@ -1,16 +1,27 @@
-import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
+// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
+import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
-import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
+import { getStaticLocale } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
-import { getThemeName } from "@/utils";
+import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
 import { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
+import { ApiProduct } from "@/widgets/common/ProductDetail/types";
 
-export const revalidate = 3600;
+export const revalidate = 30;
 export const dynamicParams = true;
+
+const HIDDEN_PRODUCT_TAG = "hide__products";
+
+function isProductHidden(product: ApiProduct | null | undefined): boolean {
+  const tags = product?.tags
+    ?.map((tag: any) => (typeof tag === "string" ? tag : tag?.name || ""))
+    .filter((tag: string) => tag.length > 0);
+  return Array.isArray(tags) && tags.includes(HIDDEN_PRODUCT_TAG);
+}
 
 export async function generateStaticParams() {
   const homepageFeaturedCollections = process.env.HOMEPAGE_FEATURED_COLLECTIONS;
@@ -32,26 +43,35 @@ export async function generateStaticParams() {
 
   // Get all product handles from collections in parallel
   const commerceClient = getCommerceClient();
-
-  const collectionPromises = handles.map((handle) =>
-    commerceClient
-      .getCollection({
+  const collectionPromises = handles.map(async (handle) => {
+    try {
+      const collectionResponse = await commerceClient.getCollection({
         handle,
-        first: productsPerCollection,
-      })
-      .then((collectionResponse: any) => {
-        if (collectionResponse?.products) {
-          return collectionResponse.products.flatMap((product: any) =>
-            product?.handle ? [product.handle] : []
-          );
-        }
+        productLimit: productsPerCollection,
+      });
+
+      // Check various possible response structures
+      const collection = collectionResponse?.data || collectionResponse;
+      const products =
+        collection?.products || collection?.products?.edges || [];
+
+      if (!products || products.length === 0) {
+        console.warn(`No products found in collection '${handle}'`);
         return [];
-      })
-      .catch((err: any) => {
-        console.warn(`Collection handle '${handle}' not found, skipping`);
-        return [];
-      })
-  );
+      }
+
+      // Handle both direct products array and Shopify edges format
+      const productHandles = products.flatMap((product: any) => {
+        const productNode = product?.node || product;
+        return productNode?.handle ? [productNode.handle] : [];
+      });
+
+      return productHandles;
+    } catch (err) {
+      console.error(`Error fetching collection '${handle}':`, err);
+      return [];
+    }
+  });
 
   // Wait for all collection requests to complete in parallel
   const collectionResults = await Promise.all(collectionPromises);
@@ -63,7 +83,6 @@ export async function generateStaticParams() {
   const uniqueProductHandles = Array.from(new Set(allProductHandles));
 
   // Return handles directly - the collection API already validated these products exist
-  // Additional validation here would cause excessive API calls during build time
   const allHandles = uniqueProductHandles.map((handle) => ({ handle }));
 
   return allHandles;
@@ -85,28 +104,35 @@ export default async function ProductPage(props: {
   params: Promise<{ handle: string }>;
 }) {
   const params = await props.params;
+
+  const product = await fetchProduct(params.handle);
+
+  if (!product) {
+    notFound();
+  }
+
+  if (isProductHidden(product as ApiProduct)) {
+    redirect("/");
+  }
+
   try {
     const themeName = getThemeName();
-
-    // Get locale first, then run other operations in parallel
     const locale = getStaticLocale();
-    const [messages, product] = await Promise.all([
-      loadMessages(locale as "en", "products"),
-      fetchProduct(params.handle),
-    ]);
-
-    if (!product) {
-      notFound();
-    }
 
     const routeContext = {
       templateName: TEMPLATE_TYPES.products,
       path: `/products/${params.handle}`,
       params,
       query: {},
+      fetchAPITemplate: true,
     };
 
-    // Get the page builder with widget manifest
+    const messages = await getRouteTranslations({
+      themeName,
+      routeContext,
+      language: locale,
+    });
+
     const pageBuilder = getPageBuilder();
 
     // Note: The builder uses "merchantName" internally for loading themes/templates

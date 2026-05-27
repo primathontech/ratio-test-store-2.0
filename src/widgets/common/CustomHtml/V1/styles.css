@@ -1,0 +1,108 @@
+/* ---------------------------------------------------------------- *
+ * CustomHtml — rich-text body styles                                *
+ *                                                                   *
+ * Quill in the visual editor strips `class` attributes on save, so  *
+ * we style the semantic tags inside `.custom-html-body` instead.    *
+ * ---------------------------------------------------------------- */
+.custom-html-body {
+  /* Defensive: override any inherited multi-column / justified flow. */
+  column-count: auto;
+  columns: auto;
+  text-align: left;
+  display: block;
+}
+.custom-html-body > *,
+.custom-html-body p,
+.custom-html-body h1,
+.custom-html-body h2,
+.custom-html-body h3,
+.custom-html-body h4,
+.custom-html-body h5,
+.custom-html-body h6 {
+  text-align: left;
+  word-spacing: normal;
+  letter-spacing: normal;
+  text-align-last: auto;
+}
+.custom-html-body h2 {
+  font-size: 14px;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin-top: 15px;
+}
+.custom-html-body h3 {
+  font-size: 16px;
+  font-weight: 600;
+  color: #000;
+  margin-top: 15px;
+  line-height: 1.5;
+}
+@media (min-width: 768px) {
+  .custom-html-body h3 {
+    font-size: 20px;
+  }
+}
+.custom-html-body h4 {
+  font-size: 16px;
+  font-weight: 400;
+  margin-top: 15px;
+}
+@media (min-width: 768px) {
+  .custom-html-body h4 {
+    font-size: 20px;
+  }
+}
+.custom-html-body h6 {
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: 15px;
+}
+.custom-html-body p {
+  margin-top: 15px;
+}
+.custom-html-body strong,
+.custom-html-body b {
+  font-weight: 700;
+}
+.custom-html-body a {
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  cursor: pointer;
+  color: inherit;
+}
+.custom-html-body a:hover {
+  text-decoration-thickness: 2px;
+}
+.custom-html-body ul,
+.custom-html-body ol {
+  margin-top: 15px;
+  padding-left: 20px;
+}
+.custom-html-body ul {
+  list-style: disc;
+}
+.custom-html-body ol {
+  list-style: decimal;
+}
+.custom-html-body li {
+  margin-top: 15px;
+}
+.custom-html-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  color: #545454;
+  border: 1px solid #ebebeb;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.custom-html-body th {
+  padding: 14px;
+  border: 1px solid #ebebeb;
+  font-weight: 700;
+  text-align: left;
+}
+.custom-html-body td {
+  padding: 14px;
+  border: 1px solid #ebebeb;
+}

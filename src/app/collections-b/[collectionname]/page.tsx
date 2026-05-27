@@ -1,4 +1,5 @@
-import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
+// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
+import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
@@ -11,28 +12,29 @@ import { Suspense } from "react";
 export const revalidate = 3600;
 export const dynamicParams = true;
 
-export async function generateStaticParams() {
-  const featuredCollections = process.env.FEATURED_COLLECTIONS;
+// TODO: Implement dynamic route generation based on FEATURED_COLLECTIONS environment variable
+// export async function generateStaticParams() {
+//   const featuredCollections = process.env.FEATURED_COLLECTIONS;
 
-  // Check environment variable
-  if (!featuredCollections) {
-    console.error("FEATURED_COLLECTIONS environment variable not found");
-    return [];
-  }
+//   // Check environment variable
+//   if (!featuredCollections) {
+//     console.error("FEATURED_COLLECTIONS environment variable not found");
+//     return [];
+//   }
 
-  // Split and clean handles
-  const handles = featuredCollections
-    .split(",")
-    .filter(Boolean)
-    .map((h) => h.trim());
+//   // Split and clean handles
+//   const handles = featuredCollections
+//     .split(",")
+//     .filter(Boolean)
+//     .map((h) => h.trim());
 
-  // Return each handle as { collectionname }
-  const staticParams = handles.map((handle) => ({
-    collectionname: handle,
-  }));
+//   // Return each handle as { collectionname }
+//   const staticParams = handles.map((handle) => ({
+//     collectionname: handle,
+//   }));
 
-  return staticParams;
-}
+//   return staticParams;
+// }
 
 export async function generateMetadata(props: {
   params: Promise<{ collectionname: string }>;

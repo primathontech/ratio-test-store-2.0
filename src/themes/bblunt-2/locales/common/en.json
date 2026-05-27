@@ -1,0 +1,333 @@
+{
+  "common": {
+    "logo": "/images/bblunt-2/logo.svg",
+    "site_name": "bblunt-2",
+    "product_card": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "View",
+      "sold_out_in_pdp": "Sold Out"
+    },
+    "header": {
+      "logoSrc": {
+        "src": "/Header/images/logo.png",
+        "alt": "BBlunt"
+      },
+      "searchPlaceholder": "Search For Conditioner, Shampoo...",
+      "searchSuggestions": [
+        "Search for Shampoo",
+        "Search for Hair Care",
+        "Search for Conditioner",
+        "Search for Salon Treatment"
+      ],
+      "product_label": "Product",
+      "product_href": "/collections/all",
+      "product_items": [
+        { "label": "All Products", "href": "/collections/all" },
+        { "label": "New Launches", "href": "/collections/new-launches" },
+        { "label": "Combos", "href": "/collections/combos" },
+        { "label": "Kits", "href": "/collections/kits" },
+        { "label": "Best Sellers", "href": "/collections/bestseller" },
+        { "label": "Tarini X BBlunt", "href": "/collections/tarini-range" }
+      ],
+      "hair_care_label": "Hair Care",
+      "hair_care_href": "/collections/hair-care",
+      "hair_care_type_label": "Product Type",
+      "hair_care_type_href": "/collections/hair-care",
+      "hair_care_type_items": [
+        { "label": "Shampoo", "href": "/collections/shampoo" },
+        { "label": "Hair Sprays", "href": "/collections/sprays" },
+        { "label": "Conditioner", "href": "/collections/conditioner" },
+        { "label": "Mask", "href": "/collections/hair-mask" },
+        { "label": "Serum", "href": "/collections/serum" }
+      ],
+      "hair_care_concern_label": "Shop By Concern",
+      "hair_care_concern_href": "/",
+      "hair_care_concern_items": [
+        { "label": "Hair fall", "href": "/collections/hairfall" },
+        { "label": "Dry Hair", "href": "/collections/dry-hair" },
+        { "label": "Damaged Hair", "href": "/collections/damaged-hair" },
+        {
+          "label": "Smoothening Range",
+          "href": "/collections/advanced-smoothening"
+        },
+        { "label": "Anti-dandruff", "href": "/collections/anti-dandruff" },
+        { "label": "Curly Hair", "href": "/collections/curly-hair" },
+        { "label": "Shine Range", "href": "/collections/intense-shine" }
+      ],
+      "hair_colour_label": "Hair Colour",
+      "hair_colour_href": "/collections/hair-colour",
+      "hair_colour_items": [
+        { "label": "Salon Secret", "href": "/collections/salon-secret" },
+        { "label": "Colour Bundles", "href": "/collections/colour-bundles" },
+        {
+          "label": "Hair Colour Shampoo",
+          "href": "/collections/hair-colour-shampoo"
+        }
+      ],
+      "hair_styling_label": "Hair Styling",
+      "hair_styling_href": "/collections/hair-styling",
+      "hair_styling_items": [
+        { "label": "Heat Protection", "href": "/collections/heat-protection" },
+        { "label": "Hair Sprays", "href": "/collections/sprays" },
+        {
+          "label": "Styling Appliances",
+          "href": "https://style.bblunt.com/collections/electronic-devices"
+        }
+      ],
+      "salon_label": "Salon",
+      "salon_href": "https://bbluntsalons.co.in/salon-locator",
+      "salon_items": [
+        {
+          "label": "Mumbai",
+          "href": "https://bbluntsalons.co.in/salon-locator"
+        },
+        {
+          "label": "Hyderabad",
+          "href": "https://bbluntsalons.co.in/salon-locator"
+        },
+        {
+          "label": "Bangalore",
+          "href": "https://bbluntsalons.co.in/salon-locator"
+        },
+        {
+          "label": "Gurugram",
+          "href": "https://bbluntsalons.co.in/salon-locator"
+        },
+        {
+          "label": "Guwahati",
+          "href": "https://bbluntsalons.co.in/salon-locator"
+        },
+        {
+          "label": "Kolkata",
+          "href": "https://bbluntsalons.co.in/salon-locator"
+        }
+      ],
+      "get_app": {
+        "title": "Get this App",
+        "description": "For better experience and exclusive features",
+        "button_text": "Use app",
+        "logo_alt": "App Logo",
+        "logo_url": {
+          "src": "https://bblunt.com/cdn/shop/files/bbluntIcon.webp?v=1760440322",
+          "alt": "BBlunt App Logo"
+        },
+        "app_url": "https://onelink.to/zwhyy8"
+      }
+    },
+    "testimonials": {
+      "heading__rich": "What our <strong>customers are saying?</strong>",
+      "items": [
+        {
+          "heading": "Surprised at the result",
+          "reviewText": "So easy peasy to use! In just 5 minutes like shampoo I can apply and it leaves my hair so shiny and wonderful!! Totally recommended for people like me who can’t get roots touched up every other week! Thanks BBLUNT!",
+          "authorName": "Amaira Joe",
+          "avatarSrc": "/Testimonials/images/amaira-joe.jpg",
+          "alt": "Amaira Joe — BBlunt customer testimonial",
+          "stars": 5
+        },
+        {
+          "heading": "Last Longing Hair Colour!",
+          "reviewText": "My friend suggested me use this hair colour, and I tried it. Guess what? I was shocked as it gives a smooth glossy & nourished finish, covers grey hairs, and looks natural. The colour easily lasted for more than two months, unlike other brands in the market.",
+          "authorName": "Nikita Advani",
+          "avatarSrc": "/Testimonials/images/nikita-advani.jpg",
+          "alt": "Nikita Advani — BBlunt customer testimonial",
+          "stars": 5
+        },
+        {
+          "heading": "Love this Intense Moisture Range!",
+          "reviewText": "The first impression after using the shampoo is really impressive. It gives smoothness & hydration and also helps to reduce dryness from my dry and color-treated hair. I highly recommend it to everyone with dry and damaged hair.",
+          "authorName": "Anita Agrawal",
+          "avatarSrc": "/Testimonials/images/anita-agrawal.jpg",
+          "alt": "Anita Agrawal — BBlunt customer testimonial",
+          "stars": 5
+        },
+        {
+          "heading": "Curly Girls Will Love This",
+          "reviewText": "This BBLUNT Curly Hair Shampoo & Conditioner is the best combo for people with curly hair. It makes our hair frizz free and smooth, and even it makes it bounce that looks so gorgeous every time. Use both products together to get the best result.",
+          "authorName": "Tarini Menon",
+          "avatarSrc": "/Testimonials/images/tarini-menon.jpg",
+          "alt": "Tarini Menon — BBlunt customer testimonial",
+          "stars": 5
+        }
+      ]
+    },
+    "footer": {
+      "mobileFooterTagline__rich": "India&apos;s Go-To Hair care - <strong>Bblunt</strong>",
+      "logoUrl": {
+        "src": "/Footer/images/logo.png",
+        "alt": "BBlunt Footer Logo"
+      },
+      "logoAlt": "BBlunt Footer Logo",
+      "appDownloadText": "Get the app",
+      "googlePlayUrl": "https://onelink.to/zwhyy8",
+      "appStoreUrl": "https://onelink.to/zwhyy8",
+      "googlePlayImage": {
+        "src": "/Footer/images/app-store-android.png",
+        "alt": "Download BBlunt on Google Play"
+      },
+      "googlePlayAlt": "Download BBlunt on Google Play",
+      "appStoreImage": {
+        "src": "/Footer/images/app-store-ios.png",
+        "alt": "Download BBlunt on Apple App Store"
+      },
+      "appStoreAlt": "Download BBlunt on Apple App Store",
+      "serviceSectionsIcons": [
+        { "name": "Free Shipping", "image": "", "alt": "Free Shipping icon" },
+        { "name": "Easy Return", "image": "", "alt": "Easy Return icon" },
+        { "name": "COD Available", "image": "", "alt": "COD Available icon" }
+      ],
+      "aboutTitle": "About Us",
+      "aboutLinks": [
+        { "name": "Our Story", "href": "/pages/about-us" },
+        { "name": "Blogs", "href": "https://bblunt.com/blogs/news" }
+      ],
+      "usefulLinksTitle": "Useful Links",
+      "usefulLinks": [
+        { "name": "Privacy Policy", "href": "/pages/privacy-policy" },
+        { "name": "Return Policy", "href": "/pages/return-policy" },
+        { "name": "Terms & Conditions", "href": "/pages/terms-and-conditions" },
+        {
+          "name": "Contact Us",
+          "href": "https://support.bblunt.com/support/home"
+        },
+        {
+          "name": "Request Replacement/Returns",
+          "href": "https://bblunt.com/apps/return_prime"
+        }
+      ],
+      "ourSalonsTitle": "Our Salons",
+      "ourSalonsLinks": [
+        {
+          "name": "Mumbai",
+          "href": "https://bbluntsalons.co.in/salon-locator/"
+        },
+        {
+          "name": "Hyderabad",
+          "href": "https://bbluntsalons.co.in/salon-locator/"
+        },
+        {
+          "name": "Bangalore",
+          "href": "https://bbluntsalons.co.in/salon-locator/"
+        },
+        {
+          "name": "Gurugram",
+          "href": "https://bbluntsalons.co.in/salon-locator/"
+        },
+        {
+          "name": "Guwahati",
+          "href": "https://bbluntsalons.co.in/salon-locator/"
+        },
+        {
+          "name": "Kolkata",
+          "href": "https://bbluntsalons.co.in/salon-locator/"
+        }
+      ],
+      "categoriesTitle": "Categories",
+      "categoriesLinks": [
+        { "name": "All Products", "href": "/collections/all" },
+        { "name": "Hair Styling", "href": "/collections/hair-styling" },
+        { "name": "Hair Colour", "href": "/collections/hair-colour" },
+        { "name": "Hair Care", "href": "/collections/hair-care" }
+      ],
+      "myAccountTitle": "My Account",
+      "myAccountLinks": [
+        { "name": "Profile", "href": "/account" },
+        { "name": "Orders", "href": "/pages/orders" },
+        { "name": "Addresses", "href": "/account/addresses" }
+      ],
+      "socialLinks": [
+        {
+          "name": "Facebook",
+          "href": "https://www.facebook.com/bbluntindia",
+          "icon": "facebook"
+        },
+        {
+          "name": "Twitter",
+          "href": "https://twitter.com/bbluntindia",
+          "icon": "twitter"
+        },
+        {
+          "name": "Instagram",
+          "href": "https://www.instagram.com/bbluntindia",
+          "icon": "instagram"
+        },
+        {
+          "name": "YouTube",
+          "href": "https://www.youtube.com/c/BBLUNTIndia/videos",
+          "icon": "youtube"
+        },
+        { "name": "Email", "href": "mailto:care@BBLUNT.com", "icon": "email" }
+      ],
+      "paymentProtectionText": "100% Payment Protection, Easy Return Policy",
+      "copyrightText": "© 2026 Honasa Consumer Limited. All rights reserved.",
+      "paymentMethods": [
+        { "name": "Visa", "icon": "visa", "image": "/Footer/icons/visa.svg" },
+        {
+          "name": "Mastercard",
+          "icon": "master",
+          "image": "/Footer/icons/master.svg"
+        },
+        {
+          "name": "American Express",
+          "icon": "amex",
+          "image": "/Footer/icons/american_express.svg"
+        },
+        {
+          "name": "RuPay",
+          "icon": "rupay",
+          "image": "/Footer/icons/rupay.svg"
+        },
+        {
+          "name": "Net Banking",
+          "icon": "netbanking",
+          "image": "/Footer/icons/netbanking.svg"
+        },
+        {
+          "name": "Google Pay",
+          "icon": "gpay",
+          "image": "/Footer/icons/google_pay.svg"
+        },
+        { "name": "Paytm", "icon": "paytm", "image": "/Footer/icons/paytm.svg" }
+      ]
+    },
+    "shine_academy_banner": {
+      "logoSrc": {
+        "src": "/images/shine-academy/shine-academy-logo.webp",
+        "alt": "BBlunt Shine Academy"
+      },
+      "logoAlt": "BBlunt Shine Academy",
+      "tagline": "Every time you buy from our website, you play a significant role in impacting a woman’s life by empowering her to shine on.",
+      "mosaicSrcDesktop": {
+        "src": "/images/shine-academy/mosaic-collage.webp",
+        "alt": "BBlunt Shine Academy - salon stylists and trainees collage"
+      },
+      "mosaicSrcMobile": {
+        "src": "/images/shine-academy/mosaic-collage.webp",
+        "alt": "BBlunt Shine Academy - salon stylists and trainees collage"
+      },
+      "mosaicAlt": "BBlunt Shine Academy - salon stylists and trainees collage"
+    },
+    "announcement_bar__rich": [
+      {
+        "id": 0,
+        "text": "Get 2 Products at ₹599 | Use code : <strong>GET599</strong>",
+        "href": "/pages/shine-squad-weekly-offer"
+      },
+      {
+        "id": 1,
+        "text": "Get 3 Products at ₹999 | Use code : <strong>GET999</strong>",
+        "href": "/pages/shine-squad-weekly-offer"
+      }
+    ],
+    "collection_page": {
+      "filter_title": "Filter",
+      "sort_dropdown_button_text": "Sort by"
+    },
+    "deleteAccount": {
+      "heading": "Delete Your Account",
+      "description": "Deleting your account will permanently remove your personal data, app activity, and any associated information. This action cannot be undone. To proceed, please verify your identity by entering your registered email address or phone number below. We'll send you a confirmation link or code to complete your account deletion request.",
+      "submitLabel": "Send",
+      "successMessage": "Thanks for contacting us. We'll get back to you as soon as possible."
+    }
+  }
+}

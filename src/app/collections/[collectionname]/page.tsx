@@ -1,14 +1,15 @@
-import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
+// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
+import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
-import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
+import { getStaticLocale } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
-import { getThemeName } from "@/utils";
+import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-export const revalidate = 3600;
+export const revalidate = 30;
 export const dynamicParams = true;
 
 export async function generateStaticParams() {
@@ -56,14 +57,6 @@ export default async function CollectionPage(props: {
   try {
     const themeName = getThemeName();
     const locale = getStaticLocale();
-    const [messages, collection] = await Promise.all([
-      loadMessages(locale as "en", "collections"),
-      fetchCollection(params.collectionname),
-    ]);
-
-    if (!collection) {
-      notFound();
-    }
 
     const routeContext = {
       templateName: TEMPLATE_TYPES.collection,
@@ -71,6 +64,19 @@ export default async function CollectionPage(props: {
       params: { handle: params.collectionname },
       query: {},
     };
+
+    const [messages, collection] = await Promise.all([
+      getRouteTranslations({
+        themeName,
+        routeContext,
+        language: locale,
+      }),
+      fetchCollection(params.collectionname),
+    ]);
+
+    if (!collection) {
+      notFound();
+    }
 
     // Get the page builder with widget manifest
     const pageBuilder = getPageBuilder();

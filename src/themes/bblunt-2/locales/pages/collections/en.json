@@ -1,0 +1,28 @@
+{
+  "bblunt-2_collection_default": {
+    "banner_carousel": [
+      {
+        "id": 1,
+        "type": "IMAGE",
+        "mobileSrc": "https://bblunt.com/cdn/shop/files/Square_copy_2.jpg?v=1770381198&width=1000",
+        "desktopSrc": "https://bblunt.com/cdn/shop/files/Artboard_1_5.jpg?v=1770381198&width=1200",
+        "indicatorHeading": "",
+        "indicatorSubHeading": "",
+        "href": "#",
+        "alt": "BBLUNT Buy 2 get 2"
+      }
+    ],
+    "collection_additional_information": {
+      "title": "Additional Information"
+    },
+    "collection_faq": {
+      "title": "FAQ"
+    },
+    "collection_timer": {
+      "endDateString": "Apr 30, 2026 23:59:59",
+      "urgencyText": "Hurry Up!",
+      "saleLabel": "Hurry! Offer Will Expire in",
+      "expiredText": "Oops! Offer is expired."
+    }
+  }
+}
