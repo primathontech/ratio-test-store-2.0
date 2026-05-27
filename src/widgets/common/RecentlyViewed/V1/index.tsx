@@ -275,14 +275,14 @@ export const V1 = memo(function V1({ data, settings }: RecentlyViewedProps) {
       }}
     >
       {/* Content overlay */}
-      <div className="relative z-[1] max-w-[1400px] mx-auto md:px-[30px] xl:px-[50px]">
+      <div className="relative z-[1] max-w-[1400px] mx-auto py-[24px] md:py-[32px] md:px-[50px]">
         {/* Heading */}
-        <div className="flex flex-col items-start text-center mb-4 md:mb-[30px] px-[15px]">
+        <div className="flex flex-col items-start text-center mb-4 md:mb-[30px] px-[15px] md:px-0">
           <h4
-            className="text-[20px] min-[375px]:text-[22px] md:text-[24px] lg:text-[28px] leading-[24px] min-[375px]:leading-[26.4px] md:leading-[28.8px] lg:leading-[33.6px] [&_strong]:font-bold"
+            className="text-[20px] min-[375px]:text-[22px] min-[425px]:text-[24px] leading-[24px] min-[375px]:leading-[26.4px] min-[425px]:leading-[28.8px] [&_strong]:font-bold"
             style={{
               color: settings?.sectionTextColor || "#000000",
-              fontWeight: 400,
+              fontWeight: 700,
               margin: 0,
             }}
           >

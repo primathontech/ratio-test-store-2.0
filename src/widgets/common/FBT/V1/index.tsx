@@ -444,9 +444,9 @@ export const V1: React.FC<FBTProps> = ({ data }) => {
   }
 
   return (
-    <div className="bg-white mb-6">
-      <div className="theme-box w-full max-w-[1400px] mx-auto md:px-6 min-[1150px]:px-[65px] relative py-8">
-        <div className="relative pb-6 min-[1280px]:px-[28px] min-[1280px]:pl-[38px]">
+    <div className="bg-white">
+      <div className="w-full max-w-[1400px] mx-auto md:px-[50px] py-[24px] md:py-[32px] relative">
+        <div className="relative">
           {sdkLoading && (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <CardSkeleton />
