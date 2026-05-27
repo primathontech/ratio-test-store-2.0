@@ -27,6 +27,7 @@ import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
 import { fontVariables } from "./fonts";
 import LimeChatScript from "./LimeChatScript";
+import { AffiliateTracker } from "@shopkit/events/affiliate";
 
 // =============================================================================
 // ROOT LAYOUT
@@ -73,6 +74,7 @@ export default async function RootLayout({
             },
           }}
         >
+          <AffiliateTracker autoCapture />
           <AppCartInitializer merchantName={merchantName} />
           {children}
           <ClientDynamics

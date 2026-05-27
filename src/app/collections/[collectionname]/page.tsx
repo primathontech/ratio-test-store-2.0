@@ -42,7 +42,7 @@ export async function generateMetadata(props: {
   const searchParams = await props.searchParams;
   const params = await props.params;
   const collection = await fetchCollection(params.collectionname);
-  return await resolveCommercePageSEO(
+  return resolveCommercePageSEO(
     "collection",
     collection,
     `/collections/${params.collectionname}`,

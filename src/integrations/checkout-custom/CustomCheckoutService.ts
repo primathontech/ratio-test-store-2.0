@@ -6,6 +6,7 @@
  */
 
 import { DefaultCartStorage } from "@shopkit/cart";
+import { getAffiliateParams } from "@shopkit/events/affiliate";
 import {
   dispatchCartViewEvent,
   dispatchCheckoutCompleteEvent,
@@ -161,6 +162,7 @@ export class CustomCheckoutService {
         payload: {
           cart_token: cartToken,
           checkout_id: "",
+          attributes: getAffiliateParams() ?? undefined,
         },
       });
 

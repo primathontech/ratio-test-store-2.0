@@ -78,10 +78,11 @@ export async function generateMetadata(props: {
 }): Promise<Metadata> {
   const params = await props.params;
   const product = await fetchProduct(params.handle);
-  return await resolveCommercePageSEO(
+  return resolveCommercePageSEO(
     "product",
     product,
-    `/products/${params.handle}`
+    `/collections/${params.collectionname}/products-b/${params.handle}`,
+    { canonicalPath: `/products/${params.handle}` }
   );
 }
 
