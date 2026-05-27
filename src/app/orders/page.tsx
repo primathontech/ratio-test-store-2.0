@@ -9,10 +9,10 @@ import { getSEOConfig } from "@/config";
 
 export const dynamic = "force-dynamic";
 
-export function generateMetadata(): Metadata {
+export async function generateMetadata(): Promise<Metadata> {
   const { siteUrl, siteName } = getSEOConfig();
   return resolvePageSEO(
-    { noIndex: true },
+    { title: "Order Confirmation", noIndex: true },
     { siteUrl, siteName, path: "/orders" }
   );
 }
