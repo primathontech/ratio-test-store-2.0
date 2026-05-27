@@ -11,15 +11,9 @@ import "./styles.css";
  * semantic tags. All styling lives in `./styles.css`, scoped to
  * `.custom-html-body`.
  */
-// Quill (react-quill-new) saves every regular space as `&nbsp;` (U+00A0),
-// which prevents the browser from wrapping lines. Normalize both the HTML
-// entity and the raw NBSP character to regular spaces before rendering.
-function normalizeRichTextHtml(html: string): string {
-  return html.replace(/&nbsp;/g, " ").replace(/\u00A0/g, " ");
-}
 
 export const V1 = memo(function V1({ settings, className }: CustomHtmlProps) {
-  const body = normalizeRichTextHtml(settings?.body ?? "");
+  const body = settings?.body ?? "";
 
   return (
     <div className={`bg-white ${className ?? ""}`}>
