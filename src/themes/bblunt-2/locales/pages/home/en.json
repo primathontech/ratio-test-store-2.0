@@ -58,11 +58,11 @@
         "id": 1,
         "type": "IMAGE",
         "href": "/pages/shine-squad-bb30-offer",
-        "desktopSrc": "/BannerCarousel/images/slide1-desktop.webp",
-        "mobileSrc": "/BannerCarousel/images/slide1-mobile.webp",
         "alt": "Get 3 Freebies on orders above Rs499 - Code FREETRIO",
         "indicatorHeading": "Free 3-Step\nRoutine",
-        "indicatorSubHeading": "Shop our"
+        "indicatorSubHeading": "Shop our",
+        "desktopImage": "/BannerCarousel/images/slide1-desktop.webp",
+        "mobileImage": "/BannerCarousel/images/slide1-mobile.webp"
       }
     ],
     "shop_by_concerns": {
