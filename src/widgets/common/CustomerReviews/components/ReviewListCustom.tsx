@@ -387,7 +387,7 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                   <div
                     data-testid={`review-text-${review.id}`}
                     className={`text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] ${
-                      isLong && !isExpanded ? "md:line-clamp-2" : ""
+                      isLong && !isExpanded ? "line-clamp-4" : ""
                     }`}
                   >
                     {comment}
@@ -396,18 +396,9 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                     <button
                       type="button"
                       onClick={() => setExpandedReviewId(review.id)}
-                      className="text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] hover:underline font-normal mt-1"
+                      className="text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#636E6E] underline font-normal mt-1"
                     >
                       Read more
-                    </button>
-                  )}
-                  {isExpanded && isLong && (
-                    <button
-                      type="button"
-                      onClick={() => setExpandedReviewId(null)}
-                      className="text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#333333] hover:underline font-normal mt-1"
-                    >
-                      Show less
                     </button>
                   )}
                 </div>
