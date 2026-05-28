@@ -8,7 +8,7 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { ImageSlide } from "../compounds/ImageSlide";
 import { Indicators } from "../compounds/Indicators";
 import { VideoSlide } from "../compounds/VideoSlide";
-import { MediaContentType, Props } from "../types";
+import { Props } from "../types";
 
 export const V1: React.FC<Props> = ({ settings }) => {
   const {
@@ -156,15 +156,48 @@ export const V1: React.FC<Props> = ({ settings }) => {
             const originalIndex =
               bannerCarousel.length === 2 && loop ? index % 2 : index;
 
-            // Apply rounded corners unless it's a single image with no video
+            // Resolve slide kind. Editor merchants upload via the image
+            // and video Browse Library buttons (filtered by mime type at the
+            // picker), so the `type` text field is treated as a hint only:
+            //   1. If `type` is set and matches a filled URL → respect it.
+            //   2. Otherwise infer: any *Video URL present → "video", else "image".
+            // This is forgiving of typos / missing type values that can sneak
+            // in through the objectArray text input.
+            const declaredType = (item.type ?? "").toString().toUpperCase();
+            const hasVideo = Boolean(item.desktopVideo || item.mobileVideo);
+            const hasImage = Boolean(item.desktopImage || item.mobileImage);
+            let isVideo: boolean;
+            if (declaredType === "VIDEO") {
+              isVideo = hasVideo || !hasImage;
+            } else if (declaredType === "IMAGE") {
+              isVideo = !hasImage && hasVideo;
+            } else {
+              isVideo = hasVideo;
+            }
+
+            // Apply rounded corners unless every slide is a single image
             const applyRounded =
               bannerCarousel.length > 1 ||
               bannerCarousel.some(
-                (slide) => slide.type === MediaContentType.VIDEO
+                (s) =>
+                  Boolean(s.desktopVideo || s.mobileVideo) ||
+                  (s.type ?? "").toString().toUpperCase() === "VIDEO"
               );
 
+            const resolvedDesktop = isVideo
+              ? item.desktopVideo || item.desktopSrc || ""
+              : item.desktopImage || item.desktopSrc || "";
+            const resolvedMobile = isVideo
+              ? item.mobileVideo || item.mobileSrc || ""
+              : item.mobileImage || item.mobileSrc || "";
+            const resolvedItem = {
+              ...item,
+              desktopSrc: resolvedDesktop,
+              mobileSrc: resolvedMobile,
+            };
+
             const slideProps = {
-              item,
+              item: resolvedItem,
               index: originalIndex, // Pass original index for priority calculation
               desktopAspectRatio: desktopAspectRatio,
               mobileAspectRatio: mobileAspectRatio,
@@ -186,7 +219,7 @@ export const V1: React.FC<Props> = ({ settings }) => {
 
             const slideClassName = `embla__slide ${mobileSlideClass} ${desktopSlideClass} min-w-0`;
 
-            if (item.type === MediaContentType.VIDEO) {
+            if (isVideo) {
               return (
                 <div
                   key={uniqueKey}
@@ -215,7 +248,7 @@ export const V1: React.FC<Props> = ({ settings }) => {
         <button
           data-testid="banner-carousel-prev-button"
           onClick={() => emblaApi?.scrollPrev()}
-          className="absolute left-10 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[4.8rem] bg-black/50 hover:bg-black/70 rounded-[50%] transition-all duration-200"
+          className="absolute left-10 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[48px] bg-black/50 hover:bg-black/70 rounded-[50%] transition-all duration-200"
           aria-label="Previous slide"
         >
           <Image
@@ -234,7 +267,7 @@ export const V1: React.FC<Props> = ({ settings }) => {
         <button
           data-testid="banner-carousel-next-button"
           onClick={() => emblaApi?.scrollNext()}
-          className="absolute right-10 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[4.8rem] bg-black/50 hover:bg-black/70 rounded-[50%] transition-all duration-200"
+          className="absolute right-10 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[48px] bg-black/50 hover:bg-black/70 rounded-[50%] transition-all duration-200"
           aria-label="Next slide"
         >
           <Image

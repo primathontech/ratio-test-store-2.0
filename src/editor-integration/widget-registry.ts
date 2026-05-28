@@ -170,12 +170,17 @@ const merchantWidgetSchemas = {
       bannerCarousel: {
         type: "objectArray" as const,
         label: "Banner Slides",
+        // `type` is intended to be a select (IMAGE | VIDEO) but the current
+        // editor's ObjectArrayInput only renders plain text inputs inside
+        // an objectArray row. Merchants enter "IMAGE" or "VIDEO" verbatim.
         fields: [
           "id",
           "type",
           "href",
-          "image:desktopSrc",
-          "image:mobileSrc",
+          "image:desktopImage",
+          "image:mobileImage",
+          "video:desktopVideo",
+          "video:mobileVideo",
           "image:posterSrc",
           "alt",
           "indicatorHeading",

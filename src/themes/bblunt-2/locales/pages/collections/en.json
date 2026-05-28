@@ -1,5 +1,9 @@
 {
   "bblunt-2_collection_default": {
+    "banner": {
+      "mobileAspectRatio": "1/1",
+      "desktopAspectRatio": "1440/450"
+    },
     "banner_carousel": [
       {
         "id": 1,

@@ -83,6 +83,23 @@ export default async function RootLayout({
           />
         </AppShell>
 
+        {/* Merchant AB scripts – required early */}
+        {process.env.NEXT_PUBLIC_PRT_CONFIG_URL && (
+          <Script
+            src={process.env.NEXT_PUBLIC_PRT_CONFIG_URL}
+            strategy="beforeInteractive"
+            id="merchant-prt-config"
+          />
+        )}
+
+        {process.env.NEXT_PUBLIC_PRT_AB_URL && (
+          <Script
+            src={process.env.NEXT_PUBLIC_PRT_AB_URL}
+            strategy="beforeInteractive"
+            id="merchant-prt-ab"
+          />
+        )}
+
         {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
