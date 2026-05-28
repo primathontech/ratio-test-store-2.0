@@ -7,22 +7,69 @@ export enum MediaContentType {
 }
 
 /**
- * Banner carousel item interface
+ * Banner carousel item interface.
+ *
+ * Field requirements (what merchants MUST fill in the editor):
+ *
+ *   id                Required.  Unique React key + indicator mapping.
+ *   href              Recommended.  Where the slide navigates on click.
+ *
+ *   Image slide       Required:  at least one of `desktopImage` / `mobileImage`.
+ *                                 If only one is set the widget uses it at both
+ *                                 breakpoints.
+ *
+ *   Video slide       Required:  at least one of `desktopVideo` / `mobileVideo`.
+ *                     Strongly   `posterSrc` — used as
+ *                     recommended:    (a) the still thumbnail in the media
+ *                                         indicator pill (otherwise the
+ *                                         indicator falls back to an inline
+ *                                         <video> which is heavier), and
+ *                                     (b) the `poster=` attribute on the
+ *                                         <video> while it buffers.
+ *
+ *   indicatorHeading  Required when `indicatorType: "media"` (default) — used
+ *   indicatorSubHeading             as the text inside the active indicator
+ *                                   pill. Ignored when `indicatorType: "simple"`.
+ *
+ *   alt               Recommended for accessibility on image slides.
+ *
+ *   type              Optional — kept for backward compat. The widget infers
+ *                     slide kind from which media URL is filled.
  */
 export interface IBannerCarouselItem {
   /** Unique identifier */
   id: number;
 
-  /** Content type - IMAGE or VIDEO */
-  type: MediaContentType;
+  /**
+   * Optional explicit content type ("IMAGE" / "VIDEO").
+   * When omitted, the widget infers the slide kind from which media URL is
+   * filled: any `desktopVideo` / `mobileVideo` present → video, else image.
+   * The editor exposes this as a text input inside the slides objectArray;
+   * merchants don't need to fill it as long as they upload via the
+   * correct Browse Library picker (image: for image slides, video: for video).
+   */
+  type?: MediaContentType;
 
-  /** Mobile image/video URL */
-  mobileSrc: string;
+  /** Desktop image URL. Editor: image picker. */
+  desktopImage?: string;
+  /** Mobile image URL. Editor: image picker. */
+  mobileImage?: string;
+  /** Desktop video URL. Editor: video picker. */
+  desktopVideo?: string;
+  /** Mobile video URL. Editor: video picker. */
+  mobileVideo?: string;
 
-  /** Desktop image/video URL */
-  desktopSrc: string;
+  /** Legacy combined desktop URL (image or video). Used as fallback when the typed field is empty. */
+  desktopSrc?: string;
+  /** Legacy combined mobile URL (image or video). Used as fallback when the typed field is empty. */
+  mobileSrc?: string;
 
-  /** Poster image URL for videos (optional) */
+  /**
+   * Poster image URL for video slides — strongly recommended.
+   * Used as the still thumbnail in the carousel's media-indicator pill and
+   * as the `<video poster="…">` while the video buffers. Without it, the
+   * indicator falls back to rendering an inline <video> for the preview.
+   */
   posterSrc?: string;
 
   /** Indicator heading text */
