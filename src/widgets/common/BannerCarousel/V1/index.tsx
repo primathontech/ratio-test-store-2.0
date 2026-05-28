@@ -248,7 +248,7 @@ export const V1: React.FC<Props> = ({ settings }) => {
         <button
           data-testid="banner-carousel-prev-button"
           onClick={() => emblaApi?.scrollPrev()}
-          className="absolute left-10 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[4.8rem] bg-black/50 hover:bg-black/70 rounded-[50%] transition-all duration-200"
+          className="absolute left-10 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[48px] bg-black/50 hover:bg-black/70 rounded-[50%] transition-all duration-200"
           aria-label="Previous slide"
         >
           <Image
@@ -267,7 +267,7 @@ export const V1: React.FC<Props> = ({ settings }) => {
         <button
           data-testid="banner-carousel-next-button"
           onClick={() => emblaApi?.scrollNext()}
-          className="absolute right-10 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[4.8rem] bg-black/50 hover:bg-black/70 rounded-[50%] transition-all duration-200"
+          className="absolute right-10 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex items-center justify-center size-[48px] bg-black/50 hover:bg-black/70 rounded-[50%] transition-all duration-200"
           aria-label="Next slide"
         >
           <Image

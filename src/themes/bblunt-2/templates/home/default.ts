@@ -344,8 +344,10 @@ export const template: PageConfig = {
             draggable: true,
             showIndicators: true,
             indicatorType: "media",
-            mobileAspectRatio: "1/1",
-            desktopAspectRatio: "1440/529",
+            mobileAspectRatio:
+              "t:bblunt-2_home_default.banner.mobileAspectRatio",
+            desktopAspectRatio:
+              "t:bblunt-2_home_default.banner.desktopAspectRatio",
             bannerCarousel: "t:bblunt-2_home_default.banner_carousel",
           },
         },
