@@ -93,7 +93,7 @@ export const Indicators: React.FC<IndicatorsProps> = ({
   return (
     <div
       data-testid="banner-carousel-indicators"
-      className="absolute -bottom-11 left-1/2 transform -translate-x-1/2 md:left-auto md:right-56 md:bottom-[2.4rem] md:transform-none flex items-center gap-6 z-[10]"
+      className="absolute -bottom-[21.5px] left-1/2 transform -translate-x-1/2 md:left-auto md:right-[140px] md:bottom-[24px] md:transform-none flex items-center gap-[15px] z-[10]"
     >
       {items.map((item, index) => {
         const isActive = index === currentIndex;
@@ -142,7 +142,7 @@ export const Indicators: React.FC<IndicatorsProps> = ({
               {/* Thumbnail Image / Video */}
               <div
                 data-testid={`banner-carousel-indicator-thumbnail-${index}`}
-                className={`relative h-16 md:h-[51px] border-2 md:border-[2.5px] border-black rounded-md overflow-hidden transition-[width] duration-[1200ms] ease-out ${isActive ? "w-16 md:w-[51px]" : "w-5"}`}
+                className={`relative h-[40px] md:h-[51px] border-2 md:border-[2.5px] border-black rounded-md overflow-hidden transition-[width] duration-[1200ms] ease-out ${isActive ? "w-[40px] md:w-[51px]" : "w-[20px]"}`}
               >
                 {thumbUrl ? (
                   useVideoThumb ? (
@@ -192,7 +192,7 @@ export const Indicators: React.FC<IndicatorsProps> = ({
                   <div className="text-[10px] md:text-[10.2px] font-medium line-clamp-1">
                     {item.indicatorSubHeading}
                   </div>
-                  <div className="text-sm md:text-[15.3px] font-bold line-clamp-1">
+                  <div className="text-[8.75px] md:text-[15.3px] font-bold line-clamp-1">
                     {item.indicatorHeading}
                   </div>
                 </div>
@@ -200,7 +200,7 @@ export const Indicators: React.FC<IndicatorsProps> = ({
                 {/* Arrow */}
                 <div
                   data-testid={`banner-carousel-indicator-arrow-${index}`}
-                  className="ml-2 w-[2.3rem] flex justify-center items-center rounded-md bg-white/15"
+                  className="ml-2 w-[23px] flex justify-center items-center rounded-md bg-white/15"
                 >
                   <Image
                     src="/icons/hero-carousel-right-arrow.svg"

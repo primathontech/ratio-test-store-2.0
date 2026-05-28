@@ -3,6 +3,10 @@
     "page_title": "Home Page",
     "heading": "Home",
     "description": "Welcome to the Home page.",
+    "banner": {
+      "mobileAspectRatio": "1/1",
+      "desktopAspectRatio": "1440/529"
+    },
     "hair_care_bffs": {
       "heading__rich": "Hair Care <strong>BFFs</strong>",
       "backgroundImage": {
