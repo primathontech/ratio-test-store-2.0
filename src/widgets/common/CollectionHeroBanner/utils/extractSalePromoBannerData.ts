@@ -10,6 +10,17 @@ function escapeHtml(input: string): string {
 }
 
 /**
+ * The rich-text API embeds non-breaking spaces (U+00A0) inside text
+ * segments. When concatenated around `<strong>` tags, the browser
+ * treats long nbsp-joined runs as one unbreakable token and renders
+ * the line with grossly stretched whitespace. Collapse nbsp + any
+ * whitespace to a single regular space so lines wrap normally.
+ */
+function normalizeWhitespace(input: string): string {
+  return input.replace(/ /g, " ").replace(/\s+/g, " ");
+}
+
+/**
  * Convert the `how_to_shop` rich-text tree (root → list → list-item → text)
  * into the `{ id, text }[]` shape consumed by the HowToShopModal. Inline
  * bold runs are emitted as `<strong>…</strong>`.
@@ -31,10 +42,11 @@ function richTextToHowToShopSteps(
     const text = (item.children ?? [])
       .filter((c) => c?.type === "text")
       .map((c) => {
-        const raw = escapeHtml(c.value ?? "");
+        const raw = escapeHtml(normalizeWhitespace(c.value ?? ""));
         return c.bold ? `<strong>${raw}</strong>` : raw;
       })
-      .join("");
+      .join("")
+      .trim();
     return { id: index + 1, text };
   });
 }
