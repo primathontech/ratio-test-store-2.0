@@ -24,6 +24,7 @@ export const V1 = memo(function SalePageBannerV1({
   className = "",
 }: SalePageBannerProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isCountdownExpired, setIsCountdownExpired] = useState(false);
 
   const mobile = resolveImage(settings?.mobileSrc, {
     src: "",
@@ -42,6 +43,7 @@ export const V1 = memo(function SalePageBannerV1({
   const currencySymbol = settings?.currencySymbol;
   const couponCode = settings?.couponCode;
   const expiryText = settings?.expiryText;
+  const counterTitle = settings?.counterTitle;
   const endDateString = settings?.endDateString;
   const bannerCtaLabel = settings?.bannerCtaLabel;
   const howToShopTitle = settings?.howToShopTitle;
@@ -87,7 +89,7 @@ export const V1 = memo(function SalePageBannerV1({
           {/* Desktop Image */}
           <div
             data-testid="sale-page-banner-desktop-image"
-            className="hidden md:block relative w-full aspect-[182/57]"
+            className="hidden md:block relative w-full aspect-[1440/530]"
           >
             <Image
               src={desktopSrc}
@@ -162,12 +164,23 @@ export const V1 = memo(function SalePageBannerV1({
             {endDateString && (
               <div
                 data-testid="sale-page-banner-timer-section"
-                className="mt-2.5"
+                className="mt-2.5 flex flex-col items-center"
               >
+                {counterTitle && (
+                  <div
+                    data-testid="sale-page-banner-counter-title"
+                    className="text-white text-[28px] xl:text-[38px] font-semibold leading-none mb-2 md:mb-4 text-center"
+                  >
+                    {isCountdownExpired
+                      ? "Oops! Offer is Expired"
+                      : counterTitle}
+                  </div>
+                )}
                 <Timer
                   endDateString={endDateString}
                   interval={timerInterval}
                   className="justify-center"
+                  onExpiredChange={setIsCountdownExpired}
                 />
               </div>
             )}

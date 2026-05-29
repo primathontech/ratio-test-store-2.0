@@ -30,6 +30,38 @@ export interface CollectionBannerItem {
 }
 
 /**
+ * Sale promo banner metaobject (collection metadata → `sale_promo_banner`).
+ * Drives the SalePageBanner override on collection pages that opt in.
+ */
+export interface SalePromoBannerItem {
+  id: string;
+  type: string;
+  handle: string;
+  status: string;
+  fields: {
+    title?: { value: string; data_type: string };
+    subtitle?: { value: string; data_type: string };
+    desktop_image?: { value: string; data_type: string };
+    image?: { value: string; data_type: string };
+    discount_code?: { value: string; data_type: string };
+    price_text?: { value: string; data_type: string };
+    end_sale_date?: { value: string; data_type: string };
+    expire_text?: { value: string | string[]; data_type: string };
+  };
+}
+
+/**
+ * Rich-text node shape used by the `how_to_shop` metadata field.
+ */
+export interface HowToShopRichTextNode {
+  type: string;
+  value?: string;
+  bold?: boolean;
+  listType?: string;
+  children?: HowToShopRichTextNode[];
+}
+
+/**
  * Collection metadata fields the banner reads from
  */
 export interface CollectionBannerMetadata {
@@ -47,6 +79,14 @@ export interface CollectionBannerMetadata {
   };
   collection_redirection?: {
     value: string;
+    data_type: string;
+  };
+  sale_promo_banner?: {
+    value: SalePromoBannerItem[];
+    data_type: string;
+  };
+  how_to_shop?: {
+    value: HowToShopRichTextNode;
     data_type: string;
   };
 }
