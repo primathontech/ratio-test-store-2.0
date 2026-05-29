@@ -21,16 +21,8 @@ export default function LimeChatScript() {
             g.defer = true;
             s.parentNode.insertBefore(g,s);
             g.onload=function(){
-              var pathname = window.location.pathname;
-              var isCustomerOrOrderPage = pathname.startsWith('/account') ||
-                pathname.includes('order') ||
-                pathname.includes('thank-you');
-              var websiteToken = isCustomerOrOrderPage
-                ? 'DtL44DZeVnPdYUqxxycykdAv'
-                : 'Seiake7fu4wfuc441v2XtKwg';
-
               window.chatwootSDK.run({
-                websiteToken: websiteToken,
+                websiteToken: 'DtL44DZeVnPdYUqxxycykdAv',
                 baseUrl: BASE_URL
               });
 
