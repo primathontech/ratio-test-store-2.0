@@ -81,6 +81,7 @@ export function extractSalePromoBannerData(
   const offerPrice = getFirstValue(fields.subtitle?.value) || "";
   const couponCode = getFirstValue(fields.discount_code?.value) || "";
   const expiryText = getFirstValue(fields.price_text?.value) || "";
+  const counterTitle = getFirstValue(fields.expire_text?.value) || "";
   const endDateString = getFirstValue(fields.end_sale_date?.value) || "";
 
   const howToShopSteps = richTextToHowToShopSteps(metadata?.how_to_shop?.value);
@@ -94,6 +95,7 @@ export function extractSalePromoBannerData(
     currencySymbol: "",
     couponCode,
     expiryText,
+    counterTitle,
     endDateString,
     timerInterval: 1000,
     bannerCtaLabel: howToShopSteps.length > 0 ? "How to shop" : "",

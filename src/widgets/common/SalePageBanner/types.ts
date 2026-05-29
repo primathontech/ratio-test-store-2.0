@@ -35,6 +35,14 @@ export interface SalePageBannerSettings {
   /** Tick interval (ms). Defaults to 1000. */
   timerInterval?: number;
 
+  /**
+   * Optional title rendered directly above the countdown timer (e.g.
+   * "Sale ending soon"). When the countdown expires, this is replaced
+   * with the hardcoded "Oops! Offer is Expired" copy. Hidden entirely
+   * when not provided — matches bblunt.com's `expire_text` behavior.
+   */
+  counterTitle?: string;
+
   // CTA
   bannerCtaLabel?: string;
 

@@ -9,6 +9,8 @@ interface TimerProps {
   interval?: number;
   /** Custom styling */
   className?: string;
+  /** Fires whenever the expired state changes (incl. initial mount). */
+  onExpiredChange?: (expired: boolean) => void;
 }
 
 interface TimeLeft {
@@ -59,6 +61,7 @@ export const Timer: React.FC<TimerProps> = ({
   endDateString,
   interval = 1000,
   className = "",
+  onExpiredChange,
 }) => {
   const [timeLeft, setTimeLeft] = useState<TimeLeft>({
     days: 0,
@@ -131,6 +134,11 @@ export const Timer: React.FC<TimerProps> = ({
       }
     };
   }, [endDateString, interval, calculateTimeLeft, safeSetTimeLeft]);
+
+  // Notify parent whenever the expired state transitions (incl. initial).
+  useEffect(() => {
+    onExpiredChange?.(timeLeft.isExpired);
+  }, [timeLeft.isExpired, onExpiredChange]);
 
   const renderTimeUnit = useCallback(
     (value: number, label: string, maxValue: number) => (
