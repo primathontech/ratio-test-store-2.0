@@ -2,8 +2,10 @@
 
 import React, { memo } from "react";
 import { BannerCarousel } from "../../BannerCarousel";
+import { SalePageBanner } from "../../SalePageBanner";
 import type { CollectionHeroBannerProps } from "../types";
 import { extractBannerData } from "../utils/extractBannerData";
+import { extractSalePromoBannerData } from "../utils/extractSalePromoBannerData";
 
 /**
  * CollectionHeroBanner V1
@@ -31,6 +33,18 @@ export const V1 = memo(function CollectionHeroBannerV1({
     desktopAspectRatio = "182/57",
     style,
   } = settings ?? {};
+
+  // When the collection exposes `sale_promo_banner` + `how_to_shop` metadata,
+  // override the standard banner carousel with the SalePageBanner widget
+  // (matches bblunt.com/collections/sale-page behavior).
+  const salePromoSettings = extractSalePromoBannerData(data ?? {});
+  if (salePromoSettings) {
+    return (
+      <div data-testid="collection-hero-banner-v1-sale-promo">
+        <SalePageBanner settings={salePromoSettings} className={className} />
+      </div>
+    );
+  }
 
   const dynamicBannerCarousel = extractBannerData(data ?? {});
   const finalBannerCarousel =
