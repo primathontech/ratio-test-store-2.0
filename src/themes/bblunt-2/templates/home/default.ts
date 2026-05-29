@@ -317,7 +317,7 @@ export const template: PageConfig = {
         layout: SECTION_LAYOUT_OPTIONS.FULL,
         responsive: {
           mobile: {
-            margin: { top: -58, right: 0, bottom: 0, left: 0 },
+            margin: { top: -60, right: 0, bottom: 0, left: 0 },
             padding: { top: 0, right: 0, bottom: 0, left: 0 },
           },
           tablet: {
