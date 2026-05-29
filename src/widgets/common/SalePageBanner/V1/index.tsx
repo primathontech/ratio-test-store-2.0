@@ -87,7 +87,7 @@ export const V1 = memo(function SalePageBannerV1({
           {/* Desktop Image */}
           <div
             data-testid="sale-page-banner-desktop-image"
-            className="hidden md:block relative w-full aspect-[182/57]"
+            className="hidden md:block relative w-full aspect-[1440/530]"
           >
             <Image
               src={desktopSrc}
