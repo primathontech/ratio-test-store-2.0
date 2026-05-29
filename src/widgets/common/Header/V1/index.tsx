@@ -548,19 +548,16 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
   return (
     <>
       <header
-        className={`sticky top-0 z-[20] max-md:!bg-[rgb(255_255_255/0.6)] max-md:[backdrop-filter:blur(16px)] max-md:[-webkit-backdrop-filter:blur(16px)] ${className ?? ""}`}
+        className={`sticky top-0 z-[20] max-md:!bg-[rgb(255_255_255/0.6)] md:[backdrop-filter:blur(16px)] md:[-webkit-backdrop-filter:blur(16px)] ${className ?? ""}`}
         style={{
           background:
             backgroundColor === "#ffffff"
               ? "rgb(255 255 255 / .6)"
               : backgroundColor,
-          backdropFilter: backgroundColor === "#ffffff" ? "blur(16px)" : "none",
-          WebkitBackdropFilter:
-            backgroundColor === "#ffffff" ? "blur(16px)" : "none",
         }}
       >
         {/* Inner container: 60px height + 15px padding on mobile/tablet, 65px + 40px on desktop (≥1100px) */}
-        <div className="w-full max-w-full flex items-center h-[60px] px-[15px] min-[1100px]:h-[65px] min-[1100px]:px-10 border-b border-white md:border-primary/60">
+        <div className="w-full max-w-full flex items-center h-[60px] px-[15px] min-[1100px]:h-[65px] min-[1100px]:px-10 md:border-primary/60">
           {/* ---- Mobile Hamburger (visible below 1100px) ---- */}
           <div className="flex items-center mr-[15px] min-[1100px]:hidden">
             <button
