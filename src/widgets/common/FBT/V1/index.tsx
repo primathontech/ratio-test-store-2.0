@@ -284,21 +284,9 @@ export const V1: React.FC<FBTProps> = ({ data }) => {
       return;
     }
 
-    const applyFirstCardMargin = () => {
-      if (window.innerWidth >= 770) {
-        return;
-      }
-      const scrollContainer = el.querySelector(".fbt-no-scrollbar");
-      const firstCard = scrollContainer?.firstElementChild as HTMLElement;
-      if (firstCard) {
-        firstCard.style.paddingLeft = "12px";
-      }
-    };
-
     const check = () => {
       if (el.childElementCount > 0) {
         setSdkLoading(false);
-        applyFirstCardMargin();
       }
     };
     check();
