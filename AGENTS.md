@@ -363,6 +363,51 @@ const updatedCart = await client.addToCart({ id: cartId, items: lines });
 const orders = await client.getOrderHistory({ customerAccessToken });
 ```
 
+**Static Generation (build-time route pre-generation):**
+
+All 8 dynamic route pages use factory functions from `@shopkit/data-layer` to pre-build every collection and product page at CI time. Do not add `generateStaticParams` manually — use the factories:
+
+```typescript
+import {
+  createCollectionStaticParams,
+  createProductViaCollectionsStaticParams,
+  createCollectionProductStaticParams,
+} from "@shopkit/data-layer";
+import { getCommerceClient } from "@/config/commerce";
+
+// For /collections/[collectionname] and /collections-b/[collectionname]
+export const generateStaticParams =
+  createCollectionStaticParams(getCommerceClient);
+
+// For /products/[handle] and /products-b/[handle]
+// (custom backend has no products-list endpoint — collection traversal is the only option)
+export const generateStaticParams =
+  createProductViaCollectionsStaticParams(getCommerceClient);
+
+// NOTE — choosing the right product factory:
+// • Always use createProductViaCollectionsStaticParams for the custom REST backend (this
+//   project). The backend exposes no products-list endpoint — the only way to discover all
+//   product handles is to traverse collections. It fetches all collections then all products
+//   per collection, deduplicating by handle so each /products/[handle] route is pre-built once.
+// • createProductStaticParams is for backends that expose a direct product-listing endpoint
+//   (e.g. Shopify Storefront API). Do NOT use it with the custom backend.
+
+// For all nested /collections/.../products/... routes
+export const generateStaticParams =
+  createCollectionProductStaticParams(getCommerceClient);
+```
+
+Always pair with `export const revalidate = 3600` and `export const dynamicParams = true` as literal values (Next.js static analysis does not support computed values here).
+
+All factories accept an `options` object. The traversal-based factories (`createProductViaCollectionsStaticParams`, `createCollectionProductStaticParams`) also accept `concurrency` (default: `10`) to cap simultaneous `getCollection` API calls — lower it if your backend is rate-limited, raise it if your backend is fast:
+
+```typescript
+export const generateStaticParams = createProductViaCollectionsStaticParams(
+  getCommerceClient,
+  { collectionsLimit: 250, productsPerCollection: 100, concurrency: 5 }
+);
+```
+
 **Response Pattern:**
 
 ```typescript
