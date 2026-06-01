@@ -51,6 +51,7 @@ function findPageFiles(): string[] {
         if (
           entry === "api" ||
           entry === "editor" ||
+          entry === "editor-preview" ||
           entry === "_next" ||
           entry.startsWith(".")
         ) {
