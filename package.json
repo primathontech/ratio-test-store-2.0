@@ -24,7 +24,7 @@
     "watch:widgets": "shopkit watch:widgets",
     "watch:locales": "shopkit watch:locales",
     "dev:watch": "bun run generate && (bun run watch:widgets & bun run watch:locales & next dev -p 4344)",
-    "migrate:theme": "bun src/app/editor/scripts/migrate-theme.ts",
+    "migrate:theme": "shopkit-editor-bridge-migrate",
     "editor:sync": "git submodule sync --recursive && git submodule update --init --recursive",
     "editor:status": "git -C src/app/editor status -sb && git -C src/app/editor rev-parse --short HEAD",
     "editor:update": "git -C src/app/editor pull origin main && git add src/app/editor && git commit -m \"chore(editor): update editor to latest main\" || true",
