@@ -13,6 +13,8 @@
   - `ui/layout/SectionWrapper.tsx` imports `SectionWrapperEditor` from the package; the local copy is deleted. Selection between editor and core wrapper continues to read `NEXT_PUBLIC_ENABLE_EDITOR_CHANGES` (`"true"` → editor wrapper, otherwise → core), matching the existing convention.
 - **New required env var**: `NEXT_PUBLIC_EDITOR_ORIGIN`. Sets the one allowed editor origin. Unset → empty allowlist → bridge fails closed.
 - **New dependency**: `@shopkit/editor-bridge` at `^0.2.0`.
+- **Automatic static generation via `@shopkit/data-layer`** — all 8 dynamic route pages (`collections`, `collections-b`, `products`, `products-b`, and all 4 nested collection-product variants) now use factory functions from `@shopkit/data-layer` instead of reading `FEATURED_COLLECTIONS` env vars. At build time, all collection and product handles are fetched from the commerce backend automatically — no manual configuration needed.
+- **Removed `FEATURED_COLLECTIONS`, `HOMEPAGE_FEATURED_COLLECTIONS`, `HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT` env vars** — these are no longer read anywhere in the app.
 
 ### Theme-team follow-ups (per editable template)
 
