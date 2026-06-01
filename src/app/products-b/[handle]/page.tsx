@@ -1,3 +1,4 @@
+import { createProductViaCollectionsStaticParams } from "@shopkit/data-layer";
 import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
@@ -12,73 +13,24 @@ import { cache } from "react";
 export const revalidate = 3600;
 export const dynamicParams = true;
 
-export async function generateStaticParams() {
-  const homepageFeaturedCollections = process.env.HOMEPAGE_FEATURED_COLLECTIONS;
-  const productsPerCollection = parseInt(
-    process.env.HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT || "8"
-  );
-
-  if (!homepageFeaturedCollections) {
-    console.error(
-      "HOMEPAGE_FEATURED_COLLECTIONS environment variable not found"
-    );
-    return [];
-  }
-
-  const handles = homepageFeaturedCollections
-    .split(",")
-    .filter(Boolean)
-    .map((h) => h.trim());
-
-  // Get all product handles from collections in parallel
-  const commerceClient = getCommerceClient();
-
-  const collectionPromises = handles.map((handle) =>
-    commerceClient
-      .getCollection({
-        handle,
-        first: productsPerCollection,
-      })
-      .then((collectionResponse: any) => {
-        if (collectionResponse?.products) {
-          return collectionResponse.products.flatMap((product: any) =>
-            product?.handle ? [product.handle] : []
-          );
-        }
-        return [];
-      })
-      .catch((err: any) => {
-        console.warn(`Collection handle '${handle}' not found, skipping`);
-        return [];
-      })
-  );
-
-  // Wait for all collection requests to complete in parallel
-  const collectionResults = await Promise.all(collectionPromises);
-
-  // Flatten all product handles from all collections
-  const allProductHandles = collectionResults.flat();
-
-  // Remove duplicate product handles
-  const uniqueProductHandles = Array.from(new Set(allProductHandles));
-
-  // Return handles directly - the collection API already validated these products exist
-  // Additional validation here would cause excessive API calls during build time
-  const allHandles = uniqueProductHandles.map((handle) => ({ handle }));
-
-  return allHandles;
-}
+// Custom backend has no products-list endpoint — collection traversal is the only way to discover all handles.
+export const generateStaticParams =
+  createProductViaCollectionsStaticParams(getCommerceClient);
 
 export async function generateMetadata(props: {
   params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
-  const params = await props.params;
-  const product = await fetchProduct(params.handle);
-  return resolveCommercePageSEO(
-    "product",
-    product,
-    `/products-b/${params.handle}`
-  );
+  try {
+    const params = await props.params;
+    const product = await fetchProduct(params.handle);
+    return resolveCommercePageSEO(
+      "product",
+      product,
+      `/products-b/${params.handle}`
+    );
+  } catch {
+    return {};
+  }
 }
 
 export default async function ProductPage(props: {

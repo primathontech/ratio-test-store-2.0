@@ -44,27 +44,6 @@ ENABLE_EDITOR_CHANGES=false
 
 ---
 
-## Collection & Product Configuration
-
-| Variable                                      | Required | Description                                          |
-| --------------------------------------------- | -------- | ---------------------------------------------------- |
-| `FEATURED_COLLECTIONS`                        | Optional | Comma-separated collection handles for navigation    |
-| `HOMEPAGE_FEATURED_COLLECTIONS`               | Optional | Comma-separated collection handles for homepage      |
-| `HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT` | Optional | Max products per homepage collection (default: `12`) |
-
-```env
-# Featured collections for navigation/sidebar
-FEATURED_COLLECTIONS="all,new-launches,bestseller,combos,hair-care"
-
-# Collections displayed on homepage
-HOMEPAGE_FEATURED_COLLECTIONS="most-loved,bestsellers,new-arrivals"
-
-# Limit products shown per collection on homepage
-HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT=12
-```
-
----
-
 ## Shopify Configuration
 
 Required when `NEXT_PUBLIC_PLATFORM=shopify` or using Shopify as data source:
@@ -354,13 +333,6 @@ NEXT_PUBLIC_THEME_NAME=dawn
 # =============================================================================
 NEXT_PUBLIC_EDITOR_API_URL=https://visual-editor-be.primathontech.co.in
 ENABLE_EDITOR_CHANGES=false
-
-# =============================================================================
-# COLLECTION & PRODUCT CONFIGURATION
-# =============================================================================
-FEATURED_COLLECTIONS="all,new-launches,bestseller,combos,hair-care"
-HOMEPAGE_FEATURED_COLLECTIONS="most-loved,for-hair-fall,for-dry-hair"
-HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT=12
 
 # =============================================================================
 # SHOPIFY CONFIGURATION (Data Source)

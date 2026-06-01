@@ -1,3 +1,4 @@
+import { createCollectionProductStaticParams } from "@shopkit/data-layer";
 import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
@@ -9,80 +10,26 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-// For featured collection products, use static generation
 export const revalidate = 3600;
 export const dynamicParams = true;
-
-export async function generateStaticParams() {
-  const homepageFeaturedCollections = process.env.FEATURED_COLLECTIONS;
-  const productsPerCollection = parseInt(
-    process.env.HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT || "8"
-  );
-
-  if (!homepageFeaturedCollections) {
-    console.error(
-      "HOMEPAGE_FEATURED_COLLECTIONS environment variable not found"
-    );
-    return [];
-  }
-
-  const handles = homepageFeaturedCollections
-    .split(",")
-    .filter(Boolean)
-    .map((h) => h.trim());
-
-  const commerceClient = getCommerceClient();
-
-  // Get all collection-product pairs in parallel
-  const collectionPromises = handles.map((collectionname) =>
-    commerceClient
-      .getCollection({
-        handle: collectionname,
-        first: productsPerCollection,
-      })
-      .then((collectionResponse: any) => {
-        if (collectionResponse?.products) {
-          return collectionResponse.products.flatMap((product: any) =>
-            product?.handle ? [{ collectionname, handle: product.handle }] : []
-          );
-        }
-        return [];
-      })
-      .catch((err: any) => {
-        console.warn(
-          `Collection handle '${collectionname}' not found, skipping`
-        );
-        return [];
-      })
-  );
-
-  // Wait for all collection requests to complete in parallel
-  const collectionResults = await Promise.all(collectionPromises);
-
-  // Flatten all collection-product pairs
-  const collectionProductPairs = collectionResults.flat();
-
-  // Remove duplicate products (based on handle but keeping first found collection)
-  const uniquePairs = Array.from(
-    new Map(collectionProductPairs.map((item) => [item.handle, item])).values()
-  );
-
-  // Return pairs directly - the collection API already validated these products exist
-  // Additional validation here would cause excessive API calls during build time
-  return uniquePairs;
-}
+export const generateStaticParams =
+  createCollectionProductStaticParams(getCommerceClient);
 
 export async function generateMetadata(props: {
   params: Promise<{ collectionname: string; handle: string }>;
 }): Promise<Metadata> {
-  const params = await props.params;
-  const product = await fetchProduct(params.handle);
-  return resolveCommercePageSEO(
-    "product",
-    product,
-    `/collections/${params.collectionname}/products/${params.handle}`,
-    { canonicalPath: `/products/${params.handle}` }
-  );
+  try {
+    const params = await props.params;
+    const product = await fetchProduct(params.handle);
+    return resolveCommercePageSEO(
+      "product",
+      product,
+      `/collections/${params.collectionname}/products/${params.handle}`,
+      { canonicalPath: `/products/${params.handle}` }
+    );
+  } catch {
+    return {};
+  }
 }
 
 // Main page component
