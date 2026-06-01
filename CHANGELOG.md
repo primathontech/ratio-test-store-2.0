@@ -1,5 +1,19 @@
 # storefront-starter-app
 
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @shopkit/cli@0.3.0
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @shopkit/cli@1.0.0
+
 ## 0.2.1
 
 ### Patch Changes
