@@ -297,6 +297,10 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  // Track page scroll so desktop header can apply backdrop-blur only after
+  // the user has scrolled past the top. (Initial render: no blur.)
+  const [isScrolled, setIsScrolled] = useState(false);
+
   // Initialise from `?q=` so landing on /pages/search?q=bblunt
   // pre-populates the header input. Mirrors how SearchPageWrapper reads the URL.
   const searchParams = useSearchParams();
@@ -545,10 +549,17 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     { key: "need_help", label: "Need help ?", href: "#" },
   ];
 
+  useEffect(() => {
+    const onScroll = () => setIsScrolled(window.scrollY > 0);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <>
       <header
-        className={`sticky top-0 z-[20] max-md:!bg-[rgb(255_255_255/0.6)] md:[backdrop-filter:blur(16px)] md:[-webkit-backdrop-filter:blur(16px)] ${className ?? ""}`}
+        className={`sticky top-0 z-[20] max-md:!bg-[rgb(255_255_255/0.6)] ${isScrolled ? "[backdrop-filter:blur(16px)] [-webkit-backdrop-filter:blur(16px)]" : ""} ${className ?? ""}`}
         style={{
           background:
             backgroundColor === "#ffffff"
