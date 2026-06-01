@@ -24,6 +24,7 @@ import { AppShell, AppHead } from "@shopkit/app-shell";
 import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
 import { AffiliateTracker } from "@shopkit/events/affiliate";
+import { EditorHostMount } from "@/editor-integration/EditorHostMount";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
@@ -91,6 +92,7 @@ export default async function RootLayout({
         >
           <AffiliateTracker autoCapture />
           <AppCartInitializer merchantName={merchantName} />
+          <EditorHostMount />
           {children}
           <ClientDynamics
             locale={locale}
