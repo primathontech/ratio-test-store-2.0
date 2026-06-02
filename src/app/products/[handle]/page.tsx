@@ -6,6 +6,7 @@ import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
+import { KwikPassProductView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
@@ -74,6 +75,7 @@ export default async function ProductPage(props: {
       <>
         <AppProductTracker product={product} />
         {pageContent}
+        <KwikPassProductView product={product} />
       </>
     );
   } catch (error) {

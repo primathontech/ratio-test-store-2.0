@@ -105,6 +105,8 @@ NEXT_PUBLIC_MULTI_PIXEL_IDS=your-fb-pixel-id
 export { KwikPassCustom } from "./KwikPassCustom";
 export { KwikPassScriptCustom } from "./KwikPassScriptCustom";
 export { KwikpassLoginCustom } from "./KwikpassLoginCustom";
+export { KwikPassProductView } from "./KwikPassProductView";
+export { KwikPassCollectionView } from "./KwikPassCollectionView";
 
 // Config
 export { getKwikPassConfig } from "./config";
@@ -114,8 +116,6 @@ export {
   dispatchProductViewEvent,
   dispatchCollectionViewEvent,
   dispatchPageViewEvent,
-  dispatchLoginEvent,
-  dispatchLogoutEvent,
   KwikPassEventType,
 } from "./events";
 
@@ -133,15 +133,19 @@ export {
 
 ## Events
 
-### Analytics Events Dispatched
+### `page_view_kp` DOM CustomEvent (KwikEngage retargeting)
 
-| Event             | When                   | Data                    |
-| ----------------- | ---------------------- | ----------------------- |
-| `PRODUCT_VIEW`    | Product page viewed    | productId, title, price |
-| `COLLECTION_VIEW` | Collection page viewed | collectionId, title     |
-| `PAGE_VIEW`       | Page viewed            | path, title             |
-| `LOGIN`           | User logged in         | userId, phone           |
-| `LOGOUT`          | User logged out        | userId                  |
+Every dispatch fans into `window.dispatchEvent(new CustomEvent("page_view_kp", { detail: { type, data } }))`. KwikPass's script listens on this event and forwards to KwikEngage retargeting flows.
+
+| Type           | Fired by                   | `data` shape (mandatory fields **bold**)                                           |
+| -------------- | -------------------------- | ---------------------------------------------------------------------------------- |
+| `"product"`    | `<KwikPassProductView>`    | **product_id**, **name**, **image_url**, **price**, variant_id?, handle?, cart_id? |
+| `"collection"` | `<KwikPassCollectionView>` | **collection_id**, **name**, **image_url**, handle?, cart_id?                      |
+| `"other"`      | `<KwikPassCustom>`         | cart_id?                                                                           |
+
+Mount `<KwikPassProductView product={product} />` in product page server components alongside `<AppProductTracker>`. Mount `<KwikPassCollectionView collection={collection} />` inside the collection page `<Suspense>`. The `"other"` dispatch is handled automatically by `<KwikPassCustom>` for non-product/collection paths.
+
+Gate: dispatcher silently no-ops when `NEXT_PUBLIC_KP_EVENT_ALLOWED` is `"no"`.
 
 ### Window Events
 

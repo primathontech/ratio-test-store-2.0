@@ -1,5 +1,16 @@
 # storefront-starter-app
 
+## 0.2.3
+
+### Enhancements
+
+- **KwikPass `page_view_kp` retargeting events wired end-to-end.** KwikEngage retargeting flows (Home / Collection / Product / Cart) listen for a `page_view_kp` DOM CustomEvent on every page; this release adds the missing dispatchers and mounts them across all 8 product/collection routes (top-level + nested under collections, both `/products` and `/products-b` variants).
+  - Two new client trackers in `integrations/kwikpass-custom/`: `KwikPassProductView` and `KwikPassCollectionView`. Both fire on mount + every SPA navigation, no-op when `cartToken` is absent, and extract the KwikEngage payload from the commerce-client product/collection prop.
+  - `KwikPassCustom` now fires `PAGE_VIEW` (mapped to `type: "other"`) only when the path isn't a product/collection page AND a `cartToken` exists. Cart access switched from `getCartToken()` (sync localStorage) to `useCartStore()` (Zustand).
+  - `events.ts` consolidated to a single sink (the `page_view_kp` DOM event). Drops the legacy `window.gokwik.track` and FB Pixel paths, drops the `LOGIN`/`LOGOUT` enum members + dispatchers, drops the `KwikPassEvent` envelope. `KWIK_ENGAGE_TYPE_MAP` is a typed `Record` so TS enforces map completeness.
+  - Dropped the unused `useCheckoutToken` hook (zero callers).
+- **New optional env var**: `NEXT_PUBLIC_KP_EVENT_ALLOWED` (`"yes"` default, `"no"` to opt out). Replaces the previous `NEXT_PUBLIC_GOKWIK_ENABLED` gate.
+
 ## 0.2.2
 
 ### Patch Changes

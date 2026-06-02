@@ -9,6 +9,7 @@ import { AppProductTracker } from "@shopkit/app-shell";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
+import { KwikPassProductView } from "@/integrations/kwikpass-custom";
 
 export const revalidate = 3600;
 export const dynamicParams = true;
@@ -75,6 +76,7 @@ export default async function CollectionProductPage(props: {
       <>
         <AppProductTracker product={product} />
         {pageContent}
+        <KwikPassProductView product={product} />
       </>
     );
   } catch (error) {
