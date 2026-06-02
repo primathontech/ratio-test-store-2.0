@@ -5,6 +5,7 @@ import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
+import { KwikPassCollectionView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -68,7 +69,12 @@ export default async function CollectionPage(props: {
       messages,
     });
 
-    return <Suspense fallback={<></>}>{pageContent}</Suspense>;
+    return (
+      <Suspense fallback={<></>}>
+        {pageContent}
+        <KwikPassCollectionView collection={collection} />
+      </Suspense>
+    );
   } catch (error) {
     console.error("Error rendering collection page:", error);
     notFound();
