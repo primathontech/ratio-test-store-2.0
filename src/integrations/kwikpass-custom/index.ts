@@ -7,6 +7,8 @@
 export { default as KwikPassCustom } from "./KwikPassCustom";
 export { default as KwikPassScriptCustom } from "./KwikPassScriptCustom";
 export { default as KwikpassLoginCustom } from "./KwikpassLoginCustom";
+export { default as KwikPassProductView } from "./KwikPassProductView";
+export { default as KwikPassCollectionView } from "./KwikPassCollectionView";
 
 // Config
 export { getKwikPassConfig } from "./config";
@@ -16,16 +18,12 @@ export {
   dispatchProductViewEvent,
   dispatchCollectionViewEvent,
   dispatchPageViewEvent,
-  dispatchLoginEvent,
-  dispatchLogoutEvent,
   KwikPassEventType,
 } from "./events";
 export type {
-  KwikPassEvent,
   KwikPassProductEventData,
   KwikPassCollectionEventData,
   KwikPassPageEventData,
-  KwikPassLoginEventData,
 } from "./events";
 
 // Utils
@@ -38,6 +36,3 @@ export {
   handleKwikpassLogin,
   getCartToken,
 } from "./utils";
-
-// Hooks
-export { useCheckoutToken } from "./useCheckoutToken";
