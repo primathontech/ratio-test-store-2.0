@@ -1,10 +1,12 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
+import { createCollectionStaticParams } from "@shopkit/data-layer";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
+import { KwikPassCollectionView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -12,42 +14,26 @@ import { Suspense } from "react";
 export const revalidate = 30;
 export const dynamicParams = true;
 
-export async function generateStaticParams() {
-  const featuredCollections = process.env.FEATURED_COLLECTIONS;
-
-  // Check environment variable
-  if (!featuredCollections) {
-    console.error("FEATURED_COLLECTIONS environment variable not found");
-    return [];
-  }
-
-  // Split and clean handles
-  const handles = featuredCollections
-    .split(",")
-    .filter(Boolean)
-    .map((h) => h.trim());
-
-  // Return each handle as { collectionname }
-  const staticParams = handles.map((handle) => ({
-    collectionname: handle,
-  }));
-
-  return staticParams;
-}
+export const generateStaticParams =
+  createCollectionStaticParams(getCommerceClient);
 
 export async function generateMetadata(props: {
   params: Promise<{ collectionname: string }>;
   searchParams?: Promise<Record<string, string>>;
 }): Promise<Metadata> {
-  const searchParams = await props.searchParams;
-  const params = await props.params;
-  const collection = await fetchCollection(params.collectionname);
-  return resolveCommercePageSEO(
-    "collection",
-    collection,
-    `/collections/${params.collectionname}`,
-    { searchParams }
-  );
+  try {
+    const searchParams = await props.searchParams;
+    const params = await props.params;
+    const collection = await fetchCollection(params.collectionname);
+    return resolveCommercePageSEO(
+      "collection",
+      collection,
+      `/collections/${params.collectionname}`,
+      { searchParams }
+    );
+  } catch {
+    return {};
+  }
 }
 
 export default async function CollectionPage(props: {
@@ -90,7 +76,12 @@ export default async function CollectionPage(props: {
       messages,
     });
 
-    return <Suspense fallback={<></>}>{pageContent}</Suspense>;
+    return (
+      <Suspense fallback={<></>}>
+        {pageContent}
+        <KwikPassCollectionView collection={collection} />
+      </Suspense>
+    );
   } catch (error) {
     console.error("Error rendering collection page:", error);
     notFound();
