@@ -22,12 +22,13 @@ import Script from "next/script";
 import { AppShell, AppHead } from "@shopkit/app-shell";
 import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
+import { AffiliateTracker } from "@shopkit/events/affiliate";
+import { EditorHostMount } from "@/editor-integration/EditorHostMount";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
 import { fontVariables } from "./fonts";
 import LimeChatScript from "./LimeChatScript";
-import { AffiliateTracker } from "@shopkit/events/affiliate";
 
 // =============================================================================
 // ROOT LAYOUT
@@ -76,6 +77,7 @@ export default async function RootLayout({
         >
           <AffiliateTracker autoCapture />
           <AppCartInitializer merchantName={merchantName} />
+          <EditorHostMount />
           {children}
           <ClientDynamics
             locale={locale}

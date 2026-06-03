@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { useCheckoutToken } from "@/integrations/kwikpass-custom";
 
 import { EDDResponse, OrderApiResponse, ThankYouProps } from "../types";
 import { getOrderById, getOrderTracking } from "@/services/order.service";
@@ -17,6 +16,7 @@ import {
   RightSection,
 } from "./components";
 import { GuestUserStorage } from "./utils/guestUserStorage";
+import { useCheckoutToken } from "@/integrations/kwikpass-custom/useCheckoutToken";
 
 export const V1: React.FC<ThankYouProps> = () => {
   const router = useRouter();

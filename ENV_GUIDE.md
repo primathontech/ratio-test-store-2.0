@@ -44,27 +44,6 @@ ENABLE_EDITOR_CHANGES=false
 
 ---
 
-## Collection & Product Configuration
-
-| Variable                                      | Required | Description                                          |
-| --------------------------------------------- | -------- | ---------------------------------------------------- |
-| `FEATURED_COLLECTIONS`                        | Optional | Comma-separated collection handles for navigation    |
-| `HOMEPAGE_FEATURED_COLLECTIONS`               | Optional | Comma-separated collection handles for homepage      |
-| `HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT` | Optional | Max products per homepage collection (default: `12`) |
-
-```env
-# Featured collections for navigation/sidebar
-FEATURED_COLLECTIONS="all,new-launches,bestseller,combos,hair-care"
-
-# Collections displayed on homepage
-HOMEPAGE_FEATURED_COLLECTIONS="most-loved,bestsellers,new-arrivals"
-
-# Limit products shown per collection on homepage
-HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT=12
-```
-
----
-
 ## Shopify Configuration
 
 Required when `NEXT_PUBLIC_PLATFORM=shopify` or using Shopify as data source:
@@ -123,12 +102,12 @@ NEXT_PUBLIC_SHOPIFY_API_VERSION="2025-04"
 
 ### Configuration
 
-| Variable                         | Required | Description                             |
-| -------------------------------- | -------- | --------------------------------------- |
-| `NEXT_PUBLIC_GOKWIK_ENVIRONMENT` | Yes      | `sandbox`, `qa`, or `production`        |
-| `NEXT_PUBLIC_GOKWIK_TYPE`        | Optional | Integration type (e.g., `merchantInfo`) |
-| `NEXT_PUBLIC_GOKWIK_SCRIPT_URL`  | Yes      | GoKwik SDK URL                          |
-| `NEXT_PUBLIC_GOKWIK_ENABLED`     | Optional | Enable/disable GoKwik (`true`/`false`)  |
+| Variable                         | Required | Description                                                                   |
+| -------------------------------- | -------- | ----------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_GOKWIK_ENVIRONMENT` | Yes      | `sandbox`, `qa`, or `production`                                              |
+| `NEXT_PUBLIC_GOKWIK_TYPE`        | Optional | Integration type (e.g., `merchantInfo`)                                       |
+| `NEXT_PUBLIC_GOKWIK_SCRIPT_URL`  | Yes      | GoKwik SDK URL                                                                |
+| `NEXT_PUBLIC_KP_EVENT_ALLOWED`   | Optional | Enable KwikPass `page_view_kp` retargeting events (`yes`/`no`, default `yes`) |
 
 ```env
 # Merchant IDs
@@ -140,7 +119,7 @@ NEXT_PUBLIC_MERCHANT_ID="your-merchant-id"
 NEXT_PUBLIC_GOKWIK_ENVIRONMENT="qa"          # qa, sandbox, production
 NEXT_PUBLIC_GOKWIK_TYPE="merchantInfo"
 NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://qa.pdp.gokwik.co"
-NEXT_PUBLIC_GOKWIK_ENABLED=true
+NEXT_PUBLIC_KP_EVENT_ALLOWED="yes"           # yes (default) | no — opt-out of page_view_kp retargeting events
 ```
 
 ### Environment URLs
@@ -356,13 +335,6 @@ NEXT_PUBLIC_EDITOR_API_URL=https://visual-editor-be.primathontech.co.in
 ENABLE_EDITOR_CHANGES=false
 
 # =============================================================================
-# COLLECTION & PRODUCT CONFIGURATION
-# =============================================================================
-FEATURED_COLLECTIONS="all,new-launches,bestseller,combos,hair-care"
-HOMEPAGE_FEATURED_COLLECTIONS="most-loved,for-hair-fall,for-dry-hair"
-HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT=12
-
-# =============================================================================
 # SHOPIFY CONFIGURATION (Data Source)
 # =============================================================================
 SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
@@ -383,7 +355,7 @@ NEXT_PUBLIC_MERCHANT_ID="your-merchant-id"
 NEXT_PUBLIC_GOKWIK_ENVIRONMENT="qa"
 NEXT_PUBLIC_GOKWIK_TYPE="merchantInfo"
 NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://qa.pdp.gokwik.co"
-NEXT_PUBLIC_GOKWIK_ENABLED=true
+NEXT_PUBLIC_KP_EVENT_ALLOWED="yes"
 
 # =============================================================================
 # CUSTOM BACKEND API ENDPOINTS
@@ -427,7 +399,7 @@ NEXT_PUBLIC_MERCHANT_ID="prod-merchant-id"
 NEXT_PUBLIC_GOKWIK_ENVIRONMENT="production"
 NEXT_PUBLIC_GOKWIK_TYPE="merchantInfo"
 NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://pdp.gokwik.co"
-NEXT_PUBLIC_GOKWIK_ENABLED=true
+NEXT_PUBLIC_KP_EVENT_ALLOWED="yes"
 
 # =============================================================================
 # ANALYTICS
@@ -457,7 +429,7 @@ NEXT_PUBLIC_MULTI_PIXEL_IDS=1582841486258190,856034283724150
 1. Verify `NEXT_PUBLIC_GOKWIK_MID` is correct
 2. Check `NEXT_PUBLIC_GOKWIK_ENVIRONMENT` matches your GoKwik dashboard
 3. Ensure `NEXT_PUBLIC_GOKWIK_SCRIPT_URL` is correct for your environment
-4. Check `NEXT_PUBLIC_GOKWIK_ENABLED=true`
+4. Check `NEXT_PUBLIC_KP_EVENT_ALLOWED` is unset or `"yes"` — set to `"no"` to opt out of `page_view_kp` retargeting events
 
 ### "Custom API calls failing"
 
