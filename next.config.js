@@ -51,4 +51,9 @@ module.exports = createNextConfig({
 
   // App-specific redirects (wellversed.in legacy pages)
   redirects: [],
+
+  // the GoKwik API slower than local, so per-page prerender can exceed the 60s
+  // default and get dropped. Gives slow fetches more headroom to complete.
+  // Raise static-generation timeout 60s -> 180s. The CI build container reaches
+  extend: (config) => ({ ...config, staticPageGenerationTimeout: 180 }),
 });
