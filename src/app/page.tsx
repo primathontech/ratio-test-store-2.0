@@ -8,7 +8,7 @@ import { Metadata } from "next";
 import { getRouteTranslations } from "@/utils";
 
 /** ISR — revalidate collection data every 30 seconds */
-export const revalidate = 30;
+// export const revalidate = 30;
 
 // Generate metadata for home page
 export async function generateMetadata(): Promise<Metadata> {

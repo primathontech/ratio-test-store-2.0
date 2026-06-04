@@ -1,6 +1,5 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
-import { createCollectionStaticParams } from "@shopkit/data-layer";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
@@ -11,11 +10,11 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-export const revalidate = 30;
-export const dynamicParams = true;
+// export const revalidate = 30;
+// export const dynamicParams = true;
 
-export const generateStaticParams =
-  createCollectionStaticParams(getCommerceClient);
+// export const generateStaticParams =
+//   createCollectionStaticParams(getCommerceClient);
 
 export async function generateMetadata(props: {
   params: Promise<{ collectionname: string }>;
