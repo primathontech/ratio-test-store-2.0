@@ -1,11 +1,13 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
+import { createProductViaCollectionsStaticParams } from "@shopkit/data-layer";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
+import { KwikPassProductView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
@@ -23,81 +25,24 @@ function isProductHidden(product: ApiProduct | null | undefined): boolean {
   return Array.isArray(tags) && tags.includes(HIDDEN_PRODUCT_TAG);
 }
 
-export async function generateStaticParams() {
-  const homepageFeaturedCollections = process.env.HOMEPAGE_FEATURED_COLLECTIONS;
-  const productsPerCollection = parseInt(
-    process.env.HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT || "8"
-  );
-
-  if (!homepageFeaturedCollections) {
-    console.error(
-      "HOMEPAGE_FEATURED_COLLECTIONS environment variable not found"
-    );
-    return [];
-  }
-
-  const handles = homepageFeaturedCollections
-    .split(",")
-    .filter(Boolean)
-    .map((h) => h.trim());
-
-  // Get all product handles from collections in parallel
-  const commerceClient = getCommerceClient();
-  const collectionPromises = handles.map(async (handle) => {
-    try {
-      const collectionResponse = await commerceClient.getCollection({
-        handle,
-        productLimit: productsPerCollection,
-      });
-
-      // Check various possible response structures
-      const collection = collectionResponse?.data || collectionResponse;
-      const products =
-        collection?.products || collection?.products?.edges || [];
-
-      if (!products || products.length === 0) {
-        console.warn(`No products found in collection '${handle}'`);
-        return [];
-      }
-
-      // Handle both direct products array and Shopify edges format
-      const productHandles = products.flatMap((product: any) => {
-        const productNode = product?.node || product;
-        return productNode?.handle ? [productNode.handle] : [];
-      });
-
-      return productHandles;
-    } catch (err) {
-      console.error(`Error fetching collection '${handle}':`, err);
-      return [];
-    }
-  });
-
-  // Wait for all collection requests to complete in parallel
-  const collectionResults = await Promise.all(collectionPromises);
-
-  // Flatten all product handles from all collections
-  const allProductHandles = collectionResults.flat();
-
-  // Remove duplicate product handles
-  const uniqueProductHandles = Array.from(new Set(allProductHandles));
-
-  // Return handles directly - the collection API already validated these products exist
-  const allHandles = uniqueProductHandles.map((handle) => ({ handle }));
-
-  return allHandles;
-}
+// Custom backend has no products-list endpoint — collection traversal is the only way to discover all handles.
+export const generateStaticParams =
+  createProductViaCollectionsStaticParams(getCommerceClient);
 
 export async function generateMetadata(props: {
   params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
-  const params = await props.params;
-  const product = await fetchProduct(params.handle);
-  return resolveCommercePageSEO(
-    "product",
-    product,
-    `/products/${params.handle}`
-  );
+  try {
+    const params = await props.params;
+    const product = await fetchProduct(params.handle);
+    return resolveCommercePageSEO(
+      "product",
+      product,
+      `/products/${params.handle}`
+    );
+  } catch {
+    return {};
+  }
 }
 
 export default async function ProductPage(props: {
@@ -148,6 +93,7 @@ export default async function ProductPage(props: {
       <>
         <AppProductTracker product={product} />
         {pageContent}
+        <KwikPassProductView product={product} />
       </>
     );
   } catch (error) {
