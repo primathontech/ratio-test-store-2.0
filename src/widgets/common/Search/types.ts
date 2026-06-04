@@ -70,6 +70,7 @@ export interface ProductVariant {
   compare_at_price: number;
   availableForSale: boolean;
   availableQuantity: number;
+  sku?: string;
 }
 
 export interface ProductImage {

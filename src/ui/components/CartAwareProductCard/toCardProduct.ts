@@ -79,6 +79,7 @@ export function toCardProduct(product: MappableApiProduct): ProductCardProduct {
   /* ---------- Variant / availability ---------- */
   const variantFromList = product.variants?.[0];
   const variantId = variantFromList?.id || product.variant?.id;
+  const sku = variantFromList?.sku || product.variant?.sku;
   const availableForSale =
     typeof product.availableForSale === "boolean"
       ? product.availableForSale
@@ -124,6 +125,7 @@ export function toCardProduct(product: MappableApiProduct): ProductCardProduct {
     id: product.id,
     productId: product.id,
     variantId,
+    sku,
     availableForSale,
     href: `/products/${product.handle}`,
     title: product.title,

@@ -37,6 +37,7 @@ export interface StickyFooterProductData {
     id: string;
     title?: string;
     price?: number;
+    sku?: string;
   }>;
 }
 
@@ -179,7 +180,9 @@ export const StickyFooter = ({
       handle: "",
       product_type: productData.product_type,
       price: priceInPaise,
-      variant: activeVariant?.id ? { id: activeVariant.id } : undefined,
+      variant: activeVariant?.id
+        ? { id: activeVariant.id, sku: activeVariant.sku }
+        : undefined,
     };
     try {
       await addItem(
