@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import * as jose from "jose";
-import { getKwikPassConfig as getGoKwikConfig } from "@/integrations/kwikpass-shopify";
+import { getKwikPassConfig as getGoKwikConfig } from "@/integrations/kwikpass-shopify/config";
 
 export async function POST(request: Request) {
   try {
