@@ -73,6 +73,7 @@ export const mapSearchProductToProductResponse = (
       availableForSale:
         (product?.onSale && (product?.inStock ?? product?.isInStock)) ?? false,
       availableQuantity: product.variant?.availableQuantity ?? 10,
+      sku: product.variant?.sku ?? (product as any).variants?.[0]?.sku,
     } as ProductVariant,
     average_rating: product.rating?.toString?.() ?? "0",
     rating_count: product.reviewsCount?.toString?.() ?? "0",

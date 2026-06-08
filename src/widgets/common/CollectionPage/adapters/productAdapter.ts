@@ -41,6 +41,7 @@ export function transformProductForCard(
     id: product.id,
     productId: product.id,
     variantId: product.variant?.id,
+    sku: product.variant?.sku,
     availableForSale: product.availableForSale,
     href: `/products/${product.handle}`,
     title: product.title,

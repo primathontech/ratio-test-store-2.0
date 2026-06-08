@@ -220,6 +220,7 @@ export async function searchProducts(
         ? {
             id: firstVariant.variantId,
             title: firstVariant.title ?? "Default Title",
+            sku: firstVariant.sku,
           }
         : undefined;
       const pricePaise = firstVariant?.price ?? product.minPrice ?? 0;

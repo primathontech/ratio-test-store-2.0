@@ -26,6 +26,7 @@ export interface ProductVariant {
   compare_at_price: number | null;
   availableForSale: boolean;
   availableQuantity: number;
+  sku?: string;
   metadata: Record<string, any>;
 }
 
