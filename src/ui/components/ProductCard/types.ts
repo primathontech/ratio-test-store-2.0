@@ -12,6 +12,8 @@ export interface ProductCardProduct {
   productId?: string;
   /** Variant identifier — used for cart add/lookup */
   variantId?: string;
+  /** Variant SKU — forwarded to the cart payload for add-to-cart analytics */
+  sku?: string;
   /** Whether the product is purchasable. When false, the action button shows the sold-out state. */
   availableForSale?: boolean;
   /** Product page URL */
