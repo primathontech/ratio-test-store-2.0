@@ -1,0 +1,69 @@
+"use client";
+
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@shopkit/core/context";
+
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+  redirectTo?: string;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
+  children,
+  redirectTo = "/",
+}) => {
+  const { accessToken } = useAuth();
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    // Give the auth context one tick to hydrate from cookie/localStorage
+    // before deciding to redirect. Cleanup below clears the timeout AND
+    // flips `cancelled`, so no state update happens after unmount.
+    // eslint-disable-next-line no-restricted-syntax
+    const timeout = setTimeout(() => {
+      if (cancelled) {
+        return;
+      }
+
+      const token =
+        typeof accessToken === "string"
+          ? accessToken
+          : (accessToken as { accessToken?: string; token?: string } | null)
+              ?.accessToken ||
+            (accessToken as { token?: string } | null)?.token;
+
+      if (!token) {
+        if (
+          typeof window !== "undefined" &&
+          (window as any).openKwikpassLogin
+        ) {
+          (window as any).openKwikpassLogin();
+        }
+        router.replace(redirectTo);
+      } else {
+        setChecking(false);
+      }
+    }, 100);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timeout);
+    };
+  }, [accessToken, redirectTo, router]);
+
+  if (checking) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-black border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+};
+
+export default ProtectedRoute;
