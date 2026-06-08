@@ -1,0 +1,10 @@
+// ── static-pages feature pack · WIRING REFERENCE ─────────────────────────────
+// COPY THIS FILE TO:  src/app/cancellation-policy/page.tsx  (remove the .example suffix)
+//
+// Next.js registers routes from the app/ tree, so this one file must live there.
+// It contains NO logic — it only re-exports the real route from the pack.
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  default,
+  generateMetadata,
+} from "@/feature-packs/static-pages/routes/cancellation-policy";
