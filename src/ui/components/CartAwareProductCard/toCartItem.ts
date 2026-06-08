@@ -38,8 +38,7 @@ export function toCartItem(
  * which gets `TransformedProduct` from the collection client and adapts
  * to `ProductCardProduct` before render).
  *
- * Reverses the price normalisation: paisa = round(₹ × 100). SKU is not
- * available in `ProductCardProduct`, so it's omitted.
+ * Reverses the price normalisation: paisa = round(₹ × 100).
  */
 export function cardToCartItem(cardProduct: ProductCardProduct): CartItem {
   const productId = cardProduct.productId ?? String(cardProduct.id ?? "");
@@ -50,6 +49,7 @@ export function cardToCartItem(cardProduct: ProductCardProduct): CartItem {
     id: lineId,
     productId,
     variantId,
+    sku: cardProduct.sku,
     title: cardProduct.title,
     price: {
       amount: Math.round(cardProduct.salePrice * 100),

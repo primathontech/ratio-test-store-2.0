@@ -117,6 +117,9 @@ const NoResultPage: React.FC<NoResultPageProps> = ({
           compare_at_price: compareAtPrice,
           availableForSale: product.status === "active",
           availableQuantity: 10,
+          sku:
+            (product as any).variant?.sku ??
+            (product as any).variants?.[0]?.sku,
         } as ProductVariant,
         average_rating: String(
           product.rating ?? product.averageRating ?? "4.5"
