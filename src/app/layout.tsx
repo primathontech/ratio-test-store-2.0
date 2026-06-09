@@ -21,6 +21,7 @@ import Script from "next/script";
 import { Inter, Open_Sans } from "next/font/google";
 
 import { AppShell, AppHead } from "@shopkit/app-shell";
+import { getPageBuilder } from "@/bootstrap/builder";
 import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
 import { EditorHostMount } from "@/editor-integration/EditorHostMount";
@@ -63,6 +64,15 @@ export default async function RootLayout({
   const hasKwikcartDisabled =
     process.env.NEXT_PUBLIC_KWIKCART_DISABLE === "true";
 
+  // Shared layout chrome (header/footer) rendered once for every page.
+  // Page templates contain body sections only; chrome lives in
+  // themes/{theme}/templates/header and /footer (Shopify section-group model).
+  const { header, footer } = await getPageBuilder().renderChrome({
+    merchantName: themeName,
+    locale,
+    messages,
+  });
+
   return (
     <html lang={locale} className={`${inter.variable} ${openSans.variable}`}>
       <head>
@@ -91,7 +101,9 @@ export default async function RootLayout({
         >
           <AppCartInitializer merchantName={merchantName} />
           <EditorHostMount />
+          {header}
           {children}
+          {footer}
           <ClientDynamics
             locale={locale}
             hasKwikcartDisabled={hasKwikcartDisabled}
