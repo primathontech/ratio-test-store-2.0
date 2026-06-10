@@ -12,7 +12,8 @@ This storefront ships with a **working, admin-managed header + footer menu** out
 
 - `src/app/layout.tsx` already fetches the menus and provides them (`getNavMenus` + `NavigationProvider`).
 - `main-menu` + `footer` (the backend's default/protected menus) are fetched automatically by the
-  package — no config needed. `src/config/navigation.ts` is only for *additional* custom menus (e.g. `sales-menu`).
+  package automatically. Any **other** menu a widget references (e.g. `sales-menu`) is also fetched
+  automatically — the layout derives the handles from your chrome config (`menuHandle` settings). No handle list to maintain.
 - The chrome templates (`src/themes/dawn/templates/header` & `/footer`) already select the menu via `menuHandle`.
 - The **Header** and **Footer** widgets already consume the menu and render every menu type.
 
