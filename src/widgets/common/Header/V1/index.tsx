@@ -33,6 +33,16 @@ import "./style.css";
  * The visual design is YOURS — only the data + helpers are shared.
  */
 
+/**
+ * Graceful fallback nav — shown when `useMenu()` returns null/empty (no env var,
+ * backend down, handle not found, or inside the editor preview iframe where there
+ * is no NavigationProvider). Keep SOMETHING here so the header is never blank.
+ * Customize these links for your store. (Rule #4 in the header comment.)
+ */
+const FALLBACK_NAV: { title: string; href: string }[] = [
+  { title: "Home", href: "/" },
+];
+
 /* ── Desktop: a single depth-2 leaf inside a mega-menu column ─────────────────── */
 function DesktopLeaf({ item }: { item: NavItem }) {
   if (isBrokenLink(item)) return null;
@@ -245,15 +255,23 @@ export const V1 = memo(function V1({ settings }: HeaderProps) {
         {/* Desktop nav — hidden on mobile via CSS */}
         <nav className="sf-nav" aria-label="Main navigation">
           <ul className="sf-nav__list">
-            {items.map((item) => (
-              <DesktopItem
-                key={item.id}
-                item={item}
-                open={openId === item.id}
-                onEnter={() => setOpenId(item.id)}
-                onLeave={() => setOpenId(null)}
-              />
-            ))}
+            {items.length > 0
+              ? items.map((item) => (
+                  <DesktopItem
+                    key={item.id}
+                    item={item}
+                    open={openId === item.id}
+                    onEnter={() => setOpenId(item.id)}
+                    onLeave={() => setOpenId(null)}
+                  />
+                ))
+              : FALLBACK_NAV.map((l) => (
+                  <li key={l.href} className="sf-nav__item">
+                    <Link href={l.href} className="sf-nav__link">
+                      {l.title}
+                    </Link>
+                  </li>
+                ))}
           </ul>
         </nav>
       </div>
@@ -273,9 +291,13 @@ export const V1 = memo(function V1({ settings }: HeaderProps) {
           ×
         </button>
         <nav className="sf-drawer__nav" aria-label="Mobile navigation">
-          {items.map((item) => (
-            <MobileItem key={item.id} item={item} />
-          ))}
+          {items.length > 0
+            ? items.map((item) => <MobileItem key={item.id} item={item} />)
+            : FALLBACK_NAV.map((l) => (
+                <Link key={l.href} href={l.href} className="sf-drawer__link">
+                  {l.title}
+                </Link>
+              ))}
         </nav>
       </div>
       {drawerOpen && (
