@@ -30,7 +30,11 @@ export const template: PageConfig = {
           id: "dawn-header",
           name: "Header",
           type: WIDGET_TYPES.Header,
-          settings: { variant: "v1", menuHandle: "main-menu", brandName: "Store" },
+          settings: {
+            variant: "v1",
+            menuHandle: "main-menu",
+            brandName: "Store",
+          },
         },
       ],
     },
