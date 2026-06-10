@@ -1,12 +1,12 @@
-// Extra nav-menu handles the root layout pre-fetches, beyond the default
-// ("main-menu", which is always fetched).
+// Extra nav-menu handles the root layout pre-fetches, BEYOND the backend defaults.
 //
-// `getNavMenus` is server-only, so the layout must download every menu any widget
-// will render and pass them to <NavigationProvider>. The header uses "main-menu"
-// (default); the footer widget uses "footer" — so it's listed here.
+// `@shopkit/navigation` always fetches the protected/default menus — "main-menu"
+// (header) and "footer" — so you do NOT list those here. Add a handle here only for
+// an ADDITIONAL, non-default custom menu a widget renders (e.g. "sales-menu").
 //
-// NOTE (interim): this is a code file. The long-term plan derives these handles
-// from the resolved chrome JSON so merchants never edit code — see
-// plans/mega-menu/ ("no-code contract"). Until then, add a handle here if a
-// widget renders a menu other than "main-menu".
-export const extraNavHandles: string[] = ["footer"];
+// (`getNavMenus` is server-only, so the layout downloads every menu up front and
+// passes them to <NavigationProvider>; widgets just read via useMenu.)
+//
+// NOTE (interim): this is a code file. The long-term plan derives handles from the
+// resolved chrome JSON so merchants never edit code — see plans/mega-menu/.
+export const extraNavHandles: string[] = [];
