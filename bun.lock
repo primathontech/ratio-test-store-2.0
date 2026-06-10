@@ -18,11 +18,11 @@
         "@shopkit/asset-cache": "^1.0.1",
         "@shopkit/builder": "^0.1.4",
         "@shopkit/cart": "^0.1.4",
-        "@shopkit/cli": "^0.3.0",
+        "@shopkit/cli": "^0.4.0",
         "@shopkit/core": "^0.1.4",
         "@shopkit/data-layer": "^1.2.0",
         "@shopkit/discounts": "^0.1.3",
-        "@shopkit/editor-bridge": "^0.3.0",
+        "@shopkit/editor-bridge": "^0.4.0",
         "@shopkit/events": "^0.10.0",
         "@shopkit/i18n": "^0.1.4",
         "@shopkit/seo": "^1.1.2",
@@ -546,7 +546,7 @@
 
     "@shopkit/cart": ["@shopkit/cart@0.1.4", "", { "peerDependencies": { "react": "^18.0.0", "zustand": "^4.4.0 || ^5.0.0" } }, "sha512-VhJHqIkcgWct930DgkTjOh1nnWr9oPQ1jULbVw9KqmJfpwdYKkaA8VO7Uj808Fmcpj8a9oj7x/Rj3wOCxro2cQ=="],
 
-    "@shopkit/cli": ["@shopkit/cli@0.3.0", "", { "dependencies": { "picocolors": "^1.0.0" }, "bin": { "shopkit": "bin/shopkit.js" } }, "sha512-YvwORaWfKCAMZH/trgMqXGsbXfqscinJxGAq52KMinJ8u4znTDWaxfl/n8H0ZFi/dkvZOMq5nZFGiDaWWZ0F+w=="],
+    "@shopkit/cli": ["@shopkit/cli@0.4.0", "", { "dependencies": { "picocolors": "^1.0.0" }, "bin": { "shopkit": "bin/shopkit.js" } }, "sha512-0bdosADBfZ+jEutb1o1l6F8V3zPWDak0eGgopb7kqL8o1bENzCFoIE2oZNcksBvVUmIKu25QHLz8YF3kyChxRA=="],
 
     "@shopkit/core": ["@shopkit/core@0.1.4", "", { "peerDependencies": { "next": ">=15.5.18", "react": "^18.0.0", "react-dom": "^18.0.0" } }, "sha512-C+Uo8pINhA+evs/BBH6qGhEp3/ZNGwye12KvZMa+vseQWK9UfGm7xg5UUX8S8BrYqR6TUjZc8R7NsD+0mAy3Aw=="],
 
@@ -554,7 +554,7 @@
 
     "@shopkit/discounts": ["@shopkit/discounts@0.1.3", "", { "peerDependencies": { "@shopkit/cart": "^0.1.1", "react": "^18.0.0" } }, "sha512-Qi9nevtUzpOPC8co3Z3WZZEtp3W3fqazH1uooCuebNJzRz1caskb8Y5q94Ho49igrwzxu4JUgdnRnYhZTZDntA=="],
 
-    "@shopkit/editor-bridge": ["@shopkit/editor-bridge@0.3.0", "", { "dependencies": { "zustand": "^5.0.6" }, "peerDependencies": { "@shopkit/builder": "*", "@shopkit/i18n": "*", "next": ">=14.0.0", "react": "^18.0.0", "react-dom": "^18.0.0" }, "optionalPeers": ["@shopkit/i18n"], "bin": { "shopkit-editor-bridge-migrate": "dist/bin/migrate-theme.js" } }, "sha512-vUgsjmvU/Fz+6NnHtoc3ZSAqQ6zJcDccCzchx5Em/aVCjHcZpaHJPlGrIGPYXg63MUhNj1g7I9yyrVQ9L3x3TQ=="],
+    "@shopkit/editor-bridge": ["@shopkit/editor-bridge@0.4.0", "", { "dependencies": { "zustand": "^5.0.6" }, "peerDependencies": { "@shopkit/builder": "*", "@shopkit/i18n": "*", "next": ">=14.0.0", "react": "^18.0.0", "react-dom": "^18.0.0" }, "optionalPeers": ["@shopkit/i18n"], "bin": { "shopkit-editor-bridge-migrate": "dist/bin/migrate-theme.js" } }, "sha512-zt2+DJBaGl2qP+CLlO5jPUlqFUNSwndAZw3SHI1Tj1eFC2w1xmytQ9TBF5Li85lotNP39tLyAZVuCNtQ1x/FYw=="],
 
     "@shopkit/events": ["@shopkit/events@0.10.0", "", { "dependencies": { "capi-param-builder-nodejs": "^1.2.1", "uuid": "^9.0.0" }, "peerDependencies": { "next": ">=15.5.18", "react": "^18.0.0", "zod": "^3.22.0", "zustand": "^4.4.0 || ^5.0.0" }, "optionalPeers": ["next", "zustand"] }, "sha512-6pAnIyXhFISchjsa7/JwYsV3mgz2ZMYGmMvFIVimKCaKPRKma2VeEqjoZIV2xyb1HYi5+j1Mzi6oFos4CS8RMQ=="],
 

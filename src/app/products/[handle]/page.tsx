@@ -5,6 +5,8 @@ import { getStaticLocale } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
+import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
+import type { PageConfig } from "@shopkit/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
 import { KwikPassProductView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
@@ -47,8 +49,11 @@ export async function generateMetadata(props: {
 
 export default async function ProductPage(props: {
   params: Promise<{ handle: string }>;
+  searchParams: Promise<{ editor?: string; previewKey?: string }>;
 }) {
   const params = await props.params;
+  const { isEditor, pageConfig: previewPageConfig } =
+    await readEditorPreviewState<PageConfig>(props.searchParams);
 
   const product = await fetchProduct(params.handle);
 
@@ -78,7 +83,7 @@ export default async function ProductPage(props: {
       language: locale,
     });
 
-    const pageBuilder = getPageBuilder();
+    const pageBuilder = getPageBuilder({ isEditor });
 
     // Note: The builder uses "merchantName" internally for loading themes/templates
     // from @/themes/{name}/templates/, so we pass themeName here
@@ -87,6 +92,7 @@ export default async function ProductPage(props: {
       routeContext,
       locale,
       messages,
+      pageConfig: previewPageConfig,
     });
 
     return (
