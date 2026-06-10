@@ -1,0 +1,52 @@
+/* ============================================================================
+   Footer V1 — reference styles (neutral). Restyle freely.
+   ============================================================================ */
+
+.sf-footer {
+  background: #111827;
+  color: #d1d5db;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.sf-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 20px;
+}
+
+.sf-footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 160px;
+}
+
+.sf-footer__col-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.sf-footer__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sf-footer__link {
+  font-size: 14px;
+  color: #9ca3af;
+  text-decoration: none;
+}
+
+.sf-footer__link:hover {
+  color: #fff;
+}

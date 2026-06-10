@@ -30,7 +30,7 @@ export const template: PageConfig = {
           id: "dawn-footer",
           name: "Footer",
           type: WIDGET_TYPES.Footer,
-          settings: { variant: "v1" },
+          settings: { variant: "v1", menuHandle: "footer" },
         },
       ],
     },
