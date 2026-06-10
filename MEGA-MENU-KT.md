@@ -12,7 +12,7 @@ This storefront ships with a **working, admin-managed header + footer menu** out
 
 - `src/app/layout.tsx` already fetches the menus and provides them (`getNavMenus` + `NavigationProvider`).
 - `main-menu` + `footer` (the backend's default/protected menus) are fetched automatically by the
-  package automatically. Any **other** menu a widget references (e.g. `sales-menu`) is also fetched
+  package. Any **other** menu a widget references (e.g. `sales-menu`) is also fetched
   automatically — the layout derives the handles from your chrome config (`menuHandle` settings). No handle list to maintain.
 - The chrome templates (`src/themes/dawn/templates/header` & `/footer`) already select the menu via `menuHandle`.
 - The **Header** and **Footer** widgets already consume the menu and render every menu type.
@@ -29,7 +29,7 @@ You already have `NEXT_PUBLIC_MERCHANT_ID`. Add the nav API URL (the only new on
 ```
 NEXT_PUBLIC_NAV_MENU_API_URL=<gateway base, including /api/v1>
 #   Prod: https://api-gateway.gokwik.io/api/v1
-#   QA:   https://api-gw-v4.dev.gokwik.io/qa/pi/mm/api/v1
+#   QA:   https://api-gw-v4.dev.gokwik.io/qa/pi/pc/api/v1
 ```
 If it's unset, the header/footer fall back gracefully (no crash) — but you won't see live menus.
 
