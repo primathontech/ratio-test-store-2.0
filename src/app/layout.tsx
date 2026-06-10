@@ -24,7 +24,6 @@ import { AppShell, AppHead } from "@shopkit/app-shell";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { getNavMenus } from "@shopkit/navigation";
 import { NavigationProvider } from "@shopkit/navigation/client";
-import { extraNavHandles } from "@/config/navigation";
 import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
 import { EditorHostMount } from "@/editor-integration/EditorHostMount";
@@ -70,10 +69,18 @@ export default async function RootLayout({
   // Shared layout chrome (header/footer) rendered once for every page.
   // Page templates contain body sections only; chrome lives in
   // themes/{theme}/templates/header and /footer (Shopify section-group model).
-  const [{ header, footer }, menus] = await Promise.all([
-    getPageBuilder().renderChrome({ merchantName: themeName, locale, messages }),
-    getNavMenus(extraNavHandles),
-  ]);
+  //
+  // renderChrome reports the nav-menu handles its widgets reference (derive-from-
+  // JSON); we then fetch exactly those. So a handle the editor assigns is fetched
+  // automatically — no hand-maintained list. (getNavMenus also always includes the
+  // backend defaults main-menu + footer.) Sequential by necessity: we need the
+  // handles before fetching.
+  const { header, footer, menuHandles } = await getPageBuilder().renderChrome({
+    merchantName: themeName,
+    locale,
+    messages,
+  });
+  const menus = await getNavMenus(menuHandles);
 
   return (
     <html lang={locale} className={`${inter.variable} ${openSans.variable}`}>
