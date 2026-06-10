@@ -11,6 +11,12 @@
   - Dropped the unused `useCheckoutToken` hook (zero callers).
 - **New optional env var**: `NEXT_PUBLIC_KP_EVENT_ALLOWED` (`"yes"` default, `"no"` to opt out). Replaces the previous `NEXT_PUBLIC_GOKWIK_ENABLED` gate.
 
+### Patch Changes
+
+- Updated dependencies [045346f]
+- Updated dependencies
+  - @shopkit/cli@0.4.0
+
 ## 0.2.2
 
 ### Patch Changes
