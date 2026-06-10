@@ -2,7 +2,11 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { fireUserEngagementEvent, clearKwikpassAuthStorage } from "./utils";
+import {
+  fireUserEngagementEvent,
+  clearKwikpassAuthStorage,
+  KWIKPASS_TOKEN_KEYS,
+} from "./utils";
 import { useAuth } from "@shopkit/core/context";
 
 // Constants
@@ -402,6 +406,62 @@ export default function KwikpassLoginCustom() {
     setIsTouchDevice(isOnTouchDevice);
   }, []);
 
+  // When KwikPass authenticates the user during checkout (OTP) the SDK writes
+  // KWIKUSERTOKEN to its cookie/localStorage but does NOT fire `user-loggedin`,
+  // so our auth context stays empty. Read the token directly and adopt it into
+  // useAuth so the header reflects the SDK's session.
+  useEffect(() => {
+    if (accessToken) {
+      return;
+    }
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    // Cookie first, then localStorage — matches the SDK's own lookup order.
+    const readKey = (key: string): string | null => {
+      const cookieMatch = document.cookie
+        .split("; ")
+        .find((c) => c.startsWith(`${key}=`));
+      if (cookieMatch) {
+        const value = cookieMatch.split("=").slice(1).join("=");
+        if (value) {
+          try {
+            return decodeURIComponent(value);
+          } catch {
+            return value;
+          }
+        }
+      }
+      try {
+        return localStorage.getItem(key);
+      } catch {
+        return null;
+      }
+    };
+
+    for (const key of KWIKPASS_TOKEN_KEYS) {
+      const token = readKey(key);
+      if (token) {
+        login(token);
+        return;
+      }
+    }
+
+    // Legacy GUESTUSERDATA fallback for older SDK versions.
+    try {
+      const guestRaw = readKey("GUESTUSERDATA");
+      if (guestRaw) {
+        const guestData = JSON.parse(guestRaw);
+        if (guestData?.user_token) {
+          login(guestData.user_token);
+        }
+      }
+    } catch {
+      // Safari Private Browsing throws SecurityError on storage access
+    }
+  }, [accessToken, login]);
+
   // Listen for KwikPass login event
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -465,7 +525,7 @@ export default function KwikpassLoginCustom() {
   /**
    * Handles user logout
    */
-  const doLogout = () => {
+  const doLogout = useCallback(() => {
     try {
       if (typeof window !== "undefined") {
         clearKwikpassAuthStorage();
@@ -474,12 +534,13 @@ export default function KwikpassLoginCustom() {
         }
         logout();
         setIsAuthenticated(false);
+        setOpen(false);
         window.location.replace("/");
       }
     } catch (error) {
       console.error("Logout failed:", error);
     }
-  };
+  }, [logout]);
   /**
    * Triggers KwikPass login flow
    */

@@ -6,6 +6,8 @@ import { resolvePageSEO } from "@shopkit/seo";
 import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
+import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
+import type { PageConfig } from "@shopkit/builder";
 
 /** ISR — revalidate collection data every 30 seconds */
 export const revalidate = 30;
@@ -22,7 +24,14 @@ export function generateMetadata(): Metadata {
   );
 }
 
-export default async function CollectionsPage() {
+export default async function CollectionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ editor?: string; previewKey?: string }>;
+}) {
+  const { isEditor, pageConfig: previewPageConfig } =
+    await readEditorPreviewState<PageConfig>(searchParams);
+
   try {
     const themeName = getThemeName();
     const locale = getStaticLocale();
@@ -41,13 +50,14 @@ export default async function CollectionsPage() {
       language: locale,
     });
 
-    const pageBuilder = getPageBuilder();
+    const pageBuilder = getPageBuilder({ isEditor });
 
     const pageContent = await pageBuilder.renderPage({
       merchantName: themeName,
       routeContext,
       locale,
       messages,
+      pageConfig: previewPageConfig,
     });
 
     return <>{pageContent}</>;

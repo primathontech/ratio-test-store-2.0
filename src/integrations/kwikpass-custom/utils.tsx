@@ -88,16 +88,30 @@ export const handleKwikpassLogin = (onClose?: () => void) => {
 // Placeholder CartStorage - should be replaced with actual implementation
 export const getCartToken = () => localStorage.getItem("cart_token") || "";
 
+// Active-session token keys written by the KwikPass SDK.
+// Exported so auth-sync and clearKwikpassAuthStorage share one source of truth.
+// Source: SDK bundle non-shopify-core-functions.min.js
+export const KWIKPASS_TOKEN_KEYS = [
+  "KWIKUSERTOKEN",
+  "SANDBOXKWIKUSERTOKEN",
+  "QAKWIKUSERTOKEN",
+  "DEVKWIKUSERTOKEN",
+] as const;
+
 /**
  * Clears all auth-related storage entries written by KwikPass.
  * Called from the logout flow to ensure no stale token survives.
  */
 export const clearKwikpassAuthStorage = () => {
+  const ALL_KEYS = [...KWIKPASS_TOKEN_KEYS, "customerDetails", "GUESTUSERDATA"];
+  const SESSION_KEYS = ["gk_access_token", "gkAccessToken"];
+  const past = "Thu, 01 Jan 1970 00:00:00 GMT";
   try {
-    localStorage.removeItem("customerDetails");
-    localStorage.removeItem("GUESTUSERDATA");
-    sessionStorage.removeItem("gk_access_token");
-    sessionStorage.removeItem("gkAccessToken");
+    ALL_KEYS.forEach((k) => {
+      localStorage.removeItem(k);
+      document.cookie = `${k}=; path=/; expires=${past}`;
+    });
+    SESSION_KEYS.forEach((k) => sessionStorage.removeItem(k));
   } catch {
     // Safari Private Browsing throws SecurityError on storage access
   }
