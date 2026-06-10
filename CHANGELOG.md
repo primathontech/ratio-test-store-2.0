@@ -9,6 +9,7 @@
   - The only touchpoints outside the pack are framework-mandated pointers: a 1-line re-export `app/<slug>/page.tsx` per route, and a one-line `...spread` of the pack's exports in `theme-constants.ts` + `static-templates-registry.ts`.
   - Pages render their bundled default copy out of the box (no editor backend required); editor-backend overrides still layer on top.
   - Added a default `about-us` locale (the app previously shipped the `about-us` page without one) and aligned its heading/body typography with the policy pages.
+
 ## 0.2.3
 
 ### Enhancements
