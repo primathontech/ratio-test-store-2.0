@@ -4,8 +4,8 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import KwikPassScriptCustom from "./KwikPassScriptCustom";
 import { dispatchPageViewEvent } from "./events";
-import { getCartToken } from "./utils";
 import { useAuth } from "@shopkit/core/context";
+import { useCartStore } from "@shopkit/cart";
 
 // Extend Window interface to include KwikPass event handlers
 declare global {
@@ -31,6 +31,8 @@ export default function KwikPassCustom() {
   const pathname = usePathname();
   const [scriptLoaded, setScriptLoaded] = useState(false);
   const { login } = useAuth();
+
+  const { cartToken } = useCartStore();
 
   // Callback to set scriptLoaded state to true when the script has loaded
   const onLoaded = useCallback(() => {
@@ -101,15 +103,17 @@ export default function KwikPassCustom() {
   // Effect hook to send page view event whenever the page changes
   useEffect(() => {
     if (scriptLoaded && typeof window !== "undefined") {
-      // Send page view event (you can expand this functionality as needed)
-      console.info("KP: Page view:", pathname);
-      if (!pathname.startsWith("/products")) {
+      if (
+        !pathname.includes("/products/") &&
+        !pathname.includes("/collections/") &&
+        cartToken
+      ) {
         dispatchPageViewEvent({
-          cart_id: getCartToken(),
+          cart_id: cartToken,
         });
       }
     }
-  }, [scriptLoaded, pathname]);
+  }, [scriptLoaded, pathname, cartToken]);
 
   return <KwikPassScriptCustom onLoad={onLoaded} />;
 }

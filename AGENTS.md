@@ -630,7 +630,15 @@ function CouponForm() {
 ```typescript
 import { eventBus } from "@shopkit/events";
 import type { PixelConfigMap } from "@shopkit/events/pixel-runtime";
+import {
+  AffiliateTracker,
+  getAffiliateParams,
+} from "@shopkit/events/affiliate";
 ```
+
+**Affiliate / UTM capture (`@shopkit/events/affiliate`):**
+
+Mount `<AffiliateTracker autoCapture />` once at the layout root (alongside `AppCartInitializer`). It captures UTM params + platform click IDs from the landing URL into `sessionStorage` under the `"affiliate_data"` key — the same key the events `userEnricherMiddleware` reads from, so every pixel event downstream gets attribution attached for free. To forward captured params to a downstream API (e.g. checkout), call `getAffiliateParams()` and pass into the payload — `CustomCheckoutService` already does this for GoKwik.
 
 **Setup (pixelConfig.ts):**
 
