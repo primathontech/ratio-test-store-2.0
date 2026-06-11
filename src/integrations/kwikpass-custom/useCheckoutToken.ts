@@ -5,7 +5,9 @@ import { useAuth } from "@shopkit/core/context";
 const GOKWIK_GUEST_DATA_KEY = "GUESTUSERDATA";
 
 function readGokwikCheckoutToken(): string {
-  if (typeof window === "undefined") return "";
+  if (typeof window === "undefined") {
+    return "";
+  }
   try {
     const raw = localStorage.getItem(GOKWIK_GUEST_DATA_KEY);
     const data = raw ? JSON.parse(raw) : null;
@@ -16,21 +18,31 @@ function readGokwikCheckoutToken(): string {
 }
 
 function readKwikTokenFromCookie(): string {
-  if (typeof document === "undefined") return "";
+  if (typeof document === "undefined") {
+    return "";
+  }
   const match = document.cookie
     .split("; ")
     .find((c) => /KWIKUSERTOKEN=/i.test(c));
-  if (!match) return "";
+  if (!match) {
+    return "";
+  }
   const value = match.split("=")[1];
   return value ? decodeURIComponent(value) : "";
 }
 
 function normalizeToken(accessToken: unknown): string {
-  if (typeof accessToken === "string") return accessToken;
+  if (typeof accessToken === "string") {
+    return accessToken;
+  }
   if (accessToken && typeof accessToken === "object") {
     const obj = accessToken as Record<string, unknown>;
-    if (typeof obj.accessToken === "string") return obj.accessToken;
-    if (typeof obj.token === "string") return obj.token;
+    if (typeof obj.accessToken === "string") {
+      return obj.accessToken;
+    }
+    if (typeof obj.token === "string") {
+      return obj.token;
+    }
   }
   return "";
 }

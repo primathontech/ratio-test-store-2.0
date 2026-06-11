@@ -2,6 +2,7 @@
 
 import React, { memo, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import {
   useMenu,
   getRenderStrategy,
@@ -45,17 +46,25 @@ const FALLBACK_NAV: { title: string; href: string }[] = [
 
 /* ── Desktop: a single depth-2 leaf inside a mega-menu column ─────────────────── */
 function DesktopLeaf({ item }: { item: NavItem }) {
-  if (isBrokenLink(item)) return null;
+  if (isBrokenLink(item)) {
+    return null;
+  }
   const href = getEffectiveUrl(item) ?? "/";
   // Image leaf → card; text leaf → link. (hasImage, not resource_type.)
   if (hasImage(item)) {
     return (
       <Link href={href} className="sf-mega__card">
-        <img
+        {/* Admin-supplied remote image of unknown domain — `unoptimized` so
+            next/image doesn't require a per-merchant remotePatterns entry.
+            Sizing is controlled by CSS (.sf-mega__card-img). */}
+        <Image
           src={item.image!.src}
           alt={item.image!.alt_text || item.title}
           className="sf-mega__card-img"
+          width={400}
+          height={400}
           loading="lazy"
+          unoptimized
         />
         <span className="sf-mega__card-title">{item.title}</span>
       </Link>
@@ -74,14 +83,19 @@ function DesktopColumn({ column }: { column: NavItem }) {
   return (
     <div className="sf-mega__col">
       {column.image?.src && (
-        <img
+        <Image
           src={column.image.src}
           alt={column.image.alt_text || column.title}
           className="sf-mega__col-img"
+          width={300}
+          height={300}
           loading="lazy"
+          unoptimized
         />
       )}
-      {column.title && <span className="sf-mega__col-title">{column.title}</span>}
+      {column.title && (
+        <span className="sf-mega__col-title">{column.title}</span>
+      )}
       <div className={cards ? "sf-mega__cards" : "sf-mega__links"}>
         {column.items.map((leaf) => (
           <DesktopLeaf key={leaf.id} item={leaf} />
@@ -124,15 +138,23 @@ function DesktopItem({
           {item.title}
         </a>
       ) : strategy === "mega-menu" ? (
-        <span className="sf-nav__link" aria-haspopup="true" aria-expanded={open}>
+        <span
+          className="sf-nav__link"
+          aria-haspopup="true"
+          aria-expanded={open}
+        >
           {item.title}
-          <span className="sf-nav__chevron" aria-hidden="true">▾</span>
+          <span className="sf-nav__chevron" aria-hidden="true">
+            ▾
+          </span>
         </span>
       ) : (
         <Link href={href} className="sf-nav__link">
           {item.title}
           {strategy === "dropdown" && (
-            <span className="sf-nav__chevron" aria-hidden="true">▾</span>
+            <span className="sf-nav__chevron" aria-hidden="true">
+              ▾
+            </span>
           )}
         </Link>
       )}
@@ -142,7 +164,9 @@ function DesktopItem({
         <div className="sf-mega">
           <div className="sf-mega__inner">
             {getMegaMenuColumns(item).map((col) =>
-              isBrokenLink(col) ? null : <DesktopColumn key={col.id} column={col} />
+              isBrokenLink(col) ? null : (
+                <DesktopColumn key={col.id} column={col} />
+              )
             )}
           </div>
         </div>
@@ -171,7 +195,9 @@ function DesktopItem({
 /* ── Mobile: one top-level item as an accordion row ───────────────────────────── */
 function MobileItem({ item }: { item: NavItem }) {
   const [expanded, setExpanded] = useState(false);
-  if (isBrokenLink(item)) return null;
+  if (isBrokenLink(item)) {
+    return null;
+  }
   const strategy = getRenderStrategy(item);
   const href = getEffectiveUrl(item) ?? "/";
   const hasChildren = strategy === "mega-menu" || strategy === "dropdown";
