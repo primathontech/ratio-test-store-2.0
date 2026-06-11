@@ -1,0 +1,14 @@
+diff --git a/apps/storefront-starter/src/integrations/checkout-custom/CustomCheckoutService.ts b/apps/storefront-starter/src/integrations/checkout-custom/CustomCheckoutService.ts
+index 0445fc66f..aeca8d0c5 100644
+--- a/apps/storefront-starter/src/integrations/checkout-custom/CustomCheckoutService.ts
++++ b/apps/storefront-starter/src/integrations/checkout-custom/CustomCheckoutService.ts
+@@ -289,6 +289,9 @@ export class CustomCheckoutService {
+         // Clear cart storage (localStorage)
+         this.clearCartStorage();
+ 
++        // NOTE: Order confirmation email is sent by a backend service,
++        // not triggered client-side from here.
++
+         // Call custom handler - this will trigger component's cart clearing and closing
+         this.currentEventHandlers.onOrderComplete?.(order);
+ 
