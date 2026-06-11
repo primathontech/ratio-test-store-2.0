@@ -8,7 +8,7 @@ import { resolvePageSEO } from "@shopkit/seo";
 import { getSEOConfig } from "@/config";
 
 /** ISR — revalidate collection data every 30 seconds */
-export const revalidate = 30;
+// export const revalidate = 30;
 
 export function generateMetadata(): Metadata {
   const { siteUrl, siteName } = getSEOConfig();

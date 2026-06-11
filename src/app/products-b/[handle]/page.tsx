@@ -11,8 +11,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 
-export const revalidate = 30;
-export const dynamicParams = true;
+// export const revalidate = 30;
+// export const dynamicParams = true;
 
 // TODO: generateStaticParams has been enabled for this route to support static generation when needed.
 // export const generateStaticParams =

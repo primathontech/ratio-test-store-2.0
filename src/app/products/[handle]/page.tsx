@@ -11,10 +11,9 @@ import { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 import { ApiProduct } from "@/widgets/common/ProductDetail/types";
-import { createProductViaCollectionsStaticParams } from "@shopkit/data-layer";
 
-export const revalidate = 30;
-export const dynamicParams = true;
+// export const revalidate = 30;
+// export const dynamicParams = true;
 
 const HIDDEN_PRODUCT_TAG = "hide__products";
 
@@ -26,8 +25,8 @@ function isProductHidden(product: ApiProduct | null | undefined): boolean {
 }
 
 // Custom backend has no products-list endpoint — collection traversal is the only way to discover all handles.
-export const generateStaticParams =
-  createProductViaCollectionsStaticParams(getCommerceClient);
+// export const generateStaticParams =
+//   createProductViaCollectionsStaticParams(getCommerceClient);
 
 export async function generateMetadata(props: {
   params: Promise<{ handle: string }>;

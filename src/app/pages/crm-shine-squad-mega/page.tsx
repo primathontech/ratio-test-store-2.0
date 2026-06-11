@@ -7,7 +7,7 @@ import { Metadata } from "next";
 import { resolvePageSEO } from "@shopkit/seo";
 import { getSEOConfig } from "@/config";
 
-export const revalidate = 30;
+// export const revalidate = 30;
 
 export function generateMetadata(): Metadata {
   const { siteUrl, siteName } = getSEOConfig();
