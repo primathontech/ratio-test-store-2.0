@@ -59,7 +59,7 @@ function DesktopLeaf({ item }: { item: NavItem }) {
             Sizing is controlled by CSS (.sf-mega__card-img). */}
         <Image
           src={item.image!.src}
-          alt={item.image!.alt_text || item.title}
+          alt={item.image!.alt_text || item.title || ""}
           className="sf-mega__card-img"
           width={400}
           height={400}
@@ -85,7 +85,7 @@ function DesktopColumn({ column }: { column: NavItem }) {
       {column.image?.src && (
         <Image
           src={column.image.src}
-          alt={column.image.alt_text || column.title}
+          alt={column.image.alt_text || column.title || ""}
           className="sf-mega__col-img"
           width={300}
           height={300}
