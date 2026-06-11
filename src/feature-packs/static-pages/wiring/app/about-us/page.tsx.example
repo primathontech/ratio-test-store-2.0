@@ -1,0 +1,17 @@
+// ── static-pages feature pack · WIRING REFERENCE (about-us) ──────────────────
+// about-us ALREADY EXISTS in the base app. To use the pack's enhanced version
+// (styled template + bundled default copy), REPLACE the contents of your
+// existing src/app/about-us/page.tsx with this re-export.
+//
+// Optional: to make the visual editor's static-preview lane use the enhanced
+// template too, repoint the existing about-us import in
+// editor-integration/registries/static-templates-registry.ts to:
+//   () => import("@/feature-packs/static-pages/templates/about-us")
+//
+// To revert to the original about-us: restore your app/about-us/page.tsx and
+// the registry import — the base key/route in dev never depended on the pack.
+// ─────────────────────────────────────────────────────────────────────────────
+export {
+  default,
+  generateMetadata,
+} from "@/feature-packs/static-pages/routes/about-us";

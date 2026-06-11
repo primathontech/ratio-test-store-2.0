@@ -1,0 +1,57 @@
+/**
+ * No-op Sentry utility stubs for storefront-starter.
+ *
+ * The starter project does not depend on `@sentry/nextjs`, but ported BFF
+ * routes from momsco import these helpers. We preserve the same contract so
+ * the imports resolve and the routes compile/run, but route exceptions to
+ * console instead of an external Sentry instance.
+ *
+ * If/when Sentry is added to the starter, replace these no-ops with real
+ * implementations matching momsco's `src/lib/sentry/utils.ts`.
+ */
+
+type SeverityLevel = "fatal" | "error" | "warning" | "log" | "info" | "debug";
+
+/**
+ * Safely capture an exception (error). No-op stub.
+ */
+export function captureSentryException(
+  exception: unknown,
+  _options?: Record<string, unknown>
+): string {
+  try {
+    // eslint-disable-next-line no-console
+    console.error("[sentry-stub] captureException", exception);
+  } catch {
+    // noop
+  }
+  return "";
+}
+
+/**
+ * Safely capture a message (non-exception event). No-op stub.
+ */
+export function captureSentryMessage(
+  message: string,
+  _options?: Record<string, unknown>
+): string {
+  try {
+    // eslint-disable-next-line no-console
+    console.warn("[sentry-stub] captureMessage", message);
+  } catch {
+    // noop
+  }
+  return "";
+}
+
+/**
+ * Safely add a breadcrumb. No-op stub.
+ */
+export function addSentryBreadcrumb(
+  _category: string,
+  _message: string,
+  _data?: Record<string, unknown>,
+  _level: SeverityLevel = "info"
+): void {
+  // noop
+}
