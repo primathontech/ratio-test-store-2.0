@@ -1,0 +1,445 @@
+/**
+ * API functions for the Addresses widget.
+ *
+ * Calls the GoKwik storefront customer backend directly from the browser.
+ * Upstream base URL is `${NEXT_PUBLIC_CUSTOM_API_CUSTOMER_URL}/v1/storefront`.
+ *
+ * Response shaping (snake_case ↔ camelCase) and the `{ success, data,
+ * fieldErrors }` envelope live here, in the same module as the callers —
+ * previously they were in the now-removed `/api/v1/address` proxy route.
+ */
+
+import {
+  AddressApiResponse,
+  CustomerApiResponse,
+  AddressPayload,
+  AddressResponse,
+  ApiAddress,
+} from "./type";
+
+const STOREFRONT_BASE =
+  process.env.NEXT_PUBLIC_CUSTOM_API_CUSTOMER_URL?.replace(/\/$/, "") ?? "";
+const CUSTOMER_PROFILE_URL = `${STOREFRONT_BASE}/v1/storefront/customers/profile`;
+const ADDRESSES_BASE = `${STOREFRONT_BASE}/v1/storefront/addresses`;
+
+function getMerchantId(): string {
+  return process.env.NEXT_PUBLIC_MERCHANT_ID || "";
+}
+
+/**
+ * Maps a raw upstream address record into the shape consumed by the widget.
+ */
+function mapStorefrontAddressToApiAddress(
+  a: Record<string, unknown>,
+  customerPhone: string
+): ApiAddress & { isDefault: boolean } {
+  const address1 = (a.address1 ?? a.address ?? "") as string;
+  const addressType =
+    a.isDefault === true
+      ? "default"
+      : ((a.address_type as string) ?? "secondary");
+
+  return {
+    address_id: (a.id ?? a.address_id) as string,
+    first_name: (a.firstName ?? a.first_name ?? "") as string,
+    last_name: (a.lastName ?? a.last_name ?? "") as string,
+    company: (a.company as string | undefined) ?? undefined,
+    address: address1,
+    address_line1: address1,
+    address_line2: (a.address2 ?? a.address_line2 ?? null) as string | null,
+    city: (a.city ?? "") as string,
+    state: (a.province ?? a.state ?? "") as string,
+    country: (a.country ?? "") as string,
+    pincode: (a.zip ?? a.pincode ?? "") as string,
+    recipient_phone: (a.phone ?? a.recipient_phone ?? customerPhone) as string,
+    customerPhone,
+    address_type: addressType,
+    isDefault: addressType === "default",
+    email: (a.email ?? "") as string,
+    lat: (a.lat ?? null) as string | null,
+    long: (a.long ?? null) as string | null,
+  };
+}
+
+/**
+ * Fetches the customer's profile. Returns `null` on failure.
+ * Used as a fallback to resolve `customerId` when the caller didn't supply it.
+ */
+export const getCustomerDetails = async (
+  gkAccessToken: string,
+  gkMerchantId: string
+): Promise<CustomerApiResponse | null> => {
+  try {
+    if (!STOREFRONT_BASE) {
+      console.error("NEXT_PUBLIC_CUSTOM_API_CUSTOMER_URL not configured");
+      return null;
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    const response = await fetch(CUSTOMER_PROFILE_URL, {
+      method: "GET",
+      headers: {
+        accept: "*/*",
+        "Content-Type": "application/json",
+        "gk-access-token": gkAccessToken,
+        "gk-merchant-id": gkMerchantId,
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+    const result: CustomerApiResponse = await response.json();
+    return result;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Fetches the customer's address list, normalising every entry into
+ * the snake_case `ApiAddress` shape consumed by the widget.
+ */
+export const getCustomerAddresses = async (
+  phoneNumber: string,
+  accessToken?: string | null
+): Promise<AddressApiResponse | null> => {
+  if (!accessToken) {
+    return null;
+  }
+  try {
+    if (!STOREFRONT_BASE) {
+      console.error("NEXT_PUBLIC_CUSTOM_API_CUSTOMER_URL not configured");
+      return null;
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    const response = await fetch(`${ADDRESSES_BASE}/customer`, {
+      method: "GET",
+      cache: "no-store",
+      headers: {
+        accept: "*/*",
+        "Content-Type": "application/json",
+        "gk-merchant-id": getMerchantId(),
+        "gk-phone": phoneNumber,
+        "gk-access-token": accessToken,
+      },
+    });
+    if (!response.ok) {
+      return null;
+    }
+    const data = await response.json();
+
+    const rawList = Array.isArray(data)
+      ? data
+      : Array.isArray((data as { addresses?: unknown[] })?.addresses)
+        ? (data as { addresses: Record<string, unknown>[] }).addresses
+        : null;
+
+    if (rawList === null) {
+      return data as AddressApiResponse;
+    }
+
+    return {
+      success: true,
+      data: {
+        addresses: rawList.map((a) =>
+          mapStorefrontAddressToApiAddress(a, phoneNumber)
+        ),
+        phone: phoneNumber,
+      },
+      status_code: 200,
+      timestamp: Date.now(),
+    };
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Resolves the customer id from a profile fetch, used as a fallback when
+ * the caller didn't pass `customerId` in the address payload.
+ */
+async function resolveCustomerId(
+  gkAccessToken: string
+): Promise<string | null> {
+  try {
+    // eslint-disable-next-line no-restricted-syntax
+    const res = await fetch(CUSTOMER_PROFILE_URL, {
+      method: "GET",
+      headers: {
+        accept: "*/*",
+        "gk-merchant-id": getMerchantId(),
+        "gk-access-token": gkAccessToken,
+      },
+    });
+    const json = await res.json();
+    const profile = (json?.data ?? json) as { id?: string };
+    return profile?.id ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Maps a widget-side payload (snake_case) to the upstream camelCase shape.
+ */
+function buildUpstreamAddressBody(
+  body: AddressPayload & {
+    customerId?: string | null;
+    company?: string;
+    countryCode?: string;
+    province?: string;
+    provinceCode?: string;
+    isDefault?: boolean;
+    is_default?: boolean;
+    firstName?: string;
+    lastName?: string;
+    address1?: string;
+    address2?: string;
+    phone?: string;
+    zip?: string;
+  },
+  customerId: string | null,
+  customerPhone: string
+): Record<string, unknown> {
+  const country = body.country;
+  return {
+    customerId: customerId ?? "string",
+    firstName: body.first_name ?? body.firstName ?? "",
+    lastName: body.last_name ?? body.lastName ?? "",
+    address1: body.address_1 ?? body.address1 ?? body.address ?? "",
+    address2: body.address_2 ?? body.address2 ?? "",
+    city: body.city ?? "",
+    company: body.company ?? "string",
+    country:
+      country === "IN" || country === "India" ? "INDIA" : (country ?? "INDIA"),
+    countryCode: country === "IN" ? "IN" : (body.countryCode ?? "string"),
+    phone: body.recipient_phone ?? body.phone ?? customerPhone,
+    email: body.email ?? "",
+    province: body.state ?? body.province ?? "string",
+    provinceCode: body.pincode ?? body.provinceCode ?? "string",
+    zip: body.pincode ?? body.zip ?? "",
+    isDefault:
+      body.isDefault === true ||
+      body.is_default === true ||
+      body.address_type === "default",
+  };
+}
+
+export const updateCustomerAddress = async (
+  addressId: string,
+  payload: Record<string, unknown>,
+  phoneNumber: string,
+  accessToken?: string | null
+): Promise<AddressApiResponse | null> => {
+  if (!accessToken) {
+    return null;
+  }
+  try {
+    if (!STOREFRONT_BASE) {
+      return {
+        success: false,
+        status_code: 500,
+        timestamp: Date.now(),
+        error: {
+          message: "Server configuration error",
+          type: "config",
+          code: "missing_env",
+        },
+      } as AddressApiResponse;
+    }
+
+    let customerId = (payload as { customerId?: string }).customerId ?? null;
+    if (!customerId) {
+      customerId = await resolveCustomerId(accessToken);
+    }
+
+    const upstreamBody = buildUpstreamAddressBody(
+      payload as unknown as AddressPayload,
+      customerId,
+      phoneNumber
+    );
+
+    // eslint-disable-next-line no-restricted-syntax
+    const response = await fetch(`${ADDRESSES_BASE}/${addressId}`, {
+      method: "PUT",
+      headers: {
+        accept: "*/*",
+        "Content-Type": "application/json",
+        "gk-merchant-id": getMerchantId(),
+        "gk-phone": phoneNumber,
+        "gk-access-token": accessToken,
+      },
+      body: JSON.stringify(upstreamBody),
+    });
+
+    const data = await response.json();
+    const statusCode =
+      (data as { statusCode?: number })?.statusCode ?? response.status ?? 200;
+
+    if (statusCode >= 400) {
+      const err = data as {
+        message?: string;
+        error?: string;
+      };
+      return {
+        success: false,
+        status_code: statusCode,
+        timestamp: Date.now(),
+        error: {
+          message: err.message ?? err.error ?? "Update failed",
+          type: "upstream",
+          code: String(statusCode),
+        },
+      } as AddressApiResponse;
+    }
+
+    return {
+      success: true,
+      status_code: statusCode,
+      timestamp: Date.now(),
+      data: {
+        addresses: Array.isArray(data) ? data : [data],
+        phone: phoneNumber,
+      },
+    } as AddressApiResponse;
+  } catch {
+    return null;
+  }
+};
+
+export const deleteCustomerAddress = async (
+  addressId: string,
+  accessToken: string
+): Promise<AddressApiResponse | null> => {
+  if (!accessToken) {
+    return null;
+  }
+  try {
+    if (!STOREFRONT_BASE) {
+      return null;
+    }
+
+    // eslint-disable-next-line no-restricted-syntax
+    const response = await fetch(`${ADDRESSES_BASE}/${addressId}`, {
+      method: "DELETE",
+      headers: {
+        accept: "*/*",
+        "gk-merchant-id": getMerchantId(),
+        "gk-access-token": accessToken,
+      },
+    });
+
+    if (!response.ok) {
+      return null;
+    }
+    const result: AddressApiResponse = await response.json();
+    return result;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * Creates a new address. Resolves `customerId` from the profile when the
+ * caller didn't supply one. Returns the widget-shaped `{success, error,
+ * fieldErrors}` envelope regardless of upstream response shape.
+ */
+export const createAddress = async (
+  payload: AddressPayload,
+  customerPhone: string,
+  accessToken?: string | null
+): Promise<AddressResponse | null> => {
+  if (!accessToken) {
+    return {
+      success: false,
+      error: "Authentication required",
+      fieldErrors: {},
+    };
+  }
+  if (!STOREFRONT_BASE) {
+    return {
+      success: false,
+      error: "Server configuration error",
+      fieldErrors: {},
+    };
+  }
+
+  const required = [
+    "first_name",
+    "last_name",
+    "recipient_phone",
+    "pincode",
+    "address_1",
+  ] as const;
+  for (const field of required) {
+    if (!payload[field as keyof AddressPayload]) {
+      return {
+        success: false,
+        error: "Missing required fields",
+        fieldErrors: {},
+      };
+    }
+  }
+
+  try {
+    let customerId = (payload as AddressPayload & { customerId?: string })
+      .customerId;
+    if (!customerId) {
+      customerId = (await resolveCustomerId(accessToken)) ?? undefined;
+    }
+    if (!customerId) {
+      return {
+        success: false,
+        error: "Could not resolve customer.",
+        fieldErrors: {},
+      };
+    }
+
+    const upstreamBody = buildUpstreamAddressBody(
+      payload,
+      customerId,
+      customerPhone
+    );
+
+    // eslint-disable-next-line no-restricted-syntax
+    const response = await fetch(ADDRESSES_BASE, {
+      method: "POST",
+      headers: {
+        accept: "*/*",
+        "Content-Type": "application/json",
+        "gk-merchant-id": getMerchantId(),
+        "gk-phone": customerPhone,
+        "gk-access-token": accessToken,
+      },
+      body: JSON.stringify(upstreamBody),
+    });
+
+    const data = await response.json();
+    const statusCode =
+      (data as { statusCode?: number })?.statusCode ?? response.status ?? 200;
+
+    if (statusCode >= 400) {
+      const err = data as {
+        message?: string;
+        error?: string;
+        fieldErrors?: Record<string, string>;
+        errors?: Record<string, string>;
+      };
+      return {
+        success: false,
+        error: err.message ?? err.error ?? "Request failed",
+        fieldErrors: err.fieldErrors ?? err.errors ?? {},
+      };
+    }
+
+    return { success: true, data };
+  } catch (err) {
+    return {
+      success: false,
+      error: err instanceof Error ? err.message : "Unknown error occurred",
+      fieldErrors: {},
+    };
+  }
+};
