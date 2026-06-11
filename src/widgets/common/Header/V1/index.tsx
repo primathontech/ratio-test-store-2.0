@@ -118,7 +118,8 @@ function DesktopItem({
   onLeave: () => void;
 }) {
   const strategy = getRenderStrategy(item);
-  const href = getEffectiveUrl(item) ?? "/";
+  const linkUrl = getEffectiveUrl(item); // non-null only when this item is itself a link
+  const href = linkUrl ?? "/";
   const hasPanel = strategy === "mega-menu" || strategy === "dropdown";
 
   return (
@@ -138,16 +139,34 @@ function DesktopItem({
           {item.title}
         </a>
       ) : strategy === "mega-menu" ? (
-        <span
-          className="sf-nav__link"
-          aria-haspopup="true"
-          aria-expanded={open}
-        >
-          {item.title}
-          <span className="sf-nav__chevron" aria-hidden="true">
-            ▾
+        // A mega-menu trigger may ALSO be a link (the backend sends a `url` on the
+        // trigger when the merchant made it clickable). Render a <Link> when it has
+        // one, else a non-navigable label. Hover still opens the panel either way
+        // (the <li> mouse handlers above don't depend on this).
+        linkUrl ? (
+          <Link
+            href={linkUrl}
+            className="sf-nav__link"
+            aria-haspopup="true"
+            aria-expanded={open}
+          >
+            {item.title}
+            <span className="sf-nav__chevron" aria-hidden="true">
+              ▾
+            </span>
+          </Link>
+        ) : (
+          <span
+            className="sf-nav__link"
+            aria-haspopup="true"
+            aria-expanded={open}
+          >
+            {item.title}
+            <span className="sf-nav__chevron" aria-hidden="true">
+              ▾
+            </span>
           </span>
-        </span>
+        )
       ) : (
         <Link href={href} className="sf-nav__link">
           {item.title}
@@ -199,7 +218,8 @@ function MobileItem({ item }: { item: NavItem }) {
     return null;
   }
   const strategy = getRenderStrategy(item);
-  const href = getEffectiveUrl(item) ?? "/";
+  const linkUrl = getEffectiveUrl(item); // non-null only when this item is itself a link
+  const href = linkUrl ?? "/";
   const hasChildren = strategy === "mega-menu" || strategy === "dropdown";
 
   if (!hasChildren) {
@@ -227,14 +247,32 @@ function MobileItem({ item }: { item: NavItem }) {
 
   return (
     <div className="sf-drawer__group">
-      <button
-        className="sf-drawer__toggle"
-        aria-expanded={expanded}
-        onClick={() => setExpanded((v) => !v)}
-      >
-        {item.title}
-        <span aria-hidden="true">{expanded ? "−" : "+"}</span>
-      </button>
+      {linkUrl ? (
+        // Trigger is itself a link: the label navigates, a separate caret expands
+        // the sub-items (so mobile users can reach both).
+        <div className="sf-drawer__row">
+          <Link href={linkUrl} className="sf-drawer__link">
+            {item.title}
+          </Link>
+          <button
+            className="sf-drawer__expand"
+            aria-label={`${expanded ? "Collapse" : "Expand"} ${item.title}`}
+            aria-expanded={expanded}
+            onClick={() => setExpanded((v) => !v)}
+          >
+            <span aria-hidden="true">{expanded ? "−" : "+"}</span>
+          </button>
+        </div>
+      ) : (
+        <button
+          className="sf-drawer__toggle"
+          aria-expanded={expanded}
+          onClick={() => setExpanded((v) => !v)}
+        >
+          {item.title}
+          <span aria-hidden="true">{expanded ? "−" : "+"}</span>
+        </button>
+      )}
       {expanded && (
         <div className="sf-drawer__sub">
           {children.map((child) =>

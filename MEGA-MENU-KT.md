@@ -141,10 +141,11 @@ hasImage(leaf)                                     // card vs text — by image,
 That's it — `useMenu` + ~5 helpers cover every menu the admin can produce (and any future
 resource type, which falls back to a link). The working version is in `Header/V1/index.tsx`.
 
-> **Heads-up (upcoming backend change):** a mega-menu **trigger** (e.g. "Baby Care") will soon be able
-> to *also* be a clickable link, not just a panel opener. When that lands, `getEffectiveUrl(item)`
-> returns a non-null href for the trigger — render its title as a `<Link>` when so, and a plain
-> non-link label when not. The helpers already cover it; no data changes on your side.
+> **A mega-menu trigger can also be a link** (e.g. "Baby Care" → a collection): the backend sends a `url`
+> on the trigger when the merchant made it clickable. The reference Header handles it — when
+> `getEffectiveUrl(item)` is non-null it renders the trigger title as a `<Link>` (still opening the
+> panel); on mobile the row is a label-link + a separate expand caret. When there's no url it's a plain
+> label. Keep this branch if you restyle; the helpers cover it and there's no data work on your side.
 
 ---
 
