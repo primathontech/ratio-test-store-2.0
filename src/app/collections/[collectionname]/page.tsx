@@ -11,13 +11,12 @@ import { KwikPassCollectionView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { createCollectionStaticParams } from "@shopkit/data-layer";
 
-export const revalidate = 30;
-export const dynamicParams = true;
+// export const revalidate = 30;
+// export const dynamicParams = true;
 
-export const generateStaticParams =
-  createCollectionStaticParams(getCommerceClient);
+// export const generateStaticParams =
+//   createCollectionStaticParams(getCommerceClient);
 
 export async function generateMetadata(props: {
   params: Promise<{ collectionname: string }>;
