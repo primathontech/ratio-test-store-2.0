@@ -10,8 +10,8 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
-export const revalidate = 30;
-export const dynamicParams = true;
+// export const revalidate = 30;
+// export const dynamicParams = true;
 
 // TODO: Implement dynamic route generation based on FEATURED_COLLECTIONS environment variable
 // export async function generateStaticParams() {
