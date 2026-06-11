@@ -3,6 +3,8 @@ import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
+import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
+import type { PageConfig } from "@shopkit/builder";
 import { Metadata } from "next";
 import { resolvePageSEO } from "@shopkit/seo";
 import { getSEOConfig } from "@/config";
@@ -18,7 +20,14 @@ export function generateMetadata(): Metadata {
   );
 }
 
-export default async function AboutUsPage() {
+export default async function AboutUsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ editor?: string; previewKey?: string }>;
+}) {
+  const { isEditor, pageConfig: previewPageConfig } =
+    await readEditorPreviewState<PageConfig>(searchParams);
+
   const themeName = getThemeName();
   const locale = getStaticLocale();
 
@@ -36,13 +45,14 @@ export default async function AboutUsPage() {
     language: locale,
   });
 
-  const pageBuilder = getPageBuilder();
+  const pageBuilder = getPageBuilder({ isEditor });
 
   const pageContent = await pageBuilder.renderPage({
     merchantName: themeName,
     routeContext,
     locale,
     messages,
+    pageConfig: previewPageConfig,
   });
 
   return <>{pageContent}</>;

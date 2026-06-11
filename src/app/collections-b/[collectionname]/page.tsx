@@ -5,6 +5,8 @@ import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
+import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
+import type { PageConfig } from "@shopkit/builder";
 import { KwikPassCollectionView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -62,8 +64,11 @@ export async function generateMetadata(props: {
 
 export default async function CollectionPage(props: {
   params: Promise<{ collectionname: string }>;
+  searchParams: Promise<{ editor?: string; previewKey?: string }>;
 }) {
   const params = await props.params;
+  const { isEditor, pageConfig: previewPageConfig } =
+    await readEditorPreviewState<PageConfig>(props.searchParams);
   try {
     const themeName = getThemeName();
     const locale = getStaticLocale();
@@ -84,7 +89,7 @@ export default async function CollectionPage(props: {
     };
 
     // Get the page builder with widget manifest
-    const pageBuilder = getPageBuilder();
+    const pageBuilder = getPageBuilder({ isEditor });
 
     // Note: The builder uses "merchantName" internally for loading themes/templates
     // from @/themes/{name}/templates/, so we pass themeName here
@@ -93,6 +98,7 @@ export default async function CollectionPage(props: {
       routeContext,
       locale,
       messages,
+      pageConfig: previewPageConfig,
     });
 
     return (

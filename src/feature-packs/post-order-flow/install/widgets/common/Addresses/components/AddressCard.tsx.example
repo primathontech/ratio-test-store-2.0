@@ -1,0 +1,96 @@
+"use client";
+
+import React from "react";
+import { AddressCardProps } from "../types";
+import { INDIAN_STATE_CODES } from "../constants/indianStates";
+
+const DEFAULT_CARD_LABELS = {
+  default_label: "Default",
+  edit_button: "Edit",
+  delete_button: "Delete",
+  deleting_button: "Deleting...",
+} as const;
+
+/** Treat empty or backend placeholder "string" as falsy */
+const hasValue = (v: string | undefined | null) =>
+  v && v.trim() !== "" && v.toLowerCase() !== "string";
+
+export const AddressCard: React.FC<AddressCardProps> = ({
+  address,
+  isDeleting,
+  onEdit,
+  onDelete,
+  cardLabels,
+}) => {
+  const labels = { ...DEFAULT_CARD_LABELS, ...cardLabels };
+
+  return (
+    <div className="text-center space-y-2">
+      {/* Default label for default address */}
+      {address.isDefault && (
+        <div className="text-[28px] text-black my-[22px] leading-tight">
+          {labels.default_label}
+        </div>
+      )}
+      {/* Name */}
+      <div className="text-black text-[14px] !mt-0 leading-[22px]">
+        {address.first_name} {address.last_name}
+      </div>
+
+      {/* Company (if exists) */}
+      {hasValue(address.company) && (
+        <div className="text-black text-[14px] !mt-0 leading-[22px]">
+          {address.company}
+        </div>
+      )}
+
+      {/* Address 1 */}
+      <div className="text-black text-[14px] !mt-0 leading-[22px]">
+        {address.address}
+      </div>
+
+      {/* Address 2 (if exists) */}
+      {hasValue(address.address2) && (
+        <div className="text-black text-[14px] !mt-0 leading-[22px]">
+          {address.address2}
+        </div>
+      )}
+
+      <div className="text-black text-[14px] !mt-0 leading-[22px]">
+        {address.zip} {address.city}{" "}
+        {(INDIAN_STATE_CODES as Record<string, string>)[address.state] ??
+          address.state}
+      </div>
+
+      <div className="text-black text-[14px] !mt-0 leading-[22px]">
+        {address.country}
+      </div>
+
+      {/* Action Buttons */}
+      <div className="flex justify-center gap-4 !mt-0">
+        <button
+          type="button"
+          onClick={() => onEdit(address)}
+          disabled={isDeleting}
+          className="bg-black text-white px-[25px] md:px-[31px] my-[40px] rounded-[10px] text-[14px] font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[38.8px] md:min-h-[46.8px]"
+        >
+          {labels.edit_button}
+        </button>
+        <button
+          type="button"
+          onClick={() => {
+            if (
+              window.confirm("Are you sure you wish to delete this address?")
+            ) {
+              onDelete(address.address_id);
+            }
+          }}
+          disabled={isDeleting}
+          className="bg-white text-black border border-black px-[24px] md:px-[30px] rounded-[10px] text-[14px] font-medium hover:text-blue-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed my-[40px] ml-[20px] min-h-[38.8px] md:min-h-[46.8px] hover:border-blue-500"
+        >
+          {isDeleting ? labels.deleting_button : labels.delete_button}
+        </button>
+      </div>
+    </div>
+  );
+};

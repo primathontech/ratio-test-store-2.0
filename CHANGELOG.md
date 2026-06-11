@@ -1,5 +1,15 @@
 # storefront-starter-app
 
+## 0.2.4
+
+### Enhancements
+
+- **Editor-compatible static policy pages** — added `privacy-policy`, `shipping-policy`, `cancellation-policy`, and `terms-of-use` as static pages (heading + rich-text body rendered via `tEditable`).
+  - Packaged as a **self-contained feature pack** at `src/feature-packs/static-pages/` — every authored file (templates, default locale copy, route logic, editor registry entries) lives in that one folder, with a `guide.md` runbook. Downstream/merchant repos pull the folder cleanly (no scattered edits to conflict on) and wire it via the guide, or `rm -rf` the folder to opt out. See the guide's "Removing the pack" section.
+  - The only touchpoints outside the pack are framework-mandated pointers: a 1-line re-export `app/<slug>/page.tsx` per route, and a one-line `...spread` of the pack's exports in `theme-constants.ts` + `static-templates-registry.ts`.
+  - Pages render their bundled default copy out of the box (no editor backend required); editor-backend overrides still layer on top.
+  - Added a default `about-us` locale (the app previously shipped the `about-us` page without one) and aligned its heading/body typography with the policy pages.
+
 ## 0.2.3
 
 ### Enhancements
@@ -10,6 +20,12 @@
   - `events.ts` consolidated to a single sink (the `page_view_kp` DOM event). Drops the legacy `window.gokwik.track` and FB Pixel paths, drops the `LOGIN`/`LOGOUT` enum members + dispatchers, drops the `KwikPassEvent` envelope. `KWIK_ENGAGE_TYPE_MAP` is a typed `Record` so TS enforces map completeness.
   - Dropped the unused `useCheckoutToken` hook (zero callers).
 - **New optional env var**: `NEXT_PUBLIC_KP_EVENT_ALLOWED` (`"yes"` default, `"no"` to opt out). Replaces the previous `NEXT_PUBLIC_GOKWIK_ENABLED` gate.
+
+### Patch Changes
+
+- Updated dependencies [045346f]
+- Updated dependencies
+  - @shopkit/cli@0.4.0
 
 ## 0.2.2
 
