@@ -141,6 +141,11 @@ hasImage(leaf)                                     // card vs text — by image,
 That's it — `useMenu` + ~5 helpers cover every menu the admin can produce (and any future
 resource type, which falls back to a link). The working version is in `Header/V1/index.tsx`.
 
+> **Heads-up (upcoming backend change):** a mega-menu **trigger** (e.g. "Baby Care") will soon be able
+> to *also* be a clickable link, not just a panel opener. When that lands, `getEffectiveUrl(item)`
+> returns a non-null href for the trigger — render its title as a `<Link>` when so, and a plain
+> non-link label when not. The helpers already cover it; no data changes on your side.
+
 ---
 
 ## Cases the reference already handles (so you don't have to think about them)
@@ -168,5 +173,5 @@ NEXT_PUBLIC_NAV_MENU_API_URL=<qa or prod url> bun run dev
 ---
 
 ## Deeper reference
-- **Widget Author Contract + full flow:** `plans/mega-menu/FLOW.md` (§4.1 is the contract; read the rest for the why).
+- **Widget Author Contract + full flow:** `plans/0001-mega-menu/README.md` (§4.1 is the contract; read the rest for the why).
 - **The reference code to copy:** this app's `Header/V1` + `Footer/V1`.
