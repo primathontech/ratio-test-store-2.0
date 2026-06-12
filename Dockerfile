@@ -15,6 +15,8 @@ RUN --mount=type=bind,source=.git,target=/tmp/.git \
 # Dependencies
 FROM base AS deps
 COPY package.json bun.lock ./
+# patchedDependencies (see package.json) — bun needs the patch files at install time
+COPY patches ./patches
 COPY --from=editor /app/src/app/editor/package.json src/app/editor/
 RUN bun install --frozen-lockfile
 

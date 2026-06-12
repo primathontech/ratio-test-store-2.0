@@ -112,5 +112,8 @@
     "*.{json,md,yml,yaml}": [
       "prettier --write"
     ]
+  },
+  "patchedDependencies": {
+    "@shopkit/data-layer@1.2.0": "patches/@shopkit%2Fdata-layer@1.2.0.patch"
   }
 }
