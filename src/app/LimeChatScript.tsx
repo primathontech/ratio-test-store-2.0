@@ -2,9 +2,28 @@
 
 import Script from "next/script";
 import { usePathname } from "next/navigation";
+import { useEffect } from "react";
+
+declare global {
+  interface Window {
+    __lmCloseChatIfOpen?: () => void;
+  }
+}
 
 export default function LimeChatScript() {
   const pathname = usePathname();
+
+  // Close the chat widget on route change (SPA nav + back/forward).
+  // Replaces the injected script's 300ms setInterval poll — usePathname
+  // updates on every navigation, so this fires exactly when the route
+  // changes. The small delay lets the widget settle before toggling.
+  useEffect(() => {
+    if (pathname?.startsWith("/editor")) {
+      return;
+    }
+    const t = setTimeout(() => window.__lmCloseChatIfOpen?.(), 30);
+    return () => clearTimeout(t);
+  }, [pathname]);
 
   if (pathname?.startsWith("/editor")) {
     return null;
@@ -119,47 +138,9 @@ export default function LimeChatScript() {
                 }
               }
 
-              const CLOSE_DELAY = 30;
-
-              let currentPathname = window.location.pathname;
-
-              function checkRouteChange() {
-                const newPathname = window.location.pathname;
-                if (currentPathname !== newPathname) {
-                  currentPathname = newPathname;
-                  closeChatIfOpen();
-                  setTimeout(closeChatIfOpen, CLOSE_DELAY);
-                }
-              }
-
-              window.addEventListener('popstate', function() {
-                checkRouteChange();
-                setTimeout(checkRouteChange, CLOSE_DELAY);
-              });
-
-              document.addEventListener('click', function(e) {
-                const target = e.target;
-                const link = target.closest('a[href]');
-                if (link && link.href) {
-                  const href = link.getAttribute('href');
-                  if (href && href.startsWith('/') && !href.startsWith('//')) {
-                    closeChatIfOpen();
-                    setTimeout(closeChatIfOpen, CLOSE_DELAY);
-                  }
-                }
-              }, true);
-
-              let pathnameCheckInterval = setInterval(function() {
-                checkRouteChange();
-              }, 300);
-
-              if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', function() {
-                  setTimeout(checkRouteChange, 500);
-                });
-              } else {
-                setTimeout(checkRouteChange, 500);
-              }
+              // Exposed so the React component can close the chat on route
+              // change via usePathname() — replaces the old 300ms poll.
+              window.__lmCloseChatIfOpen = closeChatIfOpen;
             };
           })(document,"script");
 

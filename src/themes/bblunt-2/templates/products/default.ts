@@ -203,34 +203,34 @@ export const template: PageConfig = {
 
     // Video App Section — shoppable-video rail (SDK-driven, lazy-loaded
     // 1s after PDP mount). Filters videos to the current product.
-    {
-      id: "video-app-section",
-      name: "Video App",
-      type: SECTION_TYPES.CONTENT_SECTION,
-      settings: {
-        layout: SECTION_LAYOUT_OPTIONS.FULL,
-        responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-        },
-      },
-      widgets: [
-        {
-          id: "bblunt-2-video-app",
-          name: "Video App",
-          type: WIDGET_TYPES.VideoApp,
-          dataSourceKey: "productData",
-          settings: {
-            variant: "v1",
-            title: "Watch & Shop",
-            layout: "grid",
-            itemsPerRow: 4,
-            enableCtaButton: false,
-          },
-        },
-      ],
-    },
+    // {
+    //   id: "video-app-section",
+    //   name: "Video App",
+    //   type: SECTION_TYPES.CONTENT_SECTION,
+    //   settings: {
+    //     layout: SECTION_LAYOUT_OPTIONS.FULL,
+    //     responsive: {
+    //       mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //       tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //       desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //     },
+    //   },
+    //   widgets: [
+    //     {
+    //       id: "bblunt-2-video-app",
+    //       name: "Video App",
+    //       type: WIDGET_TYPES.VideoApp,
+    //       dataSourceKey: "productData",
+    //       settings: {
+    //         variant: "v1",
+    //         title: "Watch & Shop",
+    //         layout: "grid",
+    //         itemsPerRow: 4,
+    //         enableCtaButton: false,
+    //       },
+    //     },
+    //   ],
+    // },
 
     // Reasons to Love Section
     {
