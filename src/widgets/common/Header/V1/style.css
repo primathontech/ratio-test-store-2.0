@@ -6,16 +6,23 @@
    ============================================================================ */
 
 .sf-header {
-  /* ── Semantic aliases → the platform theme tokens (generated from theme.json
-     by @shopkit/core, mapped in tailwind.config.ts). Each has a literal fallback
-     so the header never breaks if a theme omits a token. Changing theme.json
-     re-themes this header automatically — no override needed. ── */
-  --sf-bg: var(--color-surface, #ffffff);
+  /* ── Semantic aliases → the platform theme tokens (from theme.json via
+     @shopkit/core). The header keys off the theme's guaranteed contrasting pair:
+     `secondary` is the light page surface, `primary` the dark text/brand. (This
+     theme only generates primary/secondary — referencing surface/background-*
+     would silently fall back to literals and never follow the theme.) The footer
+     inverts this exact pair. border / hover / muted derive from the foreground
+     via color-mix so they stay legible in either polarity; literal first-
+     declarations are the fallback for browsers without color-mix. ── */
+  --sf-bg: var(--color-secondary, #ffffff);
   --sf-fg: var(--color-primary, #18181b);
   --sf-accent: var(--color-primary, #18181b); /* active/underline + brand */
-  --sf-border: var(--color-background-2, #ececef);
-  --sf-hover-bg: var(--color-background-2, #f6f6f7);
-  --sf-muted: #52525b; /* muted nav text — not all themes define one; literal */
+  --sf-border: #ececef;
+  --sf-border: color-mix(in srgb, var(--sf-fg) 12%, transparent);
+  --sf-hover-bg: #f6f6f7;
+  --sf-hover-bg: color-mix(in srgb, var(--sf-fg) 6%, transparent);
+  --sf-muted: #52525b; /* muted nav text */
+  --sf-muted: color-mix(in srgb, var(--sf-fg) 62%, transparent);
   --sf-max: 1240px;
   --sf-header-h: 72px; /* bar height — also where the full-width mega bar pins */
   --sf-radius: 12px;
