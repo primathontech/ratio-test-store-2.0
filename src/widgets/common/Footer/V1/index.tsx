@@ -3,9 +3,9 @@
 import React, { memo } from "react";
 import Link from "next/link";
 import {
-  useMenu,
-  getEffectiveUrl,
-  isBrokenLink,
+  useNav,
+  type NavEntry,
+  type MegaMenuLeaf,
 } from "@shopkit/navigation/client";
 import { FooterProps } from "../types";
 import "./style.css";
@@ -13,37 +13,60 @@ import "./style.css";
 /**
  * Footer V1 — REFERENCE IMPLEMENTATION.
  *
- * The footer renders the SAME menu tree as the header (a different handle), as
- * column groups of links: depth-0 items are column headings, their children are
- * the links. Same data + helpers as the header (FLOW.md §4.1); restyle freely.
- *
- * Rules: import from "@shopkit/navigation/client" only; degrade gracefully when
- * useMenu() is null (render nothing extra, never crash).
+ * Same one-hook contract as the header: `useNav(handle)` → NavEntry[]. The footer
+ * renders each entry as a column group — heading + links. A `dropdown` entry's
+ * children are the links; a `link`/`external` entry is a single link; a `mega`
+ * entry's panel is flattened to links. Restyle freely; you never parse JSON.
  */
 export const V1 = memo(function V1({ settings }: FooterProps) {
-  const menu = useMenu(settings?.menuHandle ?? "footer");
-  const columns = (menu?.items ?? []).filter((c) => !isBrokenLink(c));
+  const entries = useNav(settings?.menuHandle ?? "footer");
+
+  // Resolve each top-level entry to a column's worth of links (uniform leaves).
+  const linksFor = (entry: NavEntry): MegaMenuLeaf[] => {
+    if (entry.kind === "dropdown") {
+      return entry.items;
+    }
+    if (entry.kind === "mega") {
+      return entry.panel.columns.flatMap((c) =>
+        c.items.length > 0
+          ? c.items
+          : [
+              {
+                id: c.id,
+                title: c.title,
+                href: c.href ?? "/",
+                image: c.image,
+                isExternal: false,
+              },
+            ]
+      );
+    }
+    // link / external → the entry itself is the single link.
+    return [
+      {
+        id: entry.id,
+        title: entry.label,
+        href: entry.href,
+        image: null,
+        isExternal: entry.kind === "external",
+      },
+    ];
+  };
 
   return (
     <footer className="sf-footer">
       <div className="sf-footer__inner">
-        {columns.map((col) => (
-          <div key={col.id} className="sf-footer__col">
-            <span className="sf-footer__col-title">{col.title}</span>
+        {entries.map((entry) => (
+          <div key={entry.id} className="sf-footer__col">
+            <span className="sf-footer__col-title">{entry.label}</span>
             <ul className="sf-footer__links">
-              {/* A column with children → list them; a bare link → itself. */}
-              {(col.items.length > 0 ? col.items : [col]).map((link) =>
-                isBrokenLink(link) ? null : (
-                  <li key={link.id}>
-                    <Link
-                      href={getEffectiveUrl(link) ?? "/"}
-                      className="sf-footer__link"
-                    >
-                      {link.title}
-                    </Link>
-                  </li>
-                )
-              )}
+              {linksFor(entry).map((link) => (
+                <li key={link.id}>
+                  <Link href={link.href} className="sf-footer__link">
+                    {link.title}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         ))}

@@ -4,13 +4,8 @@ import React, { memo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  useMenu,
-  getRenderStrategy,
-  getEffectiveUrl,
-  getMegaMenuModel,
-  isBrokenLink,
-  getAriaLabel,
-  type NavItem,
+  useNav,
+  type NavEntry,
   type MegaMenuColumn,
   type MegaMenuLeaf,
 } from "@shopkit/navigation/client";
@@ -21,38 +16,31 @@ import "./style.css";
  * Header V1 — REFERENCE IMPLEMENTATION for the mega menu.
  *
  * This is the canonical pattern every merchant storefront COPIES and RESTYLES.
- * It consumes the live, admin-managed menu from `@shopkit/navigation` and renders
- * it on desktop (nav bar + mega panels) and mobile (slide-in drawer accordion).
  *
- * ── Rules to keep when you restyle (see plans/mega-menu/FLOW.md §4.1) ──────────
- *  1. Import ONLY from "@shopkit/navigation/client" — never the server barrel.
- *  2. Drive each top-level item off getRenderStrategy(item).
- *  3. Decide leaf card-vs-text with hasImage(item) — NEVER resource_type
- *     (the menu data has no commerce fields; a product leaf == any image leaf).
- *  4. Keep a graceful fallback when useMenu() returns null (no env/backend) so the
- *     header is never blank and the editor preview looks fine.
+ * ── The entire data contract is ONE hook ───────────────────────────────────────
+ *   const entries = useNav(handle);   // NavEntry[] — render-ready, by `kind`
  *
- * The visual design is YOURS — only the data + helpers are shared.
+ * You never parse JSON, never call a helper, never inspect resource_type/depth/url.
+ * `entry.kind` is one of "link" | "external" | "dropdown" | "mega"; switch on it and
+ * render your markup. TypeScript makes the switch exhaustive — if the platform ever
+ * adds a kind, your build tells you. `useNav` returns [] when the menu is
+ * unavailable (no env/backend/handle), so keep a small fallback and you're done.
+ *
+ * The visual design is YOURS — only the data (useNav) is shared.
  */
 
-/**
- * Graceful fallback nav — shown when `useMenu()` returns null/empty (no env var,
- * backend down, handle not found, or inside the editor preview iframe where there
- * is no NavigationProvider). Keep SOMETHING here so the header is never blank.
- * Customize these links for your store. (Rule #4 in the header comment.)
- */
+/** Graceful fallback — shown when useNav() returns [] (no env/backend/handle, or
+ *  the editor preview). Keep SOMETHING so the header is never blank. */
 const FALLBACK_NAV: { title: string; href: string }[] = [
   { title: "Home", href: "/" },
 ];
 
-/* ── Desktop: a single leaf inside a mega-menu column (normalized model leaf) ──── */
+/* ── Desktop: a single leaf inside a mega-menu column (image → card, else link) ── */
 function DesktopLeaf({ leaf }: { leaf: MegaMenuLeaf }) {
-  // Image leaf → card; text leaf → link.
   const content = leaf.image ? (
     <>
       {/* Admin-supplied remote image of unknown domain — `unoptimized` so
-          next/image doesn't require a per-merchant remotePatterns entry.
-          Sizing is controlled by CSS (.sf-mega__card-img). */}
+          next/image needs no per-merchant remotePatterns. CSS controls size. */}
       <Image
         src={leaf.image.src}
         alt={leaf.image.alt_text || leaf.title || ""}
@@ -85,7 +73,7 @@ function DesktopLeaf({ leaf }: { leaf: MegaMenuLeaf }) {
   );
 }
 
-/* ── Desktop: a column inside a mega panel (normalized model column) ───────────── */
+/* ── Desktop: a column inside a mega panel ────────────────────────────────────── */
 function DesktopColumn({ column }: { column: MegaMenuColumn }) {
   const cards = column.items.some((l) => !!l.image);
   return (
@@ -120,24 +108,19 @@ function DesktopColumn({ column }: { column: MegaMenuColumn }) {
   );
 }
 
-/* ── Desktop: one top-level nav item (link / external / dropdown / mega-menu) ─── */
+/* ── Desktop: one top-level entry (link / external / dropdown / mega) ──────────── */
 function DesktopItem({
-  item,
+  entry,
   open,
   onEnter,
   onLeave,
 }: {
-  item: NavItem;
+  entry: NavEntry;
   open: boolean;
   onEnter: () => void;
   onLeave: () => void;
 }) {
-  const strategy = getRenderStrategy(item);
-  const linkUrl = getEffectiveUrl(item); // non-null only when this item is itself a link
-  const href = linkUrl ?? "/";
-  const hasPanel = strategy === "mega-menu" || strategy === "dropdown";
-  // Normalized panel model — the single source of shape truth.
-  const megaModel = strategy === "mega-menu" ? getMegaMenuModel(item) : null;
+  const hasPanel = entry.kind === "mega" || entry.kind === "dropdown";
 
   return (
     <li
@@ -145,66 +128,55 @@ function DesktopItem({
       onMouseEnter={hasPanel ? onEnter : undefined}
       onMouseLeave={hasPanel ? onLeave : undefined}
     >
-      {strategy === "external" ? (
+      {entry.kind === "external" ? (
         <a
-          href={href}
+          href={entry.href}
           className="sf-nav__link"
           target="_blank"
           rel="noopener noreferrer"
-          aria-label={getAriaLabel(item)}
+          aria-label={entry.ariaLabel}
         >
-          {item.title}
+          {entry.label}
         </a>
-      ) : strategy === "mega-menu" ? (
-        // A mega-menu trigger may ALSO be a link (the backend sends a `url` on the
-        // trigger when the merchant made it clickable). Render a <Link> when it has
-        // one, else a non-navigable label. Hover still opens the panel either way
-        // (the <li> mouse handlers above don't depend on this).
-        linkUrl ? (
-          <Link
-            href={linkUrl}
-            className="sf-nav__link"
-            aria-haspopup="true"
-            aria-expanded={open}
-          >
-            {item.title}
-            <span className="sf-nav__chevron" aria-hidden="true">
-              ▾
-            </span>
-          </Link>
-        ) : (
-          <span
-            className="sf-nav__link"
-            aria-haspopup="true"
-            aria-expanded={open}
-          >
-            {item.title}
-            <span className="sf-nav__chevron" aria-hidden="true">
-              ▾
-            </span>
-          </span>
-        )
-      ) : (
-        <Link href={href} className="sf-nav__link">
-          {item.title}
-          {strategy === "dropdown" && (
-            <span className="sf-nav__chevron" aria-hidden="true">
-              ▾
-            </span>
-          )}
+      ) : entry.kind === "link" ? (
+        <Link href={entry.href} className="sf-nav__link">
+          {entry.label}
         </Link>
+      ) : entry.href ? (
+        // mega / dropdown that is ALSO a link → label navigates, hover opens panel
+        <Link
+          href={entry.href}
+          className="sf-nav__link"
+          aria-haspopup="true"
+          aria-expanded={open}
+        >
+          {entry.label}
+          <span className="sf-nav__chevron" aria-hidden="true">
+            ▾
+          </span>
+        </Link>
+      ) : (
+        // mega / dropdown that is NOT a link → non-navigable label
+        <span
+          className="sf-nav__link"
+          aria-haspopup="true"
+          aria-expanded={open}
+        >
+          {entry.label}
+          <span className="sf-nav__chevron" aria-hidden="true">
+            ▾
+          </span>
+        </span>
       )}
 
-      {/* Mega-menu panel — pure markup over the normalized model */}
-      {strategy === "mega-menu" && open && megaModel && (
+      {/* Mega-menu panel */}
+      {entry.kind === "mega" && open && (
         <div className="sf-mega">
           <div className="sf-mega__inner">
-            {/* Optional featured/hero image attached to the trigger.
-                Leads the panel; restyle position via CSS. */}
-            {megaModel.hero?.src && (
+            {entry.panel.hero?.src && (
               <Image
-                src={megaModel.hero.src}
-                alt={megaModel.hero.alt_text || item.title || ""}
+                src={entry.panel.hero.src}
+                alt={entry.panel.hero.alt_text || entry.label}
                 className="sf-mega__hero"
                 width={300}
                 height={300}
@@ -212,67 +184,54 @@ function DesktopItem({
                 unoptimized
               />
             )}
-            {megaModel.columns.map((column) => (
+            {entry.panel.columns.map((column) => (
               <DesktopColumn key={column.id} column={column} />
             ))}
           </div>
         </div>
       )}
 
-      {/* Simple dropdown: a flat list of children */}
-      {strategy === "dropdown" && open && (
+      {/* Simple dropdown */}
+      {entry.kind === "dropdown" && open && (
         <div className="sf-dropdown">
-          {item.items.map((child) =>
-            isBrokenLink(child) ? null : (
-              <Link
-                key={child.id}
-                href={getEffectiveUrl(child) ?? "/"}
-                className="sf-dropdown__link"
-              >
-                {child.title}
-              </Link>
-            )
-          )}
+          {entry.items.map((leaf) => (
+            <Link key={leaf.id} href={leaf.href} className="sf-dropdown__link">
+              {leaf.title}
+            </Link>
+          ))}
         </div>
       )}
     </li>
   );
 }
 
-/* ── Mobile: one top-level item as an accordion row ───────────────────────────── */
-function MobileItem({ item }: { item: NavItem }) {
+/* ── Mobile: one top-level entry as an accordion row ──────────────────────────── */
+function MobileItem({ entry }: { entry: NavEntry }) {
   const [expanded, setExpanded] = useState(false);
-  if (isBrokenLink(item)) {
-    return null;
-  }
-  const strategy = getRenderStrategy(item);
-  const linkUrl = getEffectiveUrl(item); // non-null only when this item is itself a link
-  const href = linkUrl ?? "/";
-  const hasChildren = strategy === "mega-menu" || strategy === "dropdown";
+  const hasChildren = entry.kind === "mega" || entry.kind === "dropdown";
 
   if (!hasChildren) {
-    return strategy === "external" ? (
+    return entry.kind === "external" ? (
       <a
-        href={href}
+        href={entry.href}
         className="sf-drawer__link"
         target="_blank"
         rel="noopener noreferrer"
       >
-        {item.title}
+        {entry.label}
       </a>
     ) : (
-      <Link href={href} className="sf-drawer__link">
-        {item.title}
+      <Link href={entry.href} className="sf-drawer__link">
+        {entry.label}
       </Link>
     );
   }
 
-  // Flatten the panel to a single level for the drawer. Mega panels use the
-  // normalized model (a leaf-less column is itself a link); a plain dropdown
-  // flattens its children. Both produce a uniform list of {id, title, href}.
+  // Flatten the panel to one level for the drawer. Mega: a leaf-less column is
+  // itself a link, so fall back to the column. Dropdown: its items.
   const children: MegaMenuLeaf[] =
-    strategy === "mega-menu"
-      ? getMegaMenuModel(item).columns.flatMap((c) =>
+    entry.kind === "mega"
+      ? entry.panel.columns.flatMap((c) =>
           c.items.length > 0
             ? c.items
             : [
@@ -285,28 +244,19 @@ function MobileItem({ item }: { item: NavItem }) {
                 },
               ]
         )
-      : (item.items ?? [])
-          .filter((c) => !isBrokenLink(c))
-          .map((c) => ({
-            id: c.id,
-            title: c.title,
-            href: getEffectiveUrl(c) ?? "/",
-            image: null,
-            isExternal: false,
-          }));
+      : entry.items;
 
   return (
     <div className="sf-drawer__group">
-      {linkUrl ? (
-        // Trigger is itself a link: the label navigates, a separate caret expands
-        // the sub-items (so mobile users can reach both).
+      {entry.href ? (
+        // Trigger is itself a link: the label navigates, a separate caret expands.
         <div className="sf-drawer__row">
-          <Link href={linkUrl} className="sf-drawer__link">
-            {item.title}
+          <Link href={entry.href} className="sf-drawer__link">
+            {entry.label}
           </Link>
           <button
             className="sf-drawer__expand"
-            aria-label={`${expanded ? "Collapse" : "Expand"} ${item.title}`}
+            aria-label={`${expanded ? "Collapse" : "Expand"} ${entry.label}`}
             aria-expanded={expanded}
             onClick={() => setExpanded((v) => !v)}
           >
@@ -319,7 +269,7 @@ function MobileItem({ item }: { item: NavItem }) {
           aria-expanded={expanded}
           onClick={() => setExpanded((v) => !v)}
         >
-          {item.title}
+          {entry.label}
           <span aria-hidden="true">{expanded ? "−" : "+"}</span>
         </button>
       )}
@@ -343,8 +293,7 @@ function MobileItem({ item }: { item: NavItem }) {
 /* ── The header shell (desktop bar + mobile drawer) ───────────────────────────── */
 export const V1 = memo(function V1({ settings }: HeaderProps) {
   const brand = settings?.brandName ?? "Store";
-  const menu = useMenu(settings?.menuHandle ?? "main-menu");
-  const items = menu?.items ?? [];
+  const entries = useNav(settings?.menuHandle ?? "main-menu"); // ← the whole contract
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [openId, setOpenId] = useState<string | null>(null);
 
@@ -367,13 +316,13 @@ export const V1 = memo(function V1({ settings }: HeaderProps) {
         {/* Desktop nav — hidden on mobile via CSS */}
         <nav className="sf-nav" aria-label="Main navigation">
           <ul className="sf-nav__list">
-            {items.length > 0
-              ? items.map((item) => (
+            {entries.length > 0
+              ? entries.map((entry) => (
                   <DesktopItem
-                    key={item.id}
-                    item={item}
-                    open={openId === item.id}
-                    onEnter={() => setOpenId(item.id)}
+                    key={entry.id}
+                    entry={entry}
+                    open={openId === entry.id}
+                    onEnter={() => setOpenId(entry.id)}
                     onLeave={() => setOpenId(null)}
                   />
                 ))
@@ -403,8 +352,10 @@ export const V1 = memo(function V1({ settings }: HeaderProps) {
           ×
         </button>
         <nav className="sf-drawer__nav" aria-label="Mobile navigation">
-          {items.length > 0
-            ? items.map((item) => <MobileItem key={item.id} item={item} />)
+          {entries.length > 0
+            ? entries.map((entry) => (
+                <MobileItem key={entry.id} entry={entry} />
+              ))
             : FALLBACK_NAV.map((l) => (
                 <Link key={l.href} href={l.href} className="sf-drawer__link">
                   {l.title}
