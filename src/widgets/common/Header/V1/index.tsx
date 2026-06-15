@@ -7,11 +7,12 @@ import {
   useMenu,
   getRenderStrategy,
   getEffectiveUrl,
-  getMegaMenuColumns,
-  hasImage,
+  getMegaMenuModel,
   isBrokenLink,
   getAriaLabel,
   type NavItem,
+  type MegaMenuColumn,
+  type MegaMenuLeaf,
 } from "@shopkit/navigation/client";
 import { HeaderProps } from "../types";
 import "./style.css";
@@ -44,46 +45,49 @@ const FALLBACK_NAV: { title: string; href: string }[] = [
   { title: "Home", href: "/" },
 ];
 
-/* ── Desktop: a single depth-2 leaf inside a mega-menu column ─────────────────── */
-function DesktopLeaf({ item }: { item: NavItem }) {
-  if (isBrokenLink(item)) {
-    return null;
-  }
-  const href = getEffectiveUrl(item) ?? "/";
-  // Image leaf → card; text leaf → link. (hasImage, not resource_type.)
-  if (hasImage(item)) {
-    return (
-      <Link href={href} className="sf-mega__card">
-        {/* Admin-supplied remote image of unknown domain — `unoptimized` so
-            next/image doesn't require a per-merchant remotePatterns entry.
-            Sizing is controlled by CSS (.sf-mega__card-img). */}
-        <Image
-          src={item.image!.src}
-          alt={item.image!.alt_text || item.title || ""}
-          className="sf-mega__card-img"
-          width={400}
-          height={400}
-          loading="lazy"
-          unoptimized
-        />
-        <span className="sf-mega__card-title">{item.title}</span>
-      </Link>
-    );
-  }
-  return (
-    <Link href={href} className="sf-mega__link">
-      {item.title}
+/* ── Desktop: a single leaf inside a mega-menu column (normalized model leaf) ──── */
+function DesktopLeaf({ leaf }: { leaf: MegaMenuLeaf }) {
+  // Image leaf → card; text leaf → link.
+  const content = leaf.image ? (
+    <>
+      {/* Admin-supplied remote image of unknown domain — `unoptimized` so
+          next/image doesn't require a per-merchant remotePatterns entry.
+          Sizing is controlled by CSS (.sf-mega__card-img). */}
+      <Image
+        src={leaf.image.src}
+        alt={leaf.image.alt_text || leaf.title || ""}
+        className="sf-mega__card-img"
+        width={400}
+        height={400}
+        loading="lazy"
+        unoptimized
+      />
+      <span className="sf-mega__card-title">{leaf.title}</span>
+    </>
+  ) : (
+    leaf.title
+  );
+  const className = leaf.image ? "sf-mega__card" : "sf-mega__link";
+
+  return leaf.isExternal ? (
+    <a
+      href={leaf.href}
+      className={className}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      {content}
+    </a>
+  ) : (
+    <Link href={leaf.href} className={className}>
+      {content}
     </Link>
   );
 }
 
-/* ── Desktop: a depth-1 column inside a mega panel ────────────────────────────── */
-function DesktopColumn({ column }: { column: NavItem }) {
-  const cards = column.items.some((c) => hasImage(c));
-  // A column can itself be a link (flat mega menu: the panel is a row of
-  // collection links with no sub-items). Make the title clickable when it has a
-  // url; otherwise it's a plain heading for its leaves.
-  const colUrl = getEffectiveUrl(column);
+/* ── Desktop: a column inside a mega panel (normalized model column) ───────────── */
+function DesktopColumn({ column }: { column: MegaMenuColumn }) {
+  const cards = column.items.some((l) => !!l.image);
   return (
     <div className="sf-mega__col">
       {column.image?.src && (
@@ -97,9 +101,11 @@ function DesktopColumn({ column }: { column: NavItem }) {
           unoptimized
         />
       )}
+      {/* A column can itself be a link (flat panel): clickable title when it has a
+          href, else a plain heading for its leaves. */}
       {column.title &&
-        (colUrl ? (
-          <Link href={colUrl} className="sf-mega__col-title">
+        (column.href ? (
+          <Link href={column.href} className="sf-mega__col-title">
             {column.title}
           </Link>
         ) : (
@@ -107,7 +113,7 @@ function DesktopColumn({ column }: { column: NavItem }) {
         ))}
       <div className={cards ? "sf-mega__cards" : "sf-mega__links"}>
         {column.items.map((leaf) => (
-          <DesktopLeaf key={leaf.id} item={leaf} />
+          <DesktopLeaf key={leaf.id} leaf={leaf} />
         ))}
       </div>
     </div>
@@ -130,6 +136,8 @@ function DesktopItem({
   const linkUrl = getEffectiveUrl(item); // non-null only when this item is itself a link
   const href = linkUrl ?? "/";
   const hasPanel = strategy === "mega-menu" || strategy === "dropdown";
+  // Normalized panel model — the single source of shape truth.
+  const megaModel = strategy === "mega-menu" ? getMegaMenuModel(item) : null;
 
   return (
     <li
@@ -187,16 +195,16 @@ function DesktopItem({
         </Link>
       )}
 
-      {/* Mega-menu panel: multi-column */}
-      {strategy === "mega-menu" && open && (
+      {/* Mega-menu panel — pure markup over the normalized model */}
+      {strategy === "mega-menu" && open && megaModel && (
         <div className="sf-mega">
           <div className="sf-mega__inner">
-            {/* Optional featured/hero image attached to the trigger (depth-0).
+            {/* Optional featured/hero image attached to the trigger.
                 Leads the panel; restyle position via CSS. */}
-            {item.image?.src && (
+            {megaModel.hero?.src && (
               <Image
-                src={item.image.src}
-                alt={item.image.alt_text || item.title || ""}
+                src={megaModel.hero.src}
+                alt={megaModel.hero.alt_text || item.title || ""}
                 className="sf-mega__hero"
                 width={300}
                 height={300}
@@ -204,11 +212,9 @@ function DesktopItem({
                 unoptimized
               />
             )}
-            {getMegaMenuColumns(item).map((col) =>
-              isBrokenLink(col) ? null : (
-                <DesktopColumn key={col.id} column={col} />
-              )
-            )}
+            {megaModel.columns.map((column) => (
+              <DesktopColumn key={column.id} column={column} />
+            ))}
           </div>
         </div>
       )}
@@ -261,15 +267,33 @@ function MobileItem({ item }: { item: NavItem }) {
     );
   }
 
-  // mega-menu columns or dropdown children → flatten one level for mobile.
-  // A leaf-less column is itself a link (flat mega menu), so fall back to the
-  // column so it stays reachable in the drawer.
-  const children =
+  // Flatten the panel to a single level for the drawer. Mega panels use the
+  // normalized model (a leaf-less column is itself a link); a plain dropdown
+  // flattens its children. Both produce a uniform list of {id, title, href}.
+  const children: MegaMenuLeaf[] =
     strategy === "mega-menu"
-      ? getMegaMenuColumns(item).flatMap((col) =>
-          col.items.length > 0 ? col.items : [col]
+      ? getMegaMenuModel(item).columns.flatMap((c) =>
+          c.items.length > 0
+            ? c.items
+            : [
+                {
+                  id: c.id,
+                  title: c.title,
+                  href: c.href ?? "/",
+                  image: c.image,
+                  isExternal: false,
+                },
+              ]
         )
-      : item.items;
+      : (item.items ?? [])
+          .filter((c) => !isBrokenLink(c))
+          .map((c) => ({
+            id: c.id,
+            title: c.title,
+            href: getEffectiveUrl(c) ?? "/",
+            image: null,
+            isExternal: false,
+          }));
 
   return (
     <div className="sf-drawer__group">
@@ -301,17 +325,15 @@ function MobileItem({ item }: { item: NavItem }) {
       )}
       {expanded && (
         <div className="sf-drawer__sub">
-          {children.map((child) =>
-            isBrokenLink(child) ? null : (
-              <Link
-                key={child.id}
-                href={getEffectiveUrl(child) ?? "/"}
-                className="sf-drawer__sublink"
-              >
-                {child.title}
-              </Link>
-            )
-          )}
+          {children.map((child) => (
+            <Link
+              key={child.id}
+              href={child.href}
+              className="sf-drawer__sublink"
+            >
+              {child.title}
+            </Link>
+          ))}
         </div>
       )}
     </div>
