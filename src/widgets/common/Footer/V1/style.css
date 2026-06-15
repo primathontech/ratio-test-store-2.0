@@ -6,12 +6,19 @@
 
 .sf-footer {
   /* ── Semantic aliases → platform theme tokens (from theme.json via @shopkit/core).
-     Footer maps to the brand "secondary" surface; literal fallbacks keep it safe.
-     Changing theme.json re-themes the footer automatically. ── */
-  --sf-foot-bg: var(--color-secondary, #18181b);
-  --sf-foot-fg: var(--color-on-secondary, #fafafa);
-  --sf-foot-muted: #a1a1aa; /* muted footer text — literal (no standard token) */
-  --sf-foot-border: rgba(255, 255, 255, 0.1);
+     The footer INVERTS the page: brand `primary` is its surface, `secondary` its
+     text. primary/secondary are the theme's guaranteed contrasting pair, so the
+     footer can never go invisible — keying the background off a single token a
+     theme may set to the page colour (e.g. secondary = #fff) is what made the
+     footer disappear. muted + border derive from the foreground via color-mix so
+     they adapt to either polarity; literal first-declarations are the fallback
+     for browsers without color-mix. ── */
+  --sf-foot-bg: var(--color-primary, #18181b);
+  --sf-foot-fg: var(--color-secondary, #fafafa);
+  --sf-foot-muted: #a1a1aa;
+  --sf-foot-muted: color-mix(in srgb, var(--sf-foot-fg) 68%, transparent);
+  --sf-foot-border: rgba(127, 127, 127, 0.28);
+  --sf-foot-border: color-mix(in srgb, var(--sf-foot-fg) 16%, transparent);
   --sf-foot-max: 1240px;
   --sf-foot-font: var(--font-body, "Inter", system-ui, -apple-system, sans-serif);
 
