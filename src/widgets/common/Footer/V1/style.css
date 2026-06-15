@@ -1,35 +1,47 @@
 /* ============================================================================
-   Footer V1 — reference styles (neutral). Restyle freely.
+   Footer V1 — default reference design (clean, Shopify-style, responsive).
+   Token-driven: override the --sf-foot-* variables to re-theme. Markup + useNav
+   wiring in index.tsx is what you keep.
    ============================================================================ */
 
 .sf-footer {
-  background: #111827;
-  color: #d1d5db;
-  font-family: system-ui, -apple-system, sans-serif;
+  /* ── Semantic aliases → platform theme tokens (from theme.json via @shopkit/core).
+     Footer maps to the brand "secondary" surface; literal fallbacks keep it safe.
+     Changing theme.json re-themes the footer automatically. ── */
+  --sf-foot-bg: var(--color-secondary, #18181b);
+  --sf-foot-fg: var(--color-on-secondary, #fafafa);
+  --sf-foot-muted: #a1a1aa; /* muted footer text — literal (no standard token) */
+  --sf-foot-border: rgba(255, 255, 255, 0.1);
+  --sf-foot-max: 1240px;
+  --sf-foot-font: var(--font-body, "Inter", system-ui, -apple-system, sans-serif);
+
+  background: var(--sf-foot-bg);
+  color: var(--sf-foot-muted);
+  font-family: var(--sf-foot-font);
 }
 
 .sf-footer__inner {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 48px;
-  max-width: 1200px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 40px 48px;
+  max-width: var(--sf-foot-max);
   margin: 0 auto;
-  padding: 48px 20px;
+  padding: 56px 24px;
 }
 
 .sf-footer__col {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-width: 160px;
+  gap: 14px;
+  min-width: 0;
 }
 
 .sf-footer__col-title {
-  font-size: 13px;
-  font-weight: 600;
-  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sf-foot-fg);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.07em;
 }
 
 .sf-footer__links {
@@ -38,15 +50,24 @@
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 11px;
 }
 
 .sf-footer__link {
   font-size: 14px;
-  color: #9ca3af;
+  color: var(--sf-foot-muted);
   text-decoration: none;
+  transition: color 0.15s ease;
 }
 
 .sf-footer__link:hover {
-  color: #fff;
+  color: var(--sf-foot-fg);
+}
+
+@media (max-width: 600px) {
+  .sf-footer__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 24px;
+    padding: 40px 20px;
+  }
 }
