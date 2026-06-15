@@ -23,7 +23,7 @@ import { Inter, Open_Sans } from "next/font/google";
 import { AppShell, AppHead } from "@shopkit/app-shell";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { getNavMenus } from "@shopkit/navigation";
-import { NavigationProvider } from "@shopkit/navigation/client";
+import { NavigationProvider, NavBoundary } from "@shopkit/navigation/client";
 import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
 import { AffiliateTracker } from "@shopkit/events/affiliate";
@@ -113,9 +113,9 @@ export default async function RootLayout({
           <AppCartInitializer merchantName={merchantName} />
           <EditorHostMount />
           <NavigationProvider menus={menus}>
-            {header}
+            <NavBoundary>{header}</NavBoundary>
             {children}
-            {footer}
+            <NavBoundary>{footer}</NavBoundary>
           </NavigationProvider>
           <ClientDynamics
             locale={locale}
