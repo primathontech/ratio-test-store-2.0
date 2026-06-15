@@ -17,8 +17,9 @@
   --sf-hover-bg: var(--color-background-2, #f6f6f7);
   --sf-muted: #52525b; /* muted nav text — not all themes define one; literal */
   --sf-max: 1240px;
+  --sf-header-h: 72px; /* bar height — also where the full-width mega bar pins */
   --sf-radius: 12px;
-  --sf-shadow: 0 10px 40px -12px rgba(24, 24, 27, 0.18);
+  --sf-shadow: 0 18px 50px -20px rgba(24, 24, 27, 0.28);
   --sf-font: var(--font-body, "Inter", system-ui, -apple-system, sans-serif);
 
   position: sticky;
@@ -32,17 +33,17 @@
 .sf-header__bar {
   display: flex;
   align-items: center;
-  gap: 28px;
+  gap: 32px;
   max-width: var(--sf-max);
   margin: 0 auto;
   padding: 0 24px;
-  height: 68px;
+  height: var(--sf-header-h);
 }
 
 .sf-header__brand {
-  font-size: 22px;
+  font-size: 23px;
   font-weight: 800;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.025em;
   color: var(--sf-accent);
   text-decoration: none;
   white-space: nowrap;
@@ -82,23 +83,29 @@
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 22px 14px; /* tall hit area so hover-to-open feels stable */
-  font-size: 14px;
+  /* Full-height hit area so hover-to-open never flickers in the gap between
+     the link and the panel pinned directly below it. */
+  height: var(--sf-header-h);
+  padding: 0 15px;
+  font-size: 14.5px;
   font-weight: 500;
+  letter-spacing: -0.005em;
   color: var(--sf-muted);
   text-decoration: none;
   cursor: pointer;
   transition: color 0.15s ease;
 }
 
-/* Animated underline — the signature clean-store nav cue. */
+/* Animated underline — the signature clean-store nav cue, pinned to the bar's
+   baseline so every item underlines at the same height. */
 .sf-nav__link::after {
   content: "";
   position: absolute;
-  left: 14px;
-  right: 14px;
-  bottom: 16px;
+  left: 15px;
+  right: 15px;
+  bottom: 18px;
   height: 2px;
+  border-radius: 2px;
   background: var(--sf-accent);
   transform: scaleX(0);
   transform-origin: left;
@@ -124,29 +131,25 @@
   transform: rotate(180deg);
 }
 
-/* ── Panels (shared): dropdown + mega ──────────────────────────────────────── */
-.sf-dropdown,
-.sf-mega {
+@keyframes sf-panel-in {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Simple dropdown ───────────────────────────────────────────────────────── */
+/* Item-anchored: a short list drops directly under its trigger. */
+.sf-dropdown {
   position: absolute;
   top: 100%;
   left: 0;
+  min-width: 240px;
+  padding: 10px;
   background: var(--sf-bg);
   border: 1px solid var(--sf-border);
   border-radius: 0 0 var(--sf-radius) var(--sf-radius);
   box-shadow: var(--sf-shadow);
   z-index: 90;
   animation: sf-panel-in 0.16s ease;
-}
-
-@keyframes sf-panel-in {
-  from { opacity: 0; transform: translateY(-6px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ── Simple dropdown ───────────────────────────────────────────────────────── */
-.sf-dropdown {
-  min-width: 220px;
-  padding: 8px;
 }
 
 .sf-dropdown__link {
@@ -165,18 +168,38 @@
 }
 
 /* ── Mega panel ────────────────────────────────────────────────────────────── */
+/* Full-width bar pinned just under the header. Because it spans the whole width,
+   the panel is identical no matter which item opens it, it can never overflow the
+   viewport, and the cursor never falls into a dead gap on the way down to it.
+   `position: fixed` resolves to the viewport (the sticky header is not a
+   containing block for it), so `top` is the bar height. */
+.sf-mega {
+  position: fixed;
+  top: var(--sf-header-h);
+  left: 0;
+  right: 0;
+  background: var(--sf-bg);
+  border-top: 1px solid var(--sf-border);
+  border-bottom: 1px solid var(--sf-border);
+  box-shadow: var(--sf-shadow);
+  z-index: 90;
+  animation: sf-panel-in 0.18s ease;
+}
+
 .sf-mega__inner {
   display: flex;
-  gap: 40px;
-  padding: 32px 36px;
-  max-width: 980px;
+  gap: 48px;
+  padding: 36px 24px 40px;
+  max-width: var(--sf-max);
+  margin: 0 auto; /* center the content inside the full-width bar */
 }
 
 .sf-mega__hero {
-  width: 220px;
-  height: auto;
-  align-self: stretch;
-  border-radius: 10px;
+  width: 280px;
+  flex: 0 0 280px;
+  aspect-ratio: 4 / 3;
+  align-self: flex-start;
+  border-radius: var(--sf-radius);
   object-fit: cover;
   display: block;
 }
@@ -184,37 +207,52 @@
 .sf-mega__col {
   display: flex;
   flex-direction: column;
-  gap: 12px;
-  min-width: 160px;
+  gap: 14px;
+  min-width: 0;
+  flex: 1 1 0;
+  max-width: 240px;
+}
+
+/* A column of image cards needs more room than a column of text links. */
+.sf-mega__col:has(.sf-mega__cards) {
+  max-width: 360px;
+  flex-grow: 1.6;
 }
 
 .sf-mega__col-img {
   width: 100%;
-  height: auto;
-  border-radius: 10px;
+  aspect-ratio: 16 / 9;
+  border-radius: var(--sf-radius);
   object-fit: cover;
+  margin-bottom: 2px;
 }
 
 .sf-mega__col-title {
   font-size: 12px;
   font-weight: 700;
-  color: var(--sf-accent);
+  color: var(--sf-fg);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.08em;
   text-decoration: none;
+  padding-bottom: 4px;
+  border-bottom: 1px solid var(--sf-border);
+}
+a.sf-mega__col-title {
+  transition: color 0.12s ease;
 }
 a.sf-mega__col-title:hover {
-  text-decoration: underline;
+  color: var(--sf-accent);
 }
 
 .sf-mega__links {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 11px;
 }
 
 .sf-mega__link {
   font-size: 14px;
+  line-height: 1.3;
   color: var(--sf-muted);
   text-decoration: none;
   transition: color 0.12s ease;

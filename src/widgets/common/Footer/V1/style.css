@@ -20,19 +20,23 @@
   font-family: var(--sf-foot-font);
 }
 
+/* Columns size to their content and sit left-aligned, so a footer with just two
+   menus reads tidy instead of two links stranded at opposite edges. They wrap
+   and grow gracefully as the merchant adds more menus. */
 .sf-footer__inner {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap: 40px 48px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
+  justify-content: start;
+  gap: 44px 72px;
   max-width: var(--sf-foot-max);
   margin: 0 auto;
-  padding: 56px 24px;
+  padding: 64px 24px;
 }
 
 .sf-footer__col {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
   min-width: 0;
 }
 
@@ -41,7 +45,18 @@
   font-weight: 700;
   color: var(--sf-foot-fg);
   text-transform: uppercase;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+/* A heading that is itself a link (standalone entry, or a group with its own
+   href) gets a subtle hover cue. */
+a.sf-footer__col-title {
+  transition: opacity 0.15s ease;
+}
+a.sf-footer__col-title:hover {
+  opacity: 0.75;
+  text-decoration: underline;
 }
 
 .sf-footer__links {

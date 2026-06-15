@@ -56,20 +56,66 @@ export const V1 = memo(function V1({ settings }: FooterProps) {
   return (
     <footer className="sf-footer">
       <div className="sf-footer__inner">
-        {entries.map((entry) => (
-          <div key={entry.id} className="sf-footer__col">
-            <span className="sf-footer__col-title">{entry.label}</span>
-            <ul className="sf-footer__links">
-              {linksFor(entry).map((link) => (
-                <li key={link.id}>
-                  <Link href={link.href} className="sf-footer__link">
-                    {link.title}
+        {entries.map((entry) => {
+          // A standalone link/external entry is a single clickable heading — no
+          // sub-list, so we never render the same label twice.
+          if (entry.kind === "link" || entry.kind === "external") {
+            return (
+              <div key={entry.id} className="sf-footer__col">
+                {entry.kind === "external" ? (
+                  <a
+                    href={entry.href}
+                    className="sf-footer__col-title"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {entry.label}
+                  </a>
+                ) : (
+                  <Link href={entry.href} className="sf-footer__col-title">
+                    {entry.label}
                   </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+                )}
+              </div>
+            );
+          }
+
+          // dropdown / mega → heading + its links. The heading is itself clickable
+          // when the group points somewhere (e.g. "Shop" → /collections/all).
+          return (
+            <div key={entry.id} className="sf-footer__col">
+              {entry.href ? (
+                <Link href={entry.href} className="sf-footer__col-title">
+                  {entry.label}
+                </Link>
+              ) : (
+                <span className="sf-footer__col-title">{entry.label}</span>
+              )}
+              <ul className="sf-footer__links">
+                {linksFor(entry).map((link) =>
+                  link.isExternal ? (
+                    <li key={link.id}>
+                      <a
+                        href={link.href}
+                        className="sf-footer__link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {link.title}
+                      </a>
+                    </li>
+                  ) : (
+                    <li key={link.id}>
+                      <Link href={link.href} className="sf-footer__link">
+                        {link.title}
+                      </Link>
+                    </li>
+                  )
+                )}
+              </ul>
+            </div>
+          );
+        })}
       </div>
     </footer>
   );
