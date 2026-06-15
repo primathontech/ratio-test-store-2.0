@@ -113,6 +113,16 @@
   max-width: 900px;
 }
 
+/* Optional featured/hero image attached to the trigger; leads the panel. */
+.sf-mega__hero {
+  width: 220px;
+  height: auto;
+  align-self: flex-start;
+  border-radius: 6px;
+  object-fit: cover;
+  display: block;
+}
+
 .sf-mega__col {
   display: flex;
   flex-direction: column;

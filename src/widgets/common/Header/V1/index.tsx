@@ -80,6 +80,10 @@ function DesktopLeaf({ item }: { item: NavItem }) {
 /* ── Desktop: a depth-1 column inside a mega panel ────────────────────────────── */
 function DesktopColumn({ column }: { column: NavItem }) {
   const cards = column.items.some((c) => hasImage(c));
+  // A column can itself be a link (flat mega menu: the panel is a row of
+  // collection links with no sub-items). Make the title clickable when it has a
+  // url; otherwise it's a plain heading for its leaves.
+  const colUrl = getEffectiveUrl(column);
   return (
     <div className="sf-mega__col">
       {column.image?.src && (
@@ -93,9 +97,14 @@ function DesktopColumn({ column }: { column: NavItem }) {
           unoptimized
         />
       )}
-      {column.title && (
-        <span className="sf-mega__col-title">{column.title}</span>
-      )}
+      {column.title &&
+        (colUrl ? (
+          <Link href={colUrl} className="sf-mega__col-title">
+            {column.title}
+          </Link>
+        ) : (
+          <span className="sf-mega__col-title">{column.title}</span>
+        ))}
       <div className={cards ? "sf-mega__cards" : "sf-mega__links"}>
         {column.items.map((leaf) => (
           <DesktopLeaf key={leaf.id} item={leaf} />
@@ -182,6 +191,19 @@ function DesktopItem({
       {strategy === "mega-menu" && open && (
         <div className="sf-mega">
           <div className="sf-mega__inner">
+            {/* Optional featured/hero image attached to the trigger (depth-0).
+                Leads the panel; restyle position via CSS. */}
+            {item.image?.src && (
+              <Image
+                src={item.image.src}
+                alt={item.image.alt_text || item.title || ""}
+                className="sf-mega__hero"
+                width={300}
+                height={300}
+                loading="lazy"
+                unoptimized
+              />
+            )}
             {getMegaMenuColumns(item).map((col) =>
               isBrokenLink(col) ? null : (
                 <DesktopColumn key={col.id} column={col} />
@@ -240,9 +262,13 @@ function MobileItem({ item }: { item: NavItem }) {
   }
 
   // mega-menu columns or dropdown children → flatten one level for mobile.
+  // A leaf-less column is itself a link (flat mega menu), so fall back to the
+  // column so it stays reachable in the drawer.
   const children =
     strategy === "mega-menu"
-      ? getMegaMenuColumns(item).flatMap((col) => col.items)
+      ? getMegaMenuColumns(item).flatMap((col) =>
+          col.items.length > 0 ? col.items : [col]
+        )
       : item.items;
 
   return (
