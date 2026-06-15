@@ -107,9 +107,7 @@ NEXT_PUBLIC_NAV_MENU_API_URL=<qa or prod url> bun run dev
 
 ---
 
-## Reference & escape hatch
-- **Copy this app's `Header/V1` + `Footer/V1`** — they're the canonical example of `useNav` → markup.
-- Need lower-level control than `useNav`/`getNavModel` give you? The raw helpers
-  (`getRenderStrategy`, `getEffectiveUrl`, `hasImage`, …) live in **`@shopkit/navigation/advanced`**.
-  You almost never need them — if you're reaching there to render a normal header, you're overcomplicating it.
-- Deeper "why": `plans/0001-mega-menu/README.md`.
+## Reference
+- **Copy this app's `Header/V1` + `Footer/V1`** — the canonical example of `useNav` → markup. Restyle them.
+- Need lower-level control than `useNav` gives you? Advanced helpers live in
+  **`@shopkit/navigation/advanced`** — you almost never need them for a normal header/footer.
