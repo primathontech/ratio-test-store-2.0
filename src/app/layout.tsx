@@ -28,6 +28,7 @@ import { EditorHostMount } from "@/editor-integration/EditorHostMount";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
+import { CartRecoveryLink } from "@/integrations/cart-recovery-custom";
 
 // =============================================================================
 // FONT CONFIGURATION
@@ -92,6 +93,7 @@ export default async function RootLayout({
         >
           <AffiliateTracker autoCapture />
           <AppCartInitializer merchantName={merchantName} />
+          <CartRecoveryLink />
           <EditorHostMount />
           {children}
           <ClientDynamics
