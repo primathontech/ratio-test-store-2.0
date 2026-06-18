@@ -9,6 +9,21 @@ export interface HeaderSettings {
    * @default 'v1'
    */
   variant?: string;
+  /**
+   * Nav-menu handle this header renders, from `@shopkit/navigation`.
+   * @default "main-menu"
+   *
+   * The menu CONTENT (links, columns, mega panels) is managed by the merchant in
+   * the admin panel — this setting only selects WHICH menu to show. When the menu
+   * can't be fetched (no env/backend/handle), the header degrades gracefully.
+   */
+  menuHandle?: string;
+  /**
+   * Brand text shown at the left of the header. Replace with your logo when you
+   * restyle this reference.
+   * @default "Store"
+   */
+  brandName?: string;
 }
 
 /**

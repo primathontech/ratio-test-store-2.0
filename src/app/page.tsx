@@ -7,6 +7,12 @@ import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
 import { getRouteTranslations } from "@/utils";
 
+// The home page renders the API-backed template through the editor-aware loader
+// (request-time headers() + template fetch), so it can't be statically
+// prerendered at build — force dynamic rendering (mirrors momsco's home, which
+// is dynamic via searchParams). Without this, `next build` fails prerendering "/".
+export const dynamic = "force-dynamic";
+
 // Generate metadata for home page
 export async function generateMetadata(): Promise<Metadata> {
   return resolveCommercePageSEO("home", null, "/");

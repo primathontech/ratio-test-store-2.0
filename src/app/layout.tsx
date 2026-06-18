@@ -15,16 +15,20 @@
 
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getTheme } from "@/bootstrap/theme";
-import { getMerchantName, getThemeName } from "@/utils";
+import { getMerchantName, getThemeName, getRouteTranslations } from "@/utils";
 import { getMessages } from "next-intl/server";
 import Script from "next/script";
 import { Inter, Open_Sans } from "next/font/google";
 
 import { AppShell, AppHead } from "@shopkit/app-shell";
+import { getPageBuilder } from "@/bootstrap/builder";
+import { getNavMenus } from "@shopkit/navigation";
+import { NavigationProvider, NavBoundary } from "@shopkit/navigation/client";
 import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
 import { AffiliateTracker } from "@shopkit/events/affiliate";
 import { EditorHostMount } from "@/editor-integration/EditorHostMount";
+import { PreviewExitBar } from "@/editor-integration/preview-link/PreviewExitBar";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
@@ -64,6 +68,39 @@ export default async function RootLayout({
   const hasKwikcartDisabled =
     process.env.NEXT_PUBLIC_KWIKCART_DISABLE === "true";
 
+  // Shared layout chrome (header/footer) rendered once for every page.
+  // Page templates contain body sections only; chrome lives in
+  // themes/{theme}/templates/header and /footer (Shopify section-group model).
+  //
+  // renderChrome reports the nav-menu handles its widgets reference (derive-from-
+  // JSON); we then fetch exactly those. So a handle the editor assigns is fetched
+  // automatically — no hand-maintained list. (getNavMenus also always includes the
+  // backend defaults main-menu + footer.) Sequential by necessity: we need the
+  // handles before fetching.
+  // Chrome resolves its t:common.* refs against these messages. Mirror the page
+  // templates (which call getRouteTranslations): DB-backed when editor changes
+  // are enabled, filesystem otherwise, so editor-saved header/footer text
+  // reflects on the storefront. AppShell keeps getMessages() for client i18n.
+  // isEditor selects the editor-shimmed widget manifest so the editor can
+  // instrument chrome.
+  const chromeMessages = await getRouteTranslations({
+    themeName,
+    language: locale,
+  });
+  const chromeBuilder = getPageBuilder({ isEditor: true });
+  // Resolve chrome FRESH each request. renderChrome shares a cache across
+  // requests, and in preview/editor mode the loader can resolve a DRAFT
+  // (?editorPreview / x-editor-preview-id). Without clearing, that draft chrome
+  // could be served to the next (live) visitor. Mirrors page.tsx clearing the
+  // body cache per request — the storefront already fetches templates no-store.
+  chromeBuilder.clearCache();
+  const { header, footer, menuHandles } = await chromeBuilder.renderChrome({
+    merchantName: themeName,
+    locale,
+    messages: chromeMessages,
+  });
+  const menus = await getNavMenus(menuHandles);
+
   return (
     <html lang={locale} className={`${inter.variable} ${openSans.variable}`}>
       <head>
@@ -93,7 +130,12 @@ export default async function RootLayout({
           <AffiliateTracker autoCapture />
           <AppCartInitializer merchantName={merchantName} />
           <EditorHostMount />
-          {children}
+          <PreviewExitBar />
+          <NavigationProvider menus={menus}>
+            <NavBoundary>{header}</NavBoundary>
+            {children}
+            <NavBoundary>{footer}</NavBoundary>
+          </NavigationProvider>
           <ClientDynamics
             locale={locale}
             hasKwikcartDisabled={hasKwikcartDisabled}
