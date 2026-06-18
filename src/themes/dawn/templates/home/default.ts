@@ -4,34 +4,15 @@ import { SECTION_TYPES, SECTION_LAYOUT_OPTIONS } from "@shopkit/builder";
 
 /**
  * Home Page Template for dawn
+ *
+ * Body sections only. Header/footer are shared layout chrome rendered by the
+ * root layout via `renderChrome()` (templates/header, templates/footer) — they
+ * must NOT be duplicated here.
  */
 export const template: PageConfig = {
   id: "dawn-home",
   dataSources: {},
   sections: [
-    // Header Section
-    {
-      id: "header-section",
-      name: "Header",
-      type: SECTION_TYPES.HEADER_SECTION,
-      settings: {
-        layout: SECTION_LAYOUT_OPTIONS.FULL,
-        responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-        },
-      },
-      widgets: [
-        {
-          id: "dawn-header",
-          name: "Header",
-          type: WIDGET_TYPES.Header,
-          settings: { variant: "v1" },
-        },
-      ],
-    },
-
     // Main Content Section
     {
       id: "main-content-section",
@@ -55,29 +36,6 @@ export const template: PageConfig = {
             heading: "t:home.heading",
             description: "t:home.description",
           },
-        },
-      ],
-    },
-
-    // Footer Section
-    {
-      id: "footer-section",
-      name: "Footer",
-      type: SECTION_TYPES.FOOTER_SECTION,
-      settings: {
-        layout: SECTION_LAYOUT_OPTIONS.FULL,
-        responsive: {
-          mobile: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 20, right: 0, bottom: 0, left: 0 } },
-        },
-      },
-      widgets: [
-        {
-          id: "dawn-footer",
-          name: "Footer",
-          type: WIDGET_TYPES.Footer,
-          settings: { variant: "v1" },
         },
       ],
     },
