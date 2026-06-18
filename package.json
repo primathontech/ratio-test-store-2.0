@@ -1,6 +1,6 @@
 {
   "name": "storefront-starter-app",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "private": true,
   "workspaces": [
     "src/app/editor"
@@ -62,8 +62,8 @@
     "@shopify/storefront-api-client": "^1.0.8",
     "@shopkit/app-shell": "^2.0.0",
     "@shopkit/asset-cache": "^1.0.1",
-    "@shopkit/builder": "^0.1.4",
-    "@shopkit/navigation": "^0.1.0",
+    "@shopkit/builder": "^0.1.5",
+    "@shopkit/navigation": "^1.0.0",
     "@shopkit/cart": "^0.1.4",
     "@shopkit/cli": "^0.4.0",
     "@shopkit/core": "^0.1.4",
