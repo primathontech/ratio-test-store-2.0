@@ -15,7 +15,7 @@
 
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getTheme } from "@/bootstrap/theme";
-import { getMerchantName, getThemeName } from "@/utils";
+import { getMerchantName, getThemeName, getRouteTranslations } from "@/utils";
 import { getMessages } from "next-intl/server";
 import Script from "next/script";
 import { Inter, Open_Sans } from "next/font/google";
@@ -76,10 +76,22 @@ export default async function RootLayout({
   // automatically — no hand-maintained list. (getNavMenus also always includes the
   // backend defaults main-menu + footer.) Sequential by necessity: we need the
   // handles before fetching.
-  const { header, footer, menuHandles } = await getPageBuilder().renderChrome({
+  // Chrome resolves its t:common.* refs against these messages. Mirror the page
+  // templates (which call getRouteTranslations): DB-backed when editor changes
+  // are enabled, filesystem otherwise, so editor-saved header/footer text
+  // reflects on the storefront. AppShell keeps getMessages() for client i18n.
+  // isEditor selects the editor-shimmed widget manifest so the editor can
+  // instrument chrome.
+  const chromeMessages = await getRouteTranslations({
+    themeName,
+    language: locale,
+  });
+  const { header, footer, menuHandles } = await getPageBuilder({
+    isEditor: true,
+  }).renderChrome({
     merchantName: themeName,
     locale,
-    messages,
+    messages: chromeMessages,
   });
   const menus = await getNavMenus(menuHandles);
 
