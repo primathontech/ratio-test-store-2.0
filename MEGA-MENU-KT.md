@@ -107,6 +107,66 @@ NEXT_PUBLIC_NAV_MENU_API_URL=<qa or prod url> bun run dev
 
 ---
 
+## Editing header/footer in the visual editor
+
+Header + footer are **shared chrome** — rendered once by `layout.tsx` (`renderChrome()`), not page
+sections. To set that up (and make chrome editable), do all of:
+
+**1. Put the chrome in its own templates.** Create `templates/header/default.ts` (announcement bar +
+header sections) and `templates/footer/default.ts` (footer + bottom bar), each a `PageConfig`:
+```ts
+// templates/header/default.ts
+export const template: PageConfig = {
+  id: "<theme>-header",
+  dataSources: {},
+  sections: [
+    { id: "header-section", name: "Header", type: SECTION_TYPES.HEADER_SECTION, settings: { /* … */ },
+      widgets: [{ id: "<theme>-header", name: "Header", type: WIDGET_TYPES.Header,
+                  settings: { variant: "v1", menuHandle: "main-menu" } }] },
+  ],
+};
+```
+
+**2. Strip chrome OUT of every page template.** Delete the header/footer/announcement/bottom-bar
+sections from `home`, `products`, `collection`, … so pages are body-only:
+```ts
+// templates/home/default.ts → sections
+- { id: "announcement-bar-section", … },   // ← delete
+- { id: "header-section", … },             // ← delete (now in header template)
+  { id: "hero-section", … },               //   keep body sections
+- { id: "footer-section", … },             // ← delete (now in footer template)
+- { id: "bottom-bar-section", … },         // ← delete
+```
+
+**3. Strip chrome from static page components too** (React components, not pageConfig):
+```tsx
+// static-templates/about-us.tsx
+- return (<><AnnouncementBar/><Header/><main>…</main><Footer/><BottomBar/></>);
++ return (<main>…</main>);   // the layout adds chrome around children
+```
+> Skip step 2 or 3 and chrome renders **twice** (once from the layout, once inline).
+
+**4. Register the chrome templates** in `themes/<theme>/theme-registry.ts` so the editor can find them
+— `routeContext.type` must be exactly `"header"` / `"footer"` (the editor keys on it):
+```ts
+[TEMPLATE_TYPES.header]: { default: {
+  templatePath: "/themes/<theme>/templates/header/default.ts",
+  routeContext: { templateName: "header", type: "header", path: "/", params: {}, query: {} },
+}}, // …same for footer (type: "footer")
+```
+
+**5. Regenerate + migrate** (seeds chrome into the DB + theme structure the editor reads):
+```bash
+bun run generate:templates
+MERCHANT_ID=<id> EDITOR_API_BASE_URL=<editor-be-url> bun run migrate:theme <theme>
+```
+
+- **Order:** deploy the storefront (with chrome) **first**, migrate **last** — else the editor edits a
+  header the live store ignores.
+- Set `NEXT_PUBLIC_ENABLE_EDITOR_CHANGES=true` so the store reads DB templates (editor-saved chrome shows live).
+
+---
+
 ## Reference
 - **Copy this app's `Header/V1` + `Footer/V1`** — the canonical example of `useNav` → markup. Restyle them.
 - Need lower-level control than `useNav` gives you? Advanced helpers live in
