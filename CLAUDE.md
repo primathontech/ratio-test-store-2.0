@@ -36,6 +36,10 @@ Before generating pages, widgets, templates, or integrations, **ALWAYS read thes
 
 1. **`src/SYSTEM_ARCHITECTURE.md`** - How templates, widgets, themes work together
 2. **`AGENTS.md`** - Package APIs and common patterns
+3. **`MEGA-MENU-KT.md`** - **Read this whenever you build or restyle the Header or Footer.** This
+   storefront ships a working, admin-managed header + footer menu (desktop + mobile mega menu) via
+   `@shopkit/navigation`. The data wiring is done — you only restyle to brand. Reference code:
+   `src/widgets/common/Header/V1` + `Footer/V1`.
 
 ## Quick Command Reference
 
@@ -50,6 +54,7 @@ Before generating pages, widgets, templates, or integrations, **ALWAYS read thes
 | **Checkout flow**    | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow"                |
 | **Data fetching**    | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow" → "Data Layer" |
 | **CLI commands**     | `SYSTEM_ARCHITECTURE.md` → "CLI Commands"                        |
+| **Design/restyle Header or Footer** | `MEGA-MENU-KT.md` (admin-managed mega menu; restyle only, data is wired) |
 
 ## Essential CLI Commands
 

@@ -49,35 +49,51 @@ const commonWidgetSchemas = {
 // =============================================================================
 
 const merchantWidgetSchemas = {
-  // [WIDGET_TYPES.Header]: {
-  //   type: WIDGET_TYPES.Header,
-  //   name: "Header",
-  //   description: "Site header with logo, navigation, and cart icon",
-  //   settingsSchema: {
-  //     variant: {
-  //       type: "select",
-  //       label: "Widget Variant",
-  //       options: [
-  //         { value: "v1", label: "Version 1 (Classic)" },
-  //         { value: "v2", label: "Version 2 (Enhanced)" },
-  //       ],
-  //       default: "v1",
-  //     },
-  //   },
-  // },
-  // [WIDGET_TYPES.Footer]: {
-  //   type: WIDGET_TYPES.Footer,
-  //   name: "Footer",
-  //   description: "Site footer with links and branding",
-  //   settingsSchema: {
-  //     variant: {
-  //       type: "select",
-  //       label: "Widget Variant",
-  //       options: [{ value: "v1", label: "Version 1 (Classic)" }],
-  //       default: "v1",
-  //     },
-  //   },
-  // },
+  [WIDGET_TYPES.Header]: {
+    type: WIDGET_TYPES.Header,
+    name: "Header",
+    description: "Site header with logo, navigation, and cart icon",
+    settingsSchema: {
+      // Mega-menu source. Shows the currently-assigned handle only — the menu
+      // CONTENT (links, columns, panels) is managed in the admin panel, so this
+      // is a plain field, not a menu picker.
+      menuHandle: {
+        type: "text" as const,
+        label: "Menu handle (content managed in admin)",
+        default: "main-menu",
+      },
+      variant: {
+        type: "select" as const,
+        label: "Widget Variant",
+        options: [
+          { value: "v1", label: "Version 1 (Classic)" },
+          { value: "v2", label: "Version 2 (Enhanced)" },
+        ],
+        default: "v1",
+      },
+    },
+  },
+  [WIDGET_TYPES.Footer]: {
+    type: WIDGET_TYPES.Footer,
+    name: "Footer",
+    description: "Site footer with links and branding",
+    settingsSchema: {
+      // Mega-menu source. Shows the currently-assigned handle only — the menu
+      // CONTENT is managed in the admin panel, so this is a plain field, not a
+      // menu picker.
+      menuHandle: {
+        type: "text" as const,
+        label: "Menu handle (content managed in admin)",
+        default: "footer",
+      },
+      variant: {
+        type: "select" as const,
+        label: "Widget Variant",
+        options: [{ value: "v1", label: "Version 1 (Classic)" }],
+        default: "v1",
+      },
+    },
+  },
   // [WIDGET_TYPES.PageContent]: {
   //   type: WIDGET_TYPES.PageContent,
   //   name: "Page Content",
