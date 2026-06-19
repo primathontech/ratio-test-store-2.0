@@ -1,8 +1,8 @@
 /**
  * Next.js Middleware
  *
- * Handles locale detection and A/B testing rewrites.
- * Add custom logic before/after the core middleware as needed.
+ * Runs the core middleware (locale detection + A/B testing), then layers
+ * shareable/editor preview routing on top.
  *
  * @module middleware
  */
@@ -25,53 +25,54 @@ const baseMiddleware = createMiddleware({
   },
 });
 
-// Persists the active shareable-preview session so it survives in-app
-// navigation (internal links drop the query string).
+// Sticky shareable-preview session cookies (survive in-app navigation, since
+// internal links drop the query string). The id/version are httpOnly
+// (server-only); ACTIVE is a non-httpOnly mirror flag the client "Exit preview"
+// bar reads to know a preview is active. ACTIVE carries no secret — just "1".
 const PREVIEW_COOKIE = "editorPreviewId";
 const PREVIEW_VERSION_COOKIE = "editorPreviewVersion";
-// Non-httpOnly companion flag: the previewId cookie is httpOnly (server-only),
-// so the client "Exit preview" bar can't read it. This readable flag lets the
-// bar know preview mode is active across sticky navigation. It carries NO
-// secret — just "1" — and is cleared on exit alongside the real cookies.
 const PREVIEW_ACTIVE_COOKIE = "editorPreviewActive";
+const COOKIE_BASE = { sameSite: "lax" as const, path: "/" };
 
 export function middleware(request: NextRequest) {
-  // Add custom logic BEFORE core middleware here
-
-  // Core middleware (locale detection, A/B tests)
+  // Core middleware first (locale detection, A/B-test rewrites)…
   const response = baseMiddleware(request);
+  // …then layer preview routing on its result.
+  return applyPreviewRouting(request, response);
+}
 
-  // Add custom logic AFTER core middleware here
+/**
+ * Shareable / editor preview routing: forwards the active previewId as the
+ * `x-editor-preview-id` request header so the loader serves the snapshot.
+ * ?previewKey = editor live edit (untouched); ?editorPreview=false = exit;
+ * ?editorPreview=true&previewId = enter (+persist); sticky cookie = stay.
+ * ?editor=true is a transient session (query-only, never persisted).
+ */
+function applyPreviewRouting(
+  request: NextRequest,
+  response: NextResponse,
+): NextResponse {
+  const searchParams = request.nextUrl.searchParams;
 
-  // Shareable preview links (?editorPreview=true&previewId=…). To keep the user
-  // in preview mode across in-app navigation (internal links drop the query
-  // string), the active previewId is persisted in a cookie:
-  //   • ?editorPreview=true&previewId=…  → enter / refresh preview (set cookie)
-  //   • no params, cookie present        → stay in preview (sticky)
-  //   • ?editorPreview=false             → exit preview (clear cookie)
-  // The resolved id is forwarded as the x-editor-preview-id REQUEST header so
-  // the template loader (single chokepoint) serves the editor snapshot on any
-  // route. We re-emit base's response (next or A/B rewrite) with the augmented
-  // request headers, copying its headers + cookies so locale/A/B is preserved.
-  const sp = request.nextUrl.searchParams;
+  // Editor-bridge live edit drives the body via postMessage — never inject here.
+  if (searchParams.has("previewKey")) return response;
 
-  // Editor-bridge SOFT-NAV (?previewKey=…): the editor pushes config over
-  // postMessage and the body reads it via readEditorPreviewState; the layout
-  // (chrome) persists from the initial render. Never inject a preview snapshot
-  // here — it would override the live edits.
-  if (sp.has("previewKey")) {
+  const isEditorBridge = searchParams.get("editor") === "true";
+  const flag = searchParams.get("editorPreview");
+
+  // Exit → drop the whole sticky session (delete is idempotent).
+  if (flag === "false") {
+    response.cookies.delete(PREVIEW_COOKIE);
+    response.cookies.delete(PREVIEW_VERSION_COOKIE);
+    response.cookies.delete(PREVIEW_ACTIVE_COOKIE);
     return response;
   }
 
-  // Editor-bridge INITIAL load is ?editor=true. We DO resolve a draft for that
-  // first paint when the editor passes editorPreview=true&previewId, so the
-  // iframe renders the draft directly instead of flashing live→draft. But the
-  // editor session is TRANSIENT: only the explicit query previewId counts (no
-  // sticky cookie read) and we never persist preview cookies for it (so it
-  // can't leak preview mode into the user's normal browsing).
-  const isEditorBridge = sp.get("editor") === "true";
-
-  const flag = sp.get("editorPreview");
+  // Resolve the active previewId/version: the link's query wins; otherwise the
+  // sticky cookie (read for NORMAL browsing only — the editor never uses it).
+  const queryPreviewId =
+    flag === "true" ? searchParams.get("previewId") : null;
+  const queryVersion = flag === "true" ? searchParams.get("version") : null;
   const cookiePreviewId = isEditorBridge
     ? null
     : (request.cookies.get(PREVIEW_COOKIE)?.value ?? null);
@@ -79,72 +80,37 @@ export function middleware(request: NextRequest) {
     ? null
     : (request.cookies.get(PREVIEW_VERSION_COOKIE)?.value ?? null);
 
-  // Explicit exit clears the sticky session and returns to normal browsing.
-  if (flag === "false") {
-    if (cookiePreviewId) {
-      response.cookies.delete(PREVIEW_COOKIE);
-    }
-    if (cookieVersion) {
-      response.cookies.delete(PREVIEW_VERSION_COOKIE);
-    }
-    response.cookies.delete(PREVIEW_ACTIVE_COOKIE);
-    return response;
-  }
-
-  // Query (entering) wins over the cookie (sticky); null when neither applies.
-  const queryPreviewId = flag === "true" ? sp.get("previewId") : null;
-  const queryVersion = flag === "true" ? sp.get("version") : null;
   const previewId = queryPreviewId ?? cookiePreviewId;
-  if (!previewId) {
-    return response;
-  }
-  // Version pins to the link's value; sticky navigations reuse the cookie.
-  // Null/absent → backend serves the latest version.
-  const version = queryPreviewId
-    ? queryVersion
-    : (queryVersion ?? cookieVersion);
+  if (!previewId) return response;
 
+  // Version pins to the link's value when entering; sticky reuses the cookie.
+  // Null/absent → backend serves the latest version.
+  const version = queryPreviewId ? queryVersion : (queryVersion ?? cookieVersion);
+
+  // Forward the previewId to the app as a request header, re-emitting base's
+  // response so its locale/A-B output survives (see carryOver).
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-editor-preview-id", previewId);
-  if (version) {
-    requestHeaders.set("x-editor-preview-version", version);
-  }
+  if (version) requestHeaders.set("x-editor-preview-version", version);
 
   const rewriteTo = response.headers.get("x-middleware-rewrite");
-  const forwarded = rewriteTo
-    ? NextResponse.rewrite(new URL(rewriteTo), {
-        request: { headers: requestHeaders },
-      })
-    : NextResponse.next({ request: { headers: requestHeaders } });
+  const forwarded = carryOver(
+    response,
+    rewriteTo
+      ? NextResponse.rewrite(new URL(rewriteTo), {
+          request: { headers: requestHeaders },
+        })
+      : NextResponse.next({ request: { headers: requestHeaders } }),
+  );
 
-  response.headers.forEach((value, key) => {
-    // Skip Next's internal control headers — they belong to `response`'s own
-    // emit and are re-set correctly by the forwarded next()/rewrite() above.
-    if (!key.startsWith("x-middleware-")) {
-      forwarded.headers.set(key, value);
-    }
-  });
-  response.cookies.getAll().forEach((c) => forwarded.cookies.set(c));
-
-  // Sticky-session cookies are for NORMAL shareable browsing only. The editor
-  // session is transient (its previewId rides the iframe URL on every load), so
-  // we never persist cookies for it — that keeps preview mode out of the user's
-  // regular browsing and the "Exit preview" bar out of the editor iframe.
+  // Persist the sticky session for NORMAL browsing only (never the editor).
   if (!isEditorBridge) {
-    // Client-readable flag so the "Exit preview" bar can show across sticky
-    // navigation (the real previewId cookie is httpOnly). Session cookie.
-    forwarded.cookies.set(PREVIEW_ACTIVE_COOKIE, "1", {
-      httpOnly: false,
-      sameSite: "lax",
-      path: "/",
-    });
-
-    // When arriving via an explicit preview link, persist (or refresh) the
-    // session so subsequent param-less navigations stay in preview at the same
-    // version. Session cookies (no maxAge) — clear on browser close;
-    // ?editorPreview=false exits sooner. httpOnly: only the server reads them.
+    // Client-readable flag for the "Exit preview" bar (session cookie).
+    forwarded.cookies.set(PREVIEW_ACTIVE_COOKIE, "1", COOKIE_BASE);
+    // Entering via a link → persist (or refresh) the httpOnly session so
+    // param-less navigations stay in preview at the same version.
     if (queryPreviewId) {
-      const opts = { httpOnly: true, sameSite: "lax" as const, path: "/" };
+      const opts = { httpOnly: true, ...COOKIE_BASE };
       forwarded.cookies.set(PREVIEW_COOKIE, queryPreviewId, opts);
       if (queryVersion) {
         forwarded.cookies.set(PREVIEW_VERSION_COOKIE, queryVersion, opts);
@@ -155,6 +121,19 @@ export function middleware(request: NextRequest) {
   }
 
   return forwarded;
+}
+
+/**
+ * Re-emit base middleware's response (locale/A-B headers + cookies) onto a
+ * forwarded next()/rewrite() that injects the preview request header. Next's
+ * internal `x-middleware-*` control headers are skipped — `to` sets its own.
+ */
+function carryOver(from: NextResponse, to: NextResponse): NextResponse {
+  from.headers.forEach((value, key) => {
+    if (!key.startsWith("x-middleware-")) to.headers.set(key, value);
+  });
+  from.cookies.getAll().forEach((cookie) => to.cookies.set(cookie));
+  return to;
 }
 
 export const config = {

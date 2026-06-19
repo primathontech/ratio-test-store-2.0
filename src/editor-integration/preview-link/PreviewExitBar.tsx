@@ -52,51 +52,17 @@ export function PreviewExitBar() {
     <div
       role="region"
       aria-label="Preview mode"
-      style={{
-        position: "fixed",
-        bottom: 16,
-        left: "50%",
-        transform: "translateX(-50%)",
-        zIndex: 2147483646,
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "8px 14px",
-        borderRadius: 9999,
-        background: "rgba(17, 24, 39, 0.95)",
-        color: "#fff",
-        fontSize: 13,
-        fontWeight: 500,
-        lineHeight: 1,
-        boxShadow: "0 6px 24px rgba(0,0,0,0.28)",
-        fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif",
-      }}
+      className="fixed bottom-4 left-1/2 z-[2147483646] flex -translate-x-1/2 items-center gap-3 rounded-full bg-[#111827]/95 px-3.5 py-2 font-[system-ui] text-[13px] font-medium leading-none text-white shadow-[0_6px_24px_rgba(0,0,0,0.28)]"
     >
       <span
         aria-hidden
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: "50%",
-          background: "#f5b301",
-          display: "inline-block",
-        }}
+        className="inline-block h-2 w-2 rounded-full bg-[#f5b301]"
       />
       <span>Preview mode</span>
       <button
         type="button"
         onClick={exit}
-        style={{
-          appearance: "none",
-          border: "1px solid rgba(255,255,255,0.35)",
-          background: "transparent",
-          color: "#fff",
-          fontSize: 12,
-          fontWeight: 600,
-          padding: "5px 12px",
-          borderRadius: 9999,
-          cursor: "pointer",
-        }}
+        className="cursor-pointer appearance-none rounded-full border border-white/35 bg-transparent px-3 py-[5px] text-xs font-semibold text-white"
       >
         Exit preview
       </button>
