@@ -12,6 +12,7 @@ import { WIDGET_TYPES } from "@/widgets/.generated/types";
  *   number      – numeric input (supports min/max/step/unit)
  *   boolean     – toggle switch
  *   select      – dropdown with options[]
+ *   menu-select – dropdown of the merchant's live nav menus (editor-fetched)
  *   spacing     – responsive padding/margin control
  *   image       – image picker
  *   richtext    – rich text editor
@@ -54,12 +55,13 @@ const merchantWidgetSchemas = {
     name: "Header",
     description: "Site header with logo, navigation, and cart icon",
     settingsSchema: {
-      // Mega-menu source. Shows the currently-assigned handle only — the menu
-      // CONTENT (links, columns, panels) is managed in the admin panel, so this
-      // is a plain field, not a menu picker.
+      // Mega-menu source. Picks WHICH published menu feeds the nav — options are
+      // the merchant's live menus, fetched by the editor's "menu-select" control
+      // (no static list to maintain). The menu CONTENT (links, columns, panels)
+      // is still managed in the admin panel. `default` is the fallback handle.
       menuHandle: {
-        type: "text" as const,
-        label: "Menu handle (content managed in admin)",
+        type: "menu-select" as const,
+        label: "Menu",
         default: "main-menu",
       },
       variant: {
@@ -78,12 +80,13 @@ const merchantWidgetSchemas = {
     name: "Footer",
     description: "Site footer with links and branding",
     settingsSchema: {
-      // Mega-menu source. Shows the currently-assigned handle only — the menu
-      // CONTENT is managed in the admin panel, so this is a plain field, not a
-      // menu picker.
+      // Mega-menu source. Picks WHICH published menu feeds the nav — options are
+      // the merchant's live menus, fetched by the editor's "menu-select" control
+      // (no static list to maintain). The menu CONTENT is still managed in the
+      // admin panel. `default` is the fallback handle.
       menuHandle: {
-        type: "text" as const,
-        label: "Menu handle (content managed in admin)",
+        type: "menu-select" as const,
+        label: "Menu",
         default: "footer",
       },
       variant: {
