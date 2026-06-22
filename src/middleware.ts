@@ -25,124 +25,75 @@ const baseMiddleware = createMiddleware({
   },
 });
 
-// Sticky shareable-preview session cookies (survive in-app navigation, since
-// internal links drop the query string). The id/version are httpOnly
-// (server-only); ACTIVE is a non-httpOnly mirror flag the client "Exit preview"
-// bar reads to know a preview is active. ACTIVE carries no secret — just "1".
-const PREVIEW_COOKIE = "editorPreviewId";
-const PREVIEW_VERSION_COOKIE = "editorPreviewVersion";
-const PREVIEW_ACTIVE_COOKIE = "editorPreviewActive";
-const COOKIE_BASE = { sameSite: "lax" as const, path: "/" };
-
 export function middleware(request: NextRequest) {
-  // Core middleware first (locale detection, A/B-test rewrites)…
-  const response = baseMiddleware(request);
-  // …then layer preview routing on its result.
-  return applyPreviewRouting(request, response);
+  // Shareable-preview links must be handled BEFORE the core middleware: they
+  // redirect to a Route Handler that toggles Next.js Draft Mode (middleware
+  // cannot enable draft mode). Locale/A-B processing then re-runs on the final
+  // redirected request, so nothing is lost.
+  const previewRedirect = resolvePreviewRedirect(request);
+  if (previewRedirect) {
+    return previewRedirect;
+  }
+  // Core middleware (locale detection, A/B-test rewrites) for everything else.
+  // Sticky preview navigation needs nothing here: Draft Mode's __prerender_bypass
+  // cookie persists and the template loader reads the editorPreview cookie.
+  return baseMiddleware(request);
 }
 
 /**
- * Shareable / editor preview routing: forwards the active previewId as the
- * `x-editor-preview-id` request header so the loader serves the snapshot.
- * ?previewKey = editor live edit (untouched); ?editorPreview=false = exit;
- * ?editorPreview=true&previewId = enter (+persist); sticky cookie = stay.
- * ?editor=true is a transient session (query-only, never persisted).
+ * Shareable preview routing via Next.js Draft Mode.
+ *   ?previewKey            → editor live edit (postMessage); untouched.
+ *   ?editor=true           → editor bridge / manifest select; untouched.
+ *   ?editorPreview=false   → redirect to /api/editor-preview/exit (disable).
+ *   ?editorPreview=true
+ *     &previewId=…[&version] → redirect to /api/editor-preview/enter (enable).
+ * Returns null when there is nothing preview-related to do.
  */
-function applyPreviewRouting(
-  request: NextRequest,
-  response: NextResponse
-): NextResponse {
-  const searchParams = request.nextUrl.searchParams;
+function resolvePreviewRedirect(request: NextRequest): NextResponse | null {
+  const { searchParams } = request.nextUrl;
 
-  // Editor-bridge live edit drives the body via postMessage — never inject here.
-  if (searchParams.has("previewKey")) {
-    return response;
+  // Editor live edit / editor bridge drive rendering themselves — never touch.
+  if (searchParams.has("previewKey") || searchParams.get("editor") === "true") {
+    return null;
   }
 
-  const isEditorBridge = searchParams.get("editor") === "true";
   const flag = searchParams.get("editorPreview");
 
-  // Exit → drop the whole sticky session (delete is idempotent).
   if (flag === "false") {
-    response.cookies.delete(PREVIEW_COOKIE);
-    response.cookies.delete(PREVIEW_VERSION_COOKIE);
-    response.cookies.delete(PREVIEW_ACTIVE_COOKIE);
-    return response;
+    const exit = new URL("/api/editor-preview/exit", request.url);
+    exit.searchParams.set("to", cleanPath(request.nextUrl));
+    return NextResponse.redirect(exit);
   }
 
-  // Resolve the active previewId/version: the link's query wins; otherwise the
-  // sticky cookie (read for NORMAL browsing only — the editor never uses it).
-  const queryPreviewId = flag === "true" ? searchParams.get("previewId") : null;
-  const queryVersion = flag === "true" ? searchParams.get("version") : null;
-  const cookiePreviewId = isEditorBridge
-    ? null
-    : (request.cookies.get(PREVIEW_COOKIE)?.value ?? null);
-  const cookieVersion = isEditorBridge
-    ? null
-    : (request.cookies.get(PREVIEW_VERSION_COOKIE)?.value ?? null);
-
-  const previewId = queryPreviewId ?? cookiePreviewId;
-  if (!previewId) {
-    return response;
-  }
-
-  // Version pins to the link's value when entering; sticky reuses the cookie.
-  // Null/absent → backend serves the latest version.
-  const version = queryPreviewId
-    ? queryVersion
-    : (queryVersion ?? cookieVersion);
-
-  // Forward the previewId to the app as a request header, re-emitting base's
-  // response so its locale/A-B output survives (see carryOver).
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-editor-preview-id", previewId);
-  if (version) {
-    requestHeaders.set("x-editor-preview-version", version);
-  }
-
-  const rewriteTo = response.headers.get("x-middleware-rewrite");
-  const forwarded = carryOver(
-    response,
-    rewriteTo
-      ? NextResponse.rewrite(new URL(rewriteTo), {
-          request: { headers: requestHeaders },
-        })
-      : NextResponse.next({ request: { headers: requestHeaders } })
-  );
-
-  // Persist the sticky session for NORMAL browsing only (never the editor).
-  if (!isEditorBridge) {
-    // Client-readable flag for the "Exit preview" bar (session cookie).
-    forwarded.cookies.set(PREVIEW_ACTIVE_COOKIE, "1", COOKIE_BASE);
-    // Entering via a link → persist (or refresh) the httpOnly session so
-    // param-less navigations stay in preview at the same version.
-    if (queryPreviewId) {
-      const opts = { httpOnly: true, ...COOKIE_BASE };
-      forwarded.cookies.set(PREVIEW_COOKIE, queryPreviewId, opts);
-      if (queryVersion) {
-        forwarded.cookies.set(PREVIEW_VERSION_COOKIE, queryVersion, opts);
-      } else {
-        forwarded.cookies.delete(PREVIEW_VERSION_COOKIE);
-      }
+  if (flag === "true") {
+    const previewId = searchParams.get("previewId");
+    if (!previewId) {
+      return null;
     }
+    const enter = new URL("/api/editor-preview/enter", request.url);
+    enter.searchParams.set("previewId", previewId);
+    const version = searchParams.get("version");
+    if (version) {
+      enter.searchParams.set("version", version);
+    }
+    enter.searchParams.set("to", cleanPath(request.nextUrl));
+    return NextResponse.redirect(enter);
   }
 
-  return forwarded;
+  return null;
 }
 
 /**
- * Re-emit base middleware's response (locale/A-B headers + cookies) onto a
- * forwarded next()/rewrite() that injects the preview request header. Next's
- * internal `x-middleware-*` control headers are skipped — `to` sets its own.
+ * The path to return to after toggling preview: the original pathname plus any
+ * non-preview query (e.g. ?q= on /search), with the preview-control params
+ * stripped so re-entering the link doesn't loop through the handler again.
  */
-function carryOver(from: NextResponse, to: NextResponse): NextResponse {
-  from.headers.forEach((value, key) => {
-    if (!key.startsWith("x-middleware-")) {
-      to.headers.set(key, value);
-    }
-  });
-  from.cookies.getAll().forEach((cookie) => to.cookies.set(cookie));
-  return to;
+function cleanPath(url: URL): string {
+  const clean = new URL(url.toString());
+  clean.searchParams.delete("editorPreview");
+  clean.searchParams.delete("previewId");
+  clean.searchParams.delete("version");
+  return `${clean.pathname}${clean.search}`;
 }
 
 export const config = {
