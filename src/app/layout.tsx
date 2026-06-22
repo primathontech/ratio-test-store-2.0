@@ -28,6 +28,7 @@ import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
 import { AffiliateTracker } from "@shopkit/events/affiliate";
 import { EditorHostMount } from "@/editor-integration/EditorHostMount";
+import { PreviewExitBar } from "@/editor-integration/preview-link/PreviewExitBar";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
@@ -87,9 +88,14 @@ export default async function RootLayout({
     themeName,
     language: locale,
   });
-  const { header, footer, menuHandles } = await getPageBuilder({
-    isEditor: true,
-  }).renderChrome({
+  const chromeBuilder = getPageBuilder({ isEditor: true });
+  // Resolve chrome FRESH each request. renderChrome shares a cache across
+  // requests, and in preview/editor mode the loader can resolve a DRAFT
+  // (?editorPreview / x-editor-preview-id). Without clearing, that draft chrome
+  // could be served to the next (live) visitor. Mirrors page.tsx clearing the
+  // body cache per request — the storefront already fetches templates no-store.
+  chromeBuilder.clearCache();
+  const { header, footer, menuHandles } = await chromeBuilder.renderChrome({
     merchantName: themeName,
     locale,
     messages: chromeMessages,
@@ -126,6 +132,7 @@ export default async function RootLayout({
           <AppCartInitializer merchantName={merchantName} />
           <CartRecoveryLink />
           <EditorHostMount />
+          <PreviewExitBar />
           <NavigationProvider menus={menus}>
             <NavBoundary>{header}</NavBoundary>
             {children}
