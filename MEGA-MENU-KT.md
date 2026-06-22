@@ -23,10 +23,18 @@ never look at `resource_type` / `depth` / `url`.
 ```tsx
 entries.map((e) => {
   switch (e.kind) {
-    case "link":     return <a href={e.href}>{e.label}</a>;
-    case "external": return <a href={e.href} target="_blank" rel="noopener noreferrer">{e.label}</a>;
-    case "dropdown": return <MyDropdown label={e.label} items={e.items} />;
-    case "mega":     return <MyMegaPanel hero={e.panel.hero} columns={e.panel.columns} />;
+    case "link":
+      return <a href={e.href}>{e.label}</a>;
+    case "external":
+      return (
+        <a href={e.href} target="_blank" rel="noopener noreferrer">
+          {e.label}
+        </a>
+      );
+    case "dropdown":
+      return <MyDropdown label={e.label} items={e.items} />;
+    case "mega":
+      return <MyMegaPanel hero={e.panel.hero} columns={e.panel.columns} />;
   }
 });
 ```
@@ -40,12 +48,12 @@ entries.map((e) => {
 
 Every entry has: `id` (use as React key), `label` (display text), `ariaLabel` (accessibility, pre-built).
 
-| `kind` | extra fields | render as |
-|---|---|---|
-| `link` | `href: string` | a normal link |
-| `external` | `href: string` | a link with `target="_blank"` (opens new tab) |
-| `dropdown` | `href: string \| null`, `items: Leaf[]` | a trigger + a simple list of `items` |
-| `mega` | `href: string \| null`, `panel: { hero, columns }` | a trigger + a multi-column panel |
+| `kind`     | extra fields                                       | render as                                     |
+| ---------- | -------------------------------------------------- | --------------------------------------------- |
+| `link`     | `href: string`                                     | a normal link                                 |
+| `external` | `href: string`                                     | a link with `target="_blank"` (opens new tab) |
+| `dropdown` | `href: string \| null`, `items: Leaf[]`            | a trigger + a simple list of `items`          |
+| `mega`     | `href: string \| null`, `panel: { hero, columns }` | a trigger + a multi-column panel              |
 
 For `dropdown`/`mega`, `href` is non-null when the **trigger is itself a link** (e.g. "Baby Care" → a
 collection). When non-null: make the label a link **and** open the panel/list. When null: it's just a
@@ -56,6 +64,7 @@ A **`Column`** is: `{ id, title?, href: string | null, image: Image | null, item
 A **`Leaf`** is: `{ id, title?, href: string, image: Image | null, isExternal }`.
 
 Rendering rules baked into the data (you just read the fields):
+
 - **Card vs text link:** a leaf/column with an `image` → render a card; otherwise a text link.
 - **A column can itself be a link** (`column.href` set) — render its `title` as a link.
 - **Hero** (`panel.hero`) — an optional featured image for the panel.
@@ -65,11 +74,13 @@ Rendering rules baked into the data (you just read the fields):
 ## What you actually do (your only work)
 
 1. **Set one env var** (you already have `NEXT_PUBLIC_MERCHANT_ID`):
+
    ```
    NEXT_PUBLIC_NAV_MENU_API_URL=<gateway base incl. /api/v1>
    #   Prod: https://api-gateway.gokwik.io/api/v1
    #   QA:   https://api-gw-v4.dev.gokwik.io/qa/pi/pc/api/v1
    ```
+
    Unset → header/footer fall back gracefully (no crash), but you won't see live menus.
 
 2. **Build your menus in admin** (`main-menu`, `footer`). No code.
@@ -97,9 +108,11 @@ So: keep a fallback for the empty case, and you're done.
 ---
 
 ## Test locally
+
 ```
 NEXT_PUBLIC_NAV_MENU_API_URL=<qa or prod url> bun run dev
 ```
+
 - Desktop: hover a `mega` item → panel opens.
 - Mobile (< 768px): hamburger → drawer → expand a group.
 - Footer: column link groups.
@@ -114,21 +127,36 @@ sections. To set that up (and make chrome editable), do all of:
 
 **1. Put the chrome in its own templates.** Create `templates/header/default.ts` (announcement bar +
 header sections) and `templates/footer/default.ts` (footer + bottom bar), each a `PageConfig`:
+
 ```ts
 // templates/header/default.ts
 export const template: PageConfig = {
   id: "<theme>-header",
   dataSources: {},
   sections: [
-    { id: "header-section", name: "Header", type: SECTION_TYPES.HEADER_SECTION, settings: { /* … */ },
-      widgets: [{ id: "<theme>-header", name: "Header", type: WIDGET_TYPES.Header,
-                  settings: { variant: "v1", menuHandle: "main-menu" } }] },
+    {
+      id: "header-section",
+      name: "Header",
+      type: SECTION_TYPES.HEADER_SECTION,
+      settings: {
+        /* … */
+      },
+      widgets: [
+        {
+          id: "<theme>-header",
+          name: "Header",
+          type: WIDGET_TYPES.Header,
+          settings: { variant: "v1", menuHandle: "main-menu" },
+        },
+      ],
+    },
   ],
 };
 ```
 
 **2. Strip chrome OUT of every page template.** Delete the header/footer/announcement/bottom-bar
 sections from `home`, `products`, `collection`, … so pages are body-only:
+
 ```ts
 // templates/home/default.ts → sections
 - { id: "announcement-bar-section", … },   // ← delete
@@ -139,15 +167,18 @@ sections from `home`, `products`, `collection`, … so pages are body-only:
 ```
 
 **3. Strip chrome from static page components too** (React components, not pageConfig):
+
 ```tsx
 // static-templates/about-us.tsx
 - return (<><AnnouncementBar/><Header/><main>…</main><Footer/><BottomBar/></>);
 + return (<main>…</main>);   // the layout adds chrome around children
 ```
+
 > Skip step 2 or 3 and chrome renders **twice** (once from the layout, once inline).
 
 **4. Register the chrome templates** in `themes/<theme>/theme-registry.ts` so the editor can find them
 — `routeContext.type` must be exactly `"header"` / `"footer"` (the editor keys on it):
+
 ```ts
 [TEMPLATE_TYPES.header]: { default: {
   templatePath: "/themes/<theme>/templates/header/default.ts",
@@ -156,6 +187,7 @@ sections from `home`, `products`, `collection`, … so pages are body-only:
 ```
 
 **5. Regenerate + migrate** (seeds chrome into the DB + theme structure the editor reads):
+
 ```bash
 bun run generate:templates
 MERCHANT_ID=<id> EDITOR_API_BASE_URL=<editor-be-url> bun run migrate:theme <theme>
@@ -168,6 +200,7 @@ MERCHANT_ID=<id> EDITOR_API_BASE_URL=<editor-be-url> bun run migrate:theme <them
 ---
 
 ## Reference
+
 - **Copy this app's `Header/V1` + `Footer/V1`** — the canonical example of `useNav` → markup. Restyle them.
 - Need lower-level control than `useNav` gives you? Advanced helpers live in
   **`@shopkit/navigation/advanced`** — you almost never need them for a normal header/footer.

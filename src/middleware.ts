@@ -50,12 +50,14 @@ export function middleware(request: NextRequest) {
  */
 function applyPreviewRouting(
   request: NextRequest,
-  response: NextResponse,
+  response: NextResponse
 ): NextResponse {
   const searchParams = request.nextUrl.searchParams;
 
   // Editor-bridge live edit drives the body via postMessage — never inject here.
-  if (searchParams.has("previewKey")) return response;
+  if (searchParams.has("previewKey")) {
+    return response;
+  }
 
   const isEditorBridge = searchParams.get("editor") === "true";
   const flag = searchParams.get("editorPreview");
@@ -70,8 +72,7 @@ function applyPreviewRouting(
 
   // Resolve the active previewId/version: the link's query wins; otherwise the
   // sticky cookie (read for NORMAL browsing only — the editor never uses it).
-  const queryPreviewId =
-    flag === "true" ? searchParams.get("previewId") : null;
+  const queryPreviewId = flag === "true" ? searchParams.get("previewId") : null;
   const queryVersion = flag === "true" ? searchParams.get("version") : null;
   const cookiePreviewId = isEditorBridge
     ? null
@@ -81,17 +82,23 @@ function applyPreviewRouting(
     : (request.cookies.get(PREVIEW_VERSION_COOKIE)?.value ?? null);
 
   const previewId = queryPreviewId ?? cookiePreviewId;
-  if (!previewId) return response;
+  if (!previewId) {
+    return response;
+  }
 
   // Version pins to the link's value when entering; sticky reuses the cookie.
   // Null/absent → backend serves the latest version.
-  const version = queryPreviewId ? queryVersion : (queryVersion ?? cookieVersion);
+  const version = queryPreviewId
+    ? queryVersion
+    : (queryVersion ?? cookieVersion);
 
   // Forward the previewId to the app as a request header, re-emitting base's
   // response so its locale/A-B output survives (see carryOver).
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-editor-preview-id", previewId);
-  if (version) requestHeaders.set("x-editor-preview-version", version);
+  if (version) {
+    requestHeaders.set("x-editor-preview-version", version);
+  }
 
   const rewriteTo = response.headers.get("x-middleware-rewrite");
   const forwarded = carryOver(
@@ -100,7 +107,7 @@ function applyPreviewRouting(
       ? NextResponse.rewrite(new URL(rewriteTo), {
           request: { headers: requestHeaders },
         })
-      : NextResponse.next({ request: { headers: requestHeaders } }),
+      : NextResponse.next({ request: { headers: requestHeaders } })
   );
 
   // Persist the sticky session for NORMAL browsing only (never the editor).
@@ -130,7 +137,9 @@ function applyPreviewRouting(
  */
 function carryOver(from: NextResponse, to: NextResponse): NextResponse {
   from.headers.forEach((value, key) => {
-    if (!key.startsWith("x-middleware-")) to.headers.set(key, value);
+    if (!key.startsWith("x-middleware-")) {
+      to.headers.set(key, value);
+    }
   });
   from.cookies.getAll().forEach((cookie) => to.cookies.set(cookie));
   return to;

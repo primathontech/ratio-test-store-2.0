@@ -7,6 +7,7 @@ import { getPageBuilder } from "@/bootstrap/builder";
 import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
 import { Metadata } from "next";
 import { getRouteTranslations } from "@/utils";
+import type { PageConfig } from "@shopkit/builder";
 
 export const revalidate = 30;
 
@@ -25,7 +26,7 @@ export default async function HomePage({
   // widgets; `previewPageConfig` is the editor's in-flight edit — undefined on
   // normal traffic, so it falls through to the regular template load.
   const { isEditor, pageConfig: previewPageConfig } =
-    await readEditorPreviewState(searchParams);
+    await readEditorPreviewState<PageConfig>(searchParams);
 
   const merchantName = getMerchantName();
   const themeName = getThemeName();

@@ -20,7 +20,13 @@
   --sf-foot-border: rgba(127, 127, 127, 0.28);
   --sf-foot-border: color-mix(in srgb, var(--sf-foot-fg) 16%, transparent);
   --sf-foot-max: 1240px;
-  --sf-foot-font: var(--font-body, "Inter", system-ui, -apple-system, sans-serif);
+  --sf-foot-font: var(
+    --font-body,
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif
+  );
 
   background: var(--sf-foot-bg);
   color: var(--sf-foot-muted);
