@@ -1,17 +1,16 @@
+/* eslint-disable */
 // TEMPORARY leak diagnostic — revert after the root cause is found.
 //
 // Near-zero-overhead per-pod sampler. Logs one JSON line (tag "MEMMON") every
 // 30s; query these in your log pipeline / SignOz over 1-2 days, group by `host`.
 //
-// Reading the per-pod trend:
 //   - externalMB up + TCPSocketWrap/TLSWrap count up -> undici socket/body leak (native)
 //   - Timeout count up                               -> leaked timers (AbortSignal/setTimeout)
 //   - heapUsedMB up, handle counts flat              -> JS heap retention (take a heap snapshot)
 //   - everything flat across pods                    -> no leak on this path
 //
-// MEM_HEAPSNAP=true also writes a heap snapshot every 6h. That PAUSES the event
-// loop for seconds while serializing — only enable on a drained / no-traffic pod,
-// then `kubectl cp` the file out and diff two snapshots in Chrome DevTools.
+// MEM_HEAPSNAP=true also writes a heap snapshot every 6h (PAUSES the event loop;
+// drained/no-traffic pods only).
 
 import os from "os";
 
@@ -36,8 +35,6 @@ export function startMemMonitor(): void {
       const res = typeof getRes === "function" ? getRes.call(process) : [];
       const byType: Record<string, number> = {};
       for (const r of res) byType[r] = (byType[r] || 0) + 1;
-
-      // eslint-disable-next-line no-console
       console.log(
         JSON.stringify({
           tag: "MEMMON",
@@ -55,7 +52,7 @@ export function startMemMonitor(): void {
     } catch {
       /* never throw from the monitor */
     }
-  }, 30_000);
+  }, 30000);
   sampler.unref();
 
   if (process.env.MEM_HEAPSNAP === "true") {
@@ -65,7 +62,6 @@ export function startMemMonitor(): void {
         const v8 = await import("node:v8");
         const file = `/tmp/heap-${host}-${++n}.heapsnapshot`;
         v8.writeHeapSnapshot(file);
-        // eslint-disable-next-line no-console
         console.log(JSON.stringify({ tag: "MEMMON_SNAP", host, file }));
       } catch {
         /* ignore */
