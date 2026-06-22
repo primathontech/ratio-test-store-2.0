@@ -34,16 +34,22 @@ async function fetchPreview(
     cache: "no-store",
     headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
   });
-  if (!res.ok) throw new Error(`Preview HTTP ${res.status}`);
+  if (!res.ok) {
+    throw new Error(`Preview HTTP ${res.status}`);
+  }
 
   const json = await res.json();
   const data = json?.data;
   const pageConfig = data?.pageConfig;
-  if (!pageConfig?.sections) throw new Error("Invalid preview pageConfig");
+  if (!pageConfig?.sections) {
+    throw new Error("Invalid preview pageConfig");
+  }
   // Snapshots may omit `id` (the backend stores pageConfig as
   // {layout,sections,dataSources}); the renderer requires one, so fall back
   // to the previewId. Harmless when an id is already present.
-  if (!pageConfig.id) pageConfig.id = `preview-${previewId}`;
+  if (!pageConfig.id) {
+    pageConfig.id = `preview-${previewId}`;
+  }
   return { templateId: data?.templateId ?? null, pageConfig };
 }
 
@@ -86,7 +92,9 @@ export const getResolvedPreview = cache(
     templateId: string
   ): Promise<PageConfig | null> => {
     const params = new URLSearchParams({ themeId, templateId });
-    if (version) params.set("version", version);
+    if (version) {
+      params.set("version", version);
+    }
     const url = `${EDITOR_API_BASE}/api/v1/getPreviewLink/${encodeURIComponent(
       previewId
     )}?${params.toString()}`;
@@ -95,11 +103,17 @@ export const getResolvedPreview = cache(
         cache: "no-store",
         headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
       });
-      if (!res.ok) return null;
+      if (!res.ok) {
+        return null;
+      }
       const json = await res.json();
       const pageConfig = json?.data?.pageConfig;
-      if (!pageConfig?.sections) return null;
-      if (!pageConfig.id) pageConfig.id = `preview-${previewId}`;
+      if (!pageConfig?.sections) {
+        return null;
+      }
+      if (!pageConfig.id) {
+        pageConfig.id = `preview-${previewId}`;
+      }
       return pageConfig;
     } catch {
       return null;

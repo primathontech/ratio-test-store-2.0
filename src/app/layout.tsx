@@ -28,7 +28,6 @@ import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
 import { AffiliateTracker } from "@shopkit/events/affiliate";
 import { EditorHostMount } from "@/editor-integration/EditorHostMount";
-import { PreviewExitBar } from "@/editor-integration/preview-link/PreviewExitBar";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
@@ -132,8 +131,11 @@ export default async function RootLayout({
           <AppCartInitializer merchantName={merchantName} />
           <CartRecoveryLink />
           <EditorHostMount />
-          <PreviewExitBar />
-          <NavigationProvider menus={menus}>
+          {/* endpoint enables the read-through store: a handle not preloaded at
+              SSR (e.g. the visual editor switching menuHandle at runtime) is
+              fetched on demand via the same-origin /api/nav-menu route. Inert for
+              normal storefront traffic, where every handle is already in `menus`. */}
+          <NavigationProvider menus={menus} endpoint="/api/nav-menu">
             <NavBoundary>{header}</NavBoundary>
             {children}
             <NavBoundary>{footer}</NavBoundary>

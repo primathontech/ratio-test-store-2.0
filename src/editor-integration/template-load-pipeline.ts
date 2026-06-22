@@ -50,7 +50,9 @@ export const editorTemplateLoader: ITemplateLoader = {
         merchantName,
         templateId
       );
-      if (resolved) return resolved;
+      if (resolved) {
+        return resolved;
+      }
     }
 
     return resolver.resolveTemplate({
