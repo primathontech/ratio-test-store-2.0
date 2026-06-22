@@ -10,6 +10,7 @@
 //     un-drained upstream response bodies)
 
 import { NextResponse } from "next/server";
+import os from "os";
 import { startMemMonitor } from "@/lib/debug/mem-monitor";
 
 export const runtime = "nodejs";
@@ -28,7 +29,7 @@ export async function GET() {
       ts: Date.now(),
       uptimeSec: Math.round(process.uptime()),
       pid: process.pid,
-      host: require("os").hostname(),
+      host: os.hostname(),
       rssMB: MB(m.rss),
       heapUsedMB: MB(m.heapUsed),
       heapTotalMB: MB(m.heapTotal),
