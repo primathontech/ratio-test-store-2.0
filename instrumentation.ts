@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { startMemMonitor } from "./src/lib/debug/mem-monitor";
 
 export async function register() {
