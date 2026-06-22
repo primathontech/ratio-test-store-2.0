@@ -1,12 +1,16 @@
-// Env-gated memory diagnostic endpoint.
+// TEMPORARY memory diagnostic endpoint — revert this PR after the leak test.
 //
-// Enable by setting ENABLE_MEM_DEBUG=true in the deployment env; returns 404 otherwise.
-// Read it:  curl -s <pod>/api/_debug/memory | jq
+// Deploy-only: no env flag, no scaling needed. Just deploy and curl it:
+//   curl -s https://store.bblunt.com/api/_debug/memory | jq
 //
-// Purpose: bblunt has no OTel/Sentry runtime metrics, so this is how we read the
-// JS-heap-vs-native split under load. If `heapUsed` climbs -> JS retention; if
-// `external`/`offHeap` climb while heapUsed stays flat -> native/undici (un-drained
-// upstream response bodies in the @shopkit/data-layer commerce client).
+// Multi-replica friendly: the LB routes each call to some pod; the `pid` field
+// lets you bucket samples per pod. Poll it in a loop and group by pid to track
+// each pod's memory over a load test.
+//
+// Reading it: bblunt has no OTel runtime metrics, so this is the JS-vs-native split.
+//   - heapUsedMB climbs        -> JS object retention
+//   - externalMB/offHeapMB climb while heapUsed flat -> native (undici / data-layer
+//     un-drained upstream response bodies)
 
 import { NextResponse } from "next/server";
 
@@ -14,10 +18,6 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET() {
-  if (process.env.ENABLE_MEM_DEBUG !== "true") {
-    return NextResponse.json({ error: "disabled" }, { status: 404 });
-  }
-
   const m = process.memoryUsage();
   const MB = (n: number) => Math.round((n / 1024 / 1024) * 10) / 10;
 
@@ -25,7 +25,7 @@ export async function GET() {
     {
       ts: Date.now(),
       uptimeSec: Math.round(process.uptime()),
-      pid: process.pid,
+      pid: process.pid, // bucket samples by this when there are multiple replicas
       rssMB: MB(m.rss), // total resident — what cAdvisor / HPA see
       heapUsedMB: MB(m.heapUsed), // V8 JS heap (objects) -> climbs = JS leak
       heapTotalMB: MB(m.heapTotal),
