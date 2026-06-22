@@ -1,22 +1,23 @@
 // TEMPORARY memory diagnostic endpoint — revert after the leak test.
 //
-// NOTE: must NOT live under a folder starting with "_" — Next App Router treats
-// "_folder" as a private (non-routable) folder. Hence /api/debug/memory, not _debug.
-//
 // Deploy-only: no env flag, no scaling. Just deploy and curl it:
 //   curl -s https://store.bblunt.com/api/debug/memory | jq
 //
-// Multi-replica friendly: the LB routes each call to some pod; the `pid` field
-// lets you bucket samples per pod. Poll in a loop and group by pid.
-//
+// Also boots the background MEMMON sampler on first load (fallback in case
+// instrumentation.ts isn't picked up). Reading the split:
 //   - heapUsedMB climbs                              -> JS object retention
 //   - externalMB/offHeapMB climb while heapUsed flat -> native (undici / data-layer
 //     un-drained upstream response bodies)
 
 import { NextResponse } from "next/server";
+import { startMemMonitor } from "@/lib/debug/mem-monitor";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+// Belt-and-suspenders: guarantees the 30s sampler is running even if the Next
+// instrumentation hook didn't fire. startMemMonitor() is idempotent.
+startMemMonitor();
 
 export async function GET() {
   const m = process.memoryUsage();
@@ -26,13 +27,14 @@ export async function GET() {
     {
       ts: Date.now(),
       uptimeSec: Math.round(process.uptime()),
-      pid: process.pid, // bucket samples by this when there are multiple replicas
-      rssMB: MB(m.rss), // total resident — what cAdvisor / HPA see
-      heapUsedMB: MB(m.heapUsed), // V8 JS heap (objects) -> climbs = JS leak
+      pid: process.pid,
+      host: require("os").hostname(),
+      rssMB: MB(m.rss),
+      heapUsedMB: MB(m.heapUsed),
       heapTotalMB: MB(m.heapTotal),
-      externalMB: MB(m.external), // C++/Buffers tied to JS -> native
-      arrayBuffersMB: MB(m.arrayBuffers), // ArrayBuffer/Buffer bytes -> undici bodies/sockets
-      offHeapMB: MB(m.rss - m.heapUsed), // share of RSS that is NOT the JS heap
+      externalMB: MB(m.external),
+      arrayBuffersMB: MB(m.arrayBuffers),
+      offHeapMB: MB(m.rss - m.heapUsed),
     },
     { headers: { "cache-control": "no-store" } }
   );
