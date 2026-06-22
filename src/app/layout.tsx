@@ -89,10 +89,10 @@ export default async function RootLayout({
   });
   const chromeBuilder = getPageBuilder({ isEditor: true });
   // Resolve chrome FRESH each request. renderChrome shares a cache across
-  // requests, and in preview/editor mode the loader can resolve a DRAFT
-  // (?editorPreview / x-editor-preview-id). Without clearing, that draft chrome
-  // could be served to the next (live) visitor. Mirrors page.tsx clearing the
-  // body cache per request — the storefront already fetches templates no-store.
+  // requests, and in preview mode the loader can resolve a DRAFT (when Next.js
+  // Draft Mode is enabled via the editorPreview cookie). Without clearing, that
+  // draft chrome could be served to the next (live) visitor. Mirrors page.tsx
+  // clearing the body cache per request — the storefront fetches templates no-store.
   chromeBuilder.clearCache();
   const { header, footer, menuHandles } = await chromeBuilder.renderChrome({
     merchantName: themeName,
