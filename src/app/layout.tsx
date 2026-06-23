@@ -89,10 +89,12 @@ export default async function RootLayout({
   });
   const chromeBuilder = getPageBuilder({ isEditor: true });
   // Resolve chrome FRESH each request. renderChrome shares a cache across
-  // requests, and in preview mode the loader can resolve a DRAFT (when Next.js
-  // Draft Mode is enabled via the editorPreview cookie). Without clearing, that
-  // draft chrome could be served to the next (live) visitor. Mirrors page.tsx
-  // clearing the body cache per request — the storefront fetches templates no-store.
+  // requests; clearing it per request keeps one visitor's resolved chrome from
+  // being served to the next. Mirrors page.tsx clearing the body cache per
+  // request — the storefront fetches templates no-store.
+  // (Note: shareable-preview draft resolution was rolled back 2026-06-23, so
+  // this no longer guards against draft chrome leaking; the per-request reset is
+  // still required for correct live caching.)
   chromeBuilder.clearCache();
   const { header, footer, menuHandles } = await chromeBuilder.renderChrome({
     merchantName: themeName,
