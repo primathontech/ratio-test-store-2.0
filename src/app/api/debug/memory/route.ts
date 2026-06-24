@@ -19,11 +19,25 @@ export const dynamic = "force-dynamic";
 // didn't fire. startMemMonitor() is idempotent.
 startMemMonitor();
 
+// Reports the allocator-tuning env actually present in THIS running process, so we
+// can confirm a deploy carried it (e.g. MALLOC_ARENA_MAX) instead of guessing from
+// image tags / build timing. null = the var is not set in this container.
+function envInfo() {
+  return {
+    MALLOC_ARENA_MAX: process.env.MALLOC_ARENA_MAX ?? null,
+    MALLOC_TRIM_THRESHOLD_: process.env.MALLOC_TRIM_THRESHOLD_ ?? null,
+    NODE_OPTIONS: process.env.NODE_OPTIONS ?? null,
+    NODE_ENV: process.env.NODE_ENV ?? null,
+    UV_THREADPOOL_SIZE: process.env.UV_THREADPOOL_SIZE ?? null,
+  };
+}
+
 export async function GET(req: Request) {
   if (new URL(req.url).searchParams.get("history") === "1") {
-    return NextResponse.json(getMemHistory(), {
-      headers: { "cache-control": "no-store" },
-    });
+    return NextResponse.json(
+      { ...getMemHistory(), env: envInfo() },
+      { headers: { "cache-control": "no-store" } }
+    );
   }
 
   const m = process.memoryUsage();
@@ -36,6 +50,7 @@ export async function GET(req: Request) {
       uptimeSec: Math.round(process.uptime()),
       pid: process.pid,
       host: os.hostname(),
+      env: envInfo(),
       rssMB: MB(m.rss),
       heapUsedMB: MB(m.heapUsed),
       heapTotalMB: MB(m.heapTotal),
