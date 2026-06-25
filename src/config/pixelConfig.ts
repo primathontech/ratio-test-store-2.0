@@ -59,6 +59,8 @@ export const pixelConfig: PixelConfigMap = {
         debug: process.env.NEXT_PUBLIC_GTM_DEBUG === "true" || undefined,
       }
     : null,
+
+  "google-ratio": {},
 };
 
 /**
