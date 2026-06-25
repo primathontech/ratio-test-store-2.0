@@ -9,8 +9,15 @@ import { getRouteTranslations } from "@/utils";
 import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
 import type { PageConfig } from "@shopkit/builder";
 
-/** ISR — revalidate collection data every 30 seconds */
-export const revalidate = 30;
+// PERF/leak test: was `revalidate = 30`. On a near-idle pod, Site24x7/probe pings
+// keep this page warm and ISR re-renders it every 30s, each render fanning out ~12+
+// commerce fetches (AbortSignal.timeout) + native JSON decompression -> off-heap RSS
+// churn. aqualogica (revalidate=3600) leaks ~15x slower than bblunt (revalidate=30)
+// despite MORE traffic -> the leak tracks re-render frequency. Raised to 3600 to test.
+// Do NOT delete this export: the page awaits searchParams (dynamic API), so removing it
+// flips the route to per-request dynamic rendering (more renders, not fewer).
+/** ISR — revalidate collection data every 1 hour */
+export const revalidate = 3600;
 
 // Generate metadata for home page
 export async function generateMetadata(): Promise<Metadata> {
