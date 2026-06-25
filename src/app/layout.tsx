@@ -123,6 +123,10 @@ export default async function RootLayout({
           strategy="afterInteractive"
         />
         <Script src="/scripts/gtm-pixel-sdk.js" strategy="afterInteractive" />
+        <Script
+          src="https://ratio.apps.primathontech.co.in/google/sdk/19mgx1ar7uca.js"
+          strategy="afterInteractive"
+        />
         <LimeChatScript />
       </body>
     </html>
