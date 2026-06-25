@@ -9,8 +9,10 @@ import { getRouteTranslations } from "@/utils";
 import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
 import type { PageConfig } from "@shopkit/builder";
 
-/** ISR — revalidate collection data every 30 seconds */
-export const revalidate = 30;
+// revalidate removed. NOTE: this route is dynamically rendered regardless —
+// readEditorPreviewState() unconditionally `await`s searchParams, which forces dynamic
+// rendering in Next 15, so `export const revalidate` was being ignored here anyway.
+// export const revalidate = 30;
 
 // Generate metadata for home page
 export async function generateMetadata(): Promise<Metadata> {
