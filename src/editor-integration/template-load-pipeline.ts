@@ -1,4 +1,5 @@
-import type { ITemplateLoader } from "@shopkit/builder";
+import type { ITemplateLoader, PageConfig } from "@shopkit/builder";
+import { SECTION_TYPES } from "@shopkit/builder";
 import { cookies, draftMode } from "next/headers";
 import { merchantTemplateLoader } from "./loaders/template-loader";
 import { TemplateResolver } from "./loaders/template-resolver";
@@ -10,6 +11,61 @@ import {
 import { getTemplateId } from "./template-id";
 
 const resolver = new TemplateResolver(merchantTemplateLoader);
+
+// Well-known chrome section ids used across themes. announcement-bar and
+// bottom-bar live on CONTENT_SECTION (no distinctive `section.type`), so we
+// also pin them by id. HEADER_SECTION / FOOTER_SECTION sections are caught
+// by `section.type` regardless of id.
+const CHROME_SECTION_IDS = new Set([
+  "announcement-bar-section",
+  "header-section",
+  "footer-section",
+  "bottom-bar-section",
+]);
+
+/**
+ * Drop chrome (announcement bar / header / footer / bottom bar) sections from a
+ * page-body pageConfig.
+ *
+ * The root layout renders chrome separately via `renderChrome()`. Page bodies
+ * MUST NOT contain chrome sections — otherwise the storefront double-renders
+ * chrome (once from the layout, once inline). This filter defends against two
+ * known sources of inline chrome in preview mode:
+ *
+ *  1. **DB-live drift**: the editor backend's preview resolver falls back to
+ *     the DB-saved live template when no draft exists for the route. If that
+ *     DB row was seeded before the chrome migration (page templates were
+ *     chrome-stripped on disk but DB rows weren't re-uploaded), it still
+ *     carries inline chrome.
+ *  2. **Stale drafts**: a body preview saved by an older editor build (before
+ *     chrome was split into its own template) may still contain chrome.
+ *
+ * Caller is responsible for NOT applying this to chrome templates themselves
+ * (templateName === "header"/"footer") — those are SUPPOSED to contain these
+ * sections, that's their entire purpose.
+ */
+function stripChromeSections(pageConfig: PageConfig): PageConfig {
+  const sections = pageConfig.sections;
+  if (!sections?.length) {
+    return pageConfig;
+  }
+  const filtered = sections.filter(
+    (s) =>
+      s.type !== SECTION_TYPES.HEADER_SECTION &&
+      s.type !== SECTION_TYPES.FOOTER_SECTION &&
+      !CHROME_SECTION_IDS.has(s.id)
+  );
+  if (filtered.length === sections.length) {
+    return pageConfig;
+  }
+  return { ...pageConfig, sections: filtered };
+}
+
+/** Chrome templates by templateName. Their bodies legitimately contain the
+ * chrome sections — `stripChromeSections` must not be applied to them. */
+function isChromeTemplate(templateName: string): boolean {
+  return templateName === "header" || templateName === "footer";
+}
 
 /**
  * Editor-aware template loader.
@@ -62,7 +118,16 @@ export const editorTemplateLoader: ITemplateLoader = {
           templateId
         );
         if (resolved) {
-          return resolved;
+          // Layout renders chrome via renderChrome(); the page body must not
+          // carry chrome sections or the storefront double-renders them. The
+          // backend's preview resolver may return DB-live (when no draft for
+          // this route under the previewId), and that DB row can still carry
+          // inline chrome if the on-disk chrome-strip migration didn't
+          // re-upload page templates. Chrome templates are intentionally
+          // pass-through — their bodies ARE the chrome.
+          return isChromeTemplate(templateName)
+            ? resolved
+            : stripChromeSections(resolved);
         }
       }
     }

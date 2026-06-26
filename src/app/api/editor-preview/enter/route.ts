@@ -5,6 +5,7 @@ import {
   PREVIEW_ACTIVE_COOKIE,
   PREVIEW_ID_COOKIE,
   PREVIEW_VERSION_COOKIE,
+  publicOrigin,
 } from "@/editor-integration/preview-link/cookies";
 
 export const dynamic = "force-dynamic";
@@ -22,7 +23,8 @@ const COOKIE_BASE = { sameSite: "lax" as const, path: "/" };
  * and render the saved snapshot while normal traffic stays fully static.
  */
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  const origin = publicOrigin(request);
   const previewId = searchParams.get("previewId");
   const version = searchParams.get("version");
   const to = sanitizeTo(searchParams.get("to"));
