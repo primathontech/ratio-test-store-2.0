@@ -52,21 +52,25 @@ Every entry has: `id` (use as React key), `label` (display text), `ariaLabel` (a
 | ---------- | -------------------------------------------------- | --------------------------------------------- |
 | `link`     | `href: string`                                     | a normal link                                 |
 | `external` | `href: string`                                     | a link with `target="_blank"` (opens new tab) |
-| `dropdown` | `href: string \| null`, `items: Leaf[]`            | a trigger + a simple list of `items`          |
-| `mega`     | `href: string \| null`, `panel: { hero, columns }` | a trigger + a multi-column panel              |
+| `dropdown` | `href: string \| null`, `isExternal`, `items: Leaf[]`            | a trigger + a simple list of `items`          |
+| `mega`     | `href: string \| null`, `isExternal`, `panel: { hero, columns }` | a trigger + a multi-column panel              |
 
 For `dropdown`/`mega`, `href` is non-null when the **trigger is itself a link** (e.g. "Baby Care" → a
 collection). When non-null: make the label a link **and** open the panel/list. When null: it's just a
-label that opens the panel.
+label that opens the panel. If `isExternal` is `true`, that trigger link is external — render it with
+`target="_blank" rel="noopener noreferrer"`.
 
 A **`panel`** (mega) is: `{ hero: Image | null, columns: Column[] }`.
-A **`Column`** is: `{ id, title?, href: string | null, image: Image | null, items: Leaf[] }`.
+A **`Column`** is: `{ id, title?, href: string | null, isExternal, image: Image | null, items: Leaf[] }`.
 A **`Leaf`** is: `{ id, title?, href: string, image: Image | null, isExternal }`.
 
 Rendering rules baked into the data (you just read the fields):
 
 - **Card vs text link:** a leaf/column with an `image` → render a card; otherwise a text link.
 - **A column can itself be a link** (`column.href` set) — render its `title` as a link.
+- **External links anywhere:** `isExternal` is on leaves, columns, **and** `dropdown`/`mega` triggers.
+  Any menu item can be an external link — when `isExternal` is `true`, render it with
+  `target="_blank" rel="noopener noreferrer"`. (The reference `Header/V1` + `Footer/V1` already do this.)
 - **Hero** (`panel.hero`) — an optional featured image for the panel.
 
 ---
@@ -82,6 +86,12 @@ Rendering rules baked into the data (you just read the fields):
    ```
 
    Unset → header/footer fall back gracefully (no crash), but you won't see live menus.
+
+   > **Collection/product URLs:** admin returns those links as a bare handle; the storefront prepends
+   > the route prefix. Defaults are `/collections` and `/products` (matching this app). If your store
+   > uses a different scheme (e.g. singular `/collection`, `/product`), set it **once** on the provider
+   > in `src/app/layout.tsx`:
+   > `<NavigationProvider … routes={{ collection: "/collection", product: "/product" }}>`.
 
 2. **Build your menus in admin** (`main-menu`, `footer`). No code.
 
