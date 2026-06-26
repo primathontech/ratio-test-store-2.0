@@ -75,6 +75,21 @@ export interface HeaderSettings {
   getApp_logo_alt?: string;
   getApp_logo_url?: { src: string; alt: string } | string;
   getApp_app_url?: string;
+  /**
+   * Nav-menu handle this header renders, from `@shopkit/navigation`.
+   * @default "main-menu"
+   *
+   * The menu CONTENT (links, columns, mega panels) is managed by the merchant in
+   * the admin panel — this setting only selects WHICH menu to show. When the menu
+   * can't be fetched (no env/backend/handle), the header degrades gracefully.
+   */
+  menuHandle?: string;
+  /**
+   * Brand text shown at the left of the header. Replace with your logo when you
+   * restyle this reference.
+   * @default "Store"
+   */
+  brandName?: string;
 }
 
 /**

@@ -15,11 +15,14 @@
 
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getTheme } from "@/bootstrap/theme";
-import { getMerchantName, getThemeName } from "@/utils";
+import { getMerchantName, getThemeName, getRouteTranslations } from "@/utils";
 import { getMessages } from "next-intl/server";
 import Script from "next/script";
 
 import { AppShell, AppHead } from "@shopkit/app-shell";
+import { getPageBuilder } from "@/bootstrap/builder";
+import { getNavMenus } from "@shopkit/navigation";
+import { NavigationProvider, NavBoundary } from "@shopkit/navigation/client";
 import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
 import { AffiliateTracker } from "@shopkit/events/affiliate";
@@ -29,6 +32,7 @@ import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
 import { fontVariables } from "./fonts";
 import LimeChatScript from "./LimeChatScript";
+import { CartRecoveryLink } from "@/integrations/cart-recovery-custom";
 
 // =============================================================================
 // ROOT LAYOUT
@@ -48,6 +52,41 @@ export default async function RootLayout({
 
   const hasKwikcartDisabled =
     process.env.NEXT_PUBLIC_KWIKCART_DISABLE === "true";
+
+  // Shared layout chrome (header/footer) rendered once for every page.
+  // Page templates contain body sections only; chrome lives in
+  // themes/{theme}/templates/header and /footer (Shopify section-group model).
+  //
+  // renderChrome reports the nav-menu handles its widgets reference (derive-from-
+  // JSON); we then fetch exactly those. So a handle the editor assigns is fetched
+  // automatically — no hand-maintained list. (getNavMenus also always includes the
+  // backend defaults main-menu + footer.) Sequential by necessity: we need the
+  // handles before fetching.
+  // Chrome resolves its t:common.* refs against these messages. Mirror the page
+  // templates (which call getRouteTranslations): DB-backed when editor changes
+  // are enabled, filesystem otherwise, so editor-saved header/footer text
+  // reflects on the storefront. AppShell keeps getMessages() for client i18n.
+  // isEditor selects the editor-shimmed widget manifest so the editor can
+  // instrument chrome.
+  const chromeMessages = await getRouteTranslations({
+    themeName,
+    language: locale,
+  });
+  const chromeBuilder = getPageBuilder({ isEditor: true });
+  // Resolve chrome FRESH each request. renderChrome shares a cache across
+  // requests; clearing it per request keeps one visitor's resolved chrome from
+  // being served to the next. Mirrors page.tsx clearing the body cache per
+  // request — the storefront fetches templates no-store.
+  // (Note: shareable-preview draft resolution was rolled back 2026-06-23, so
+  // this no longer guards against draft chrome leaking; the per-request reset is
+  // still required for correct live caching.)
+  chromeBuilder.clearCache();
+  const { header, footer, menuHandles } = await chromeBuilder.renderChrome({
+    merchantName: themeName,
+    locale,
+    messages: chromeMessages,
+  });
+  const menus = await getNavMenus(menuHandles);
 
   return (
     <html lang={locale} className={fontVariables}>
@@ -77,8 +116,17 @@ export default async function RootLayout({
         >
           <AffiliateTracker autoCapture />
           <AppCartInitializer merchantName={merchantName} />
+          <CartRecoveryLink />
           <EditorHostMount />
-          {children}
+          {/* endpoint enables the read-through store: a handle not preloaded at
+              SSR (e.g. the visual editor switching menuHandle at runtime) is
+              fetched on demand via the same-origin /api/nav-menu route. Inert for
+              normal storefront traffic, where every handle is already in `menus`. */}
+          <NavigationProvider menus={menus} endpoint="/api/nav-menu">
+            <NavBoundary>{header}</NavBoundary>
+            {children}
+            <NavBoundary>{footer}</NavBoundary>
+          </NavigationProvider>
           <ClientDynamics
             locale={locale}
             hasKwikcartDisabled={hasKwikcartDisabled}

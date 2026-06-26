@@ -12,6 +12,7 @@ import { WIDGET_TYPES } from "@/widgets/.generated/types";
  *   number      – numeric input (supports min/max/step/unit)
  *   boolean     – toggle switch
  *   select      – dropdown with options[]
+ *   menu-select – dropdown of the merchant's live nav menus (editor-fetched)
  *   spacing     – responsive padding/margin control
  *   image       – image picker
  *   richtext    – rich text editor
@@ -726,6 +727,11 @@ const merchantWidgetSchemas = {
     description:
       "Site footer with link sections, social icons, payment methods, and app download",
     settingsSchema: {
+      menuHandle: {
+        type: "menu-select" as const,
+        label: "Menu",
+        default: "footer",
+      },
       mobileFooterTagline: {
         type: "richtext" as const,
         label: "Mobile Footer Tagline (rich text)",
@@ -872,6 +878,11 @@ const merchantWidgetSchemas = {
     name: "Header",
     description: "Site header with logo, navigation, search, and cart",
     settingsSchema: {
+      menuHandle: {
+        type: "menu-select" as const,
+        label: "Menu",
+        default: "main-menu",
+      },
       logoSrc: {
         type: "image" as const,
         label: "Logo Image",

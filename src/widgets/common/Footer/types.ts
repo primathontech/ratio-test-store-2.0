@@ -67,6 +67,14 @@ export interface FooterSettings {
   paymentProtectionText?: string;
   copyrightText?: string;
   paymentMethods?: PaymentMethod[];
+  /**
+   * Nav-menu handle this footer renders, from `@shopkit/navigation`.
+   * @default "footer"
+   *
+   * Same model as the header: the merchant manages the footer menu's content in
+   * admin; this only selects which menu. Degrades gracefully when unavailable.
+   */
+  menuHandle?: string;
 }
 
 /**

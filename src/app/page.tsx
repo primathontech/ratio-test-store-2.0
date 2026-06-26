@@ -4,12 +4,13 @@ import { getStaticLocale } from "@/bootstrap/i18n";
 import { resolveCommercePageSEO } from "@shopkit/seo";
 import { getMerchantName, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
+import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
 import { Metadata } from "next";
 import { getRouteTranslations } from "@/utils";
-import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
-import type { PageConfig } from "@shopkit/builder";
 
 /** ISR — revalidate collection data every 30 seconds */
+import type { PageConfig } from "@shopkit/builder";
+
 export const revalidate = 30;
 
 // Generate metadata for home page
@@ -22,6 +23,10 @@ export default async function HomePage({
 }: {
   searchParams: Promise<{ editor?: string; previewKey?: string }>;
 }) {
+  // Editor preview state from the URL (?editor / ?previewKey). `isEditor`
+  // selects the editor (client-shim) widget manifest so live overrides reach
+  // widgets; `previewPageConfig` is the editor's in-flight edit — undefined on
+  // normal traffic, so it falls through to the regular template load.
   const { isEditor, pageConfig: previewPageConfig } =
     await readEditorPreviewState<PageConfig>(searchParams);
 
@@ -43,8 +48,11 @@ export default async function HomePage({
     language: locale,
   });
 
-  // Get the page builder (widgets auto-loaded)
+  // isEditor selects the editor widget manifest so live overrides reach widgets.
   const pageBuilder = getPageBuilder({ isEditor });
+  // Clear @shopkit/builder's internal template cache so API/preview changes are
+  // picked up on every request.
+  pageBuilder.clearCache();
 
   // Note: The builder uses "merchantName" internally for loading themes/templates
   // from @/themes/{name}/templates/, so we pass themeName here
