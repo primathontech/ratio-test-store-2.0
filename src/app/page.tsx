@@ -6,26 +6,26 @@ import { getMerchantName, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
 import { getRouteTranslations } from "@/utils";
-import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
-import type { PageConfig } from "@shopkit/builder";
 
-// revalidate removed. NOTE: this route is dynamically rendered regardless —
-// readEditorPreviewState() unconditionally `await`s searchParams, which forces dynamic
-// rendering in Next 15, so `export const revalidate` was being ignored here anyway.
-// export const revalidate = 30;
+// LEAK TEST A (force-dynamic lever): the editor-preview read was removed so this page
+// no longer `await`s searchParams → the route is no longer force-dynamic → it renders
+// as ISR. `revalidate` now actually takes effect, so the page regenerates at most hourly
+// instead of on every Site24x7/probe ping. Expect bblunt's idle RSS ratchet to flatten,
+// proving the force-dynamic render path is the leak driver (→ justifies the shared
+// @shopkit/editor-bridge draftMode() fix). App-level only, no @shopkit change, reversible.
+// Tradeoff: visual-editor preview is disabled on this page while the test runs — fine on
+// this no-traffic test merchant. Revert by restoring readEditorPreviewState(searchParams).
+export const revalidate = 3600;
 
 // Generate metadata for home page
 export async function generateMetadata(): Promise<Metadata> {
   return resolveCommercePageSEO("home", null, "/");
 }
 
-export default async function HomePage({
-  searchParams,
-}: {
-  searchParams: Promise<{ editor?: string; previewKey?: string }>;
-}) {
-  const { isEditor, pageConfig: previewPageConfig } =
-    await readEditorPreviewState<PageConfig>(searchParams);
+export default async function HomePage() {
+  // Static path: do NOT read searchParams (reading it forces dynamic rendering).
+  const isEditor = false;
+  const previewPageConfig = undefined;
 
   const merchantName = getMerchantName();
   const themeName = getThemeName();
