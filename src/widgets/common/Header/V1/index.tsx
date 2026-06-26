@@ -90,12 +90,24 @@ function DesktopColumn({ column }: { column: MegaMenuColumn }) {
         />
       )}
       {/* A column can itself be a link (flat panel): clickable title when it has a
-          href, else a plain heading for its leaves. */}
+          href, else a plain heading for its leaves. A column can now also be an
+          external link (any resource type can be a child). */}
       {column.title &&
         (column.href ? (
-          <Link href={column.href} className="sf-mega__col-title">
-            {column.title}
-          </Link>
+          column.isExternal ? (
+            <a
+              href={column.href}
+              className="sf-mega__col-title"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {column.title}
+            </a>
+          ) : (
+            <Link href={column.href} className="sf-mega__col-title">
+              {column.title}
+            </Link>
+          )
         ) : (
           <span className="sf-mega__col-title">{column.title}</span>
         ))}
@@ -143,18 +155,35 @@ function DesktopItem({
           {entry.label}
         </Link>
       ) : entry.href ? (
-        // mega / dropdown that is ALSO a link → label navigates, hover opens panel
-        <Link
-          href={entry.href}
-          className="sf-nav__link"
-          aria-haspopup="true"
-          aria-expanded={open}
-        >
-          {entry.label}
-          <span className="sf-nav__chevron" aria-hidden="true">
-            ▾
-          </span>
-        </Link>
+        // mega / dropdown that is ALSO a link → label navigates, hover opens panel.
+        // The link itself may be external (any resource type can be a trigger).
+        entry.isExternal ? (
+          <a
+            href={entry.href}
+            className="sf-nav__link"
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-haspopup="true"
+            aria-expanded={open}
+          >
+            {entry.label}
+            <span className="sf-nav__chevron" aria-hidden="true">
+              ▾
+            </span>
+          </a>
+        ) : (
+          <Link
+            href={entry.href}
+            className="sf-nav__link"
+            aria-haspopup="true"
+            aria-expanded={open}
+          >
+            {entry.label}
+            <span className="sf-nav__chevron" aria-hidden="true">
+              ▾
+            </span>
+          </Link>
+        )
       ) : (
         // mega / dropdown that is NOT a link → non-navigable label
         <span
@@ -194,11 +223,23 @@ function DesktopItem({
       {/* Simple dropdown */}
       {entry.kind === "dropdown" && open && (
         <div className="sf-dropdown">
-          {entry.items.map((leaf) => (
-            <Link key={leaf.id} href={leaf.href} className="sf-dropdown__link">
-              {leaf.title}
-            </Link>
-          ))}
+          {entry.items.map((leaf) =>
+            leaf.isExternal ? (
+              <a
+                key={leaf.id}
+                href={leaf.href}
+                className="sf-dropdown__link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {leaf.title}
+              </a>
+            ) : (
+              <Link key={leaf.id} href={leaf.href} className="sf-dropdown__link">
+                {leaf.title}
+              </Link>
+            )
+          )}
         </div>
       )}
     </li>
@@ -240,7 +281,7 @@ function MobileItem({ entry }: { entry: NavEntry }) {
                   title: c.title,
                   href: c.href ?? "/",
                   image: c.image,
-                  isExternal: false,
+                  isExternal: c.isExternal,
                 },
               ]
         )
@@ -250,10 +291,22 @@ function MobileItem({ entry }: { entry: NavEntry }) {
     <div className="sf-drawer__group">
       {entry.href ? (
         // Trigger is itself a link: the label navigates, a separate caret expands.
+        // The link may be external.
         <div className="sf-drawer__row">
-          <Link href={entry.href} className="sf-drawer__link">
-            {entry.label}
-          </Link>
+          {entry.isExternal ? (
+            <a
+              href={entry.href}
+              className="sf-drawer__link"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {entry.label}
+            </a>
+          ) : (
+            <Link href={entry.href} className="sf-drawer__link">
+              {entry.label}
+            </Link>
+          )}
           <button
             className="sf-drawer__expand"
             aria-label={`${expanded ? "Collapse" : "Expand"} ${entry.label}`}
@@ -275,15 +328,27 @@ function MobileItem({ entry }: { entry: NavEntry }) {
       )}
       {expanded && (
         <div className="sf-drawer__sub">
-          {children.map((child) => (
-            <Link
-              key={child.id}
-              href={child.href}
-              className="sf-drawer__sublink"
-            >
-              {child.title}
-            </Link>
-          ))}
+          {children.map((child) =>
+            child.isExternal ? (
+              <a
+                key={child.id}
+                href={child.href}
+                className="sf-drawer__sublink"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {child.title}
+              </a>
+            ) : (
+              <Link
+                key={child.id}
+                href={child.href}
+                className="sf-drawer__sublink"
+              >
+                {child.title}
+              </Link>
+            )
+          )}
         </div>
       )}
     </div>
