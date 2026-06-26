@@ -1,6 +1,6 @@
 {
   "name": "storefront-starter-app",
-  "version": "0.2.6",
+  "version": "0.2.9",
   "private": true,
   "workspaces": [
     "src/app/editor"
@@ -63,14 +63,14 @@
     "@shopkit/app-shell": "^2.0.0",
     "@shopkit/asset-cache": "^1.0.1",
     "@shopkit/builder": "^0.1.5",
-    "@shopkit/navigation": "^1.1.0",
+    "@shopkit/navigation": "^1.2.0",
     "@shopkit/cart": "^0.1.4",
     "@shopkit/cli": "^0.4.0",
     "@shopkit/core": "^0.1.4",
     "@shopkit/data-layer": "^1.3.0",
     "@shopkit/discounts": "^0.1.3",
     "@shopkit/events": "^0.10.0",
-    "@shopkit/editor-bridge": "^0.3.0",
+    "@shopkit/editor-bridge": "^0.6.0",
     "@shopkit/i18n": "^0.1.4",
     "@shopkit/seo": "^1.1.2",
     "@shopkit/webhooks": "^0.1.1",
