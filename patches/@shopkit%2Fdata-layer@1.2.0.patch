@@ -1,64 +1,184 @@
 diff --git a/dist/adapters/index.js b/dist/adapters/index.js
-index d06e1b3..e9603b9 100644
+index d06e1b3db3bda0c6579a3ea1db1c9b394ee68e32..ba3d08b3ac844357622faf66b398bf515305f577 100644
 --- a/dist/adapters/index.js
 +++ b/dist/adapters/index.js
-@@ -4326,7 +4326,10 @@ var BaseCustomService = class {
+@@ -4324,9 +4324,15 @@ var BaseCustomService = class {
+         headers.append(key, value);
+       });
      }
++    const controller = new AbortController();
++    const __abortTimeoutId = setTimeout(
++      () => controller.abort(),
++      options?.timeout ?? this.timeout
++    );
      const requestOptions = {
        method,
 -      headers
 +      headers,
-+      // FIX(memory-leak): bound upstream wait; without a signal a hung
-+      // upstream call pins the awaiting SSR render in memory forever.
-+      signal: AbortSignal.timeout(options?.timeout ?? this.timeout)
++      signal: controller.signal
      };
      if (data && method !== "GET") {
        requestOptions.body = JSON.stringify(data);
+@@ -4338,7 +4344,12 @@ var BaseCustomService = class {
+       hasData: !!data
+     });
+     const startTime = Date.now();
+-    const response = await fetch(`${url}${queryString}`, requestOptions);
++    let response;
++    try {
++      response = await fetch(`${url}${queryString}`, requestOptions);
++    } finally {
++      clearTimeout(__abortTimeoutId);
++    }
+     const duration = Date.now() - startTime;
+     if (!response.ok) {
+       this.logger.error("API request failed", void 0, {
+@@ -4348,6 +4359,10 @@ var BaseCustomService = class {
+         statusText: response.statusText,
+         duration
+       });
++      try {
++        await response.body?.cancel();
++      } catch {
++      }
+       throw new Error(
+         `Request failed: ${response.status} ${response.statusText}`
+       );
 diff --git a/dist/adapters/index.mjs b/dist/adapters/index.mjs
-index cdda15e..fd0cb62 100644
+index cdda15ed8f5f21ec322c494bbb778fabd6331c6d..a3ca59f5f01e93f98767644237d06ef6027150db 100644
 --- a/dist/adapters/index.mjs
 +++ b/dist/adapters/index.mjs
-@@ -4324,7 +4324,10 @@ var BaseCustomService = class {
+@@ -4322,9 +4322,15 @@ var BaseCustomService = class {
+         headers.append(key, value);
+       });
      }
++    const controller = new AbortController();
++    const __abortTimeoutId = setTimeout(
++      () => controller.abort(),
++      options?.timeout ?? this.timeout
++    );
      const requestOptions = {
        method,
 -      headers
 +      headers,
-+      // FIX(memory-leak): bound upstream wait; without a signal a hung
-+      // upstream call pins the awaiting SSR render in memory forever.
-+      signal: AbortSignal.timeout(options?.timeout ?? this.timeout)
++      signal: controller.signal
      };
      if (data && method !== "GET") {
        requestOptions.body = JSON.stringify(data);
+@@ -4336,7 +4342,12 @@ var BaseCustomService = class {
+       hasData: !!data
+     });
+     const startTime = Date.now();
+-    const response = await fetch(`${url}${queryString}`, requestOptions);
++    let response;
++    try {
++      response = await fetch(`${url}${queryString}`, requestOptions);
++    } finally {
++      clearTimeout(__abortTimeoutId);
++    }
+     const duration = Date.now() - startTime;
+     if (!response.ok) {
+       this.logger.error("API request failed", void 0, {
+@@ -4346,6 +4357,10 @@ var BaseCustomService = class {
+         statusText: response.statusText,
+         duration
+       });
++      try {
++        await response.body?.cancel();
++      } catch {
++      }
+       throw new Error(
+         `Request failed: ${response.status} ${response.statusText}`
+       );
 diff --git a/dist/index.js b/dist/index.js
-index b7db1af..ec26ebe 100644
+index b7db1af1c94ba518e2d4b965754acc9ee02adf8a..e42eaf5b807d9b82218cb435db61f3d2db7f8c06 100644
 --- a/dist/index.js
 +++ b/dist/index.js
-@@ -4321,7 +4321,10 @@ var BaseCustomService = class {
+@@ -4319,9 +4319,15 @@ var BaseCustomService = class {
+         headers.append(key, value);
+       });
      }
++    const controller = new AbortController();
++    const __abortTimeoutId = setTimeout(
++      () => controller.abort(),
++      options?.timeout ?? this.timeout
++    );
      const requestOptions = {
        method,
 -      headers
 +      headers,
-+      // FIX(memory-leak): bound upstream wait; without a signal a hung
-+      // upstream call pins the awaiting SSR render in memory forever.
-+      signal: AbortSignal.timeout(options?.timeout ?? this.timeout)
++      signal: controller.signal
      };
      if (data && method !== "GET") {
        requestOptions.body = JSON.stringify(data);
+@@ -4333,7 +4339,12 @@ var BaseCustomService = class {
+       hasData: !!data
+     });
+     const startTime = Date.now();
+-    const response = await fetch(`${url}${queryString}`, requestOptions);
++    let response;
++    try {
++      response = await fetch(`${url}${queryString}`, requestOptions);
++    } finally {
++      clearTimeout(__abortTimeoutId);
++    }
+     const duration = Date.now() - startTime;
+     if (!response.ok) {
+       this.logger.error("API request failed", void 0, {
+@@ -4343,6 +4354,10 @@ var BaseCustomService = class {
+         statusText: response.statusText,
+         duration
+       });
++      try {
++        await response.body?.cancel();
++      } catch {
++      }
+       throw new Error(
+         `Request failed: ${response.status} ${response.statusText}`
+       );
 diff --git a/dist/index.mjs b/dist/index.mjs
-index 63fb781..b84090a 100644
+index 63fb781061485c210592dcaceeaea18d29e5274c..e1bc1d476a94f8c341d60053f8cbcd30e796ff86 100644
 --- a/dist/index.mjs
 +++ b/dist/index.mjs
-@@ -4319,7 +4319,10 @@ var BaseCustomService = class {
+@@ -4317,9 +4317,15 @@ var BaseCustomService = class {
+         headers.append(key, value);
+       });
      }
++    const controller = new AbortController();
++    const __abortTimeoutId = setTimeout(
++      () => controller.abort(),
++      options?.timeout ?? this.timeout
++    );
      const requestOptions = {
        method,
 -      headers
 +      headers,
-+      // FIX(memory-leak): bound upstream wait; without a signal a hung
-+      // upstream call pins the awaiting SSR render in memory forever.
-+      signal: AbortSignal.timeout(options?.timeout ?? this.timeout)
++      signal: controller.signal
      };
      if (data && method !== "GET") {
        requestOptions.body = JSON.stringify(data);
+@@ -4331,7 +4337,12 @@ var BaseCustomService = class {
+       hasData: !!data
+     });
+     const startTime = Date.now();
+-    const response = await fetch(`${url}${queryString}`, requestOptions);
++    let response;
++    try {
++      response = await fetch(`${url}${queryString}`, requestOptions);
++    } finally {
++      clearTimeout(__abortTimeoutId);
++    }
+     const duration = Date.now() - startTime;
+     if (!response.ok) {
+       this.logger.error("API request failed", void 0, {
+@@ -4341,6 +4352,10 @@ var BaseCustomService = class {
+         statusText: response.statusText,
+         duration
+       });
++      try {
++        await response.body?.cancel();
++      } catch {
++      }
+       throw new Error(
+         `Request failed: ${response.status} ${response.statusText}`
+       );
