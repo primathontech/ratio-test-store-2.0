@@ -5,6 +5,7 @@ import {
   PREVIEW_ACTIVE_COOKIE,
   PREVIEW_ID_COOKIE,
   PREVIEW_VERSION_COOKIE,
+  publicOrigin,
 } from "@/editor-integration/preview-link/cookies";
 
 export const dynamic = "force-dynamic";
@@ -18,7 +19,8 @@ export const dynamic = "force-dynamic";
  * live page.
  */
 export async function GET(request: NextRequest) {
-  const { searchParams, origin } = new URL(request.url);
+  const { searchParams } = new URL(request.url);
+  const origin = publicOrigin(request);
   const to = sanitizeTo(searchParams.get("to"));
 
   (await draftMode()).disable();
