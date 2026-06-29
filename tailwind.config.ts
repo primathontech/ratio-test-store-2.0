@@ -9,6 +9,7 @@ const config: Config = {
     "./src/widgets/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/theme/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/integrations/**/*.{js,ts,jsx,tsx,mdx}",
+    "./src/editor-integration/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {
