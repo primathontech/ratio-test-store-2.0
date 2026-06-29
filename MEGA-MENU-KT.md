@@ -48,10 +48,10 @@ entries.map((e) => {
 
 Every entry has: `id` (use as React key), `label` (display text), `ariaLabel` (accessibility, pre-built).
 
-| `kind`     | extra fields                                       | render as                                     |
-| ---------- | -------------------------------------------------- | --------------------------------------------- |
-| `link`     | `href: string`                                     | a normal link                                 |
-| `external` | `href: string`                                     | a link with `target="_blank"` (opens new tab) |
+| `kind`     | extra fields                                                     | render as                                     |
+| ---------- | ---------------------------------------------------------------- | --------------------------------------------- |
+| `link`     | `href: string`                                                   | a normal link                                 |
+| `external` | `href: string`                                                   | a link with `target="_blank"` (opens new tab) |
 | `dropdown` | `href: string \| null`, `isExternal`, `items: Leaf[]`            | a trigger + a simple list of `items`          |
 | `mega`     | `href: string \| null`, `isExternal`, `panel: { hero, columns }` | a trigger + a multi-column panel              |
 

@@ -28,6 +28,11 @@ import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
 import { AffiliateTracker } from "@shopkit/events/affiliate";
 import { EditorHostMount } from "@/editor-integration/EditorHostMount";
+// Client-only "Exit preview" bar. Direct import (not next/dynamic ssr:false,
+// which Next 15 disallows in a Server Component): the component is "use client"
+// and renders null on the server / first paint, so it never participates in SSR
+// or affects the editor's live preview. Same behavior as momsco's layout.
+import { PreviewExitBar } from "@/editor-integration/preview-link/PreviewExitBar";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
@@ -89,12 +94,10 @@ export default async function RootLayout({
   });
   const chromeBuilder = getPageBuilder({ isEditor: true });
   // Resolve chrome FRESH each request. renderChrome shares a cache across
-  // requests; clearing it per request keeps one visitor's resolved chrome from
-  // being served to the next. Mirrors page.tsx clearing the body cache per
-  // request — the storefront fetches templates no-store.
-  // (Note: shareable-preview draft resolution was rolled back 2026-06-23, so
-  // this no longer guards against draft chrome leaking; the per-request reset is
-  // still required for correct live caching.)
+  // requests, and in preview mode the loader can resolve a DRAFT (when Next.js
+  // Draft Mode is enabled via the editorPreview cookie). Without clearing, that
+  // draft chrome could be served to the next (live) visitor. Mirrors page.tsx
+  // clearing the body cache per request — the storefront fetches templates no-store.
   chromeBuilder.clearCache();
   const { header, footer, menuHandles } = await chromeBuilder.renderChrome({
     merchantName: themeName,
@@ -133,6 +136,7 @@ export default async function RootLayout({
           <AppCartInitializer merchantName={merchantName} />
           <CartRecoveryLink />
           <EditorHostMount />
+          <PreviewExitBar />
           {/* endpoint enables the read-through store: a handle not preloaded at
               SSR (e.g. the visual editor switching menuHandle at runtime) is
               fetched on demand via the same-origin /api/nav-menu route. Inert for

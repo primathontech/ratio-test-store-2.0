@@ -1,17 +1,59 @@
-import type { ITemplateLoader } from "@shopkit/builder";
+import type { ITemplateLoader, PageConfig } from "@shopkit/builder";
+import { SECTION_TYPES } from "@shopkit/builder";
+import { cookies, draftMode } from "next/headers";
 import { merchantTemplateLoader } from "./loaders/template-loader";
 import { TemplateResolver } from "./loaders/template-resolver";
-// Shareable-preview imports disabled (rolled back 2026-06-23) — these were only
-// used by the commented-out draft-mode branch in loadTemplate below:
-// import { cookies, draftMode } from "next/headers";
-// import { getResolvedPreview } from "./preview-link/fetch-preview";
-// import {
-//   PREVIEW_ID_COOKIE,
-//   PREVIEW_VERSION_COOKIE,
-// } from "./preview-link/cookies";
-// import { getTemplateId } from "./template-id";
+import { getResolvedPreview } from "./preview-link/fetch-preview";
+import {
+  PREVIEW_ID_COOKIE,
+  PREVIEW_VERSION_COOKIE,
+} from "./preview-link/cookies";
+import { getTemplateId } from "./template-id";
 
 const resolver = new TemplateResolver(merchantTemplateLoader);
+
+/**
+ * Drop chrome (announcement bar / header / footer / bottom bar) sections from a
+ * page-body pageConfig.
+ *
+ * The root layout renders chrome separately via `renderChrome()`. Page bodies
+ * MUST NOT contain chrome sections — otherwise the storefront double-renders
+ * chrome (once from the layout, once inline). This filter defends against two
+ * known sources of inline chrome in preview mode:
+ *
+ *  1. **DB-live drift**: the editor backend's preview resolver falls back to
+ *     the DB-saved live template when no draft exists for the route. If that
+ *     DB row was seeded before the chrome migration (page templates were
+ *     chrome-stripped on disk but DB rows weren't re-uploaded), it still
+ *     carries inline chrome.
+ *  2. **Stale drafts**: a body preview saved by an older editor build (before
+ *     chrome was split into its own template) may still contain chrome.
+ *
+ * Caller is responsible for NOT applying this to chrome templates themselves
+ * (templateName === "header"/"footer") — those are SUPPOSED to contain these
+ * sections, that's their entire purpose.
+ */
+function stripChromeSections(pageConfig: PageConfig): PageConfig {
+  const sections = pageConfig.sections;
+  if (!sections?.length) {
+    return pageConfig;
+  }
+  const filtered = sections.filter(
+    (s) =>
+      s.type !== SECTION_TYPES.HEADER_SECTION &&
+      s.type !== SECTION_TYPES.FOOTER_SECTION
+  );
+  if (filtered.length === sections.length) {
+    return pageConfig;
+  }
+  return { ...pageConfig, sections: filtered };
+}
+
+/** Chrome templates by templateName. Their bodies legitimately contain the
+ * chrome sections — `stripChromeSections` must not be applied to them. */
+function isChromeTemplate(templateName: string): boolean {
+  return templateName === "header" || templateName === "footer";
+}
 
 /**
  * Editor-aware template loader.
@@ -22,48 +64,61 @@ const resolver = new TemplateResolver(merchantTemplateLoader);
  * Used as a drop-in replacement for the core templateLoader in builder.ts
  * when the editor integration is active.
  *
- * SHAREABLE PREVIEW: the draft-mode snapshot resolution that used to live here
- * is disabled (rolled back 2026-06-23) — see the commented-out branch in
- * loadTemplate. The loader now always resolves the live template, so normal
- * storefront traffic and static generation are unaffected.
+ * SHAREABLE PREVIEW (single chokepoint): every route's renderPage/renderChrome
+ * funnels through loadTemplate, so this is the one place that resolves preview
+ * snapshots. Entry is via Next.js DRAFT MODE: the `/api/editor-preview/enter`
+ * handler (reached through the middleware redirect) enables draft mode and
+ * stores the previewId in a cookie. Draft mode is the key design choice — it
+ * keeps every route STATIC for normal traffic and at build time (draftMode()
+ * reports disabled, so we never touch cookies() and never bail static
+ * generation), and bypasses the static cache ONLY for requests that carry the
+ * draft cookie. That request renders dynamically and we read the previewId
+ * cookie here to fetch the editor's saved snapshot.
  *
  * @internal
  */
 export const editorTemplateLoader: ITemplateLoader = {
   loadTemplate: async (merchantName, templateName, variant) => {
-    // Shareable-preview draft resolution DISABLED (rolled back 2026-06-23).
-    // Commented out (not deleted) for an easy restore. Draft mode is never
-    // enabled now (the /api/editor-preview/enter route and the middleware
-    // routing are disabled), so this branch was already inert; dropping the
-    // draftMode() call keeps loadTemplate purely on the live-resolve path below.
-    //
-    // const { isEnabled } = await draftMode();
-    // if (isEnabled) {
-    //   const jar = await cookies();
-    //   const previewId = jar.get(PREVIEW_ID_COOKIE)?.value;
-    //   const previewVersion = jar.get(PREVIEW_VERSION_COOKIE)?.value ?? null;
-    //   if (previewId) {
-    //     // In preview mode we always ask the backend to resolve this route. The
-    //     // backend owns the matching/mapping: it returns the draft for the page
-    //     // being edited and the live config for every other page (so a product
-    //     // preview never leaks onto the home route). We just render the result.
-    //     // null = transport/backend failure → fall through to local live resolve.
-    //     const templateId = getTemplateId({
-    //       merchantName,
-    //       templateName,
-    //       variant: variant || "default",
-    //     });
-    //     const resolved = await getResolvedPreview(
-    //       previewId,
-    //       previewVersion,
-    //       merchantName,
-    //       templateId
-    //     );
-    //     if (resolved) {
-    //       return resolved;
-    //     }
-    //   }
-    // }
+    // Draft-mode gate. `draftMode()` is static-generation safe: it returns
+    // disabled at build / on normal traffic without opting the route into
+    // dynamic rendering, so cookies() below is only ever reached on an actual
+    // preview request (which draft mode has already made dynamic).
+    const { isEnabled } = await draftMode();
+    if (isEnabled) {
+      const jar = await cookies();
+      const previewId = jar.get(PREVIEW_ID_COOKIE)?.value;
+      const previewVersion = jar.get(PREVIEW_VERSION_COOKIE)?.value ?? null;
+      if (previewId) {
+        // In preview mode we always ask the backend to resolve this route. The
+        // backend owns the matching/mapping: it returns the draft for the page
+        // being edited and the live config for every other page (so a product
+        // preview never leaks onto the home route). We just render the result.
+        // null = transport/backend failure → fall through to local live resolve.
+        const templateId = getTemplateId({
+          merchantName,
+          templateName,
+          variant: variant || "default",
+        });
+        const resolved = await getResolvedPreview(
+          previewId,
+          previewVersion,
+          merchantName,
+          templateId
+        );
+        if (resolved) {
+          // Layout renders chrome via renderChrome(); the page body must not
+          // carry chrome sections or the storefront double-renders them. The
+          // backend's preview resolver may return DB-live (when no draft for
+          // this route under the previewId), and that DB row can still carry
+          // inline chrome if the on-disk chrome-strip migration didn't
+          // re-upload page templates. Chrome templates are intentionally
+          // pass-through — their bodies ARE the chrome.
+          return isChromeTemplate(templateName)
+            ? resolved
+            : stripChromeSections(resolved);
+        }
+      }
+    }
 
     return resolver.resolveTemplate({
       merchantName,
