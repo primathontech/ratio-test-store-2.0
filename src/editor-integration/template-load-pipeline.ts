@@ -52,8 +52,7 @@ function stripChromeSections(pageConfig: PageConfig): PageConfig {
   const filtered = sections.filter(
     (s) =>
       s.type !== SECTION_TYPES.HEADER_SECTION &&
-      s.type !== SECTION_TYPES.FOOTER_SECTION &&
-      !CHROME_SECTION_IDS.has(s.id)
+      s.type !== SECTION_TYPES.FOOTER_SECTION
   );
   if (filtered.length === sections.length) {
     return pageConfig;
