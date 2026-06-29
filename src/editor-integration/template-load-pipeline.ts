@@ -12,17 +12,6 @@ import { getTemplateId } from "./template-id";
 
 const resolver = new TemplateResolver(merchantTemplateLoader);
 
-// Well-known chrome section ids used across themes. announcement-bar and
-// bottom-bar live on CONTENT_SECTION (no distinctive `section.type`), so we
-// also pin them by id. HEADER_SECTION / FOOTER_SECTION sections are caught
-// by `section.type` regardless of id.
-const CHROME_SECTION_IDS = new Set([
-  "announcement-bar-section",
-  "header-section",
-  "footer-section",
-  "bottom-bar-section",
-]);
-
 /**
  * Drop chrome (announcement bar / header / footer / bottom bar) sections from a
  * page-body pageConfig.
