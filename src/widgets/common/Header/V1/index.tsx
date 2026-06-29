@@ -235,7 +235,11 @@ function DesktopItem({
                 {leaf.title}
               </a>
             ) : (
-              <Link key={leaf.id} href={leaf.href} className="sf-dropdown__link">
+              <Link
+                key={leaf.id}
+                href={leaf.href}
+                className="sf-dropdown__link"
+              >
                 {leaf.title}
               </Link>
             )
