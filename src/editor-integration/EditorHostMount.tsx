@@ -61,6 +61,7 @@ export function EditorHostMount(): JSX.Element {
         availableSectionsRegistry.availableSections as AvailableSectionRegistry
       }
       fetchDataSourceOptions={fetchDataSourceOptions}
+      previewCodeSync={true}
     />
   );
 }
