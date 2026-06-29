@@ -1,5 +1,14 @@
 # storefront-starter-app
 
+## 0.2.10
+
+### Patch Changes
+
+- Updated dependencies
+- Updated dependencies [29bfef6]
+  - @shopkit/editor-bridge@0.7.0
+  - @shopkit/navigation@1.2.0
+
 ## 0.2.9
 
 ### Patch Changes
