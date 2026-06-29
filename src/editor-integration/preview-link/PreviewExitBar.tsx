@@ -52,7 +52,7 @@ export function PreviewExitBar() {
     <div
       role="region"
       aria-label="Preview mode"
-      className="fixed bottom-4 left-1/2 z-[2147483646] flex -translate-x-1/2 items-center gap-3 rounded-full bg-[#111827]/95 px-3.5 py-2 font-[system-ui] text-[13px] font-medium leading-none text-white shadow-[0_6px_24px_rgba(0,0,0,0.28)]"
+      className="fixed bottom-4 left-1/2 z-[2147483647] flex -translate-x-1/2 items-center gap-3 rounded-full border border-[#374151] bg-[#111827] px-3.5 py-2 font-[system-ui] text-[13px] font-medium leading-none text-white shadow-lg"
     >
       <span
         aria-hidden
@@ -62,7 +62,7 @@ export function PreviewExitBar() {
       <button
         type="button"
         onClick={exit}
-        className="cursor-pointer appearance-none rounded-full border border-white/35 bg-transparent px-3 py-[5px] text-xs font-semibold text-white"
+        className="cursor-pointer appearance-none rounded-full border border-[#111827] bg-white px-3 py-[5px] text-xs font-semibold text-[#111827]"
       >
         Exit preview
       </button>
