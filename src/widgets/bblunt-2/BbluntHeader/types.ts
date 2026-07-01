@@ -6,6 +6,9 @@ import { WidgetProps } from "@/widgets/types";
 export interface NavDropdownItem {
   label: string;
   href: string;
+  /** When true, render as an external link (opens a new tab). Maps from the
+   *  useNav leaf/column `isExternal` flag. */
+  isExternal?: boolean;
 }
 
 /**
@@ -22,6 +25,10 @@ export interface NavDropdownGroup {
 export interface NavItem {
   label: string;
   href: string;
+  /** When true, the top-level trigger/link is external (opens a new tab). Maps
+   *  from the useNav entry `isExternal` flag (kind "external", or a
+   *  dropdown/mega trigger with `isExternal`). */
+  isExternal?: boolean;
   dropdown?: NavDropdownGroup[];
 }
 

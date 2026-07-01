@@ -5,6 +5,9 @@ import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 export interface FooterLink {
   name: string;
   href: string;
+  /** When true, render as an external link (opens a new tab). Maps from the
+   *  useNav leaf/column `isExternal` flag. */
+  isExternal?: boolean;
 }
 
 export interface SocialLink {

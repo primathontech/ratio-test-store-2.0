@@ -69,7 +69,9 @@ export const MyAccountFooterSection: React.FC<MyAccountFooterSectionProps> = ({
           <li key={index} className="basis-1/2 flex-shrink-0">
             <Link
               href={link.href}
-              onClick={(e) => handleLinkClick(e, link.href)}
+              {...(link.isExternal
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : { onClick: (e) => handleLinkClick(e, link.href) })}
               className="text-sm max-w-[152px] text-[#E7E7E7] hover:text-loading-blue block font-normal cursor-pointer"
             >
               {link.name}

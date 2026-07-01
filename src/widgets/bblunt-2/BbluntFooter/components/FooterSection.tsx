@@ -54,6 +54,9 @@ export const FooterSection: React.FC<FooterSectionProps> = ({
           <li key={index} className="basis-1/2 flex-shrink-0">
             <Link
               href={link.href}
+              {...(link.isExternal
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
               className="text-sm max-w-[152px] text-[#E7E7E7] hover:text-loading-blue block font-normal leading-[22.4px]"
             >
               {link.name}

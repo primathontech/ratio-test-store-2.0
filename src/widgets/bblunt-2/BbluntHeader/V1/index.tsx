@@ -166,6 +166,9 @@ function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
               <li key={ii}>
                 <Link
                   href={item.href}
+                  {...(item.isExternal
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
                   className="text-sm leading-[16.8px] font-normal text-[#545454] no-underline transition-colors duration-200 hover:text-loading-blue"
                 >
                   {item.label}
@@ -179,126 +182,6 @@ function DesktopNavDropdown({ groups }: { groups: NavDropdownGroup[] }) {
   );
 }
 
-/* ──────────────────────── Search Input with Typing Animation ──── */
-
-function SearchInput({
-  focused,
-  onFocusChange,
-  value,
-  onChange,
-  onClick,
-  onSubmit,
-  inputRef: externalInputRef,
-  suggestions,
-}: {
-  focused: boolean;
-  onFocusChange: (v: boolean) => void;
-  value?: string;
-  onChange?: (v: string) => void;
-  onClick?: () => void;
-  onSubmit?: (query: string) => void;
-  inputRef?: React.MutableRefObject<HTMLInputElement | null>;
-  suggestions: string[];
-}) {
-  const [placeholder, setPlaceholder] = useState("");
-  const internalInputRef = useRef<HTMLInputElement | null>(null);
-  const inputRef = externalInputRef ?? internalInputRef;
-
-  useEffect(() => {
-    if (!suggestions.length) {
-      return;
-    }
-    let suggestionIdx = 0;
-    let charIdx = 0;
-    let isDeleting = false;
-    let timer: ReturnType<typeof setTimeout>;
-
-    const tick = () => {
-      const current = suggestions[suggestionIdx];
-
-      if (!isDeleting) {
-        charIdx++;
-        setPlaceholder(current.substring(0, charIdx));
-        if (charIdx >= current.length) {
-          // Pause at full text, then start deleting
-          timer = setTimeout(() => {
-            isDeleting = true;
-            tick();
-          }, 1500);
-          return;
-        }
-        timer = setTimeout(tick, 80);
-      } else {
-        charIdx--;
-        setPlaceholder(current.substring(0, charIdx));
-        if (charIdx <= 0) {
-          isDeleting = false;
-          suggestionIdx = (suggestionIdx + 1) % suggestions.length;
-          timer = setTimeout(tick, 300);
-          return;
-        }
-        timer = setTimeout(tick, 40);
-      }
-    };
-
-    timer = setTimeout(tick, 500);
-    return () => clearTimeout(timer);
-  }, [suggestions]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const trimmed = (value ?? "").trim();
-    if (!trimmed) {
-      return;
-    }
-    onSubmit?.(trimmed);
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="relative" role="search">
-      <input
-        ref={inputRef}
-        type="search"
-        placeholder={placeholder}
-        value={value ?? ""}
-        onChange={(e) => onChange?.(e.target.value)}
-        onClick={onClick}
-        className="w-[255px] h-[35px] min-h-[35px] rounded bg-transparent pl-[33px] pr-[60px] pt-2 pb-2 text-sm font-medium text-[#727272] placeholder:text-surface outline-none [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-ms-clear]:hidden"
-        style={{
-          border: "1px solid #dddddd",
-        }}
-        onFocus={() => {
-          onFocusChange(true);
-          onClick?.();
-        }}
-        onBlur={() => onFocusChange(false)}
-      />
-      {/* Search icon inside input */}
-      <button
-        type="submit"
-        aria-label="Search"
-        className="absolute left-[12px] top-1/2 -translate-y-1/2 cursor-pointer"
-      >
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          aria-hidden="true"
-        >
-          <path
-            d="M12.1012 12.2113L14.9997 15.0189M14.065 7.53199C14.065 11.15 11.1357 14.083 7.52225 14.083C3.90879 14.083 0.979492 11.15 0.979492 7.53199C0.979492 3.91395 3.90879 0.980957 7.52225 0.980957C11.1357 0.980957 14.065 3.91395 14.065 7.53199Z"
-            stroke="#000000"
-            strokeWidth="1.6"
-            strokeLinecap="round"
-          />
-        </svg>
-      </button>
-    </form>
-  );
-}
-
 /* ────────────── useNav → bblunt NavItem mapping ──────────────
  * The mega-menu data contract is the single `useNav(handle)` hook (see
  * MEGA-MENU-KT.md). The menu CONTENT is admin-managed; we map each render-ready
@@ -308,20 +191,27 @@ function SearchInput({
  * (mega "cards") and the panel hero are intentionally not rendered here.
  */
 function leafToDropdownItem(leaf: MegaMenuLeaf): NavDropdownItem {
-  return { label: leaf.title ?? "", href: leaf.href };
+  return {
+    label: leaf.title ?? "",
+    href: leaf.href,
+    isExternal: leaf.isExternal,
+  };
 }
 
 function navEntryToNavItem(entry: NavEntry): NavItem {
   switch (entry.kind) {
     case "link":
-    case "external":
-      // External links open in a new tab via the renderer (see desktop/mobile).
       return { label: entry.label, href: entry.href };
+
+    case "external":
+      // Renderers open items flagged external in a new tab (target="_blank").
+      return { label: entry.label, href: entry.href, isExternal: true };
 
     case "dropdown":
       return {
         label: entry.label,
         href: entry.href ?? "#",
+        isExternal: entry.isExternal,
         dropdown: entry.items.length
           ? [{ items: entry.items.map(leafToDropdownItem) }]
           : undefined,
@@ -342,7 +232,11 @@ function navEntryToNavItem(entry: NavEntry): NavItem {
             items: col.items.map(leafToDropdownItem),
           });
         } else if (col.href) {
-          flatLinks.push({ label: col.title ?? "", href: col.href });
+          flatLinks.push({
+            label: col.title ?? "",
+            href: col.href,
+            isExternal: col.isExternal,
+          });
         }
       }
       // Flat links first, so a link-only panel (e.g. "Product") is a clean list.
@@ -352,6 +246,7 @@ function navEntryToNavItem(entry: NavEntry): NavItem {
       return {
         label: entry.label,
         href: entry.href ?? "#",
+        isExternal: entry.isExternal,
         dropdown: groups.length ? groups : undefined,
       };
     }
@@ -362,8 +257,7 @@ function navEntryToNavItem(entry: NavEntry): NavItem {
 
 export const V1 = memo(function V1({ settings, className }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchFocused, setSearchFocused] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
+  const [, setSearchOpen] = useState(false);
   // Track page scroll so desktop header can apply backdrop-blur only after
   // the user has scrolled past the top. (Initial render: no blur.)
   const [isScrolled, setIsScrolled] = useState(false);
@@ -512,86 +406,15 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     // Focus is restored by the urlQuery-keyed useEffect once navigation lands.
   }, [debouncedSearchQuery, urlQuery, router]);
 
-  /* Fallback navigation built from flat editor-friendly settings keys.
-   * Used only when useNav() returns [] (no nav env / backend down / unknown
-   * handle), so the header is never blank. Each top-level nav has its own
-   * *_label, *_href, *_items so the editor can edit them individually. */
-  const navFromSettings = useMemo<NavItem[]>(() => {
-    const items: NavItem[] = [];
-
-    if (settings?.product_label) {
-      items.push({
-        label: settings.product_label,
-        href: settings.product_href ?? "",
-        dropdown: settings.product_items?.length
-          ? [{ items: settings.product_items }]
-          : undefined,
-      });
-    }
-
-    if (settings?.hair_care_label) {
-      const groups: NavDropdownGroup[] = [];
-      if (settings.hair_care_type_items?.length) {
-        groups.push({
-          heading: settings.hair_care_type_label,
-          items: settings.hair_care_type_items,
-        });
-      }
-      if (settings.hair_care_concern_items?.length) {
-        groups.push({
-          heading: settings.hair_care_concern_label,
-          items: settings.hair_care_concern_items,
-        });
-      }
-      items.push({
-        label: settings.hair_care_label,
-        href: settings.hair_care_href ?? "",
-        dropdown: groups.length ? groups : undefined,
-      });
-    }
-
-    if (settings?.hair_colour_label) {
-      items.push({
-        label: settings.hair_colour_label,
-        href: settings.hair_colour_href ?? "",
-        dropdown: settings.hair_colour_items?.length
-          ? [{ items: settings.hair_colour_items }]
-          : undefined,
-      });
-    }
-
-    if (settings?.hair_styling_label) {
-      items.push({
-        label: settings.hair_styling_label,
-        href: settings.hair_styling_href ?? "",
-        dropdown: settings.hair_styling_items?.length
-          ? [{ items: settings.hair_styling_items }]
-          : undefined,
-      });
-    }
-
-    if (settings?.salon_label) {
-      items.push({
-        label: settings.salon_label,
-        href: settings.salon_href ?? "",
-        dropdown: settings.salon_items?.length
-          ? [{ items: settings.salon_items }]
-          : undefined,
-      });
-    }
-
-    return items;
-  }, [settings]);
-
   /* Admin-managed navigation via the single useNav data contract (see
-   * MEGA-MENU-KT.md). When the menu is available it drives the header; otherwise
-   * we fall back to the settings-based menu above. */
+   * MEGA-MENU-KT.md) — the header is entirely menu-driven. When the menu is
+   * unavailable (no nav env / backend down / unknown handle) useNav returns [],
+   * so the nav simply renders no items; the rest of the header is unaffected. */
   const entries = useNav(settings?.menuHandle ?? "main-menu");
-  const navFromNav = useMemo<NavItem[]>(
+  const navigation = useMemo<NavItem[]>(
     () => entries.map(navEntryToNavItem),
     [entries]
   );
-  const navigation = entries.length > 0 ? navFromNav : navFromSettings;
 
   const logo = resolveImage(settings?.logoSrc, {
     src: "",
@@ -695,6 +518,9 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                   >
                     <Link
                       href={item.href}
+                      {...(item.isExternal
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
                       className="relative flex items-baseline gap-2 text-sm leading-[16.8px] font-bold text-black no-underline whitespace-nowrap after:content-[''] after:absolute after:bottom-[-4px] after:left-0 after:w-full after:h-px after:bg-black after:origin-right after:scale-x-0 after:transition-transform after:duration-300 hover:after:origin-left hover:after:scale-x-100"
                       data-testid={`desktop-navigation-link-${itemKey}`}
                     >
@@ -818,13 +644,20 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
           key: item.label.toLowerCase().replace(/\s+/g, "-"),
           label: item.label,
           href: item.href,
+          isExternal: item.isExternal,
           hasDropdown: !!item.dropdown,
           dropdownItems: item.dropdown?.flatMap<{
             key: string;
             label: string;
             href?: string;
+            isExternal?: boolean;
             isCategory?: boolean;
-            items?: { key: string; label: string; href: string }[];
+            items?: {
+              key: string;
+              label: string;
+              href: string;
+              isExternal?: boolean;
+            }[];
           }>((group) => {
             if (group.heading) {
               return [
@@ -836,6 +669,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
                     key: sub.label.toLowerCase().replace(/\s+/g, "-"),
                     label: sub.label,
                     href: sub.href,
+                    isExternal: sub.isExternal,
                   })),
                 },
               ];
@@ -844,6 +678,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
               key: sub.label.toLowerCase().replace(/\s+/g, "-"),
               label: sub.label,
               href: sub.href,
+              isExternal: sub.isExternal,
             }));
           }),
         }))}

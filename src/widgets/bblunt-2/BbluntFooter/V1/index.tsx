@@ -30,21 +30,35 @@ import { resolveImage } from "@/widgets/utils/resolveImageSrc";
 function navEntriesToFooterLinks(entries: NavEntry[]): FooterLink[] {
   const links: FooterLink[] = [];
   for (const e of entries) {
-    if (e.kind === "link" || e.kind === "external") {
+    if (e.kind === "link") {
       links.push({ name: e.label, href: e.href });
+    } else if (e.kind === "external") {
+      links.push({ name: e.label, href: e.href, isExternal: true });
     } else if (e.kind === "dropdown") {
       for (const leaf of e.items) {
-        links.push({ name: leaf.title ?? "", href: leaf.href });
+        links.push({
+          name: leaf.title ?? "",
+          href: leaf.href,
+          isExternal: leaf.isExternal,
+        });
       }
     } else if (e.kind === "mega") {
       for (const col of e.panel.columns) {
         if (col.items.length > 0) {
           for (const leaf of col.items) {
-            links.push({ name: leaf.title ?? "", href: leaf.href });
+            links.push({
+              name: leaf.title ?? "",
+              href: leaf.href,
+              isExternal: leaf.isExternal,
+            });
           }
         } else if (col.href) {
           // A column that is itself a link with no leaves.
-          links.push({ name: col.title ?? "", href: col.href });
+          links.push({
+            name: col.title ?? "",
+            href: col.href,
+            isExternal: col.isExternal,
+          });
         }
       }
     }
