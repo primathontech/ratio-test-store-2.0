@@ -1,54 +1,39 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import React, { useState } from "react";
-import { useAuth } from "@shopkit/core/context";
-import { handleKwikpassLogin } from "@/integrations/kwikpass-custom";
 import { FooterLink } from "../types";
 import { AccordionToggleIcon } from "./AccordionToggleIcon";
 
-interface MyAccountFooterSectionProps {
+interface FooterSectionProps {
   title: string;
   links: FooterLink[];
   className?: string;
 }
 
-export const MyAccountFooterSection: React.FC<MyAccountFooterSectionProps> = ({
+export const FooterSection: React.FC<FooterSectionProps> = ({
   title,
   links,
   className,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const router = useRouter();
-  const { accessToken } = useAuth();
-  const isLoggedIn = !!accessToken;
 
   if (!title || links.length === 0) {
     return null;
   }
 
-  const handleLinkClick = (e: React.MouseEvent, href: string) => {
-    if (!href) {
-      return;
-    }
-    e.preventDefault();
-    if (isLoggedIn) {
-      router.push(href);
-      return;
-    }
-    handleKwikpassLogin();
-  };
-
   const toggleAccordion = () => {
     setIsOpen(!isOpen);
   };
 
+  const aboutUsPadding =
+    title === "About Us" ? "xl:pl-5 max-w-auto md:max-w-[169px]" : "";
+
   return (
-    <div className={className}>
+    <div className={`${aboutUsPadding} ${className ?? ""}`}>
       <button
         onClick={toggleAccordion}
-        className="w-full text-left flex justify-between items-center md:pointer-events-none md:cursor-default pt-6 md:pt-0 pb-6 md:pb-[30px]"
+        className="w-full text-left flex justify-between items-center md:pointer-events-none md:cursor-default pt-6 md:pt-0 pb-6 md:pb-[30px] min-w-[169px]"
         aria-expanded={isOpen}
         aria-controls={`footer-section-${title.replace(/\s+/g, "-").toLowerCase()}`}
       >
@@ -69,8 +54,10 @@ export const MyAccountFooterSection: React.FC<MyAccountFooterSectionProps> = ({
           <li key={index} className="basis-1/2 flex-shrink-0">
             <Link
               href={link.href}
-              onClick={(e) => handleLinkClick(e, link.href)}
-              className="text-sm max-w-[152px] text-[#E7E7E7] hover:text-loading-blue block font-normal cursor-pointer"
+              {...(link.isExternal
+                ? { target: "_blank", rel: "noopener noreferrer" }
+                : {})}
+              className="text-sm max-w-[152px] text-[#E7E7E7] hover:text-loading-blue block font-normal leading-[22.4px]"
             >
               {link.name}
             </Link>

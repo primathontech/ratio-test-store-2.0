@@ -12,6 +12,7 @@ import { WIDGET_TYPES } from "@/widgets/.generated/types";
  *   number      – numeric input (supports min/max/step/unit)
  *   boolean     – toggle switch
  *   select      – dropdown with options[]
+ *   menu-select – dropdown of the merchant's live nav menus (editor-fetched)
  *   spacing     – responsive padding/margin control
  *   image       – image picker
  *   richtext    – rich text editor
@@ -21,7 +22,7 @@ import { WIDGET_TYPES } from "@/widgets/.generated/types";
  *   faq         – FAQ question/answer pairs
  *
  * Structure:
- *   commonWidgetSchemas  – registered for every merchant (CustomHtml, etc.)
+ *   commonWidgetSchemas  – registered for every merchant (RichText, etc.)
  *   Merchant-specific    – uncomment and extend per widget when forking
  */
 
@@ -33,12 +34,11 @@ const commonWidgetSchemas = {
   [WIDGET_TYPES.CustomHtml]: {
     type: WIDGET_TYPES.CustomHtml,
     name: "Custom HTML",
-    description:
-      "Rich-text page (heading + long-form body) for policy pages and similar",
+    description: "Raw HTML snippet with support for <style> and <script> tags",
     settingsSchema: {
-      body: {
-        type: "richtext" as const,
-        label: "Body (rich text)",
+      html: {
+        type: "html" as const,
+        label: "HTML (supports <style> and <script>)",
         default: "",
       },
     },
@@ -50,6 +50,172 @@ const commonWidgetSchemas = {
 // =============================================================================
 
 const merchantWidgetSchemas = {
+  // ── bblunt-2 chrome (forked from common Header/Footer) ──
+  // Navigation is admin-managed via useNav, so the editable settings are the
+  // menu handle(s) + branding/search/app fields. The old per-item nav label/
+  // link settings are gone (the menu now drives the nav).
+  [WIDGET_TYPES.BbluntHeader]: {
+    type: WIDGET_TYPES.BbluntHeader,
+    name: "Header",
+    description:
+      "Site header with logo, admin-managed navigation (useNav), search, and cart",
+    settingsSchema: {
+      menuHandle: {
+        type: "menu-select" as const,
+        label: "Navigation Menu",
+        default: "main-menu",
+      },
+      logoSrc: {
+        type: "image" as const,
+        label: "Logo Image",
+        default: { src: "", alt: "" },
+      },
+      searchPlaceholder: {
+        type: "text" as const,
+        label: "Search Placeholder",
+        default: "",
+      },
+      searchSuggestions: {
+        type: "array" as const,
+        label: "Search Suggestions (rotating animation)",
+        default: [],
+      },
+      backgroundColor: {
+        type: "text" as const,
+        label: "Background Color (hex)",
+        default: "",
+      },
+      getApp_title: {
+        type: "text" as const,
+        label: "Get App: Title",
+        default: "",
+      },
+      getApp_description: {
+        type: "text" as const,
+        label: "Get App: Description",
+        default: "",
+      },
+      getApp_button_text: {
+        type: "text" as const,
+        label: "Get App: Button Text",
+        default: "",
+      },
+      getApp_logo_url: {
+        type: "image" as const,
+        label: "Get App: Logo Image",
+        default: { src: "", alt: "" },
+      },
+      getApp_logo_alt: {
+        type: "text" as const,
+        label: "Get App: Logo Alt Text",
+        default: "",
+      },
+      getApp_app_url: {
+        type: "text" as const,
+        label: "Get App: App URL",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.BbluntFooter]: {
+    type: WIDGET_TYPES.BbluntFooter,
+    name: "Footer",
+    description:
+      "Site footer. Each link column is admin-managed via its own nav menu (useNav); titles + links come from the menu.",
+    settingsSchema: {
+      // Per-section nav menus — section title + links come from these (useNav).
+      aboutMenuHandle: {
+        type: "menu-select" as const,
+        label: "About Section Menu",
+        default: "about-us",
+      },
+      usefulLinksMenuHandle: {
+        type: "menu-select" as const,
+        label: "Useful Links Menu",
+        default: "useful-links",
+      },
+      ourSalonsMenuHandle: {
+        type: "menu-select" as const,
+        label: "Our Salons Menu",
+        default: "our-salons",
+      },
+      categoriesMenuHandle: {
+        type: "menu-select" as const,
+        label: "Categories Menu",
+        default: "categories",
+      },
+      myAccountMenuHandle: {
+        type: "menu-select" as const,
+        label: "My Account Menu",
+        default: "my-account",
+      },
+      // Branding / app / misc (non-nav)
+      mobileFooterTagline: {
+        type: "richtext" as const,
+        label: "Mobile Footer Tagline (rich text)",
+        default: "",
+      },
+      logoUrl: {
+        type: "image" as const,
+        label: "Logo Image",
+        default: { src: "", alt: "" },
+      },
+      appDownloadText: {
+        type: "text" as const,
+        label: "App Download Text",
+        default: "",
+      },
+      googlePlayUrl: {
+        type: "text" as const,
+        label: "Google Play URL",
+        default: "",
+      },
+      appStoreUrl: {
+        type: "text" as const,
+        label: "App Store URL",
+        default: "",
+      },
+      googlePlayImage: {
+        type: "image" as const,
+        label: "Google Play Badge Image",
+        default: { src: "", alt: "" },
+      },
+      appStoreImage: {
+        type: "image" as const,
+        label: "App Store Badge Image",
+        default: { src: "", alt: "" },
+      },
+      serviceSectionsIcons: {
+        type: "objectArray" as const,
+        label: "Service Icons (Free Shipping, etc.)",
+        fields: ["name", "image:image", "alt"],
+        default: [],
+      },
+      socialLinks: {
+        type: "objectArray" as const,
+        label: "Social Links",
+        fields: ["name", "href", "icon"],
+        default: [],
+      },
+      paymentMethods: {
+        type: "objectArray" as const,
+        label: "Payment Methods",
+        fields: ["name", "icon", "image"],
+        fieldTypes: { image: "image" },
+        default: [],
+      },
+      paymentProtectionText: {
+        type: "text" as const,
+        label: "Payment Protection Text",
+        default: "",
+      },
+      copyrightText: {
+        type: "text" as const,
+        label: "Copyright Text",
+        default: "",
+      },
+    },
+  },
   [WIDGET_TYPES.AnnouncementBar]: {
     type: WIDGET_TYPES.AnnouncementBar,
     name: "Announcement Bar",
@@ -726,6 +892,11 @@ const merchantWidgetSchemas = {
     description:
       "Site footer with link sections, social icons, payment methods, and app download",
     settingsSchema: {
+      menuHandle: {
+        type: "menu-select" as const,
+        label: "Menu",
+        default: "footer",
+      },
       mobileFooterTagline: {
         type: "richtext" as const,
         label: "Mobile Footer Tagline (rich text)",
@@ -872,6 +1043,11 @@ const merchantWidgetSchemas = {
     name: "Header",
     description: "Site header with logo, navigation, search, and cart",
     settingsSchema: {
+      menuHandle: {
+        type: "menu-select" as const,
+        label: "Menu",
+        default: "main-menu",
+      },
       logoSrc: {
         type: "image" as const,
         label: "Logo Image",
@@ -1136,6 +1312,20 @@ const merchantWidgetSchemas = {
       },
     },
   },
+  [WIDGET_TYPES.RichText]: {
+    type: WIDGET_TYPES.RichText,
+    name: "Rich Text",
+    description:
+      "Rich-text page (heading + long-form body) for policy pages and similar",
+    settingsSchema: {
+      body: {
+        type: "richtext" as const,
+        label: "Body (rich text)",
+        default: "",
+      },
+    },
+  },
+
   // [WIDGET_TYPES.Footer]: {
   //   type: WIDGET_TYPES.Footer,
   //   name: "Footer",

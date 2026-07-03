@@ -9,6 +9,7 @@ interface NavigationItem {
   key?: string;
   label: string;
   href?: string;
+  isExternal?: boolean;
   hasDropdown?: boolean;
   dropdownItems?: NavigationItem[];
   isCategory?: boolean;
@@ -80,6 +81,9 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
       ) : (
         <Link
           href={item.href as string}
+          {...(item.isExternal
+            ? { target: "_blank", rel: "noopener noreferrer" }
+            : {})}
           onClick={onClose}
           className="block py-2 my-1 px-4 text-sm"
           data-testid={`mobile-navigation-item-link-${item.key || item.label}`}
@@ -111,6 +115,9 @@ export const MobileNavigationItem: React.FC<MobileNavigationItemProps> = ({
                   <Link
                     key={subItem.key || index}
                     href={subItem.href || "#"}
+                    {...(subItem.isExternal
+                      ? { target: "_blank", rel: "noopener noreferrer" }
+                      : {})}
                     onClick={onClose}
                     className="block py-1 my-1 px-4 no-underline text-sm"
                     data-testid={`mobile-navigation-item-sublink-${subItem.key || index}`}
