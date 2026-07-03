@@ -74,6 +74,57 @@ export interface CheckoutConfig {
   eventHandlers?: CheckoutEventHandlers;
 }
 
+interface GokwikOrderLineItem {
+  title?: string;
+  name?: string;
+  quantity?: number;
+  price?: number | string;
+  sku?: string;
+  product_id?: string | number;
+  variant_name?: string;
+  variant_title?: string;
+  image?: string;
+  image_url?: string;
+}
+
+interface GokwikOrderAddress {
+  first_name?: string;
+  last_name?: string;
+  address?: string;
+  address1?: string;
+  address2?: string;
+  city?: string;
+  province?: string;
+  state?: string;
+  country?: string;
+  country_code?: string;
+  zip?: string;
+  pincode?: string;
+  phone?: string;
+}
+
+interface GokwikOrder {
+  merchant_order_id?: string;
+  order_name?: string;
+  gokwik_order_id?: string;
+  customer_id?: string;
+  customer_name?: string;
+  email?: string;
+  phone?: string;
+  total?: number | string;
+  total_price?: number | string;
+  currency?: string;
+  status?: string;
+  payment_mode?: string;
+  payment_method?: string;
+  payment_status?: string;
+  payment_at?: string;
+  thankyou_redirect_url?: string;
+  line_items?: GokwikOrderLineItem[];
+  shipping_address?: GokwikOrderAddress;
+  billing_address?: GokwikOrderAddress;
+}
+
 export class CustomCheckoutService {
   private static eventListenersAttached = false;
   private static currentEventHandlers: CheckoutEventHandlers = {};
@@ -140,6 +191,205 @@ export class CustomCheckoutService {
     } catch (error) {
       console.error("Failed to send GoKwik tracking event:", error);
       // Could add retry logic or fallback tracking here
+    }
+  }
+
+  /**
+   * Map the GoKwik COD/prepaid signals onto the KwikChat payment_status enum.
+   * COD orders trigger the COD confirmation flow ("pending"); successful
+   * prepaid payments map to "paid". Only paid/pending/authorized/refunded are
+   * accepted by the ingestion API.
+   */
+  private static mapKwikchatPaymentStatus(
+    order: GokwikOrder
+  ): "paid" | "pending" | "authorized" | "refunded" {
+    const mode = String(
+      order?.payment_mode || order?.payment_method || ""
+    ).toLowerCase();
+    if (mode === "cod") {
+      return "pending";
+    }
+    if (
+      String(order?.payment_status || "")
+        .toLowerCase()
+        .includes("refund")
+    ) {
+      return "refunded";
+    }
+    return "paid";
+  }
+
+  /**
+   * address1/city/province/country/zip are all required when an address object
+   * is sent, so an address missing any of them is dropped rather than risking a
+   * 400 from the ingestion API. phone is only valid on the shipping address.
+   */
+  private static mapKwikchatAddress(
+    addr: GokwikOrderAddress | undefined,
+    includePhone: boolean
+  ): Record<string, string> | undefined {
+    if (!addr) {
+      return undefined;
+    }
+    const address1 = String(addr.address1 || addr.address || "");
+    const city = String(addr.city || "");
+    const province = String(addr.province || addr.state || "");
+    const country = String(addr.country || "");
+    const zip = String(addr.zip || addr.pincode || "");
+    if (!address1 || !city || !province || !country || !zip) {
+      return undefined;
+    }
+    const mapped: Record<string, string> = {
+      address1,
+      city,
+      province,
+      country,
+      zip,
+    };
+    if (addr.address2) {
+      mapped.address2 = String(addr.address2);
+    }
+    if (addr.country_code) {
+      mapped.country_code = String(addr.country_code);
+    }
+    if (includePhone && addr.phone) {
+      mapped.phone = String(addr.phone);
+    }
+    return mapped;
+  }
+
+  /**
+   * Reshape a GoKwik order into the KwikChat Order Ingestion payload.
+   * Returns null when the order is missing fields the API requires
+   * (order_id, customer_id, at least one item, and an email or phone).
+   */
+  private static buildKwikchatPayload(
+    order: GokwikOrder
+  ): Record<string, unknown> | null {
+    const orderId = String(
+      order?.merchant_order_id ||
+        order?.order_name ||
+        order?.gokwik_order_id ||
+        ""
+    );
+    const customerId = String(order?.customer_id || "");
+    const email = order?.email ? String(order.email) : "";
+    const phone = order?.phone ? String(order.phone) : "";
+
+    const lineItems: GokwikOrderLineItem[] = Array.isArray(order?.line_items)
+      ? order.line_items
+      : [];
+    const items = lineItems.map((li) => {
+      const item: Record<string, unknown> = {
+        name: String(li?.title || li?.name || "Product"),
+        quantity: Number(li?.quantity) || 1,
+        price: Number(li?.price) || 0,
+      };
+      if (li?.sku) {
+        item.sku = String(li.sku);
+      }
+      if (li?.product_id) {
+        item.product_id = String(li.product_id);
+      }
+      if (li?.variant_name || li?.variant_title) {
+        item.variant_name = String(li.variant_name || li.variant_title);
+      }
+      if (li?.image || li?.image_url) {
+        item.image = String(li.image || li.image_url);
+      }
+      return item;
+    });
+
+    if (!orderId || !customerId || items.length === 0 || (!email && !phone)) {
+      return null;
+    }
+
+    const shippingAddress = order?.shipping_address;
+    const billingAddress = order?.billing_address || shippingAddress;
+    const nameSource = shippingAddress || billingAddress || {};
+    const customerName =
+      String(order?.customer_name || "") ||
+      `${nameSource.first_name || ""} ${nameSource.last_name || ""}`.trim();
+
+    const payload: Record<string, unknown> = {
+      order_id: orderId,
+      customer_id: customerId,
+      payment_status: this.mapKwikchatPaymentStatus(order),
+      total_amount: Number(order?.total ?? order?.total_price) || 0,
+      currency: String(order?.currency || "INR"),
+      items,
+      order_status:
+        String(order?.status || "").toLowerCase() === "cancelled"
+          ? "cancelled"
+          : "created",
+    };
+
+    if (email) {
+      payload.email = email;
+    }
+    if (phone) {
+      payload.phone = phone;
+    }
+    if (customerName) {
+      payload.customer_name = customerName;
+    }
+    if (order?.payment_at) {
+      payload.order_date = String(order.payment_at);
+    }
+    if (order?.thankyou_redirect_url) {
+      payload.order_status_url = String(order.thankyou_redirect_url);
+    }
+
+    const shipping = this.mapKwikchatAddress(shippingAddress, true);
+    if (shipping) {
+      payload.shipping_address = shipping;
+    }
+    const billing = this.mapKwikchatAddress(billingAddress, false);
+    if (billing) {
+      payload.billing_address = billing;
+    }
+
+    return payload;
+  }
+
+  /**
+   * Send a completed order to the KwikChat Order Ingestion API to trigger
+   * order-based automations (COD/prepaid confirmation, fulfilment updates).
+   *
+   * The GoKwik order is reshaped into the ingestion format and posted directly
+   * to the ingestion endpoint. Best-effort: failures go to Sentry, never block
+   * checkout.
+   */
+  private static async sendOrderToKwikchat(order: GokwikOrder): Promise<void> {
+    const payload = this.buildKwikchatPayload(order);
+    if (!payload) {
+      return;
+    }
+
+    const baseUrl = process.env.NEXT_PUBLIC_KWIK_ENGAGE_ORDER_INGESTION_URL;
+    const token = process.env.NEXT_PUBLIC_KWIK_ENGAGE_ORDER_INGESTION_TOKEN;
+    const source = process.env.NEXT_PUBLIC_MERCHANT_NAME || "";
+    if (!baseUrl || !token) {
+      return;
+    }
+
+    try {
+      await fetch(`${baseUrl}/v1/custom/orders`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+          provider: "external",
+          source: source,
+        },
+        body: JSON.stringify(payload),
+        // keepalive so the request survives the post-checkout navigation
+        keepalive: true,
+      });
+    } catch (error) {
+      console.error(error, {
+        tags: { flow: "checkout", operation: "sendOrderToKwikchat" },
+      });
     }
   }
 
@@ -287,6 +537,9 @@ export class CustomCheckoutService {
           this.triggerTrackierTrackConv(order);
         }
 
+        // Send order confirmation to kwikchat
+        this.sendOrderToKwikchat(order);
+
         // Trigger checkout complete event
         this.triggeredCheckoutCompleteEvent(order);
 
@@ -353,6 +606,9 @@ export class CustomCheckoutService {
           if (typeof window !== "undefined" && window.TrackierWebSDK) {
             this.triggerTrackierTrackConv(order);
           }
+
+          // Send order confirmation to kwikchat
+          this.sendOrderToKwikchat(order);
 
           // Trigger checkout complete event
           this.triggeredCheckoutCompleteEvent(order);

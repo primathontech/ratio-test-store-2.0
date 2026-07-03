@@ -15,6 +15,28 @@
   background: #0089dd !important;
 }
 
+/*
+ * Sticky-header fix.
+ *
+ * @shopkit/builder renders each pass — header chrome, page body, footer chrome —
+ * in its own structural `<div class="page-container">`, and those three end up as
+ * SIBLINGS under <body>. That makes the header's containing block only as tall as
+ * the header itself (~header + announcement bar), so `position: sticky` on the
+ * <header> has essentially no scroll range and unsticks the moment you scroll past
+ * it — the header appears non-sticky on both mobile and desktop.
+ *
+ * `.page-container` carries no styles of its own (verified: no CSS targets it, no JS
+ * measures it), so removing it from the box tree with `display: contents` is
+ * visually inert. Its children (the header, and the page sections) then participate
+ * in <body>'s layout directly, so the sticky header's containing block becomes
+ * <body> — the scroll container — and it pins correctly across the whole page.
+ *
+ * App-side fix only; no @shopkit/* change.
+ */
+.page-container {
+  display: contents;
+}
+
 @layer base {
   /* Base styles that use CSS variables from theme */
   body {

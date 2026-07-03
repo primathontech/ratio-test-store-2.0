@@ -1,0 +1,101 @@
+/* ============================================================================
+   Footer V1 — default reference design (clean, Shopify-style, responsive).
+   Token-driven: override the --sf-foot-* variables to re-theme. Markup + useNav
+   wiring in index.tsx is what you keep.
+   ============================================================================ */
+
+.sf-footer {
+  /* ── Semantic aliases → platform theme tokens (from theme.json via @shopkit/core).
+     The footer INVERTS the page: brand `primary` is its surface, `secondary` its
+     text. primary/secondary are the theme's guaranteed contrasting pair, so the
+     footer can never go invisible — keying the background off a single token a
+     theme may set to the page colour (e.g. secondary = #fff) is what made the
+     footer disappear. muted + border derive from the foreground via color-mix so
+     they adapt to either polarity; literal first-declarations are the fallback
+     for browsers without color-mix. ── */
+  --sf-foot-bg: var(--color-primary, #18181b);
+  --sf-foot-fg: var(--color-secondary, #fafafa);
+  --sf-foot-muted: #a1a1aa;
+  --sf-foot-muted: color-mix(in srgb, var(--sf-foot-fg) 68%, transparent);
+  --sf-foot-border: rgba(127, 127, 127, 0.28);
+  --sf-foot-border: color-mix(in srgb, var(--sf-foot-fg) 16%, transparent);
+  --sf-foot-max: 1240px;
+  --sf-foot-font: var(
+    --font-body,
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif
+  );
+
+  background: var(--sf-foot-bg);
+  color: var(--sf-foot-muted);
+  font-family: var(--sf-foot-font);
+}
+
+/* Columns size to their content and sit left-aligned, so a footer with just two
+   menus reads tidy instead of two links stranded at opposite edges. They wrap
+   and grow gracefully as the merchant adds more menus. */
+.sf-footer__inner {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, max-content));
+  justify-content: start;
+  gap: 44px 72px;
+  max-width: var(--sf-foot-max);
+  margin: 0 auto;
+  padding: 64px 24px;
+}
+
+.sf-footer__col {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  min-width: 0;
+}
+
+.sf-footer__col-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--sf-foot-fg);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-decoration: none;
+}
+
+/* A heading that is itself a link (standalone entry, or a group with its own
+   href) gets a subtle hover cue. */
+a.sf-footer__col-title {
+  transition: opacity 0.15s ease;
+}
+a.sf-footer__col-title:hover {
+  opacity: 0.75;
+  text-decoration: underline;
+}
+
+.sf-footer__links {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.sf-footer__link {
+  font-size: 14px;
+  color: var(--sf-foot-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.sf-footer__link:hover {
+  color: var(--sf-foot-fg);
+}
+
+@media (max-width: 600px) {
+  .sf-footer__inner {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 24px;
+    padding: 40px 20px;
+  }
+}

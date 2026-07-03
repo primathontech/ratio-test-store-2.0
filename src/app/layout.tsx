@@ -24,11 +24,17 @@ import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
 import { AffiliateTracker } from "@shopkit/events/affiliate";
 import { EditorHostMount } from "@/editor-integration/EditorHostMount";
+// Client-only "Exit preview" bar. Direct import (not next/dynamic ssr:false,
+// which Next 15 disallows in a Server Component): the component is "use client"
+// and renders null on the server / first paint, so it never participates in SSR
+// or affects the editor's live preview. Same behavior as momsco's layout.
+import { PreviewExitBar } from "@/editor-integration/preview-link/PreviewExitBar";
 
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
 import { fontVariables } from "./fonts";
 import LimeChatScript from "./LimeChatScript";
+import { CartRecoveryLink } from "@/integrations/cart-recovery-custom";
 
 // =============================================================================
 // ROOT LAYOUT
@@ -48,6 +54,13 @@ export default async function RootLayout({
 
   const hasKwikcartDisabled =
     process.env.NEXT_PUBLIC_KWIKCART_DISABLE === "true";
+
+  // Chrome (header/footer) is NOT rendered here — it's app-side composition policy
+  // so individual pages can opt out (e.g. the thank-you page). App Router can't
+  // remove a parent layout's chrome from a child, so chrome lives in the
+  // `app/(shop)` route group, whose layout wraps its routes in <Chrome>. This root
+  // layout holds only request-invariant providers (AppShell, theme, i18n, fonts) +
+  // trackers, which apply to EVERY page — chrome'd or bare.
 
   return (
     <html lang={locale} className={fontVariables}>
@@ -77,7 +90,11 @@ export default async function RootLayout({
         >
           <AffiliateTracker autoCapture />
           <AppCartInitializer merchantName={merchantName} />
+          <CartRecoveryLink />
           <EditorHostMount />
+          <PreviewExitBar />
+          {/* Chrome (header/footer) is added per-page by the (shop) route group's
+              layout via <Chrome>, so bare pages (e.g. thank-you) can omit it. */}
           {children}
           <ClientDynamics
             locale={locale}

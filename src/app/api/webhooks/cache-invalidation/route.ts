@@ -10,19 +10,23 @@ export async function POST(request: NextRequest) {
   const startTime = Date.now();
 
   try {
-    const body = await request.json();
+    // Read the RAW body once — the HMAC must be computed over the exact bytes
+    // the sender signed (re-serializing a parsed object would change them).
+    const rawBody = await request.text();
 
-    // Verify webhook signature (if configured)
+    // When WEBHOOK_SECRET is configured, a valid signature is REQUIRED
+    // (a missing header must NOT bypass verification).
     const signature = request.headers.get("x-webhook-signature");
-    if (process.env.WEBHOOK_SECRET && signature) {
-      const isValid = await verifyWebhookSignature(body, signature);
-      if (!isValid) {
+    if (process.env.WEBHOOK_SECRET) {
+      if (!signature || !(await verifyWebhookSignature(rawBody, signature))) {
         return NextResponse.json(
           { error: "Invalid signature" },
           { status: 401 }
         );
       }
     }
+
+    const body = JSON.parse(rawBody);
 
     // Validate webhook data
     const validationResult = validateWebhookData(body);
@@ -118,7 +122,7 @@ function handleCacheInvalidation(data: any): void {
       break;
 
     case "navigation.updated":
-      revalidateTag("navigation");
+      revalidateTag("nav-menu");
       break;
 
     case "search.reindex":
@@ -142,7 +146,7 @@ function handleCacheInvalidation(data: any): void {
  * Verify webhook signature using HMAC
  */
 async function verifyWebhookSignature(
-  body: any,
+  rawBody: string,
   signature: string
 ): Promise<boolean> {
   if (!process.env.WEBHOOK_SECRET) {
@@ -153,7 +157,7 @@ async function verifyWebhookSignature(
     const crypto = await import("crypto");
     const expectedSignature = crypto
       .createHmac("sha256", process.env.WEBHOOK_SECRET)
-      .update(JSON.stringify(body))
+      .update(rawBody)
       .digest("hex");
 
     const providedSignature = signature.replace("sha256=", "");
@@ -314,7 +318,7 @@ export async function DELETE(request: NextRequest) {
         break;
 
       case "navigation":
-        revalidateTag("navigation");
+        revalidateTag("nav-menu");
         break;
 
       case "all":

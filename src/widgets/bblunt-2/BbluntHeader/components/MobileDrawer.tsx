@@ -13,6 +13,7 @@ interface NavigationItem {
   key?: string;
   label: string;
   href?: string;
+  isExternal?: boolean;
   hasDropdown?: boolean;
   dropdownItems?: NavigationItem[];
   isCategory?: boolean;

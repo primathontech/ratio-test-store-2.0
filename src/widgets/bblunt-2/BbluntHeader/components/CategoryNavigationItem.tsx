@@ -8,6 +8,7 @@ interface NavigationItem {
   key?: string;
   label: string;
   href?: string;
+  isExternal?: boolean;
   hasDropdown?: boolean;
   dropdownItems?: NavigationItem[];
   isCategory?: boolean;
@@ -88,6 +89,9 @@ const CategoryNavigationItem: React.FC<{
               <Link
                 key={nestedItem.key || nestedIndex}
                 href={nestedItem.href || "#"}
+                {...(nestedItem.isExternal
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
                 onClick={onClose}
                 className="block py-1 my-1 px-4 no-underline text-sm transition-opacity duration-300"
                 style={{

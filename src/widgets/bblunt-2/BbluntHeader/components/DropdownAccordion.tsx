@@ -66,6 +66,9 @@ export function DropdownAccordion({
             <li key={ii}>
               <Link
                 href={item.href}
+                {...(item.isExternal
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
                 tabIndex={open ? 0 : -1}
                 className="text-sm leading-[16.8px] font-normal text-[#545454] hover:text-loading-blue no-underline transition-colors duration-200"
               >

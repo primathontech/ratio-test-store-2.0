@@ -11,6 +11,7 @@ const config: Config = {
     "./src/theme/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/integrations/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/themes/**/locales/**/*.json",
+    "./src/editor-integration/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
     extend: {

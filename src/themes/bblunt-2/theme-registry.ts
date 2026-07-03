@@ -426,5 +426,34 @@ export const themeRegistry = {
         },
       },
     },
+
+    // ── Shared chrome templates (header-group / footer-group model) ──
+    // Rendered once by the root layout via renderChrome(); the editor keys on
+    // routeContext.type being exactly "header" / "footer".
+    [TEMPLATE_TYPES.header]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/header/default.ts",
+        routeContext: {
+          templateName: "header",
+          type: "header",
+          path: "/",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
+    [TEMPLATE_TYPES.footer]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/footer/default.ts",
+        routeContext: {
+          templateName: "footer",
+          type: "footer",
+          path: "/",
+          params: {},
+          query: {},
+        },
+      },
+    },
   },
 };
