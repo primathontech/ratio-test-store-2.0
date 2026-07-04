@@ -2,7 +2,7 @@ import { createProductViaCollectionsStaticParams } from "@shopkit/data-layer";
 import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
-import { resolveCommercePageSEO } from "@shopkit/seo";
+import { getPageMetadata } from "@shopkit/seo";
 import { getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
@@ -24,11 +24,11 @@ export async function generateMetadata(props: {
   try {
     const params = await props.params;
     const product = await fetchProduct(params.handle);
-    return resolveCommercePageSEO(
-      "product",
-      product,
-      `/products/${params.handle}`
-    );
+    return getPageMetadata({
+      pageType: "product",
+      path: `/products/${params.handle}`,
+      data: product,
+    });
   } catch {
     return {};
   }
