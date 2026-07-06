@@ -3,8 +3,7 @@ import { getStaticLocale } from "@shopkit/i18n/server";
 import { TranslationProvider } from "@shopkit/i18n/client";
 import type { Locale } from "@shopkit/i18n";
 import { getRouteTranslations, getThemeName } from "@/utils";
-import { resolvePageSEO } from "@shopkit/seo";
-import { getSEOConfig } from "@/config";
+import { getPageMetadata } from "@shopkit/seo";
 import type { Metadata } from "next";
 
 /**
@@ -24,8 +23,7 @@ import type { Metadata } from "next";
 
 export function makeStaticPageMetadata(title: string, path: string) {
   return async function generateMetadata(): Promise<Metadata> {
-    const { siteUrl, siteName } = getSEOConfig();
-    return resolvePageSEO({ title }, { siteUrl, siteName, path });
+    return getPageMetadata({ pageType: "page", path, fallback: { title } });
   };
 }
 

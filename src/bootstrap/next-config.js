@@ -16,6 +16,9 @@ const {
 const {
   ALLOWED_EDITOR_ORIGINS,
 } = require("../editor-integration/editor-bridge-config");
+// Build-time env guard — the package owns WHICH keys are required, so a future required
+// key is enforced on the next @shopkit/seo bump with no edit here.
+const { assertSeoEnv } = require("@shopkit/seo/config");
 
 // =============================================================================
 // DEFAULT CONFIGURATIONS
@@ -318,6 +321,14 @@ function buildServiceWorkerHeaders() {
  * });
  */
 function createNextConfig(options = {}) {
+  // Fail fast (build & dev) if required config env vars are missing — a forked storefront
+  // can't ship misconfigured. Set SKIP_ENV_VALIDATION=1 to bypass (lint-only CI, or a Docker
+  // build stage without runtime env). Runtime API failures still degrade gracefully; this
+  // only guards against a developer forgetting to set the keys.
+  if (!process.env.SKIP_ENV_VALIDATION) {
+    assertSeoEnv();
+  }
+
   const {
     i18nPath = "./src/bootstrap/i18n-request.ts",
     images = {},
