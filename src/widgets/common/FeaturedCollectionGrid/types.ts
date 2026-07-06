@@ -14,8 +14,6 @@ export interface FeaturedCollectionGridSettings {
   variant?: string;
   /** Category heading text (e.g. "Most Loved", "For Hair Fall Control") */
   categoryTitle?: string;
-  /** Collection handle to pick from the API response */
-  collectionHandle?: string;
 }
 
 /* ------------------------------------------------------------------ */
