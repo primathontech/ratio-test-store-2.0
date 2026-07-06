@@ -28,19 +28,6 @@ export const themeRegistry = {
       },
     },
 
-    [TEMPLATE_TYPES["home-b"]]: {
-      default: {
-        templatePath: "/themes/bblunt-2/templates/home-b/default.ts",
-        translationsPath: "/themes/bblunt-2/locales/pages/home-b",
-        routeContext: {
-          templateName: "home-b",
-          path: "/home-b",
-          params: {},
-          query: {},
-        },
-      },
-    },
-
     [TEMPLATE_TYPES.products]: {
       default: {
         templatePath: "/themes/bblunt-2/templates/products/default.ts",
@@ -59,24 +46,6 @@ export const themeRegistry = {
       },
     },
 
-    [TEMPLATE_TYPES["products-b"]]: {
-      default: {
-        templatePath: "/themes/bblunt-2/templates/products-b/default.ts",
-        translationsPath: "/themes/bblunt-2/locales/pages/products-b",
-        routeContext: {
-          templateName: "products-b",
-          path: "/products-b/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
-          params: {
-            handle:
-              "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
-          },
-          query: {},
-          productHandle:
-            "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
-        },
-      },
-    },
-
     [TEMPLATE_TYPES.collection]: {
       default: {
         templatePath: "/themes/bblunt-2/templates/collection/default.ts",
@@ -84,20 +53,6 @@ export const themeRegistry = {
         routeContext: {
           templateName: "collection",
           path: "/collections/colour-bundles",
-          params: { handle: "colour-bundles" },
-          query: {},
-          collectionHandle: "colour-bundles",
-        },
-      },
-    },
-
-    [TEMPLATE_TYPES["collection-b"]]: {
-      default: {
-        templatePath: "/themes/bblunt-2/templates/collection-b/default.ts",
-        translationsPath: "/themes/bblunt-2/locales/pages/collections-b",
-        routeContext: {
-          templateName: "collection-b",
-          path: "/collections-b/colour-bundles",
           params: { handle: "colour-bundles" },
           query: {},
           collectionHandle: "colour-bundles",
