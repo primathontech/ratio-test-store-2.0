@@ -369,19 +369,6 @@ export const themeRegistry = {
       },
     },
 
-    [TEMPLATE_TYPES["not-found"]]: {
-      default: {
-        templatePath: "/themes/bblunt-2/templates/not-found/default.ts",
-        translationsPath: "/themes/bblunt-2/locales/pages/not-found",
-        routeContext: {
-          templateName: "not-found",
-          path: "/404",
-          params: {},
-          query: {},
-        },
-      },
-    },
-
     // ── Shared chrome templates (header-group / footer-group model) ──
     // Rendered once by the root layout via renderChrome(); the editor keys on
     // routeContext.type being exactly "header" / "footer".
