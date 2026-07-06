@@ -56,11 +56,10 @@ export default async function RootLayout({
     process.env.NEXT_PUBLIC_KWIKCART_DISABLE === "true";
 
   // Chrome (header/footer) is NOT rendered here — it's app-side composition policy
-  // so individual pages can opt out (e.g. the thank-you page). App Router can't
-  // remove a parent layout's chrome from a child, so chrome lives in the
-  // `app/(shop)` route group, whose layout wraps its routes in <Chrome>. This root
-  // layout holds only request-invariant providers (AppShell, theme, i18n, fonts) +
-  // trackers, which apply to EVERY page — chrome'd or bare.
+  // (ADR-0004) so individual pages can opt out (e.g. the thank-you page). Pages that
+  // want chrome live under the `app/(shop)` route group, whose layout wraps them in
+  // <Chrome>. This root layout holds only request-invariant providers (AppShell,
+  // theme, i18n, fonts) + trackers, which apply to EVERY page — chrome'd or not.
 
   return (
     <html lang={locale} className={fontVariables}>
