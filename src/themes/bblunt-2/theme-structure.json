@@ -483,25 +483,6 @@
           }
         }
       ]
-    },
-    {
-      "name": "Not Found",
-      "templates": [
-        {
-          "id": "bblunt-2_not-found_default",
-          "name": "Not Found (Default)",
-          "variant": "default",
-          "isDynamic": true,
-          "supportedLanguages": ["en"],
-          "routeContext": {
-            "templateName": "not-found",
-            "path": "/404",
-            "params": {},
-            "query": {},
-            "fetchAPITemplate": true
-          }
-        }
-      ]
     }
   ]
 }
