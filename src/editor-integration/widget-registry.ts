@@ -1310,6 +1310,38 @@ const merchantWidgetSchemas = {
       },
     },
   },
+  [WIDGET_TYPES.NotFound]: {
+    type: WIDGET_TYPES.NotFound,
+    name: "Not Found (404)",
+    description: "404 page content — error code, heading, description, and CTA",
+    settingsSchema: {
+      errorCode: {
+        type: "text" as const,
+        label: "Error Code",
+        default: "",
+      },
+      heading: {
+        type: "text" as const,
+        label: "Heading",
+        default: "",
+      },
+      description: {
+        type: "text" as const,
+        label: "Description",
+        default: "",
+      },
+      buttonText: {
+        type: "text" as const,
+        label: "Button Text",
+        default: "",
+      },
+      buttonHref: {
+        type: "text" as const,
+        label: "Button Link",
+        default: "",
+      },
+    },
+  },
 
   // [WIDGET_TYPES.Footer]: {
   //   type: WIDGET_TYPES.Footer,

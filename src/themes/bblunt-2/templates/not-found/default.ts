@@ -29,12 +29,11 @@ export const template: PageConfig = {
           type: WIDGET_TYPES.NotFound,
           settings: {
             variant: "v1",
-            errorCode: "404",
-            heading: "Oops...That link is broken.",
-            description:
-              "Sorry for the inconvenience. Go to our homepage to check out our latest collections.",
-            buttonText: "Shop now",
-            buttonHref: "/collections/all",
+            errorCode: "t:bblunt-2_not-found_default.not_found.errorCode",
+            heading: "t:bblunt-2_not-found_default.not_found.heading",
+            description: "t:bblunt-2_not-found_default.not_found.description",
+            buttonText: "t:bblunt-2_not-found_default.not_found.buttonText",
+            buttonHref: "t:bblunt-2_not-found_default.not_found.buttonHref",
           },
         },
       ],
