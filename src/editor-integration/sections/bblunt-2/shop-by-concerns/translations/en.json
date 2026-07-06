@@ -4,42 +4,50 @@
     {
       "label": "Hair fall fighters",
       "href": "/collections/hairfall",
-      "image": "/ShopByConcerns/images/hair-fall-fighters.png"
+      "image": "/ShopByConcerns/images/hair-fall-fighters.webp",
+      "alt": "Hair fall fighters"
     },
     {
       "label": "Frizz fixers",
       "href": "/collections/dry-hair",
-      "image": "/ShopByConcerns/images/frizz-fixers.png"
+      "image": "/ShopByConcerns/images/frizz-fixers.webp",
+      "alt": "Frizz fixers"
     },
     {
       "label": "Damage repair",
       "href": "/collections/damaged-hair",
-      "image": "/ShopByConcerns/images/damage-repair.png"
+      "image": "/ShopByConcerns/images/damage-repair.webp",
+      "alt": "Damage repair"
     },
     {
       "label": "Smooth hair essentials",
       "href": "/collections/advanced-smoothening",
-      "image": "/ShopByConcerns/images/smooth-hair-essentials.png"
+      "image": "/ShopByConcerns/images/smooth-hair-essentials.webp",
+      "alt": "Smooth hair essentials"
     },
     {
       "label": "Dandruff defence",
       "href": "/collections/anti-dandruff",
-      "image": "/ShopByConcerns/images/dandruff-defence.png"
+      "image": "/ShopByConcerns/images/dandruff-defence.webp",
+      "alt": "Dandruff defence"
     },
     {
       "label": "Curl care crew",
-      "href": null,
-      "image": "/ShopByConcerns/images/curl-care-crew.png"
+      "href": "/collections/curly-hair",
+      "image": "/ShopByConcerns/images/curl-care-crew.webp",
+      "alt": "Curl care crew"
     },
     {
       "label": "Shine boosters",
-      "href": null,
-      "image": "/ShopByConcerns/images/shine-boosters.png"
+      "href": "/collections/intense-shine",
+      "image": "/ShopByConcerns/images/shine-boosters.webp",
+      "alt": "Shine boosters"
     },
     {
       "label": "Scalp saviours",
-      "href": null,
-      "image": "/ShopByConcerns/images/scalp-saviours.png"
+      "href": "/collections/scalp-hair-tonics",
+      "image": "/ShopByConcerns/images/scalp-saviours.webp",
+      "alt": "Scalp saviours"
     }
   ]
 }

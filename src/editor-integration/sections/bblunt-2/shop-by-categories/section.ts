@@ -10,15 +10,21 @@ export default {
   settings: {
     layout: SECTION_LAYOUT_OPTIONS.FULL,
     responsive: {
-      mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-      tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-      desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+      mobile: {
+        padding: { top: 0, right: 0, bottom: 0, left: 0 },
+      },
+      tablet: {
+        padding: { top: 0, right: 0, bottom: 0, left: 0 },
+      },
+      desktop: {
+        padding: { top: 0, right: 0, bottom: 0, left: 0 },
+      },
     },
   },
 
   widgets: [
     {
-      id: "bblunt-2-shop-by-categories",
+      id: "shop-by-categories-widget",
       name: "Shop by Categories",
       type: WIDGET_TYPES.ShopByCategories,
       settings: {
