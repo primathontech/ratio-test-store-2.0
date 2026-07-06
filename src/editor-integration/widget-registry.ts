@@ -296,11 +296,6 @@ const merchantWidgetSchemas = {
         label: "Section Heading (rich text)",
         default: "",
       },
-      collectionHandle: {
-        type: "text" as const,
-        label: "Collection Handle",
-        default: "",
-      },
       viewAllCollectionHandle: {
         type: "text" as const,
         label: "View All Collection Handle (override)",
@@ -723,11 +718,6 @@ const merchantWidgetSchemas = {
         label: "Category Title",
         default: "",
       },
-      collectionHandle: {
-        type: "text" as const,
-        label: "Collection Handle",
-        default: "",
-      },
     },
   },
   [WIDGET_TYPES.AboutUsHero]: {
@@ -834,11 +824,6 @@ const merchantWidgetSchemas = {
       mosaicAlt: {
         type: "text" as const,
         label: "Mosaic Alt Text",
-        default: "",
-      },
-      backgroundColor: {
-        type: "text" as const,
-        label: "Background Color",
         default: "",
       },
     },

@@ -23,25 +23,6 @@
       ]
     },
     {
-      "name": "Home B",
-      "templates": [
-        {
-          "id": "bblunt-2_home-b_default",
-          "name": "Home B (Default)",
-          "variant": "default",
-          "isDynamic": true,
-          "supportedLanguages": ["en"],
-          "routeContext": {
-            "templateName": "home-b",
-            "path": "/home-b",
-            "params": {},
-            "query": {},
-            "fetchAPITemplate": true
-          }
-        }
-      ]
-    },
-    {
       "name": "Products",
       "templates": [
         {
@@ -64,28 +45,6 @@
       ]
     },
     {
-      "name": "Products B",
-      "templates": [
-        {
-          "id": "bblunt-2_products-b_default",
-          "name": "Products B (Default)",
-          "variant": "default",
-          "isDynamic": true,
-          "supportedLanguages": ["en"],
-          "routeContext": {
-            "templateName": "products-b",
-            "path": "/products-b/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
-            "params": {
-              "handle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32"
-            },
-            "query": {},
-            "productHandle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
-            "fetchAPITemplate": true
-          }
-        }
-      ]
-    },
-    {
       "name": "Collection",
       "templates": [
         {
@@ -97,28 +56,6 @@
           "routeContext": {
             "templateName": "collection",
             "path": "/collections/colour-bundles",
-            "params": {
-              "handle": "colour-bundles"
-            },
-            "query": {},
-            "collectionHandle": "colour-bundles",
-            "fetchAPITemplate": true
-          }
-        }
-      ]
-    },
-    {
-      "name": "Collection B",
-      "templates": [
-        {
-          "id": "bblunt-2_collection-b_default",
-          "name": "Collection B (Default)",
-          "variant": "default",
-          "isDynamic": true,
-          "supportedLanguages": ["en"],
-          "routeContext": {
-            "templateName": "collection-b",
-            "path": "/collections-b/colour-bundles",
             "params": {
               "handle": "colour-bundles"
             },

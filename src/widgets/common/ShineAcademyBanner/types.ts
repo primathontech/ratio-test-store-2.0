@@ -20,8 +20,6 @@ export interface ShineAcademyBannerSettings {
   mosaicSrcDesktop?: { src: string; alt: string } | string;
   /** Mosaic alt text (legacy fallback — prefer mosaicSrcDesktop.alt) */
   mosaicAlt?: string;
-  /** Section background color */
-  backgroundColor?: string;
 }
 
 /**
