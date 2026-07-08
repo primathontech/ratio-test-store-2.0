@@ -46,27 +46,37 @@
     },
     "featured_collection_carousels": {
       "for_hair_fall_control__rich": "For <strong>Hair Fall Control</strong>",
-      "for_party_ready_hair__rich": "For <strong>Party Ready Hair at Home</strong>",
+      "for_party_ready_hair__rich": "For <strong>Party Ready Hair</strong>",
       "for_dull_dry_hair__rich": "For <strong>Dull & Dry Hair</strong>",
-      "high_shine_creme_hair_colour__rich": "<strong>High Shine Creme Hair Colour</strong>",
+      "high_shine_creme_hair_colour__rich": "High Shine Creme <strong>Hair Colour</strong>",
       "for_damage_repair__rich": "For <strong>Damage Repair</strong>",
       "for_advanced_smoothening__rich": "For <strong>Advanced Smoothening</strong>",
-      "for_extraordinary_shiny_hair__rich": "For <strong>Extraordinary Shiny Hair</strong>",
+      "for_extraordinary_shiny_hair__rich": "For Extraordinary <strong>Shiny Hair</strong>",
       "for_bond_repair__rich": "For <strong>Bond Repair</strong>",
       "for_nourished_defined_curls__rich": "For <strong>Nourished & Defined Curls</strong>",
       "for_dandruff_control__rich": "For <strong>Dandruff Control</strong>",
-      "five_minute_shampoo_hair_colour__rich": "5 Minute <strong>Shampoo Hair Colour</strong>"
+      "five_minute_shampoo_hair_colour__rich": "5 Minute Shampoo <strong>Hair Colour</strong>"
     },
     "banner_carousel": [
       {
         "id": 1,
         "type": "IMAGE",
-        "href": "/pages/shine-squad-bb30-offer",
-        "alt": "Get 3 Freebies on orders above Rs499 - Code FREETRIO",
-        "indicatorHeading": "Free 3-Step\nRoutine",
+        "href": "/pages/combo-kit",
+        "alt": "Flat 50% Off on Combo Kits - Limited Period Offer",
+        "indicatorHeading": "Flat 50%",
         "indicatorSubHeading": "Shop our",
         "desktopImage": "/BannerCarousel/images/slide1-desktop.webp",
         "mobileImage": "/BannerCarousel/images/slide1-mobile.webp"
+      },
+      {
+        "id": 2,
+        "type": "IMAGE",
+        "href": "/pages/shine-squad-b2g2",
+        "alt": "Buy 2 @ 40% off - Code STEAL40",
+        "indicatorHeading": "2@40%off",
+        "indicatorSubHeading": "Shop our",
+        "desktopImage": "/BannerCarousel/images/slide2-desktop.webp",
+        "mobileImage": "/BannerCarousel/images/slide2-mobile.webp"
       }
     ],
     "shop_by_concerns": {

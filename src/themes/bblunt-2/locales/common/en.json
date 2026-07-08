@@ -310,13 +310,13 @@
     "announcement_bar__rich": [
       {
         "id": 0,
-        "text": "Get 2 Products at ₹599 | Use code : <strong>GET599</strong>",
-        "href": "/pages/shine-squad-weekly-offer"
+        "text": "Buy 2 @ 40% off | Code : <strong>STEAL40</strong>",
+        "href": "/pages/shine-squad-b2g2"
       },
       {
         "id": 1,
-        "text": "Get 3 Products at ₹999 | Use code : <strong>GET999</strong>",
-        "href": "/pages/shine-squad-weekly-offer"
+        "text": "Upto 55% Off on Bestsellers | Limited Period Offer",
+        "href": "/pages/combo-kit"
       }
     ],
     "collection_page": {

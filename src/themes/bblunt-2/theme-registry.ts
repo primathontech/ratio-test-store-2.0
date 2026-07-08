@@ -303,6 +303,19 @@ export const themeRegistry = {
       },
     },
 
+    [TEMPLATE_TYPES["combo-kit"]]: {
+      default: {
+        templatePath: "/themes/bblunt-2/templates/combo-kit/default.ts",
+        translationsPath: "/themes/bblunt-2/locales/pages/combo-kit",
+        routeContext: {
+          templateName: "combo-kit",
+          path: "/pages/combo-kit",
+          params: {},
+          query: {},
+        },
+      },
+    },
+
     [TEMPLATE_TYPES["shine-squad-b2g2"]]: {
       default: {
         templatePath: "/themes/bblunt-2/templates/shine-squad-b2g2/default.ts",
