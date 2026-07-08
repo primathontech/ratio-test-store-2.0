@@ -396,6 +396,25 @@
       ]
     },
     {
+      "name": "Combo Kit",
+      "templates": [
+        {
+          "id": "bblunt-2_combo-kit_default",
+          "name": "Combo Kit (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "combo-kit",
+            "path": "/pages/combo-kit",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
       "name": "Shine Squad B2g2",
       "templates": [
         {
