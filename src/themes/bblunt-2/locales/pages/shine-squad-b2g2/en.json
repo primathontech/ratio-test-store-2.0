@@ -43,7 +43,7 @@
         "alt": "Sale Banner"
       },
       "offer": {
-        "title": "Buy 2 @ 40% Off",
+        "title": "Buy 2 at 40% Off",
         "price": "",
         "currencySymbol": "",
         "couponCode": "STEAL40",
@@ -73,7 +73,7 @@
       "primary_button": "Got it"
     },
     "sale_collection": {
-      "title": "Bestsellers"
+      "title": "Most Loved"
     }
   }
 }

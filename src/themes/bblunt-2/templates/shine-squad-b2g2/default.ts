@@ -66,7 +66,7 @@ export const template: PageConfig = {
     mostLovedCollection: {
       type: DATA_SOURCE_TYPES.COLLECTION,
       params: {
-        handle: "most-loved-home-page",
+        handle: "most-loved-single-products",
         productLimit: 1,
       },
       required: false,
@@ -75,7 +75,7 @@ export const template: PageConfig = {
     saleCollectionData: {
       type: DATA_SOURCE_TYPES.COLLECTION,
       params: {
-        handle: "most-loved-sale-page",
+        handle: "most-loved-single-products",
       },
       options: {
         version: "v2",

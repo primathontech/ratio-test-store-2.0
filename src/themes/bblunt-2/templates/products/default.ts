@@ -433,32 +433,32 @@ export const template: PageConfig = {
     },
 
     // Product Disclaimer Section
-    {
-      id: "product-disclaimer-section",
-      name: "Product Disclaimer",
-      type: SECTION_TYPES.CONTENT_SECTION,
-      settings: {
-        layout: SECTION_LAYOUT_OPTIONS.FULL,
-        responsive: {
-          mobile: { padding: { top: 20, right: 0, bottom: 20, left: 0 } },
-          tablet: { padding: { top: 32, right: 0, bottom: 32, left: 0 } },
-          desktop: { padding: { top: 64, right: 0, bottom: 64, left: 0 } },
-        },
-      },
-      widgets: [
-        {
-          id: "bblunt-2-product-disclaimer",
-          name: "Product Disclaimer",
-          type: WIDGET_TYPES.ProductDisclaimer,
-          dataSourceKey: "productData",
-          settings: {
-            variant: "v1",
-            sectionTitle:
-              "t:bblunt-2_products_default.product_disclaimer.sectionTitle",
-          },
-        },
-      ],
-    },
+    // {
+    //   id: "product-disclaimer-section",
+    //   name: "Product Disclaimer",
+    //   type: SECTION_TYPES.CONTENT_SECTION,
+    //   settings: {
+    //     layout: SECTION_LAYOUT_OPTIONS.FULL,
+    //     responsive: {
+    //       mobile: { padding: { top: 20, right: 0, bottom: 20, left: 0 } },
+    //       tablet: { padding: { top: 32, right: 0, bottom: 32, left: 0 } },
+    //       desktop: { padding: { top: 64, right: 0, bottom: 64, left: 0 } },
+    //     },
+    //   },
+    //   widgets: [
+    //     {
+    //       id: "bblunt-2-product-disclaimer",
+    //       name: "Product Disclaimer",
+    //       type: WIDGET_TYPES.ProductDisclaimer,
+    //       dataSourceKey: "productData",
+    //       settings: {
+    //         variant: "v1",
+    //         sectionTitle:
+    //           "t:bblunt-2_products_default.product_disclaimer.sectionTitle",
+    //       },
+    //     },
+    //   ],
+    // },
 
     // Breadcrumb Section
     // {
