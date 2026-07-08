@@ -236,7 +236,9 @@ export function BbluntProductInfo({
 
   const productMetaTags = ensureArray<string>(
     data?.metadata?.[PRODUCT_INFO_METAFIELD_KEYS.PRODUCT_TAGS_MERA]?.value as
-      string | string[] | undefined
+      | string
+      | string[]
+      | undefined
   );
 
   const productVariants = data?.metadata?.[

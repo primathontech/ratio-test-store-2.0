@@ -6,7 +6,8 @@ import { AdditionalInformationProps } from "../types";
 export function V2({ data, settings }: AdditionalInformationProps) {
   const [isOpen, setIsOpen] = useState(false);
   const collectionData = data?.data as
-    { data?: { collectionByHandle?: { description?: string } } } | undefined;
+    | { data?: { collectionByHandle?: { description?: string } } }
+    | undefined;
   const description =
     collectionData?.data?.collectionByHandle?.description ?? "";
   const title = settings?.title || "Additional Information";
