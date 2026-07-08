@@ -80,7 +80,7 @@ export const template: PageConfig = {
       },
       options: {
         version: "v2",
-        params: { first: 12 },
+        params: { first: 50 },
       },
       required: false,
     },

@@ -43,10 +43,10 @@
         "alt": "Buy 2 @ 40% Off | Code STEAL40"
       },
       "offer": {
-        "title": "Buy 2 @ 40% Off",
+        "title": "FLAT 50%",
         "price": "",
         "currencySymbol": "",
-        "couponCode": "STEAL40",
+        "couponCode": "",
         "expiryText": "Offer will expire in"
       },
       "countdown": "Jul 8, 2026 23:59:59",
@@ -73,7 +73,7 @@
       "primary_button": "Got it"
     },
     "sale_collection": {
-      "title": "Combos"
+      "title": "Upto 55% off"
     }
   }
 }

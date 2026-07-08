@@ -87,16 +87,19 @@ export function startMemMonitor(): void {
 
   if (process.env.MEM_HEAPSNAP === "true") {
     let n = 0;
-    const snap = setInterval(async () => {
-      try {
-        const v8 = await import("node:v8");
-        const file = `/tmp/heap-${host}-${++n}.heapsnapshot`;
-        v8.writeHeapSnapshot(file);
-        console.log(JSON.stringify({ tag: "MEMMON_SNAP", host, file }));
-      } catch {
-        /* ignore */
-      }
-    }, 6 * 60 * 60 * 1000);
+    const snap = setInterval(
+      async () => {
+        try {
+          const v8 = await import("node:v8");
+          const file = `/tmp/heap-${host}-${++n}.heapsnapshot`;
+          v8.writeHeapSnapshot(file);
+          console.log(JSON.stringify({ tag: "MEMMON_SNAP", host, file }));
+        } catch {
+          /* ignore */
+        }
+      },
+      6 * 60 * 60 * 1000
+    );
     snap.unref();
   }
 }
