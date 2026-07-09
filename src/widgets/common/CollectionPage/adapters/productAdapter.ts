@@ -1,5 +1,6 @@
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
 import { getProductLabel } from "@/ui/components/ProductCard/badgeUtils";
+import { resolveAvailableForSale } from "@/ui/components/ProductCard/availability";
 import type { TransformedProduct } from "../api/types";
 
 /**
@@ -42,7 +43,12 @@ export function transformProductForCard(
     productId: product.id,
     variantId: product.variant?.id,
     sku: product.variant?.sku,
-    availableForSale: product.availableForSale,
+    // Collection API reports quantity on the singular `variant`. When
+    // availableForSale is false, fall back to that stock count.
+    availableForSale: resolveAvailableForSale(
+      product.availableForSale,
+      product.availableQuantity
+    ),
     href: `/products/${product.handle}`,
     title: product.title,
     alt,
