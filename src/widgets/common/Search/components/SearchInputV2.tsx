@@ -12,7 +12,7 @@ import SearchDropdown from "./SearchDropdown";
  * Ported from the BBLUNT V2 reference Header (docs/V2/components/SearchInput.tsx).
  * Used inside the mobile fullscreen search overlay rendered by the Header.
  * Handles its own typewriter placeholder, URL initialisation, debounced submit
- * (→ /pages/search?q=…), and cross-page sessionStorage handshake.
+ * (→ /pages/searchtap-search?q=…), and cross-page sessionStorage handshake.
  */
 
 interface SearchInputV2Props {
@@ -44,7 +44,7 @@ interface SearchInputV2Props {
   renderDropdown?: boolean;
 }
 
-const SEARCH_RESULTS_ROUTE = "/pages/search";
+const SEARCH_RESULTS_ROUTE = "/pages/searchtap-search";
 
 export const SearchInputV2: React.FC<SearchInputV2Props> = ({
   searchPlaceholder = ["Search For Sunscreen"],

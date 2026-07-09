@@ -4,7 +4,7 @@ import { SECTION_TYPES, SECTION_LAYOUT_OPTIONS } from "@shopkit/builder";
 
 /**
  * Search Page Template for bblunt-2
- * URL: /pages/search?q=<query>
+ * URL: /pages/searchtap-search?q=<query>
  *
  * Renders the Search widget which reads `q` from the URL and shows a
  * filterable, sortable grid of (currently dummy) search results.

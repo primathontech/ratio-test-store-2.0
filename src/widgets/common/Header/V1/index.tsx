@@ -25,7 +25,7 @@ import { TrendingSearches } from "@/widgets/common/Search/components/TrendingSea
 import { RecommendedProducts } from "@/widgets/common/Search/components/RecommendedProducts";
 import { useDebounce } from "@/hooks/useDebounce";
 
-const SEARCH_RESULTS_ROUTE = "/pages/search";
+const SEARCH_RESULTS_ROUTE = "/pages/searchtap-search";
 const OVERLAY_VIEWPORT_BREAKPOINT = 1150;
 
 /* ──────────────────────── Inline SVG Icons ──────────────────────── */
@@ -301,7 +301,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
   // the user has scrolled past the top. (Initial render: no blur.)
   const [isScrolled, setIsScrolled] = useState(false);
 
-  // Initialise from `?q=` so landing on /pages/search?q=bblunt
+  // Initialise from `?q=` so landing on /pages/searchtap-search?q=bblunt
   // pre-populates the header input. Mirrors how SearchPageWrapper reads the URL.
   const searchParams = useSearchParams();
   const urlQuery = searchParams?.get("q") ?? "";
@@ -323,7 +323,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
 
   // Always start `false` on the server to keep SSR/CSR markup in sync.
   // The real open-state (sessionStorage handshake from SearchInputV2 when the
-  // user clears the input, or the `/pages/search` default) is resolved in the
+  // user clears the input, or the `/pages/searchtap-search` default) is resolved in the
   // post-mount effect below.
   const [isSearchOverlayOpen, setIsSearchOverlayOpen] = useState(false);
 
@@ -408,7 +408,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     (query: string) => {
       setSearchOpen(false);
       setMobileSearchOpen(false);
-      router.push(`/pages/search?q=${encodeURIComponent(query)}`);
+      router.push(`/pages/searchtap-search?q=${encodeURIComponent(query)}`);
     },
     [router]
   );
@@ -432,7 +432,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
       return;
     }
     // If the URL already reflects this query (e.g. the user landed on
-    // /pages/search?q=bblunt), record it so we don't do a redundant
+    // /pages/searchtap-search?q=bblunt), record it so we don't do a redundant
     // router.push on mount — but DO still keep the input in sync.
     if (debouncedSearchQuery === urlQuery) {
       lastNavigatedQueryRef.current = debouncedSearchQuery;
@@ -441,7 +441,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     lastNavigatedQueryRef.current = debouncedSearchQuery;
     setSearchOpen(false);
     setMobileSearchOpen(false);
-    router.push(`/pages/search?q=${encodeURIComponent(debouncedSearchQuery)}`);
+    router.push(`/pages/searchtap-search?q=${encodeURIComponent(debouncedSearchQuery)}`);
     // Focus is restored by the urlQuery-keyed useEffect once navigation lands.
   }, [debouncedSearchQuery, urlQuery, router]);
 
@@ -777,7 +777,7 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
       <MobileSearchOverlay
         isOpen={mobileSearchOpen}
         onClose={() => setMobileSearchOpen(false)}
-        searchRoutePattern="/pages/search?q={q}"
+        searchRoutePattern="/pages/searchtap-search?q={q}"
       />
 
       {/* V2-style fullscreen search overlay (< 1150px). Backdrop + centered
