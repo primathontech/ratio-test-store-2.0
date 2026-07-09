@@ -347,7 +347,7 @@ export const template: PageConfig = {
           settings: {
             variant: "v1",
             autoLoadMore: false,
-            showFilterAndSort: false,
+            showFilterAndSort: true,
             showActionButton: true,
             actionButtonText: "t:common.product_card.add_to_cart",
             soldOutText: "t:common.product_card.sold_out",
