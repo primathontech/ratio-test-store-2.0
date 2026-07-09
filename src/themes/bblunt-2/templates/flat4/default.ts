@@ -75,7 +75,7 @@ export const template: PageConfig = {
     saleCollectionData: {
       type: DATA_SOURCE_TYPES.COLLECTION,
       params: {
-        handle: "most-loved-sale-page",
+        handle: "less-than-500_flat3",
       },
       options: {
         version: "v2",

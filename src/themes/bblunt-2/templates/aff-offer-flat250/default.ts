@@ -60,6 +60,54 @@ function categoryGridSection(
   };
 }
 
+/* ------------------------------------------------------------------ */
+/*  Helper: section config for a CollectionPage widget                  */
+/*  Renders a titled product grid for a single collection. Used to show */
+/*  the four live collections (Most Loved / Trending / Expert Hair Care */
+/*  Range / Explore more) as stacked CollectionPage sections.           */
+/* ------------------------------------------------------------------ */
+function collectionPageSection(
+  id: string,
+  name: string,
+  title: string,
+  dataSourceKey: string
+) {
+  return {
+    id: `${id}-section`,
+    name,
+    type: SECTION_TYPES.CONTENT_SECTION,
+    settings: {
+      layout: SECTION_LAYOUT_OPTIONS.FULL,
+      responsive: {
+        mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+      },
+    },
+    widgets: [
+      {
+        id: `${id}-widget`,
+        name,
+        type: WIDGET_TYPES.CollectionPage,
+        dataSourceKey,
+        settings: {
+          variant: "v1",
+          autoLoadMore: false,
+          showFilterAndSort: false,
+          showActionButton: true,
+          actionButtonText: "t:common.product_card.add_to_cart",
+          soldOutText: "t:common.product_card.sold_out",
+          showBadge: true,
+          showRating: true,
+          actionButtonTextColor: "#ffffff",
+          sectionTextColor: "#1D1D1D",
+          title,
+        },
+      },
+    ],
+  };
+}
+
 export const template: PageConfig = {
   id: "bblunt-2-aff-offer-flat250",
   dataSources: {
@@ -81,6 +129,32 @@ export const template: PageConfig = {
         version: "v2",
         params: { first: 12 },
       },
+      required: false,
+    },
+
+    // Multiple-collection product carousels (mirrors live shine-squad-b2g2).
+    mostLovedCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "most-loved-single-products" },
+      options: { version: "v2", params: { first: 12 } },
+      required: false,
+    },
+    trendingCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "trending-single-products" },
+      options: { version: "v2", params: { first: 12 } },
+      required: false,
+    },
+    expertHairCareCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "expert-hair-care-range-single-products" },
+      options: { version: "v2", params: { first: 12 } },
+      required: false,
+    },
+    exploreMoreCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "explore-more-single-products" },
+      options: { version: "v2", params: { first: 12 } },
       required: false,
     },
   },
@@ -315,6 +389,32 @@ export const template: PageConfig = {
       ],
     },
 
+    // ── Four Collection Grids (one CollectionPage per collection, mirrors live) ──
+    collectionPageSection(
+      "most-loved",
+      "Most Loved",
+      "t:bblunt-2_aff-offer-flat250_default.collection_sections.most_loved",
+      "mostLovedCarousel"
+    ),
+    collectionPageSection(
+      "trending",
+      "Trending",
+      "t:bblunt-2_aff-offer-flat250_default.collection_sections.trending",
+      "trendingCarousel"
+    ),
+    collectionPageSection(
+      "expert-hair-care-range",
+      "Expert Hair Care Range",
+      "t:bblunt-2_aff-offer-flat250_default.collection_sections.expert_hair_care_range",
+      "expertHairCareCarousel"
+    ),
+    collectionPageSection(
+      "explore-more",
+      "Explore more",
+      "t:bblunt-2_aff-offer-flat250_default.collection_sections.explore_more",
+      "exploreMoreCarousel"
+    ),
+
     // ── 4 Product Category Grid Sections (kept as TODO for parity) ─
     // categoryGridSection(
     //   "most-loved",
@@ -326,7 +426,11 @@ export const template: PageConfig = {
     // ),
 
     // ── Sale Collection Page Section ───────────────────────────────
-    {
+    // Disabled to match live bblunt.com/pages/aff-offer-flat250, which shows
+    // the multiple-collection carousels above (Most Loved / Trending / Expert
+    // Hair Care Range / Explore more) instead of a single most-loved grid.
+    // Re-enable if a filterable sale grid is wanted on this page.
+    /* {
       id: "sale-collection-page-section",
       name: "Sale Collection Page",
       type: SECTION_TYPES.CONTENT_SECTION,
@@ -359,7 +463,7 @@ export const template: PageConfig = {
           },
         },
       ],
-    },
+    }, */
 
     // Footer Section
     {
