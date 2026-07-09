@@ -441,7 +441,9 @@ export const V1 = memo(function V1({ settings, className }: HeaderProps) {
     lastNavigatedQueryRef.current = debouncedSearchQuery;
     setSearchOpen(false);
     setMobileSearchOpen(false);
-    router.push(`/pages/searchtap-search?q=${encodeURIComponent(debouncedSearchQuery)}`);
+    router.push(
+      `/pages/searchtap-search?q=${encodeURIComponent(debouncedSearchQuery)}`
+    );
     // Focus is restored by the urlQuery-keyed useEffect once navigation lands.
   }, [debouncedSearchQuery, urlQuery, router]);
 
