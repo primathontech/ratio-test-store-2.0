@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { CartAwareProductCard } from "@/ui/components/CartAwareProductCard";
 import { sortOptions } from "../compounds/sortOptions";
 import { transformProductForCard } from "../adapters/productAdapter";
@@ -54,6 +55,11 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
   const shouldScrollRef = useRef(false);
   const sentinelRef = useRef<HTMLDivElement>(null);
   const filterChipsContainerRef = useRef<HTMLDivElement>(null);
+
+  // Sale pages live under /pages/* — hide the "N products found for you"
+  // count line on those (keep it on /collections/* listing pages).
+  const pathname = usePathname();
+  const isPagesRoute = pathname?.startsWith("/pages/") ?? false;
 
   const collection = state.collection as TransformedCollection | null;
 
@@ -415,7 +421,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
         {(settingsTitle || collection?.title) && (
           <h1
             data-testid="collection-page-title"
-            className="text-left xl2:text-center text-[20px] md:text-[32px] leading-[24px] md:leading-[38.4px] font-bold md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 pt-10 md:pt-[46px] lg:pt-14"
+            className={`text-left xl2:text-center text-[20px] md:text-[32px] leading-[24px] md:leading-[38.4px] ${isPagesRoute ? "font-normal" : "md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 font-bold"} pt-10 md:pt-[46px] lg:pt-14`}
             style={sectionTextColor ? { color: sectionTextColor } : undefined}
           >
             {settingsTitle || collection?.title}
@@ -572,13 +578,15 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                 data-testid="collection-page-products-header"
                 className="flex justify-between items-center pb-[25px] lg:pb-9 mt-[4px]"
               >
-                <p
-                  data-testid="collection-page-products-count"
-                  className="text-primary text-xs md:text-base leading-none"
-                >
-                  {totalProducts > 0 ? totalProducts : "No"} products found for
-                  you
-                </p>
+                {!isPagesRoute && (
+                  <p
+                    data-testid="collection-page-products-count"
+                    className="text-primary text-xs md:text-base leading-none"
+                  >
+                    {totalProducts > 0 ? totalProducts : "No"} products found
+                    for you
+                  </p>
+                )}
                 {showFilterAndSort && (
                   <div
                     className="min-w-[250px] hidden md:block"
