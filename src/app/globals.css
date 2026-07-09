@@ -689,8 +689,17 @@
 /*  sibling section that follows is collapsed. When the shimmer        */
 /*  unmounts (on IntersectionObserver), the class is removed and the   */
 /*  real sections take over. Mirrors bblunt.com's lazyload behavior.   */
+/*                                                                     */
+/*  The footer section is excluded: on home the footer is a following  */
+/*  sibling section and hosts the fixed ContextualMessage +            */
+/*  StickyFooter. Collapsing it would `display:none` those persistent  */
+/*  bars until the shimmer scrolled into view (home-only bug). The     */
+/*  footer is not lazy content, so it must stay visible. We match it   */
+/*  via `:has(footer)` — the Footer widget renders a <footer> element  */
+/*  inside its section wrapper — so no change to the section renderer  */
+/*  is needed.                                                         */
 /* ------------------------------------------------------------------ */
-section.bblunt-shimmer-host ~ section {
+section.bblunt-shimmer-host ~ section:not(:has(footer)) {
   display: none;
 }
 

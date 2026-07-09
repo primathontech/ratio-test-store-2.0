@@ -397,7 +397,7 @@ export const template: PageConfig = {
 
     // ── Collection Page Section ────────────────────────────────────
     // Full filter + sort + grid view of the configured sale collection.
-    // No filter UI here (showFilterAndSort: false) to keep the sale page focused.
+    // No filter UI here (showFilterAndSort: true) to keep the sale page focused.
     {
       id: "sale-collection-page-section",
       name: "Sale Collection Page",
@@ -419,7 +419,7 @@ export const template: PageConfig = {
           settings: {
             variant: "v1",
             autoLoadMore: false,
-            showFilterAndSort: false,
+            showFilterAndSort: true,
             showActionButton: true,
             actionButtonText: "t:common.product_card.add_to_cart",
             soldOutText: "t:common.product_card.sold_out",
