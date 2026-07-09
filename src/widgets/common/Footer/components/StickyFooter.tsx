@@ -19,6 +19,7 @@ import {
   type MappableApiProduct,
 } from "@/ui/components/CartAwareProductCard";
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
+import { resolveAvailableForSale } from "@/ui/components/ProductCard/availability";
 import { NAVIGATION_ICONS } from "../constants";
 import { MobileNavigationItem } from "../types";
 
@@ -38,6 +39,7 @@ export interface StickyFooterProductData {
     title?: string;
     price?: number;
     sku?: string;
+    availableQuantity?: number;
   }>;
 }
 
@@ -197,7 +199,13 @@ export const StickyFooter = ({
     ? !!loadingItems[productData.id] ||
       !!loadingItems[selectedVariantId || productData.variants[0]?.id || ""]
     : false;
-  const isAvailable = productData?.availableForSale !== false;
+  // availableForSale===false → fall back to the active variant's stock
+  // quantity (PDP API exposes it per variant) before showing "Sold Out".
+  const isAvailable =
+    resolveAvailableForSale(
+      productData?.availableForSale,
+      activeVariant?.availableQuantity
+    ) !== false;
 
   const cartIconColor =
     itemCount > 0
