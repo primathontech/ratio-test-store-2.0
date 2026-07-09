@@ -74,6 +74,12 @@
     },
     "sale_collection": {
       "title": "Bestsellers"
+    },
+    "collection_sections": {
+      "most_loved": "Most Loved",
+      "trending": "Trending",
+      "expert_hair_care_range": "Expert Hair Care Range",
+      "explore_more": "Explore more"
     }
   }
 }

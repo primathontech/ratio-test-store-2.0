@@ -60,6 +60,54 @@ function categoryGridSection(
   };
 }
 
+/* ------------------------------------------------------------------ */
+/*  Helper: section config for a CollectionPage widget                  */
+/*  Renders a titled product grid for a single collection. Used to show */
+/*  the four live collections (Most Loved / Trending / Expert Hair Care */
+/*  Range / Explore more) as stacked CollectionPage sections.           */
+/* ------------------------------------------------------------------ */
+function collectionPageSection(
+  id: string,
+  name: string,
+  title: string,
+  dataSourceKey: string
+) {
+  return {
+    id: `${id}-section`,
+    name,
+    type: SECTION_TYPES.CONTENT_SECTION,
+    settings: {
+      layout: SECTION_LAYOUT_OPTIONS.FULL,
+      responsive: {
+        mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+      },
+    },
+    widgets: [
+      {
+        id: `${id}-widget`,
+        name,
+        type: WIDGET_TYPES.CollectionPage,
+        dataSourceKey,
+        settings: {
+          variant: "v1",
+          autoLoadMore: false,
+          showFilterAndSort: false,
+          showActionButton: true,
+          actionButtonText: "t:common.product_card.add_to_cart",
+          soldOutText: "t:common.product_card.sold_out",
+          showBadge: true,
+          showRating: true,
+          actionButtonTextColor: "#ffffff",
+          sectionTextColor: "#1D1D1D",
+          title,
+        },
+      },
+    ],
+  };
+}
+
 export const template: PageConfig = {
   id: "bblunt-2-fb-intense-moisture-category-sale",
   dataSources: {
@@ -81,6 +129,56 @@ export const template: PageConfig = {
         version: "v2",
         params: { first: 12 },
       },
+      required: false,
+    },
+
+    // Multiple-collection product grids (one CollectionPage per row).
+    imApp: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "im-app" },
+      options: { version: "v2", params: { first: 12 } },
+      required: false,
+    },
+    mostLovedCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "most-loved-single-products" },
+      options: { version: "v2", params: { first: 12 } },
+      required: false,
+    },
+    trendingCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "trending-single-products" },
+      options: { version: "v2", params: { first: 12 } },
+      required: false,
+    },
+    expertHairCareCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "expert-hair-care-range-single-products" },
+      options: { version: "v2", params: { first: 12 } },
+      required: false,
+    },
+    salonLikeColour: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "for-salon-like-colour-at-home-single-products" },
+      options: { version: "v2", params: { first: 12 } },
+      required: false,
+    },
+    bestSellingCombos: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "best-selling-combos-sale-page" },
+      options: { version: "v2", params: { first: 12 } },
+      required: false,
+    },
+    bestSellingKits: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "best-selling-kits-sale-page" },
+      options: { version: "v2", params: { first: 12 } },
+      required: false,
+    },
+    exploreMoreCarousel: {
+      type: DATA_SOURCE_TYPES.COLLECTION,
+      params: { handle: "explore-more-single-products" },
+      options: { version: "v2", params: { first: 12 } },
       required: false,
     },
   },
@@ -315,6 +413,56 @@ export const template: PageConfig = {
       ],
     },
 
+    // ── Collection Grids (one CollectionPage per collection) ───────
+    collectionPageSection(
+      "dull-dry-hair",
+      "For Dull & Dry Hair",
+      "t:bblunt-2_fb-intense-moisture-category-sale_default.collection_sections.dull_dry_hair",
+      "imApp"
+    ),
+    collectionPageSection(
+      "most-loved",
+      "Most Loved",
+      "t:bblunt-2_fb-intense-moisture-category-sale_default.collection_sections.most_loved",
+      "mostLovedCarousel"
+    ),
+    collectionPageSection(
+      "trending",
+      "Trending",
+      "t:bblunt-2_fb-intense-moisture-category-sale_default.collection_sections.trending",
+      "trendingCarousel"
+    ),
+    collectionPageSection(
+      "expert-hair-care-range",
+      "Expert Hair Care Range",
+      "t:bblunt-2_fb-intense-moisture-category-sale_default.collection_sections.expert_hair_care_range",
+      "expertHairCareCarousel"
+    ),
+    collectionPageSection(
+      "salon-like-colour",
+      "For Salon Like Colour at Home",
+      "t:bblunt-2_fb-intense-moisture-category-sale_default.collection_sections.salon_like_colour",
+      "salonLikeColour"
+    ),
+    collectionPageSection(
+      "best-selling-combos",
+      "Best Selling Combos",
+      "t:bblunt-2_fb-intense-moisture-category-sale_default.collection_sections.best_selling_combos",
+      "bestSellingCombos"
+    ),
+    collectionPageSection(
+      "best-selling-kits",
+      "Best Selling Kits",
+      "t:bblunt-2_fb-intense-moisture-category-sale_default.collection_sections.best_selling_kits",
+      "bestSellingKits"
+    ),
+    collectionPageSection(
+      "explore-more",
+      "Explore more",
+      "t:bblunt-2_fb-intense-moisture-category-sale_default.collection_sections.explore_more",
+      "exploreMoreCarousel"
+    ),
+
     // ── 4 Product Category Grid Sections (kept as TODO for parity) ─
     // categoryGridSection(
     //   "most-loved",
@@ -326,7 +474,9 @@ export const template: PageConfig = {
     // ),
 
     // ── Sale Collection Page Section ───────────────────────────────
-    {
+    // Disabled in favour of the multiple-collection CollectionPage grids
+    // above. Re-enable if a single filterable sale grid is wanted.
+    /* {
       id: "sale-collection-page-section",
       name: "Sale Collection Page",
       type: SECTION_TYPES.CONTENT_SECTION,
@@ -360,7 +510,7 @@ export const template: PageConfig = {
           },
         },
       ],
-    },
+    }, */
 
     // Footer Section
     {
