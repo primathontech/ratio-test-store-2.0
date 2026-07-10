@@ -528,9 +528,7 @@ export async function fetchMostLovedProducts(productLimit: number = 12) {
       products?: unknown[];
     };
     const rawData = response.data as
-      | NormalisedEntry[]
-      | { collections?: NormalisedEntry[] }
-      | null;
+      NormalisedEntry[] | { collections?: NormalisedEntry[] } | null;
     const entries: NormalisedEntry[] = Array.isArray(rawData)
       ? rawData
       : Array.isArray(rawData?.collections)

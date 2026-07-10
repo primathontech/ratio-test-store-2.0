@@ -148,9 +148,7 @@ export const template: PageConfig = {
       id: "header-section",
       name: "Header",
       type: SECTION_TYPES.HEADER_SECTION,
-      settings: {
-        /* … */
-      },
+      settings: {/* … */},
       widgets: [
         {
           id: "<theme>-header",
