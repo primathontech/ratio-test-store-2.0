@@ -226,8 +226,7 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
 
           // Keep previous facets when pagination response has empty facets (API often omits facets on page > 1)
           const textFacetResponse = results.textFacets as
-            | Record<string, unknown>
-            | undefined;
+            Record<string, unknown> | undefined;
           const hasTextFacets =
             textFacetResponse &&
             ((Array.isArray(textFacetResponse.st_newcollections) &&
@@ -235,8 +234,7 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
               (Array.isArray(textFacetResponse.product_type) &&
                 textFacetResponse.product_type.length > 0));
           const numericFacetResponse = results.numericFacets as
-            | Record<string, unknown>
-            | undefined;
+            Record<string, unknown> | undefined;
           const hasNumericFacets =
             numericFacetResponse &&
             ((Array.isArray(numericFacetResponse.discounted_price) &&
