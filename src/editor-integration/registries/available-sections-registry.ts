@@ -17,7 +17,6 @@ import hairCareBffs from "@/editor-integration/sections/bblunt-2/hair-care-bffs"
 import featuredCollectionCarousel from "@/editor-integration/sections/bblunt-2/featured-collection-carousel";
 import featuredCollectionGrid from "@/editor-integration/sections/bblunt-2/featured-collection-grid";
 import collectionHeroBanner from "@/editor-integration/sections/bblunt-2/collection-hero-banner";
-import collectionTimer from "@/editor-integration/sections/bblunt-2/collection-timer";
 import collectionPage from "@/editor-integration/sections/bblunt-2/collection-page";
 
 const commonSections = {
@@ -40,7 +39,6 @@ const bblunt2Sections = {
   "featured-collection-carousel": featuredCollectionCarousel,
   "featured-collection-grid": featuredCollectionGrid,
   "collection-hero-banner": collectionHeroBanner,
-  "collection-timer": collectionTimer,
   "collection-page": collectionPage,
 };
 
