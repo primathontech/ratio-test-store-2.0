@@ -16,6 +16,7 @@ import {
   NewVariantNode,
 } from "./VariantPicker";
 import { ProductCardToast } from "@/ui/components/ProductCard/Toast";
+import { resolveAvailableForSale } from "@/ui/components/ProductCard/availability";
 import {
   ProductRatingSummary,
   ProductRatingSummaryFallback,
@@ -145,6 +146,16 @@ export function BbluntProductInfo({
     selectedVariantId ??
     data?.variants?.find((v) => v.title === "Default Title")?.id ??
     data?.variants?.[0]?.id;
+  const effectiveVariant = data?.variants?.find(
+    (v) => v.id === effectiveVariantId
+  );
+  // availableForSale===true is authoritative; when false, fall back to the
+  // selected variant's stock quantity (PDP API exposes it per variant).
+  const isAvailable =
+    resolveAvailableForSale(
+      data?.availableForSale,
+      effectiveVariant?.availableQuantity
+    ) === true;
 
   const cartLine = items.find((i) => {
     const lineProductId = i.productId ?? i.product_id;
@@ -236,9 +247,7 @@ export function BbluntProductInfo({
 
   const productMetaTags = ensureArray<string>(
     data?.metadata?.[PRODUCT_INFO_METAFIELD_KEYS.PRODUCT_TAGS_MERA]?.value as
-      | string
-      | string[]
-      | undefined
+      string | string[] | undefined
   );
 
   const productVariants = data?.metadata?.[
@@ -570,14 +579,14 @@ export function BbluntProductInfo({
         data-testid="cart-item-add-to-cart"
         className={`hidden md:flex w-full h-12 bg-black text-white rounded-[10px] font-bold text-[22px] leading-[1.2em] items-center justify-center transition-opacity disabled:cursor-not-allowed ${isLoading ? "" : "shine-link-button"}`}
         onClick={handleAddToCart}
-        disabled={isLoading || !data?.availableForSale || !cartToken}
+        disabled={isLoading || !isAvailable || !cartToken}
       >
         {isLoading ? (
           <span
             data-testid="add-to-cart-loading-spinner"
             className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
           />
-        ) : !data?.availableForSale ? (
+        ) : !isAvailable ? (
           soldOutText
         ) : (
           addToCartText

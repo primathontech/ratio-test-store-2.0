@@ -4,6 +4,7 @@ import React, { memo, useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
 import { useCartItems, useCartStore, type CartItem } from "@shopkit/cart";
 import { ProductCardToast } from "@/ui/components/ProductCard/Toast";
+import { resolveAvailableForSale } from "@/ui/components/ProductCard/availability";
 import type { ApiProduct } from "@/widgets/common/ProductDetail/types";
 import { calculateDiscountPercentage } from "@/widgets/common/ProductDetail/utils/productInfoHelpers";
 import { StickyAddToCartProps } from "../types";
@@ -98,7 +99,16 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
     settings?.inclusiveOfAllTaxesText || "Incl. of all taxes";
   const buttonText = settings?.buttonText || "Add to cart";
   const soldOutText = settings?.soldOutText || "Sold Out";
-  const isAvailable = product?.availableForSale ?? true;
+  // availableForSale===false → fall back to the default variant's stock
+  // quantity (PDP API exposes it per variant) before showing "Sold Out".
+  const stickyDefaultVariant =
+    product?.variants?.find((v) => v.title === "Default Title") ||
+    product?.variants?.[0];
+  const isAvailable =
+    resolveAvailableForSale(
+      product?.availableForSale,
+      stickyDefaultVariant?.availableQuantity
+    ) !== false;
 
   const [isVisible, setIsVisible] = useState(false);
   const [showToast, setShowToast] = useState(false);

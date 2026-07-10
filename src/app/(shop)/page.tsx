@@ -8,10 +8,10 @@ import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
 import { Metadata } from "next";
 import { getRouteTranslations } from "@/utils";
 
-/** ISR — revalidate collection data every 30 seconds */
+/** ISR — revalidate collection data every 3600 seconds */
 import type { PageConfig } from "@shopkit/builder";
 
-export const revalidate = 30;
+export const revalidate = 3600;
 
 // Generate metadata for home page
 export async function generateMetadata(): Promise<Metadata> {

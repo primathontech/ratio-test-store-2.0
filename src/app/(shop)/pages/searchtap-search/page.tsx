@@ -1,3 +1,4 @@
+// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getThemeName, getRouteTranslations } from "@/utils";
@@ -22,7 +23,7 @@ export async function generateMetadata({
       description:
         "BBlunt shampoo for dry, frizzy & damaged hair. Get salon-like shine & nourishment at home. Best for coloured & chemically-treated hair.",
     },
-    { siteUrl, siteName, path: "/pages/search" }
+    { siteUrl, siteName, path: "/pages/searchtap-search" }
   );
 }
 
@@ -43,7 +44,7 @@ export default async function SearchtapSearchPage({
 
   const routeContext = {
     templateName: TEMPLATE_TYPES["search"],
-    path: "/pages/search",
+    path: "/pages/searchtap-search",
     params: {},
     query: flatQuery,
     fetchAPITemplate: true,
