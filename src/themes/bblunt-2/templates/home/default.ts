@@ -499,13 +499,13 @@ export const template: PageConfig = {
     ),
 
     // For Nourished & Defined Curls — FeaturedCollectionCarousel #9
-    carouselSection(
-      "for-nourished-defined-curls",
-      "For Nourished & Defined Curls",
-      "t:bblunt-2_home_default.featured_collection_carousels.for_nourished_defined_curls__rich",
-      "nourishedAndDefinedCurlCarousel",
-      "curly-hair"
-    ),
+    // carouselSection(
+    //   "for-nourished-defined-curls",
+    //   "For Nourished & Defined Curls",
+    //   "t:bblunt-2_home_default.featured_collection_carousels.for_nourished_defined_curls__rich",
+    //   "nourishedAndDefinedCurlCarousel",
+    //   "curly-hair"
+    // ),
 
     // Video App Section — shoppable-video rail on the home page (no
     // product context; SDK falls back to its featured/global feed).

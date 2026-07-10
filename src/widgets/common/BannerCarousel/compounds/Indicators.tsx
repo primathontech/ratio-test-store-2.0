@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 import { IBannerCarouselItem } from "../types";
@@ -107,21 +108,24 @@ export const Indicators: React.FC<IndicatorsProps> = ({
             ? !item.posterSrc && !item.mobileImage && !item.desktopImage
             : false;
 
-        return (
-          <button
-            key={index}
-            data-testid={`banner-carousel-indicator-${index}`}
-            onClick={() => onIndicatorClick(index)}
-            className={`
-              relative overflow-hidden rounded-md flex items-center border-[2.5px] border-white
-              ${isActive ? "bg-black text-white" : "bg-black/70 text-white"}
-            `}
-            style={{
-              width: isActive ? "auto" : "24px",
-              transition: "width 1.2s ease-out",
-            }}
-            aria-label={`Go to slide ${index + 1}: ${item.indicatorHeading}`}
-          >
+        // Shared pill styling for both the link (active) and button (inactive)
+        // renderings so the visuals stay identical.
+        const pillClassName = `
+          relative overflow-hidden rounded-md flex items-center border-[2.5px] border-white
+          ${isActive ? "bg-black text-white" : "bg-black/70 text-white"}
+        `;
+        const pillStyle = {
+          width: isActive ? "auto" : "24px",
+          transition: "width 1.2s ease-out",
+        };
+
+        // Matches bblunt.com: the ACTIVE (expanded) indicator is a link that
+        // redirects to the slide's page, while INACTIVE indicators switch the
+        // carousel to that slide.
+        const canRedirect = isActive && Boolean(item.href) && item.href !== "#";
+
+        const pillInner = (
+          <>
             {/* Progress Bar — Pure CSS Animation */}
             {isActive && autoplay && (
               <div
@@ -214,6 +218,38 @@ export const Indicators: React.FC<IndicatorsProps> = ({
                 </div>
               </div>
             </div>
+          </>
+        );
+
+        // Active + has destination → redirect link (matches live site).
+        if (canRedirect) {
+          return (
+            <Link
+              key={index}
+              href={item.href as string}
+              target={item.target || "_self"}
+              data-testid={`banner-carousel-indicator-${index}`}
+              className={pillClassName}
+              style={pillStyle}
+              aria-label={`Go to ${item.indicatorHeading}`}
+            >
+              {pillInner}
+            </Link>
+          );
+        }
+
+        // Inactive (or no destination) → switch the carousel to this slide.
+        return (
+          <button
+            key={index}
+            type="button"
+            data-testid={`banner-carousel-indicator-${index}`}
+            onClick={() => onIndicatorClick(index)}
+            className={pillClassName}
+            style={pillStyle}
+            aria-label={`Go to slide ${index + 1}: ${item.indicatorHeading}`}
+          >
+            {pillInner}
           </button>
         );
       })}

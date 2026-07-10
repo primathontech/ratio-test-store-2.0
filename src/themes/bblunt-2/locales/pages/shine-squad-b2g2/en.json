@@ -3,11 +3,11 @@
     "hero_banner": {
       "desktopImage": {
         "src": "/HeroBanner/images/hero-desktop.jpg",
-        "alt": "Buy2 Get2"
+        "alt": "Buy 2 @ 40% Off | Code STEAL40"
       },
       "mobileImage": {
         "src": "/HeroBanner/images/hero-mobile.jpg",
-        "alt": "Buy2 Get2"
+        "alt": "Buy 2 @ 40% Off | Code STEAL40"
       },
       "mobileAspectRatio": "1/1",
       "desktopAspectRatio": "1440/529"
@@ -15,23 +15,29 @@
     "how_it_works_banner": {
       "desktopImage": {
         "src": "/HowItWorksBanner/images/howtoshop-desktop.jpg",
-        "alt": "How To Shop: 1. Add favorites to cart, 2. Apply code at checkout, 3. Enjoy your offer"
+        "alt": "How To Shop: 1. Add 2 products to cart, 2. Apply code STEAL40, 3. Get 40% off"
       },
       "mobileImage": {
         "src": "/HowItWorksBanner/images/howtoshop-mobile.jpg",
-        "alt": "How To Shop: 1. Add favorites to cart, 2. Apply code at checkout, 3. Enjoy your offer"
+        "alt": "How To Shop: 1. Add 2 products to cart, 2. Apply code STEAL40, 3. Get 40% off"
       },
       "mobileAspectRatio": "1500/1167",
       "desktopAspectRatio": "5692/692"
     },
     "countdown_timer": {
-      "targetDate": "Mar 12, 2026 23:59:59",
+      "targetDate": "Jul 10, 2026 00:00:00",
       "heading": "Hurry Up!",
-      "subheading": "Hurry! Offer Will Expire in",
+      "subheading": "Offer will expire in",
       "expiredText": "Oops! Offer is Expired"
     },
     "most_loved_grid": {
       "category_title": "Most Loved"
+    },
+    "collection_sections": {
+      "most_loved": "Most Loved",
+      "trending": "Trending",
+      "expert_hair_care_range": "Expert Hair Care Range",
+      "explore_more": "Explore more"
     },
     "sale_banner": {
       "mobileSrc": {
@@ -43,37 +49,37 @@
         "alt": "Sale Banner"
       },
       "offer": {
-        "title": "Buy2 Get2",
-        "price": "Free",
+        "title": "Buy 2 at 40% Off",
+        "price": "",
         "currencySymbol": "",
-        "couponCode": "B2G2",
-        "expiryText": "Sale ends tonight"
+        "couponCode": "STEAL40",
+        "expiryText": "Offer will expire in"
       },
-      "countdown": "Mar 12, 2026 23:59:59",
+      "countdown": "Jul 9, 2026 23:59:59",
       "banner_cta": "How to shop",
       "how_to_shop_title": "How to shop",
       "how_to_shop_steps__rich": [
         {
           "id": 1,
-          "text": "Add <strong>4 favourites</strong> to your cart"
+          "text": "Add any <strong>2 products</strong> to your cart"
         },
         {
           "id": 2,
-          "text": "Apply code <strong>B2G2</strong> at checkout"
+          "text": "Apply code <strong>STEAL40</strong> at checkout"
         },
         {
           "id": 3,
-          "text": "Lowest-priced product will be <strong>Free</strong>"
+          "text": "Get <strong>40% off</strong> — up to 55% off on bestsellers"
         }
       ],
       "terms_and_conditions": {
         "title": "Terms and conditions",
-        "points": "Offer cannot be clubbed with other coupons.Not applicable on kits & combos."
+        "points": "Offer cannot be clubbed with other coupons.Applicable on select bestsellers."
       },
       "primary_button": "Got it"
     },
     "sale_collection": {
-      "title": "Bestsellers"
+      "title": "Most Loved"
     }
   }
 }

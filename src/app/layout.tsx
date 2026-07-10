@@ -139,6 +139,12 @@ export default async function RootLayout({
           strategy="afterInteractive"
         />
         <Script src="/scripts/gtm-pixel-sdk.js" strategy="afterInteractive" />
+        {process.env.NEXT_PUBLIC_GOOGLE_RATIO_GMC_SDK_URL && (
+          <Script
+            src={process.env.NEXT_PUBLIC_GOOGLE_RATIO_GMC_SDK_URL}
+            strategy="afterInteractive"
+          />
+        )}
         <LimeChatScript />
       </body>
     </html>

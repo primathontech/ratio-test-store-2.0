@@ -1,5 +1,6 @@
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
 import { getProductLabel } from "@/ui/components/ProductCard/badgeUtils";
+import { resolveAvailableForSale } from "@/ui/components/ProductCard/availability";
 import type { MappableApiProduct, MappableApiTag } from "./types";
 
 /* ------------------------------------------------------------------ */
@@ -80,11 +81,21 @@ export function toCardProduct(product: MappableApiProduct): ProductCardProduct {
   const variantFromList = product.variants?.[0];
   const variantId = variantFromList?.id || product.variant?.id;
   const sku = variantFromList?.sku || product.variant?.sku;
-  const availableForSale =
+  const rawAvailableForSale =
     typeof product.availableForSale === "boolean"
       ? product.availableForSale
       : (variantFromList?.availableForSale ??
         product.variant?.availableForSale);
+  // When availableForSale is false, fall back to stock quantity (variant
+  // first, then product-level) before declaring the card sold out.
+  const availableQuantity =
+    variantFromList?.availableQuantity ??
+    product.variant?.availableQuantity ??
+    product.availableQuantity;
+  const availableForSale = resolveAvailableForSale(
+    rawAvailableForSale,
+    availableQuantity
+  );
 
   /* ---------- Rating ---------- */
   const ratingNum =

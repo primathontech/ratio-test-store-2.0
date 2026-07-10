@@ -74,6 +74,19 @@
     },
     "sale_collection": {
       "title": "Bestsellers"
+    },
+    "collection_sections": {
+      "most_loved": "Most Loved",
+      "hair_fall_control": "For Hair Fall Control",
+      "party_ready": "For Party Ready Hair at Home",
+      "salon_secret": "High Shine Creme Hair Colour",
+      "dull_dry_hair": "For Dull & Dry Hair",
+      "damage_repair": "For Damage Repair",
+      "advanced_smoothening": "For Advanced Smoothening",
+      "dandruff_control": "For Dandruff Control",
+      "extraordinary_shiny": "For Extraordinary Shiny Hair",
+      "bond_repair": "For Bond Repair",
+      "five_min_shampoo": "5 Minute Shampoo Hair Colour"
     }
   }
 }

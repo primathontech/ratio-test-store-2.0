@@ -74,6 +74,15 @@
     },
     "sale_collection": {
       "title": "BestSellers"
+    },
+    "collection_sections": {
+      "high_shine": "High Shine Creme Hair Colour",
+      "most_loved": "Most Loved",
+      "trending": "Trending",
+      "expert_hair_care_range": "Expert Hair Care Range",
+      "best_selling_combos": "Best Selling Combos",
+      "best_selling_kits": "Best Selling Kits",
+      "explore_more": "Explore more"
     }
   }
 }

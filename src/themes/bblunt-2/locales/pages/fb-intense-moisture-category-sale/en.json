@@ -74,6 +74,16 @@
     },
     "sale_collection": {
       "title": "BestSellers"
+    },
+    "collection_sections": {
+      "dull_dry_hair": "For Dull & Dry Hair",
+      "most_loved": "Most Loved",
+      "trending": "Trending",
+      "expert_hair_care_range": "Expert Hair Care Range",
+      "salon_like_colour": "For Salon Like Colour at Home",
+      "best_selling_combos": "Best Selling Combos",
+      "best_selling_kits": "Best Selling Kits",
+      "explore_more": "Explore more"
     }
   }
 }
