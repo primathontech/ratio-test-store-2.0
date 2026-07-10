@@ -1016,18 +1016,19 @@ console.log("Assets migrated:", result.assets);
 ```
 
 **Available Tools:**
-| Tool | Purpose |
-|------|---------|
-| `scrapeStore` | Scrape website structure and content |
-| `analyzeDesign` | Extract colors, fonts, spacing |
-| `migrateAssets` | Download and optimize images/fonts |
-| `createMerchant` | Create new merchant in system |
-| `addSection` | Add section to page template |
-| `addWidget` | Add widget to section |
-| `updateWidget` | Modify widget settings |
-| `updateThemeColors` | Update theme color palette |
-| `updateThemeTypography` | Update fonts and sizes |
-| `triggerClaudeCode` | Generate code via Claude Code |
+
+| Tool                    | Purpose                              |
+| ----------------------- | ------------------------------------ |
+| `scrapeStore`           | Scrape website structure and content |
+| `analyzeDesign`         | Extract colors, fonts, spacing       |
+| `migrateAssets`         | Download and optimize images/fonts   |
+| `createMerchant`        | Create new merchant in system        |
+| `addSection`            | Add section to page template         |
+| `addWidget`             | Add widget to section                |
+| `updateWidget`          | Modify widget settings               |
+| `updateThemeColors`     | Update theme color palette           |
+| `updateThemeTypography` | Update fonts and sizes               |
+| `triggerClaudeCode`     | Generate code via Claude Code        |
 
 ---
 

@@ -66,42 +66,42 @@ export const template: PageConfig = {
     },
 
     // Collection Timer Section (urgency strip)
-    {
-      id: "collection-timer-section",
-      name: "Collection Timer",
-      type: SECTION_TYPES.CONTENT_SECTION,
-      settings: {
-        layout: SECTION_LAYOUT_OPTIONS.FULL,
-        responsive: {
-          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
-        },
-      },
-      widgets: [
-        {
-          id: "collection-timer-widget",
-          name: "Collection Timer",
-          type: WIDGET_TYPES.CollectionTimer,
-          settings: {
-            variant: "v1",
-            visible: true,
-            endDateString:
-              "t:bblunt-2_collection_default.collection_timer.endDateString",
-            timerInterval: 1000,
-            urgencyText:
-              "t:bblunt-2_collection_default.collection_timer.urgencyText",
-            saleLabel:
-              "t:bblunt-2_collection_default.collection_timer.saleLabel",
-            expiredText:
-              "t:bblunt-2_collection_default.collection_timer.expiredText",
-            backgroundColor: "#ffffff",
-            textColor: "#1D1D1D",
-            urgencyColor: "#FF0000",
-          },
-        },
-      ],
-    },
+    // {
+    //   id: "collection-timer-section",
+    //   name: "Collection Timer",
+    //   type: SECTION_TYPES.CONTENT_SECTION,
+    //   settings: {
+    //     layout: SECTION_LAYOUT_OPTIONS.FULL,
+    //     responsive: {
+    //       mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //       tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //       desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+    //     },
+    //   },
+    //   widgets: [
+    //     {
+    //       id: "collection-timer-widget",
+    //       name: "Collection Timer",
+    //       type: WIDGET_TYPES.CollectionTimer,
+    //       settings: {
+    //         variant: "v1",
+    //         visible: true,
+    //         endDateString:
+    //           "t:bblunt-2_collection_default.collection_timer.endDateString",
+    //         timerInterval: 1000,
+    //         urgencyText:
+    //           "t:bblunt-2_collection_default.collection_timer.urgencyText",
+    //         saleLabel:
+    //           "t:bblunt-2_collection_default.collection_timer.saleLabel",
+    //         expiredText:
+    //           "t:bblunt-2_collection_default.collection_timer.expiredText",
+    //         backgroundColor: "#ffffff",
+    //         textColor: "#1D1D1D",
+    //         urgencyColor: "#FF0000",
+    //       },
+    //     },
+    //   ],
+    // },
 
     // Collection Page Section
     {

@@ -20,6 +20,7 @@ export interface MappableApiVariant {
   id?: string;
   sku?: string;
   availableForSale?: boolean;
+  availableQuantity?: number;
 }
 
 /**
@@ -42,6 +43,7 @@ export interface MappableApiProduct {
   images?: MappableApiImage[];
   tags?: MappableApiTag[];
   availableForSale?: boolean;
+  availableQuantity?: number;
   variant?: MappableApiVariant;
   variants?: MappableApiVariant[];
   average_rating?: string | number;

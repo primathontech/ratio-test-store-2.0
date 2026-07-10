@@ -50,7 +50,15 @@ module.exports = createNextConfig({
   },
 
   // App-specific redirects (wellversed.in legacy pages)
-  redirects: [],
+  redirects: [
+    // Search page moved from /pages/search → /pages/searchtap-search (matches
+    // live bblunt.com). Redirect the old path so existing links/bookmarks work.
+    {
+      source: "/pages/search",
+      destination: "/pages/searchtap-search",
+      permanent: true,
+    },
+  ],
 
   // the GoKwik API slower than local, so per-page prerender can exceed the 60s
   // default and get dropped. Gives slow fetches more headroom to complete.

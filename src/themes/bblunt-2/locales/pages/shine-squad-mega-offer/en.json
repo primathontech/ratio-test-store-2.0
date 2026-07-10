@@ -33,6 +33,12 @@
     "most_loved_grid": {
       "category_title": "Most Loved"
     },
+    "collection_sections": {
+      "most_loved": "Most Loved",
+      "trending": "Trending",
+      "expert_hair_care_range": "Expert Hair Care Range",
+      "explore_more": "Explore more"
+    },
     "sale_banner": {
       "mobileSrc": {
         "src": "/bblunt-2/images/sale-page-background-mobile.webp",

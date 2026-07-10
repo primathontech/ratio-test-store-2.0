@@ -15,6 +15,8 @@ RUN --mount=type=bind,source=.git,target=/tmp/.git \
 # Dependencies
 FROM base AS deps
 COPY package.json bun.lock ./
+# patchedDependencies (see package.json) — bun needs the patch files at install time
+COPY patches ./patches
 COPY --from=editor /app/src/app/editor/package.json src/app/editor/
 RUN bun install --frozen-lockfile
 
@@ -43,6 +45,10 @@ FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV HOSTNAME=0.0.0.0
+# DIAGNOSTIC (revert after leak test): cap glibc malloc arenas. MEMMON shows
+# idle off-heap RSS ratcheting (heapUsed/external flat); this tests whether it's
+# glibc arena fragmentation. No effect if the runtime allocator isn't glibc.
+ENV MALLOC_ARENA_MAX=2
 
 RUN groupadd --system --gid 1001 nodejs && \
   useradd --system --uid 1001 --gid nodejs nextjs
