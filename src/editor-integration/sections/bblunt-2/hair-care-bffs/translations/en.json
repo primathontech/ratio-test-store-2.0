@@ -1,0 +1,37 @@
+{
+  "sections.hair_care_bffs.heading__rich": "Hair Care <strong>BFFs</strong>",
+  "sections.hair_care_bffs.backgroundImage": {
+    "src": "/HairCareBFFs/images/bg-watermark.webp",
+    "alt": "Hair Care BFFs section background"
+  },
+  "sections.hair_care_bffs.backgroundImageMobile": {
+    "src": "/HairCareBFFs/images/bg-mobile-watermark.webp",
+    "alt": "Hair Care BFFs section background"
+  },
+  "sections.hair_care_bffs.collections": [
+    {
+      "label": "Most Loved",
+      "viewAllCollectionHandle": "most-loved-home-page"
+    },
+    {
+      "label": "Shampoo",
+      "viewAllCollectionHandle": "shampoo-haircarebffs"
+    },
+    {
+      "label": "Conditioner",
+      "viewAllCollectionHandle": "shampoo-haircarebffs-copy"
+    },
+    {
+      "label": "Hair Spray",
+      "viewAllCollectionHandle": "spray-haircarebffs"
+    },
+    {
+      "label": "Hair Colour",
+      "viewAllCollectionHandle": "salon-haircarebffs"
+    },
+    {
+      "label": "Hair Mask",
+      "viewAllCollectionHandle": "hair-mask-haircarebffs"
+    }
+  ]
+}
