@@ -16,24 +16,32 @@
 }
 
 /*
- * Sticky-header fix.
+ * Sticky-header fix (SCOPED to chrome) + soft-nav scroll fix.
  *
- * @shopkit/builder renders each pass — header chrome, page body, footer chrome —
- * in its own structural `<div class="page-container">`, and those three end up as
- * SIBLINGS under <body>. That makes the header's containing block only as tall as
- * the header itself (~header + announcement bar), so `position: sticky` on the
- * <header> has essentially no scroll range and unsticks the moment you scroll past
- * it — the header appears non-sticky on both mobile and desktop.
+ * @shopkit/builder renders header chrome, page body, and footer chrome each in
+ * its own `<div class="page-container">` (siblings under <body>). A chrome
+ * container is only chrome-tall, so `position: sticky` on the <header> inside it
+ * has no scroll range and unsticks the moment you scroll past it.
  *
- * `.page-container` carries no styles of its own (verified: no CSS targets it, no JS
- * measures it), so removing it from the box tree with `display: contents` is
- * visually inert. Its children (the header, and the page sections) then participate
- * in <body>'s layout directly, so the sticky header's containing block becomes
- * <body> — the scroll container — and it pins correctly across the whole page.
+ * We remove ONLY the header/footer chrome containers from the box tree with
+ * `display: contents`, so the sticky header's containing block resolves to <body>
+ * and it pins across the whole page. Chrome containers are matched by the semantic
+ * <header>/<footer> they render (verified: no page-body widget renders those tags;
+ * the shimmer rule below already relies on `:has(footer)` for the same reason).
  *
- * App-side fix only; no @shopkit/* change.
+ * IMPORTANT — the PAGE-BODY container is deliberately NOT matched, so it stays a
+ * real box. The earlier BLANKET `.page-container { display: contents }` removed the
+ * body's box too, and on SOFT (client-side) navigation Next.js App Router's
+ * ScrollAndFocusHandler could not resolve the new page segment as a scroll target —
+ * it scrolled <next-route-announcer> (at the document bottom) into view, so
+ * client-side redirects landed at the BOTTOM of the page. Keeping the body
+ * container a real box restores Next's native scroll-to-top on navigation.
+ *
+ * `.page-container` carries no styles of its own (verified), so this is visually
+ * inert. App-side fix only; no @shopkit/* change.
  */
-.page-container {
+.page-container:has(header),
+.page-container:has(footer) {
   display: contents;
 }
 
