@@ -15,7 +15,7 @@ export function generateMetadata(): Metadata {
   const { siteUrl, siteName } = getSEOConfig();
   return resolvePageSEO(
     {
-      title: "Combo Kit - BBlunt",
+      title: "Combo-kit - BBlunt",
       description: "Combo kit sale page.",
     },
     { siteUrl, siteName, path: "/pages/combo-kit" }
