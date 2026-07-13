@@ -20,6 +20,7 @@ import {
 } from "@/ui/components/CartAwareProductCard";
 import type { ProductCardProduct } from "@/ui/components/ProductCard/types";
 import { resolveAvailableForSale } from "@/ui/components/ProductCard/availability";
+import { getCommerceClient } from "@/config/commerce";
 import { NAVIGATION_ICONS } from "../constants";
 import { MobileNavigationItem } from "../types";
 
@@ -34,6 +35,9 @@ export interface StickyFooterProductData {
   title: string;
   product_type?: string;
   availableForSale?: boolean;
+  /** Top-level product price in paise. Canonical fallback when a variant
+   *  price is missing (mirrors the PDP: `variant.price ?? product.price`). */
+  price?: number;
   variants: Array<{
     id: string;
     title?: string;
@@ -45,16 +49,12 @@ export interface StickyFooterProductData {
 
 interface StickyFooterProps {
   items: MobileNavigationItem[];
-  productData?: StickyFooterProductData;
-  selectedVariantId?: string;
   addToCartText?: string;
   soldOutText?: string;
 }
 
 export const StickyFooter = ({
   items,
-  productData,
-  selectedVariantId,
   addToCartText = "Add to Cart",
   soldOutText = "Sold Out",
 }: StickyFooterProps) => {
@@ -78,6 +78,67 @@ export const StickyFooter = ({
   const isInitialLoadRef = useRef(true);
 
   const isProductPage = pathname?.startsWith("/products/") ?? false;
+
+  // The footer is rendered by chrome (`renderChrome`, path:"/"), so it never
+  // receives the open product server-side. On a product route we fetch it
+  // client-side via the commerce client using the handle from the URL — this
+  // powers the MOBILE add-to-cart (desktop/tablet is the StickyAddToCart widget).
+  const productHandle = (() => {
+    const parts = pathname?.split("/").filter(Boolean) ?? [];
+    const i = parts.indexOf("products");
+    return i !== -1 ? parts[i + 1] : undefined;
+  })();
+
+  const [fetchedProduct, setFetchedProduct] =
+    useState<StickyFooterProductData | null>(null);
+  const [isProductLoading, setIsProductLoading] = useState(false);
+
+  useEffect(() => {
+    if (!productHandle) {
+      setFetchedProduct(null);
+      setIsProductLoading(false);
+      return;
+    }
+    let cancelled = false;
+    setFetchedProduct(null);
+    setIsProductLoading(true);
+    (async () => {
+      try {
+        const res = (await getCommerceClient().getProduct({
+          handle: productHandle,
+        })) as { data?: any };
+        const p = res?.data;
+        if (cancelled || !p) {
+          return;
+        }
+        setFetchedProduct({
+          id: p.id,
+          title: p.title,
+          product_type: p.product_type,
+          availableForSale: p.availableForSale,
+          price: p.price,
+          variants: (p.variants ?? []).map((v: any) => ({
+            id: v.id,
+            title: v.title,
+            price: v.price,
+            sku: v.sku,
+            availableQuantity: v.availableQuantity,
+          })),
+        });
+      } catch (error) {
+        console.error("[StickyFooter] getProduct failed:", error);
+      } finally {
+        if (!cancelled) {
+          setIsProductLoading(false);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [productHandle]);
+
+  const productData = fetchedProduct ?? undefined;
 
   useEffect(() => {
     if (isCartInitialized && isInitialLoadRef.current) {
@@ -162,14 +223,15 @@ export const StickyFooter = ({
     return item.icon;
   };
 
-  const selectedVariant = selectedVariantId
-    ? productData?.variants.find((v) => v.id === selectedVariantId)
-    : undefined;
-  const fallbackVariant =
+  const activeVariant =
     productData?.variants.find((v) => v?.title === "Default Title") ||
     productData?.variants[0];
-  const activeVariant = selectedVariant || fallbackVariant;
-  const priceInPaise = activeVariant?.price ?? 0;
+  // Use the TOP-LEVEL product price directly (matches the desktop StickyAddToCart
+  // — `product.price / 100` — and the PDP, which resolves to the top-level price
+  // for products without a "Default Title" variant). Falling back to a variant
+  // price would show the wrong value for products whose first variant differs
+  // from the canonical top-level price. Variant price is only a last resort.
+  const priceInPaise = productData?.price ?? activeVariant?.price ?? 0;
   const currentPrice = priceInPaise / 100;
 
   const handleAddToCart = async () => {
@@ -196,8 +258,7 @@ export const StickyFooter = ({
   };
 
   const isLoading = productData
-    ? !!loadingItems[productData.id] ||
-      !!loadingItems[selectedVariantId || productData.variants[0]?.id || ""]
+    ? !!loadingItems[productData.id] || !!loadingItems[activeVariant?.id || ""]
     : false;
   // availableForSale===false → fall back to the active variant's stock
   // quantity (PDP API exposes it per variant) before showing "Sold Out".
@@ -268,7 +329,7 @@ export const StickyFooter = ({
               disabled={isLoading || !productData || !isAvailable || !cartToken}
               className="md:hidden flex items-center justify-center text-text-lg text-center text-white font-bold px-[42px] py-[17px] w-full rounded-full bg-black disabled:cursor-not-allowed transition-opacity hover:opacity-90"
             >
-              {isLoading ? (
+              {isLoading || isProductLoading ? (
                 <svg
                   width="18"
                   height="18"

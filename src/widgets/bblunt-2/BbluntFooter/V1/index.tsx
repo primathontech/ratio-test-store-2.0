@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import React, { memo, useState } from "react";
 import { useNav, type NavEntry } from "@shopkit/navigation/client";
 
@@ -79,9 +80,12 @@ function navMenuTitle(entries: NavEntry[]): string {
   return "";
 }
 
-export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
+export const V1 = memo(function V1({ settings = {} }: FooterProps) {
   const [isMobileAccordionOpen, setIsMobileAccordionOpen] = useState(false);
-  const product = data?.success ? data.data : null;
+  // Product pages show the mobile sticky add-to-cart bar (StickyFooter) fixed
+  // at the bottom — add extra bottom margin there so it doesn't overlap the footer.
+  const pathname = usePathname();
+  const isProductPage = pathname?.startsWith("/products/") ?? false;
 
   const {
     backgroundColor = FOOTER_CONSTANTS.DEFAULT_SETTINGS.backgroundColor,
@@ -150,8 +154,8 @@ export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
         {/* Main Footer Content */}
         <div
           className={`mx-0 md:mx-[30px] xl:mx-[70px] 2xl:mx-auto px-[15px] pt-[35px] md:px-0 md:pt-[70px] xl:pt-[40px] transition-all duration-300 pb-0 md:pb-[30px] max-w-[1300px] ${
-            isMobileAccordionOpen ? "pb-[117px]" : "pb-[117px] md:pb-[40px]"
-          }`}
+            isMobileAccordionOpen ? "pb-[117px]" : "pb-[150px] md:pb-[40px]"
+          } ${isProductPage ? "mb-[60px] md:mb-0" : ""}`}
         >
           {/* Mobile Layout */}
           <div className="md:hidden">
@@ -454,10 +458,7 @@ export const V1 = memo(function V1({ data, settings = {} }: FooterProps) {
       <ContextualMessage data={{}} settings={{ variant: "v1" }} />
 
       <div className="fixed bottom-[16px] left-[16px] right-[16px] z-[50] block xl:hidden">
-        <StickyFooter
-          items={MOBILE_NAVIGATION_ITEMS}
-          productData={product ?? undefined}
-        />
+        <StickyFooter items={MOBILE_NAVIGATION_ITEMS} />
       </div>
     </footer>
   );

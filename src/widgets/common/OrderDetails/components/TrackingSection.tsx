@@ -27,13 +27,13 @@ export const TrackingSection: React.FC<TrackingSectionProps> = ({
   const gapClass =
     orderStatus === "Cancelled"
       ? "gap-20 sm:gap-56 ml-0 sm:ml-12"
-      : "gap-20 sm:gap-36";
+      : "gap-14 sm:gap-36";
 
   // Line width: below 638px → 30vw, 638px–920px → 34vw, above 920px → capped by max
   const lineWidthClass =
     orderStatus === "Cancelled"
       ? "w-[clamp(7rem,20vw,17rem)] min-[638px]:w-[clamp(7rem,40vw,17rem)]"
-      : "w-[clamp(8rem,20vw,12rem)] min-[638px]:w-[clamp(8rem,28vw,12rem)]";
+      : "w-[clamp(7rem,20vw,12rem)] min-[638px]:w-[clamp(8rem,28vw,12rem)]";
 
   return (
     <div data-testid="tracking-section-container" className="mb-6 w-fit">
