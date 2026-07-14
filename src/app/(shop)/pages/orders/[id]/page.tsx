@@ -10,30 +10,32 @@ import { getSEOConfig } from "@/config";
 
 export const dynamic = "force-dynamic";
 
-export function generateMetadata({
+export async function generateMetadata({
   params,
 }: {
-  params: { id: string };
-}): Metadata {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
   const { siteUrl, siteName } = getSEOConfig();
   return resolvePageSEO(
     { noIndex: true },
-    { siteUrl, siteName, path: `/pages/orders/${params.id}` }
+    { siteUrl, siteName, path: `/pages/orders/${id}` }
   );
 }
 
 export default async function OrderDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const themeName = getThemeName();
   const locale = getStaticLocale();
 
   const routeContext = {
     templateName: TEMPLATE_TYPES["order-details"],
-    path: `/pages/orders/${params.id}`,
-    params: { id: params.id },
+    path: `/pages/orders/${id}`,
+    params: { id },
     query: {},
     fetchAPITemplate: true,
   };
