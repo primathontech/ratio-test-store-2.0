@@ -268,6 +268,12 @@ export const StickyFooter = ({
       activeVariant?.availableQuantity
     ) !== false;
 
+  // Sold-out treatment (matches bblunt.com): show a transparent/outlined
+  // button that still displays the price. Only once the product has loaded
+  // (during load we keep the black button + spinner).
+  const showSoldOut =
+    !!productData && !isAvailable && !isLoading && !isProductLoading;
+
   const cartIconColor =
     itemCount > 0
       ? showGreenTransition && !showBlackTransition
@@ -327,7 +333,9 @@ export const StickyFooter = ({
               data-testid="sticky-footer-add-to-cart-button"
               onClick={handleAddToCart}
               disabled={isLoading || !productData || !isAvailable || !cartToken}
-              className="md:hidden flex items-center justify-center text-text-lg text-center text-white font-bold px-[42px] py-[17px] w-full rounded-full bg-black disabled:cursor-not-allowed transition-opacity hover:opacity-90"
+              className={`md:hidden flex items-center justify-center text-text-lg text-center font-bold px-[42px] py-[17px] w-full rounded-full bg-black text-white disabled:cursor-not-allowed transition-opacity ${
+                showSoldOut ? "opacity-50" : "hover:opacity-90"
+              }`}
             >
               {isLoading || isProductLoading ? (
                 <svg
@@ -359,7 +367,7 @@ export const StickyFooter = ({
                   />
                 </svg>
               ) : !isAvailable ? (
-                soldOutText
+                `${soldOutText} - ₹${currentPrice}`
               ) : (
                 `${addToCartText} - ₹${currentPrice}`
               )}
