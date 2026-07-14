@@ -82,7 +82,14 @@ export default async function CollectionPage(props: {
     });
 
     return (
-      <Suspense fallback={<></>}>
+      // Reserve viewport height while the collection content streams in. The
+      // footer is rendered by the (shop) <Chrome> layout OUTSIDE this boundary,
+      // so with an empty fallback the content slot collapses during streaming
+      // and the footer flashes up under the header. A min-h-screen placeholder
+      // keeps the footer below the fold until the content arrives. This is
+      // SSR-streaming-only — it's replaced by the real content the moment it
+      // resolves, so the final rendered UI is unchanged.
+      <Suspense fallback={<div className="min-h-screen" aria-hidden />}>
         {pageContent}
         <KwikPassCollectionView collection={collection} />
       </Suspense>
