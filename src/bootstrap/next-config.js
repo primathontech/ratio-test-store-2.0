@@ -142,12 +142,18 @@ function buildStaticHeaders(
 ) {
   const paths = [...DEFAULT_STATIC_PATHS, ...additionalPaths];
 
+  // In `next dev`, chunk URLs are NOT content-hashed — a 1-year immutable
+  // header makes browsers permanently serve stale code after every edit
+  // (invisible fixes, phantom crashes). Immutable is prod-only.
+  const cacheValue =
+    process.env.NODE_ENV === "production" ? IMMUTABLE_CACHE : NO_CACHE;
+
   const staticHeaders = paths.map((source) => ({
     source,
     headers: [
       {
         key: "Cache-Control",
-        value: IMMUTABLE_CACHE,
+        value: cacheValue,
       },
     ],
   }));
@@ -156,7 +162,7 @@ function buildStaticHeaders(
   const corsHeaders = additionalCorsStaticPaths.map((source) => ({
     source,
     headers: [
-      { key: "Cache-Control", value: IMMUTABLE_CACHE },
+      { key: "Cache-Control", value: cacheValue },
       { key: "Access-Control-Allow-Origin", value: "*" },
     ],
   }));
