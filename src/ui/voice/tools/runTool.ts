@@ -71,6 +71,10 @@ export function createRunTool(ctx: ToolContext) {
   const MAX_CART_UNITS = config.limits.maxCartUnits;
   const MAX_CART_LINES = config.limits.maxCartLines;
   const LARGE_QTY = config.limits.largeQty;
+  // The store's currency CODE, attached to every price-bearing payload so the model
+  // has a per-datum anchor and can never read a bare number as USD. Config-driven
+  // (default INR); pairs with the persona's MONEY rule.
+  const CURRENCY = config.currency?.code || "INR";
   // How many products a single sort-by-rating rates (bounds the review fan-out).
   const RATING_FANOUT = 12;
   const GUARD_LIMITS: GuardLimits = {
@@ -115,11 +119,15 @@ export function createRunTool(ctx: ToolContext) {
       const path =
         typeof window !== "undefined" ? window.location.pathname : "";
       const handle = path.match(/\/products\/([^/?#]+)/)?.[1];
-      if (!handle) return null;
+      if (!handle) {
+        return null;
+      }
       const d: any = await fetchJson(
         `/api/voice-product?handle=${encodeURIComponent(handle)}`
       );
-      if (!d || d.error || !d.handle) return null;
+      if (!d || d.error || !d.handle) {
+        return null;
+      }
       currentProductDetailRef.current = d;
       const p = {
         id: d.product_id,
@@ -162,7 +170,9 @@ export function createRunTool(ctx: ToolContext) {
       const fresh: any = await fetchJson(
         `/api/voice-product?handle=${encodeURIComponent(p.handle)}`
       );
-      if (fresh && !fresh.error) d = currentProductDetailRef.current = fresh;
+      if (fresh && !fresh.error) {
+        d = currentProductDetailRef.current = fresh;
+      }
     }
     const variants: any[] = Array.isArray(d?.variants) ? d.variants : [];
     const vid = (v: any) =>
@@ -172,20 +182,24 @@ export function createRunTool(ctx: ToolContext) {
     let variantId: string | null = isSyntheticVariant(p)
       ? null
       : (p.variantId ?? null);
-    if (!variantId)
+    if (!variantId) {
       variantId =
         (d?.variant_id != null ? String(d.variant_id) : null) ??
         vid(variants.find((v) => v.available)) ??
         vid(variants[0]);
+    }
     // Availability from the source of record.
     let soldOut: boolean;
     const chosen = variantId
       ? variants.find((v) => String(v.variant_id) === String(variantId))
       : undefined;
-    if (chosen && typeof chosen.available === "boolean")
+    if (chosen && typeof chosen.available === "boolean") {
       soldOut = !chosen.available;
-    else if (d && typeof d.available === "boolean") soldOut = !d.available;
-    else soldOut = p.available === false;
+    } else if (d && typeof d.available === "boolean") {
+      soldOut = !d.available;
+    } else {
+      soldOut = p.available === false;
+    }
     return { variantId, soldOut };
   };
 
@@ -193,16 +207,19 @@ export function createRunTool(ctx: ToolContext) {
     p: TransformedProduct
   ): Promise<{ avg: number; total: number }> => {
     const hit = ratingsCacheRef.current.get(p.id);
-    if (hit) return hit;
+    if (hit) {
+      return hit;
+    }
     let rec = { avg: 0, total: 0 };
     const d = await fetchJson(
       `/api/voice-reviews?handle=${encodeURIComponent(p.handle)}`
     );
-    if (d)
+    if (d) {
       rec = {
         avg: Number(d.average_rating) || 0,
         total: Number(d.total_ratings) || 0,
       };
+    }
     ratingsCacheRef.current.set(p.id, rec);
     return rec;
   };
@@ -220,6 +237,7 @@ export function createRunTool(ctx: ToolContext) {
     handle: p.handle,
     title: p.title,
     price: p.price,
+    currency: CURRENCY, // price is a number in THIS currency — never USD
     available: p.available,
     on_sale: onSale(p),
     ...(p.brand ? { brand: p.brand } : {}),
@@ -238,9 +256,13 @@ export function createRunTool(ctx: ToolContext) {
         i.variantId === productId ||
         i.variant_id === productId
     );
-    if (direct) return direct;
+    if (direct) {
+      return direct;
+    }
     const p = findP(productId);
-    if (!p) return undefined;
+    if (!p) {
+      return undefined;
+    }
     return items.find(
       (i) =>
         i.productId === p.id ||
@@ -251,9 +273,13 @@ export function createRunTool(ctx: ToolContext) {
   };
 
   const loadCollections = async () => {
-    if (collectionsRef.current.length) return collectionsRef.current;
+    if (collectionsRef.current.length) {
+      return collectionsRef.current;
+    }
     const d = await fetchJson("/api/voice-collections");
-    if (Array.isArray(d?.collections)) collectionsRef.current = d.collections;
+    if (Array.isArray(d?.collections)) {
+      collectionsRef.current = d.collections;
+    }
     return collectionsRef.current;
   };
 
@@ -268,14 +294,18 @@ export function createRunTool(ctx: ToolContext) {
 
   const fetchProfile = async (): Promise<ProfileResult> => {
     const cred = auth.getCredential();
-    if (!cred) return { ok: false };
+    if (!cred) {
+      return { ok: false };
+    }
     const r = await fetchJsonWithStatus("/api/v1/customer", {
       headers: {
         "gk-access-token": cred.accessToken,
         "gk-merchant-id": cred.merchantId,
       },
     });
-    if (r.ok && r.data && !r.data.error) return { ok: true, data: r.data };
+    if (r.ok && r.data && !r.data.error) {
+      return { ok: true, data: r.data };
+    }
     return { ok: false, authExpired: r.status === 401 || r.status === 403 };
   };
 
@@ -295,12 +325,16 @@ export function createRunTool(ctx: ToolContext) {
           ? localStorage.getItem("customerDetails")
           : null;
       const cached = raw ? JSON.parse(raw)?.phone : "";
-      if (cached) return String(cached);
+      if (cached) {
+        return String(cached);
+      }
     } catch {
       /* ignore malformed cache */
     }
     const p = await fetchProfile();
-    if (p.ok) return String(p.data.phone || p.data.defaultAddress?.phone || "");
+    if (p.ok) {
+      return String(p.data.phone || p.data.defaultAddress?.phone || "");
+    }
     return "";
   };
 
@@ -316,13 +350,14 @@ export function createRunTool(ctx: ToolContext) {
     }
     // HONEST DEGRADATION: if the search backend is in cooldown (recently failed),
     // don't pretend the catalog is empty — tell the agent search is unavailable.
-    if (health.isDown("search"))
+    if (health.isDown("search")) {
       return {
         ok: false,
         service_unavailable: true,
         message:
           "Product search is temporarily unavailable — I can still help with your cart or the page you're on.",
       };
+    }
     let products;
     try {
       ({ products } = await searchProducts(query, WORKING_SET, 1));
@@ -354,8 +389,9 @@ export function createRunTool(ctx: ToolContext) {
       typeof window !== "undefined" &&
       window.location.pathname === SEARCH_PATH &&
       new URLSearchParams(window.location.search).get("q") === query;
-    if (!alreadyOnThisSearch)
+    if (!alreadyOnThisSearch) {
       router.push(`${SEARCH_PATH}?q=${encodeURIComponent(query)}`);
+    }
     setCaption(`🔎 ${query}`);
     track("search", { query, count: products.length });
     return {
@@ -379,11 +415,14 @@ export function createRunTool(ctx: ToolContext) {
   const search: Handler = (args) => doSearch(args.query);
   const productSummary: Handler = (args) => {
     const p = findP(args.product_id) ?? currentProductRef.current;
-    if (!p) return { ok: false, error: "not in recent results" };
+    if (!p) {
+      return { ok: false, error: "not in recent results" };
+    }
     currentProductRef.current = p;
     return {
       title: p.title,
       price: p.price,
+      currency: CURRENCY,
       available: p.available,
       handle: p.handle,
     };
@@ -410,15 +449,18 @@ export function createRunTool(ctx: ToolContext) {
           .trim() ||
         cp?.title ||
         "";
-      if (!seed)
+      if (!seed) {
         return {
           ok: false,
           needQuery: true,
           message:
             "Tell me what you're after — a category, an occasion, or who it's for — and I'll suggest some options.",
         };
+      }
       const res = await doSearch(seed);
-      if (res.ok === false) return res;
+      if (res.ok === false) {
+        return res;
+      }
       // Drop the open product from its own "similar" list.
       const openId = d?.product_id ?? cp?.id;
       const products = Array.isArray((res as any).products)
@@ -438,12 +480,13 @@ export function createRunTool(ctx: ToolContext) {
         findP(args.product_id) ??
         currentProductRef.current ??
         (await resolveOnScreenProduct());
-      if (!p)
+      if (!p) {
         return {
           ok: false,
           message:
             "Tell me which product — search for it or open its page first.",
         };
+      }
       // AUTHORITATIVE: resolve stock from the product-detail source of record (per the
       // chosen variant), the SAME path add_to_cart uses — so we never say "in stock"
       // here and then have add_to_cart refuse it as sold out (or vice-versa).
@@ -453,21 +496,23 @@ export function createRunTool(ctx: ToolContext) {
       // have swapped in a DIFFERENT product's detail (when checking one they're not
       // viewing), which would make get_current_product / "tell me about this" describe the
       // wrong item. Restore the prior focus detail.
-      if (savedDetail?.handle && savedDetail.handle !== p.handle)
+      if (savedDetail?.handle && savedDetail.handle !== p.handle) {
         currentProductDetailRef.current = savedDetail;
+      }
       return {
         ok: true,
         title: p.title,
         available: !soldOut,
         in_stock: !soldOut,
         price: p.price,
+        currency: CURRENCY,
       };
     },
 
     // ACCOUNT TOOLS (auth:"required" in registry → gated in runTool below).
     get_customer_profile: async () => {
       const p = await fetchProfile();
-      if (!p.ok)
+      if (!p.ok) {
         return {
           ok: false,
           ...(p.authExpired ? { auth_expired: true } : {}),
@@ -475,6 +520,7 @@ export function createRunTool(ctx: ToolContext) {
             ? "Your session looks expired — please sign in again and I'll pull it up."
             : "I couldn't load your profile right now.",
         };
+      }
       const d = p.data;
       // PRIVACY: the model context / transcript is logged provider-side, so we do
       // NOT put raw email/phone in it. The agent gets the shopper's NAME (safe to
@@ -502,16 +548,18 @@ export function createRunTool(ctx: ToolContext) {
       if (
         typeof window === "undefined" ||
         window.location.pathname !== "/pages/orders"
-      )
+      ) {
         router.push("/pages/orders");
+      }
       setCaption("🧾 Your orders");
       const phone = await resolvePhone();
-      if (!phone)
+      if (!phone) {
         return {
           ok: false,
           message:
             "I couldn't find your account details to look up orders — please make sure you're signed in.",
         };
+      }
       const cred = auth.getCredential();
       // SECURITY: the KwikPass token and the shopper's phone go in REQUEST HEADERS,
       // never the URL — a token in a query string leaks via access logs, Referer,
@@ -523,7 +571,7 @@ export function createRunTool(ctx: ToolContext) {
         },
       });
       const authExpired = r.status === 401 || r.status === 403;
-      if (!r.ok)
+      if (!r.ok) {
         return {
           ok: false,
           ...(authExpired ? { auth_expired: true } : {}),
@@ -531,6 +579,7 @@ export function createRunTool(ctx: ToolContext) {
             ? "Your session looks expired — please sign in again."
             : "I couldn't load your orders right now.",
         };
+      }
       const list: any[] = Array.isArray(r.data?.orders) ? r.data.orders : [];
       const orders = list.slice(0, 10).map((entry) => {
         const o = entry?.order ?? entry;
@@ -540,7 +589,7 @@ export function createRunTool(ctx: ToolContext) {
           status: o?.tracking?.status || o?.fulfillment_status || o?.status,
           payment_status: o?.payment_status,
           total: paiseToRupees(o?.total_price), // rupees (API sends paise)
-          currency: o?.currency || "INR",
+          currency: o?.currency || CURRENCY,
           items: Array.isArray(o?.line_items)
             ? o.line_items.map((li: any) => ({
                 title: li?.title,
@@ -563,19 +612,21 @@ export function createRunTool(ctx: ToolContext) {
     reorder: async (args) => {
       const orderNo = String(args?.order_number || "").trim();
       const c0 = cart() as any;
-      if (!c0.isInitialized && typeof c0.initializeCart === "function")
+      if (!c0.isInitialized && typeof c0.initializeCart === "function") {
         try {
           await c0.initializeCart();
         } catch {
           /* best-effort — non-fatal */
         }
+      }
       const phone = await resolvePhone();
-      if (!phone)
+      if (!phone) {
         return {
           ok: false,
           message:
             "I couldn't find your account details to look up your orders — please make sure you're signed in.",
         };
+      }
       const cred = auth.getCredential();
       const r = await fetchJsonWithStatus("/api/v1/orders?limit=10", {
         headers: {
@@ -607,13 +658,14 @@ export function createRunTool(ctx: ToolContext) {
         : (list[0] as any);
       const o = entry?.order ?? entry;
       const lineItems: any[] = Array.isArray(o?.line_items) ? o.line_items : [];
-      if (!o || !lineItems.length)
+      if (!o || !lineItems.length) {
         return {
           ok: false,
           message: orderNo
             ? `I couldn't find order ${orderNo} to reorder.`
             : "I couldn't find a recent order to reorder.",
         };
+      }
       const added: string[] = [];
       const skippedStock: string[] = []; // sold out / unavailable now
       const skippedUnknown: string[] = []; // couldn't identify the product
@@ -670,14 +722,17 @@ export function createRunTool(ctx: ToolContext) {
           variantId,
           title: li.title,
           handle,
-          price: { amount: Math.round(priceRupees * 100), currencyCode: "INR" },
+          price: {
+            amount: Math.round(priceRupees * 100),
+            currencyCode: CURRENCY,
+          },
           image: li.image,
           quantity: qty,
         });
         added.push(li.title);
       }
       const totalSkipped = skippedStock.length + skippedUnknown.length;
-      if (!added.length)
+      if (!added.length) {
         return {
           ok: false,
           ...(skippedStock.length ? { sold_out: true } : {}),
@@ -687,6 +742,7 @@ export function createRunTool(ctx: ToolContext) {
               ? "I couldn't re-add the items from that order right now."
               : "I couldn't reorder that.",
         };
+      }
       openCart();
       setCaption(`🛒 Reordered ${added.length}`);
       track("reorder", {
@@ -697,9 +753,12 @@ export function createRunTool(ctx: ToolContext) {
       // Report the two skip reasons HONESTLY — don't claim an unresolved item was "sold
       // out" when we simply couldn't identify it.
       let note = "";
-      if (skippedStock.length) note += `; ${skippedStock.length} out of stock`;
-      if (skippedUnknown.length)
+      if (skippedStock.length) {
+        note += `; ${skippedStock.length} out of stock`;
+      }
+      if (skippedUnknown.length) {
         note += `; ${skippedUnknown.length} couldn't be re-added`;
+      }
       return {
         ok: true,
         added,
@@ -726,7 +785,9 @@ export function createRunTool(ctx: ToolContext) {
           const j = await fetchJson(
             `/api/voice-product?handle=${encodeURIComponent(cp.handle)}`
           );
-          if (j && !j.error) d = currentProductDetailRef.current = j;
+          if (j && !j.error) {
+            d = currentProductDetailRef.current = j;
+          }
         } else {
           // No focus ref yet (e.g. a manually-opened PDP before the async seed
           // lands) — resolve the on-screen product straight from the URL.
@@ -734,41 +795,48 @@ export function createRunTool(ctx: ToolContext) {
           d = currentProductDetailRef.current;
         }
       }
-      if (!d)
+      if (!d) {
         return {
           ok: false,
           message:
             "No product is open right now — open a product and I'll tell you everything about it.",
         };
-      return d;
+      }
+      // Anchor the currency so the model never reads this product's numeric price
+      // (and its variants') as USD. Spread — never mutate the cached detail ref.
+      return { ...d, currency: CURRENCY };
     },
 
     select_variant: async (args) => {
       const d = currentProductDetailRef.current;
       const handle = d?.handle ?? currentProductRef.current?.handle;
       const variants: any[] = Array.isArray(d?.variants) ? d!.variants : [];
-      if (!handle)
+      if (!handle) {
         return {
           ok: false,
           message: "Open a product first, then I can pick a variant.",
         };
-      if (!variants.length)
+      }
+      if (!variants.length) {
         return {
           ok: false,
           message:
             "This product doesn't have size or colour options to choose from.",
         };
+      }
       const norm = (s: unknown) =>
         String(s ?? "")
           .toLowerCase()
           .replace(/\s+/g, "");
       let target: any = null;
-      if (args.variant_id)
+      if (args.variant_id) {
         target = variants.find(
           (v) => String(v.variant_id) === String(args.variant_id)
         );
-      if (!target && args.index != null)
+      }
+      if (!target && args.index != null) {
         target = variants[Math.floor(Number(args.index)) - 1];
+      }
       if (!target && args.option) {
         const want = norm(args.option);
         const matches = variants.filter(
@@ -782,7 +850,7 @@ export function createRunTool(ctx: ToolContext) {
         );
         target = matches.find((v) => v.available) ?? matches[0];
       }
-      if (!target)
+      if (!target) {
         return {
           ok: false,
           message: `I couldn't find that option. Available: ${variants
@@ -794,6 +862,7 @@ export function createRunTool(ctx: ToolContext) {
             available: v.available,
           })),
         };
+      }
       // Idempotent: don't re-navigate if this exact variant is already selected on the
       // page (re-picking the same size/colour would be a wasted transition).
       const alreadyThisVariant =
@@ -801,19 +870,21 @@ export function createRunTool(ctx: ToolContext) {
         window.location.pathname === `/products/${handle}` &&
         new URLSearchParams(window.location.search).get("variant") ===
           String(target.variant_id);
-      if (!alreadyThisVariant)
+      if (!alreadyThisVariant) {
         router.push(
           `/products/${handle}?variant=${encodeURIComponent(
             String(target.variant_id)
           )}`
         );
-      if (currentProductRef.current)
+      }
+      if (currentProductRef.current) {
         currentProductRef.current = {
           ...currentProductRef.current,
           variantId: String(target.variant_id),
           price: target.price ?? currentProductRef.current.price,
           available: target.available ?? currentProductRef.current.available,
         };
+      }
       setCaption(`🎚️ ${target.title}`);
       return {
         ok: true,
@@ -822,6 +893,7 @@ export function createRunTool(ctx: ToolContext) {
           title: target.title,
           options: target.options,
           price: target.price,
+          currency: CURRENCY,
           available: target.available,
         },
       };
@@ -829,12 +901,13 @@ export function createRunTool(ctx: ToolContext) {
 
     navigate_to_product: (args) => {
       const p = findP(args.product_id);
-      if (!p || !p.handle)
+      if (!p || !p.handle) {
         return {
           ok: false,
           message:
             "Couldn't open that product page; the products are already shown on the results page.",
         };
+      }
       // Idempotent: if the shopper is ALREADY on this product's page, don't
       // re-navigate — tell the model it's already open (checks the real URL, so
       // it's accurate regardless of how they got there). Merchant-agnostic.
@@ -921,41 +994,46 @@ export function createRunTool(ctx: ToolContext) {
       // Ensure the cart store is hydrated before we read/resolve lines, so the
       // FIRST command works (not just the retry). Idempotent + best-effort.
       const c0 = cart() as any;
-      if (!c0.isInitialized && typeof c0.initializeCart === "function")
+      if (!c0.isInitialized && typeof c0.initializeCart === "function") {
         try {
           await c0.initializeCart();
         } catch {
           /* best-effort — non-fatal */
         }
+      }
       let p =
         findP(args.product_id) ??
         currentProductRef.current ??
         (await resolveOnScreenProduct());
-      if (!p)
+      if (!p) {
         return {
           ok: false,
           message:
             "Tell me which product — search for it or open its page first.",
         };
+      }
       const curForCart = currentProductRef.current;
-      if (curForCart && curForCart.id === p.id && curForCart.variantId)
+      if (curForCart && curForCart.id === p.id && curForCart.variantId) {
         p = curForCart;
+      }
       // AUTHORITATIVE pre-add resolution (server-of-record). Confirms a REAL variant
       // + true availability from product detail before any cart mutation. The model
       // proposes; the tool disposes — prompt rules alone don't stop a model that's
       // told to "add whenever the shopper wants it", so enforce here.
       const { variantId: realVariantId, soldOut } = await prepareForCart(p);
-      if (soldOut)
+      if (soldOut) {
         return {
           ok: false,
           sold_out: true,
           message: `${p.title} is sold out right now, so I can't add it to your cart. Want me to find a similar in-stock option?`,
         };
-      if (!realVariantId)
+      }
+      if (!realVariantId) {
         return {
           ok: false,
           message: `I couldn't find a purchasable option for ${p.title}. Could you open its page and pick a variant?`,
         };
+      }
       // DON'T silently auto-pick a variant the shopper never chose. If the product has a
       // REAL option dimension (size/colour/pack) with >1 purchasable variant and none was
       // explicitly selected, ask which one — an in-store associate wouldn't grab a random
@@ -984,11 +1062,12 @@ export function createRunTool(ctx: ToolContext) {
         !onThisPdp &&
         purchasableVariants.length > 1 &&
         hasRealOptions
-      )
+      ) {
         return {
           ok: false,
           needs_variant: true,
           product: p.title,
+          currency: CURRENCY,
           options: purchasableVariants.slice(0, 12).map((v: any) => ({
             variant_id: v.variant_id,
             title: v.title,
@@ -998,8 +1077,11 @@ export function createRunTool(ctx: ToolContext) {
           })),
           message: `${p.title} comes in a few options — which one would you like?`,
         };
+      }
       // Never let a synthetic/placeholder variant id reach the cart.
-      if (p.variantId !== realVariantId) p = { ...p, variantId: realVariantId };
+      if (p.variantId !== realVariantId) {
+        p = { ...p, variantId: realVariantId };
+      }
       const qty = Math.max(
         1,
         Math.min(MAX_QTY, Math.floor(Number(args.quantity) || 1))
@@ -1012,25 +1094,27 @@ export function createRunTool(ctx: ToolContext) {
       // and total units can't exceed the unit cap — this is what bounds an
       // "add everything in the store" bulk attempt regardless of loop length.
       const { units, lines } = cartTotals();
-      if (before === 0 && lines >= MAX_CART_LINES)
+      if (before === 0 && lines >= MAX_CART_LINES) {
         return {
           ok: false,
           cart_limit: true,
           message: `Your cart already has ${lines} different items — that's plenty for now. Want to review it or check out?`,
         };
-      if (units - before + target > MAX_CART_UNITS)
+      }
+      if (units - before + target > MAX_CART_UNITS) {
         return {
           ok: false,
           cart_limit: true,
           message: `That would push your cart past ${MAX_CART_UNITS} items in total — let's keep it manageable. Want to check out what you've got?`,
         };
+      }
       await cart().addItem({
         id: p.variantId,
         productId: p.id,
         variantId: p.variantId,
         title: p.title,
         handle: p.handle,
-        price: { amount: Math.round(p.price * 100), currencyCode: "INR" },
+        price: { amount: Math.round(p.price * 100), currencyCode: CURRENCY },
         image: p.imageUrl,
         quantity: qty,
       });
@@ -1063,12 +1147,13 @@ export function createRunTool(ctx: ToolContext) {
 
     remove_from_cart: async (args) => {
       const c0 = cart() as any;
-      if (!c0.isInitialized && typeof c0.initializeCart === "function")
+      if (!c0.isInitialized && typeof c0.initializeCart === "function") {
         try {
           await c0.initializeCart();
         } catch {
           /* best-effort — non-fatal */
         }
+      }
       // Accept a single product_id OR a product_ids[] (multi-remove in one step).
       const ids: string[] =
         Array.isArray(args?.product_ids) && args.product_ids.length
@@ -1076,8 +1161,9 @@ export function createRunTool(ctx: ToolContext) {
           : args?.product_id != null
             ? [String(args.product_id)]
             : [];
-      if (!ids.length)
+      if (!ids.length) {
         return { ok: false, error: "Tell me which item to remove." };
+      }
       const removed: string[] = [];
       const snapshots: any[] = [];
       for (const id of ids) {
@@ -1088,8 +1174,9 @@ export function createRunTool(ctx: ToolContext) {
           removed.push(line.title);
         }
       }
-      if (!removed.length)
+      if (!removed.length) {
         return { ok: false, error: "That item isn't in the cart." };
+      }
       // Offer undo only for a SINGLE removal (partial-undo of a multi-remove would be
       // confusing); a multi-remove clears the undo slot.
       lastMutationRef.current =
@@ -1117,15 +1204,17 @@ export function createRunTool(ctx: ToolContext) {
 
     clear_cart: async () => {
       const c0 = cart() as any;
-      if (!c0.isInitialized && typeof c0.initializeCart === "function")
+      if (!c0.isInitialized && typeof c0.initializeCart === "function") {
         try {
           await c0.initializeCart();
         } catch {
           /* best-effort — non-fatal */
         }
+      }
       const items = [...((cart().items ?? []) as any[])];
-      if (!items.length)
+      if (!items.length) {
         return { ok: true, message: "Your cart is already empty." };
+      }
       for (const line of items) {
         try {
           await cart().removeItem(line.id, line.variantId ?? line.variant_id);
@@ -1145,36 +1234,40 @@ export function createRunTool(ctx: ToolContext) {
 
     undo_last_action: async () => {
       const c0 = cart() as any;
-      if (!c0.isInitialized && typeof c0.initializeCart === "function")
+      if (!c0.isInitialized && typeof c0.initializeCart === "function") {
         try {
           await c0.initializeCart();
         } catch {
           /* best-effort — non-fatal */
         }
+      }
       const m = lastMutationRef.current;
-      if (!m)
+      if (!m) {
         return { ok: false, message: "There's nothing to undo right now." };
+      }
       lastMutationRef.current = null; // single-level undo — consume it
       try {
         if (m.kind === "qty") {
           const line = findCartLine(m.productId);
           if (m.prevQty <= 0) {
-            if (line)
+            if (line) {
               await cart().removeItem(
                 line.id,
                 line.variantId ?? line.variant_id
               );
+            }
             setCaption(`↩️ Undid ${m.title}`);
             return {
               ok: true,
               message: `Okay — I've taken ${m.title} back out.`,
             };
           }
-          if (!line)
+          if (!line) {
             return {
               ok: false,
               message: `I couldn't find ${m.title} to undo.`,
             };
+          }
           await cart().updateItemQuantity(
             line.id,
             m.prevQty,
@@ -1206,26 +1299,30 @@ export function createRunTool(ctx: ToolContext) {
 
     update_cart_quantity: async (args) => {
       const c0 = cart() as any;
-      if (!c0.isInitialized && typeof c0.initializeCart === "function")
+      if (!c0.isInitialized && typeof c0.initializeCart === "function") {
         try {
           await c0.initializeCart();
         } catch {
           /* best-effort — non-fatal */
         }
+      }
       const line = findCartLine(args.product_id);
-      if (!line) return { ok: false, error: "That item isn't in the cart." };
+      if (!line) {
+        return { ok: false, error: "That item isn't in the cart." };
+      }
       const q = Math.max(
         0,
         Math.min(MAX_QTY, Math.floor(Number(args.quantity) || 0))
       );
       const beforeQ = Number(line.quantity) || 0;
       const { units: unitsNow } = cartTotals();
-      if (unitsNow - beforeQ + q > MAX_CART_UNITS)
+      if (unitsNow - beforeQ + q > MAX_CART_UNITS) {
         return {
           ok: false,
           cart_limit: true,
           message: `That would push your cart past ${MAX_CART_UNITS} items in total — tell me which one to trim instead.`,
         };
+      }
       await cart().updateItemQuantity(
         line.id,
         q,
@@ -1265,7 +1362,7 @@ export function createRunTool(ctx: ToolContext) {
       );
       const currency =
         (typeof raw[0]?.price === "object" && raw[0].price?.currencyCode) ||
-        "INR";
+        CURRENCY;
       return { items, count: items.length, units, subtotal, currency };
     },
 
@@ -1298,7 +1395,7 @@ export function createRunTool(ctx: ToolContext) {
       }, 0);
       const currency =
         (typeof items[0]?.price === "object" && items[0].price?.currencyCode) ||
-        "INR";
+        CURRENCY;
       const opened = await openNativeCheckout({
         token: s.cartToken,
         items,
@@ -1325,21 +1422,28 @@ export function createRunTool(ctx: ToolContext) {
 
     filter_results: (args) => {
       const view = lastResultsRef.current;
-      if (!view.length)
+      if (!view.length) {
         return {
           ok: false,
           message:
             "No products are loaded yet — search a product type first, then I can filter.",
         };
+      }
       const min = Number(args.price_min);
       const max = Number(args.price_max);
       let out = view;
-      if (!Number.isNaN(min) && args.price_min != null)
+      if (!Number.isNaN(min) && args.price_min != null) {
         out = out.filter((p) => p.price >= min);
-      if (!Number.isNaN(max) && args.price_max != null)
+      }
+      if (!Number.isNaN(max) && args.price_max != null) {
         out = out.filter((p) => p.price <= max);
-      if (args.on_sale_only) out = out.filter(onSale);
-      if (args.in_stock_only) out = out.filter((p) => p.available);
+      }
+      if (args.on_sale_only) {
+        out = out.filter(onSale);
+      }
+      if (args.in_stock_only) {
+        out = out.filter((p) => p.available);
+      }
       // Attribute refine (colour/material/brand/type/tag word). Matches the term
       // against title + type + tags + options — so it works whenever the backend
       // supplies attributes, and SAFELY degrades to a title match when it doesn't
@@ -1347,7 +1451,7 @@ export function createRunTool(ctx: ToolContext) {
       const attr = String(args.attribute || "")
         .trim()
         .toLowerCase();
-      if (attr)
+      if (attr) {
         out = out.filter((p) =>
           [
             p.title,
@@ -1361,6 +1465,7 @@ export function createRunTool(ctx: ToolContext) {
             .toLowerCase()
             .includes(attr)
         );
+      }
       lastResultsRef.current = out;
       setCaption(`🔎 ${out.length} match`);
       return {
@@ -1373,12 +1478,13 @@ export function createRunTool(ctx: ToolContext) {
 
     sort_results: async (args) => {
       let view = [...lastResultsRef.current];
-      if (!view.length)
+      if (!view.length) {
         return {
           ok: false,
           message:
             "No products are loaded yet — search first, then I can sort.",
         };
+      }
       const by = String(args.by || "").toLowerCase();
       if (by.includes("rating")) {
         // Cap the review fan-out: rate only the top RATING_FANOUT of the current
@@ -1410,6 +1516,7 @@ export function createRunTool(ctx: ToolContext) {
           product_id: p.id,
           title: p.title,
           price: p.price,
+          currency: CURRENCY,
         })),
         _note:
           "Reordered only the shortlist you read back — the on-screen grid and its sort are UNCHANGED. Present these verbally (e.g. 'cheapest is … then …'); never say you sorted the page. If the shopper wants the visible page re-sorted, tell them to tap the Sort control on screen.",
@@ -1461,12 +1568,13 @@ export function createRunTool(ctx: ToolContext) {
       } else {
         picks = lastResultsRef.current.slice(0, 2);
       }
-      if (picks.length < 2)
+      if (picks.length < 2) {
         return {
           ok: false,
           message:
             "Tell me which two products to compare from the current results.",
         };
+      }
       const compared = await Promise.all(
         picks.slice(0, 3).map(async (p) => {
           const r = await getAvgRating(p);
@@ -1475,6 +1583,7 @@ export function createRunTool(ctx: ToolContext) {
             title: p.title,
             price: p.price,
             compare_at_price: p.compareAtPrice ?? null,
+            currency: CURRENCY,
             discount_pct: onSale(p)
               ? Math.round((1 - p.price / p.compareAtPrice!) * 100)
               : 0,
@@ -1500,15 +1609,18 @@ export function createRunTool(ctx: ToolContext) {
 
     get_reviews: async (args) => {
       const p = findP(args.product_id) ?? currentProductRef.current;
-      if (!p)
+      if (!p) {
         return {
           ok: false,
           message: "Which product? Search for it or open it first.",
         };
+      }
       const d = await fetchJson(
         `/api/voice-reviews?handle=${encodeURIComponent(p.handle)}`
       );
-      if (!d) return { ok: false, message: "No reviews available right now." };
+      if (!d) {
+        return { ok: false, message: "No reviews available right now." };
+      }
       // Reviews are USER-GENERATED — sanitise before they enter the model context
       // so a planted "ignore previous instructions…" review can't steer the agent.
       return {
@@ -1559,7 +1671,9 @@ export function createRunTool(ctx: ToolContext) {
             : STORE_FACTS[topic]
               ? topic
               : "";
-      if (key && STORE_FACTS[key]) return { topic, answer: STORE_FACTS[key] };
+      if (key && STORE_FACTS[key]) {
+        return { topic, answer: STORE_FACTS[key] };
+      }
       return {
         topic,
         known: false,
@@ -1574,11 +1688,12 @@ export function createRunTool(ctx: ToolContext) {
       // counts, options, availability, anything rendered) on ANY merchant — no
       // hardcoded facts. The model must answer ONLY from what this returns.
       const content = readPage();
-      if (!content)
+      if (!content) {
         return {
           ok: false,
           message: "I couldn't read the current page.",
         };
+      }
       // On-page text can include third-party/UGC content — sanitise before it
       // enters the model context.
       return {
@@ -1601,11 +1716,12 @@ export function createRunTool(ctx: ToolContext) {
         idx >= 1
           ? lastResultsRef.current[idx - 1]
           : (currentProductRef.current ?? (await resolveOnScreenProduct()));
-      if (!p || !p.handle)
+      if (!p || !p.handle) {
         return {
           ok: false,
           message: "I don't have that item in the current list.",
         };
+      }
       currentProductRef.current = p;
       // Idempotent: don't re-open a product that's already on screen.
       if (
@@ -1638,16 +1754,19 @@ export function createRunTool(ctx: ToolContext) {
               : /about/.test(t)
                 ? "/about-us"
                 : "";
-      if (!route)
+      if (!route) {
         return {
           ok: false,
           message:
             "I can open the shipping, returns, privacy, terms, or about pages.",
         };
+      }
       // Idempotent: don't re-open the policy page if the shopper is already on it.
       const alreadyOnPolicy =
         typeof window !== "undefined" && window.location.pathname === route;
-      if (!alreadyOnPolicy) router.push(route);
+      if (!alreadyOnPolicy) {
+        router.push(route);
+      }
       setCaption(`📄 ${route.slice(1).replace(/-/g, " ")}`);
       return {
         ok: true,
@@ -1670,12 +1789,15 @@ export function createRunTool(ctx: ToolContext) {
     apply_discount_code: async (args) => {
       const code = String(args?.code || "").trim();
       const s = cart();
-      if (!code) return { ok: false, message: "Which code should I apply?" };
-      if (!s.cartToken || (s.items?.length ?? 0) === 0)
+      if (!code) {
+        return { ok: false, message: "Which code should I apply?" };
+      }
+      if (!s.cartToken || (s.items?.length ?? 0) === 0) {
         return {
           ok: false,
           message: "Your cart is empty, so there's nothing to apply a code to.",
         };
+      }
       // HONESTY: not every storefront lets you apply a coupon IN the cart. The custom
       // drawer has NO apply control — eligible coupons auto-apply at CHECKOUT (the cart
       // even says "all coupons apply on checkout"). Faking a backend apply + claiming
@@ -1760,7 +1882,9 @@ export function createRunTool(ctx: ToolContext) {
     switch (name) {
       case "open_checkout": {
         const items = cart().items ?? [];
-        if (!items.length) return null; // empty cart → handler answers, no confirm
+        if (!items.length) {
+          return null;
+        } // empty cart → handler answers, no confirm
         const units = items.reduce(
           (n: number, i: any) => n + (Number(i.quantity) || 0),
           0
@@ -1772,7 +1896,9 @@ export function createRunTool(ctx: ToolContext) {
       }
       case "clear_cart": {
         const items = cart().items ?? [];
-        if (!items.length) return null; // empty → handler answers, no confirm
+        if (!items.length) {
+          return null;
+        } // empty → handler answers, no confirm
         return {
           key: "clear_cart",
           summary: `Empty your whole cart (${items.length} item${items.length > 1 ? "s" : ""}) — shall I?`,
@@ -1800,7 +1926,9 @@ export function createRunTool(ctx: ToolContext) {
         const lines = ids
           .map((id) => findCartLine(id))
           .filter(Boolean) as any[];
-        if (!lines.length) return null; // nothing to remove → handler answers
+        if (!lines.length) {
+          return null;
+        } // nothing to remove → handler answers
         const key = `remove:${lines
           .map((l) => l.id)
           .sort()
@@ -1818,7 +1946,9 @@ export function createRunTool(ctx: ToolContext) {
       }
       case "add_to_cart": {
         const q = Math.floor(Number(args?.quantity) || 1);
-        if (q < LARGE_QTY) return null;
+        if (q < LARGE_QTY) {
+          return null;
+        }
         const p = findP(args?.product_id) ?? currentProductRef.current;
         return {
           key: `add:${args?.product_id}:${q}`,
@@ -1827,7 +1957,9 @@ export function createRunTool(ctx: ToolContext) {
       }
       case "update_cart_quantity": {
         const q = Math.floor(Number(args?.quantity) || 0);
-        if (q < LARGE_QTY) return null;
+        if (q < LARGE_QTY) {
+          return null;
+        }
         const line = findCartLine(args?.product_id);
         return {
           key: `update:${args?.product_id}:${q}`,

@@ -88,6 +88,15 @@ export interface VoiceTurnConfig {
   maxUtteranceMs: number;
 }
 
+/** The merchant's money settings. `code` is the ISO currency (e.g. "INR", "USD")
+ *  and `symbol` the display glyph (e.g. "₹", "$"). Config-driven so a non-INR
+ *  merchant is one env change — never inferred by the model (which defaults to $
+ *  and caused the "USD on an INR store" bug). */
+export interface VoiceCurrency {
+  code: string;
+  symbol: string;
+}
+
 export interface VoiceConfig {
   enabled: boolean;
   provider: VoiceProviderName;
@@ -95,6 +104,9 @@ export interface VoiceConfig {
   session: VoiceSessionTiming;
   appearance: VoiceAppearance;
   turn: VoiceTurnConfig;
+  /** The store's currency — sourced here, threaded into the persona rule AND every
+   *  price-bearing tool payload, so the agent always states amounts in it. */
+  currency: VoiceCurrency;
   /** Route the search-results page lives at for THIS merchant. Storefronts differ
    *  (Shopify default `/search`, but some use `/pages/searchtap-search`, etc.), so
    *  the agent must navigate to the real one — a wrong path = a broken results page
@@ -111,6 +123,12 @@ export function getVoiceConfig(): VoiceConfig {
   return {
     enabled: process.env.NEXT_PUBLIC_VOICE_ENABLED !== "false",
     searchPath: process.env.NEXT_PUBLIC_VOICE_SEARCH_PATH || "/search",
+    // Currency: env-driven, default INR/₹. Same env vars the persona reads
+    // (agentConfig), so the spoken currency and the payload currency always agree.
+    currency: {
+      code: process.env.NEXT_PUBLIC_VOICE_CURRENCY || "INR",
+      symbol: process.env.NEXT_PUBLIC_VOICE_CURRENCY_SYMBOL || "₹",
+    },
     provider:
       (process.env.NEXT_PUBLIC_VOICE_PROVIDER as VoiceProviderName) || "openai",
     limits: {
