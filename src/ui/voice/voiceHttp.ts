@@ -39,10 +39,32 @@ export function voiceAccessCode(): string {
   }
 }
 
+/**
+ * A time-limited AbortSignal that works on EVERY target browser. The native
+ * `AbortSignal.timeout()` only shipped in Chrome 103 / Safari 15.4 / Firefox 100
+ * (mid-2022) — calling it directly threw on anything older (iOS 15.0–15.3, older
+ * Samsung Internet / Android WebView), which killed the voice token mint and every
+ * voice fetch outright. This uses the native method when present and otherwise
+ * falls back to an AbortController + setTimeout (supported since Chrome 66 /
+ * Safari 12.1 / Firefox 57). The timer is cleared on abort so it can't leak.
+ */
+export function timeoutSignal(ms: number): AbortSignal {
+  const AS = AbortSignal as typeof AbortSignal & {
+    timeout?: (ms: number) => AbortSignal;
+  };
+  if (typeof AS.timeout === "function") return AS.timeout(ms);
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  controller.signal.addEventListener("abort", () => clearTimeout(timer), {
+    once: true,
+  });
+  return controller.signal;
+}
+
 /** Bounded GET returning parsed JSON, or null on any failure/timeout. */
 export async function fetchJson(url: string, ms = 6000): Promise<any | null> {
   try {
-    const res = await fetch(url, { signal: AbortSignal.timeout(ms) });
+    const res = await fetch(url, { signal: timeoutSignal(ms) });
     if (!res.ok) return null;
     return await res.json();
   } catch {
@@ -62,7 +84,7 @@ export async function fetchJsonWithStatus(
   ms = 6000
 ): Promise<{ ok: boolean; status: number; data: any | null }> {
   try {
-    const res = await fetch(url, { ...init, signal: AbortSignal.timeout(ms) });
+    const res = await fetch(url, { ...init, signal: timeoutSignal(ms) });
     let data: any = null;
     try {
       data = await res.json();
@@ -97,7 +119,7 @@ export async function toCatalogQuery(raw: string): Promise<string> {
         ...(code ? { "x-voice-access-code": code } : {}),
       },
       body: JSON.stringify({ text: q }),
-      signal: AbortSignal.timeout(4000),
+      signal: timeoutSignal(4000),
     });
     if (!res.ok) return q;
     const { query } = await res.json();

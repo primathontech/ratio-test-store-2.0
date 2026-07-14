@@ -22,6 +22,7 @@
 
 import { fetchValidOffers } from "@/utils/gokwikOffers";
 import { resolveSideCartAdapter } from "./sideCartAdapter";
+import { timeoutSignal } from "../voiceHttp";
 import type { CartLine } from "../tools/context";
 
 export interface VoiceOffer {
@@ -65,7 +66,7 @@ async function fetchCustomDiscounts(): Promise<VoiceOffer[]> {
         status: "published",
         visibility: "always",
       }),
-      signal: AbortSignal.timeout(6000),
+      signal: timeoutSignal(6000),
     });
     if (!res.ok) return [];
     const data: unknown = await res.json();

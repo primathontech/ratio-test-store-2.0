@@ -46,8 +46,10 @@ export function VoiceAssistant() {
     muted,
     toggleMute,
     error,
+    paused,
     start,
     stop,
+    resume,
     prewarm,
   } = useVoiceSession();
 
@@ -57,8 +59,9 @@ export function VoiceAssistant() {
     if (error) return "error";
     if (status === "connecting") return "connecting";
     if (status === "live") return "live";
+    if (paused) return "paused"; // backgrounded → resumable (status is idle here)
     return "idle";
-  }, [error, status]);
+  }, [error, status, paused]);
 
   // The bar's status line: granular phases (searching / navigating / adding to
   // cart / opening checkout …) already arrive via `caption`; speaking/listening/
@@ -67,6 +70,7 @@ export function VoiceAssistant() {
     // connecting: show the live caption when it's meaningful (e.g. "Reconnecting…")
     // else a plain label.
     if (view === "connecting") return cleanCaption(caption) || "Connecting…";
+    if (view === "paused") return "Paused — tap Resume";
     if (view === "error")
       return cleanCaption(caption) || "Something went wrong";
     if (muted) return "Muted";
@@ -86,6 +90,8 @@ export function VoiceAssistant() {
 
   const handleEnd = useCallback(() => void stop(), [stop]);
   const handleRetry = useCallback(() => void start(), [start]);
+  // Resume runs inside the tap gesture → iOS re-grants mic/audio; continues memory.
+  const handleResume = useCallback(() => void resume(), [resume]);
 
   return (
     <VoiceWidget
@@ -102,6 +108,7 @@ export function VoiceAssistant() {
       onToggleMute={toggleMute}
       onEnd={handleEnd}
       onRetry={handleRetry}
+      onResume={handleResume}
     />
   );
 }

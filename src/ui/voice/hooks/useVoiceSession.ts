@@ -33,7 +33,7 @@ import {
   type VoiceSessionCallbacks,
 } from "../providers";
 import { getVoiceConfig } from "../voiceConfig";
-import { fetchJson, voiceAccessCode } from "../voiceHttp";
+import { fetchJson, timeoutSignal, voiceAccessCode } from "../voiceHttp";
 import { createRunTool } from "../tools/runTool";
 import { resolveSideCartAdapter } from "../cart/sideCartAdapter";
 import { READ_ONLY_TOOLS, type ToolName } from "../tools/registry";
@@ -85,8 +85,16 @@ export interface VoiceSessionApi {
    *  or the connection was lost with no retries left. Cleared on the next start().
    *  Transient mid-session errors surface via `caption`, not this flag. */
   error: boolean;
+  /** True when the session was auto-suspended because the tab was backgrounded
+   *  (screen lock / incoming call / app switch / tab change). Conversation memory
+   *  is preserved — call resume() to continue it. */
+  paused: boolean;
   start: () => Promise<void>;
   stop: () => Promise<void>;
+  /** Resume a paused (backgrounded) session, CONTINUING the same conversation with
+   *  its memory intact. Must be called from a user gesture (iOS re-grants mic/audio
+   *  only inside one). */
+  resume: () => Promise<void>;
   /** Pre-mint the ephemeral token on first user intent (mic hover/focus/press) so
    *  the connect is instant without minting on every idle page load. */
   prewarm: () => void;
@@ -107,6 +115,10 @@ export function useVoiceSession(): VoiceSessionApi {
   const [muted, setMuted] = useState(false);
   const mutedRef = useRef(false);
   const [error, setError] = useState(false);
+  // True when the session was AUTO-SUSPENDED because the tab was backgrounded
+  // (screen lock / incoming call / app switch / tab change). Conversation memory
+  // is preserved; the widget offers a one-tap Resume that continues it.
+  const [paused, setPaused] = useState(false);
 
   const memory = useVoiceMemory();
 
@@ -213,7 +225,7 @@ export function useVoiceSession(): VoiceSessionApi {
           // 15s (was 8s): the first mint also runs persona generation, and on
           // slower mobile/cellular networks 8s routinely aborted a mint that would
           // have succeeded. Desktop is unaffected (it resolves in well under 8s).
-          signal: AbortSignal.timeout(15000),
+          signal: timeoutSignal(15000),
           headers: accessCode
             ? { "x-voice-access-code": accessCode }
             : undefined,
@@ -721,48 +733,73 @@ export function useVoiceSession(): VoiceSessionApi {
     }
   }, []);
 
+  // Shared teardown for BOTH a user stop and a background suspend: invalidate the
+  // generation, cancel every timer, release the mic + WebRTC session, and reset the
+  // transient UI state. It deliberately does NOT touch conversation memory (that is
+  // reset ONLY on a fresh start), so a suspend()→resume() continues the SAME
+  // conversation. `reason` feeds session-end analytics.
+  const teardownSession = useCallback(
+    (reason: string) => {
+      userClosedRef.current = true; // no auto-reconnect; a resume/start is deliberate
+      startGenRef.current++; // invalidate any in-flight connect/reconnect + stale cbs
+      void releaseWakeLock();
+      if (reconnectTimerRef.current) {
+        clearTimeout(reconnectTimerRef.current);
+        reconnectTimerRef.current = null;
+      }
+      if (stableTimerRef.current) {
+        clearTimeout(stableTimerRef.current);
+        stableTimerRef.current = null;
+      }
+      // Turn-coalescing timers (multi-speaker) — clear so none fires after teardown.
+      if (stabilizeTimerRef.current) {
+        clearTimeout(stabilizeTimerRef.current);
+        stabilizeTimerRef.current = null;
+      }
+      if (utteranceWatchdogRef.current) {
+        clearTimeout(utteranceWatchdogRef.current);
+        utteranceWatchdogRef.current = null;
+      }
+      responseActiveRef.current = false;
+      reconnectsRef.current = 0;
+      // Drop any mic acquisition primed for a connect that isn't happening, so the
+      // OS mic indicator can't linger on.
+      primedMicRef.current
+        ?.then((s) => s.getTracks().forEach((t) => t.stop()))
+        .catch(() => {});
+      primedMicRef.current = null;
+      trackSessionEnd(reason);
+      try {
+        sessionRef.current?.close(); // stops the mic track + tears down the WebRTC pc
+      } catch {}
+      sessionRef.current = null;
+      setStatus("idle");
+      setCaption("");
+      setActivity("listening");
+      setError(false);
+      setMuted(false);
+      mutedRef.current = false;
+    },
+    [trackSessionEnd, releaseWakeLock]
+  );
+
+  // User-initiated end → a clean idle (NOT resumable): clear the paused flag so the
+  // widget returns to the launcher. Next start() begins a fresh conversation.
   const stop = useCallback(async () => {
-    userClosedRef.current = true; // this close is intentional → no reconnect
-    startGenRef.current++; // invalidate any in-flight connect/reconnect
-    void releaseWakeLock();
-    if (reconnectTimerRef.current) {
-      clearTimeout(reconnectTimerRef.current);
-      reconnectTimerRef.current = null;
-    }
-    if (stableTimerRef.current) {
-      clearTimeout(stableTimerRef.current);
-      stableTimerRef.current = null;
-    }
-    // Turn-coalescing timers (multi-speaker) — clear so none fires after stop.
-    if (stabilizeTimerRef.current) {
-      clearTimeout(stabilizeTimerRef.current);
-      stabilizeTimerRef.current = null;
-    }
-    if (utteranceWatchdogRef.current) {
-      clearTimeout(utteranceWatchdogRef.current);
-      utteranceWatchdogRef.current = null;
-    }
-    responseActiveRef.current = false;
-    reconnectsRef.current = 0;
-    // Drop any mic acquisition primed for a connect that isn't happening, so the
-    // OS mic indicator can't linger on.
-    primedMicRef.current
-      ?.then((s) => s.getTracks().forEach((t) => t.stop()))
-      .catch(() => {});
-    primedMicRef.current = null;
-    trackSessionEnd("user");
-    try {
-      sessionRef.current?.close(); // stops the mic track + tears down the WebRTC pc
-    } catch {}
-    sessionRef.current = null;
-    setStatus("idle");
-    setCaption("");
-    // User-initiated end → clean idle: clear activity, error, and mute for next call.
-    setActivity("listening");
-    setError(false);
-    setMuted(false);
-    mutedRef.current = false;
-  }, [trackSessionEnd, releaseWakeLock]);
+    setPaused(false);
+    teardownSession("user");
+  }, [teardownSession]);
+
+  // SUSPEND — the tab was backgrounded (screen lock / incoming call / app switch /
+  // tab change). We NEVER hold the mic in the background (privacy, and iOS suspends
+  // it anyway), so the teardown is identical to stop() — but we PRESERVE the
+  // conversation memory and flag `paused`, so the widget shows a one-tap Resume that
+  // continues where the shopper left off instead of losing the conversation.
+  const suspend = useCallback(() => {
+    if (statusRef.current === "idle") return; // nothing live to suspend
+    teardownSession("backgrounded");
+    setPaused(true);
+  }, [teardownSession]);
 
   // Mic mute toggle — flips the outgoing track via the provider (no teardown) and
   // mirrors the choice into a ref so a reconnect re-applies it. No-op-safe when
@@ -1187,7 +1224,13 @@ export function useVoiceSession(): VoiceSessionApi {
           audio: {
             echoCancellation: true,
             noiseSuppression: true,
-            autoGainControl: true,
+            // AGC OFF — MUST match the provider's own getUserMedia constraints
+            // (openaiRealtimeProvider). AGC ramps over the first few hundred ms and
+            // attenuates word ONSETS, which clips a short first command ("add it")
+            // enough that endpointing misses the turn. This primed stream is the one
+            // actually used on mobile/iOS, so leaving it ON regressed exactly that
+            // case on the platform most shoppers are on.
+            autoGainControl: false,
             channelCount: 1,
           },
         });
@@ -1200,29 +1243,55 @@ export function useVoiceSession(): VoiceSessionApi {
     }
   }, []);
 
-  const start = useCallback(async () => {
-    if (startingRef.current) return; // re-entry guard: one connect at a time
-    startingRef.current = true;
-    userClosedRef.current = false;
-    reconnectsRef.current = 0;
-    // A fresh call starts clean: no carried-over error, mic live.
-    setError(false);
-    setMuted(false);
-    mutedRef.current = false;
-    primeForConnect(); // synchronous, in-gesture — unlocks iOS audio + mic
-    // Claim the single cross-tab voice slot: tell any other tab already running
-    // voice to yield BEFORE we connect (last tab wins).
-    voiceChannelRef.current?.postMessage({
-      type: "start",
-      id: tabIdRef.current,
-    });
-    memory.reset(); // fresh conversation (reconnect keeps memory; a new start clears it)
-    try {
-      await establish();
-    } finally {
-      startingRef.current = false;
-    }
-  }, [establish, memory, primeForConnect]);
+  // The shared connect path for start (fresh) and resume (continue). MUST be called
+  // from a user gesture on mobile — primeForConnect runs synchronously here to
+  // unlock iOS audio + mic before the first await.
+  const connect = useCallback(
+    async (freshMemory: boolean) => {
+      if (startingRef.current) return; // re-entry guard: one connect at a time
+      // OFFLINE PRE-CHECK — `navigator.onLine === false` is reliable (a `true` is
+      // not), so we bail ONLY when definitively offline: a clear message beats
+      // prompting for the mic and then failing silently at the SDP exchange.
+      if (typeof navigator !== "undefined" && navigator.onLine === false) {
+        setPaused(false);
+        setStatus("idle");
+        setError(true);
+        setCaption("You're offline — check your connection and try again.");
+        return;
+      }
+      startingRef.current = true;
+      userClosedRef.current = false;
+      reconnectsRef.current = 0;
+      // Start clean: no carried-over error/pause, mic live.
+      setError(false);
+      setPaused(false);
+      setMuted(false);
+      mutedRef.current = false;
+      primeForConnect(); // synchronous, in-gesture — unlocks iOS audio + mic
+      // Claim the single cross-tab voice slot: tell any other tab already running
+      // voice to yield BEFORE we connect (last tab wins).
+      voiceChannelRef.current?.postMessage({
+        type: "start",
+        id: tabIdRef.current,
+      });
+      // Fresh start clears the working memory; resume() keeps it so the paused
+      // conversation continues (reconnect also keeps it — see onClose).
+      if (freshMemory) memory.reset();
+      try {
+        await establish();
+      } finally {
+        startingRef.current = false;
+      }
+    },
+    [establish, memory, primeForConnect]
+  );
+
+  // Fresh conversation (idle → live).
+  const start = useCallback(() => connect(true), [connect]);
+  // Continue a conversation that was auto-suspended when the tab was backgrounded —
+  // memory preserved. Called from the Resume tap (a gesture, so iOS re-grants
+  // mic/audio).
+  const resume = useCallback(() => connect(false), [connect]);
 
   // TAB LIFECYCLE — voice needs a FOREGROUND tab (you can't talk to a hidden one),
   // and a hidden tab must never hold the mic + WebRTC + AI session (privacy + cost).
@@ -1231,12 +1300,15 @@ export function useVoiceSession(): VoiceSessionApi {
   // resources leaking across many backgrounded/abandoned tabs.
   useEffect(() => {
     if (typeof window === "undefined") return;
+    // Backgrounded (screen lock / incoming call / app switch / tab change) → SUSPEND:
+    // release the mic, keep the conversation, offer Resume — never a memory-wiping
+    // stop. The wake lock is re-acquired by the status effect when resume() goes live.
     const onVisibility = () => {
       if (document.visibilityState === "hidden" && statusRef.current !== "idle")
-        void stop();
+        suspend();
     };
     const onPageHide = () => {
-      if (statusRef.current !== "idle") void stop();
+      if (statusRef.current !== "idle") suspend();
     };
     document.addEventListener("visibilitychange", onVisibility);
     window.addEventListener("pagehide", onPageHide);
@@ -1244,7 +1316,7 @@ export function useVoiceSession(): VoiceSessionApi {
       document.removeEventListener("visibilitychange", onVisibility);
       window.removeEventListener("pagehide", onPageHide);
     };
-  }, [stop]);
+  }, [suspend]);
 
   // CROSS-TAB SINGLE SESSION — only one tab runs voice at a time. On start a tab
   // broadcasts a takeover; any other tab with a live/connecting session yields
@@ -1289,8 +1361,10 @@ export function useVoiceSession(): VoiceSessionApi {
     muted,
     toggleMute,
     error,
+    paused,
     start,
     stop,
+    resume,
     prewarm,
   };
 }

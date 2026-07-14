@@ -25,10 +25,11 @@ import {
   SlashIcon,
 } from "./icons";
 
-/** The four VISUAL states of the widget. The engine's richer lifecycle
- *  (connecting/live/idle/error) collapses onto these; granular phases
- *  (searching, navigating, adding to cart, …) ride the `statusText` line. */
-export type VoiceView = "idle" | "connecting" | "live" | "error";
+/** The VISUAL states of the widget. The engine's richer lifecycle collapses onto
+ *  these; granular phases (searching, navigating, adding to cart, …) ride the
+ *  `statusText` line. `paused` = the session was suspended when the tab was
+ *  backgrounded and can be resumed. */
+export type VoiceView = "idle" | "connecting" | "live" | "error" | "paused";
 
 export interface VoiceWidgetProps {
   view: VoiceView;
@@ -48,6 +49,8 @@ export interface VoiceWidgetProps {
   onToggleMute: () => void;
   onEnd: () => void;
   onRetry: () => void;
+  /** Resume a backgrounded (paused) session — shown only in the paused state. */
+  onResume: () => void;
   /** Idle-only overlay content (consent / adoption-hint bubbles), stacked above
    *  the launcher by the container. */
   children?: React.ReactNode;
@@ -67,6 +70,7 @@ function VoiceWidgetImpl({
   onToggleMute,
   onEnd,
   onRetry,
+  onResume,
   children,
 }: VoiceWidgetProps) {
   const rootStyle = accent
@@ -150,6 +154,9 @@ function VoiceWidgetImpl({
             <button type="button" className="rv-retry" onClick={onRetry}>
               Retry
             </button>
+            <button type="button" className="rv-resume" onClick={onResume}>
+              Resume
+            </button>
           </div>
         </div>
       )}
@@ -175,7 +182,13 @@ const WIDGET_CSS = `
   --rv-ink:#14171C; --rv-ink-2:#565D6B; --rv-ink-3:#878E9C;
   --rv-line:#E4E7EC; --rv-line-2:#D5DAE2;
   --rv-accent:#0E8C7F;
+  /* strong/soft derive from --rv-accent via color-mix so ONE token re-tints the
+     whole widget. The static line before each is the fallback for browsers without
+     color-mix (Chrome <111 / Safari <16.2 / Firefox <113) — they keep the default
+     palette (a custom --rv-accent still applies where it's used directly). */
+  --rv-accent-strong: #0B6F65;
   --rv-accent-strong: color-mix(in srgb, var(--rv-accent) 78%, #000);
+  --rv-accent-soft: #E3F3F0;
   --rv-accent-soft: color-mix(in srgb, var(--rv-accent) 14%, var(--rv-surface));
   --rv-live: var(--rv-accent);
   --rv-danger:#DE474C; --rv-danger-strong:#C23A3F;
@@ -193,6 +206,12 @@ const WIDGET_CSS = `
     --rv-ink:#EAECEF; --rv-ink-2:#A5ACBA; --rv-ink-3:#6C7484;
     --rv-line:#262C36; --rv-line-2:#333B48;
     --rv-accent:#1FB8A6;
+    /* dark fallbacks (static) + the color-mix override for modern browsers — same
+       pattern as the light block, so dark degrades cleanly without color-mix. */
+    --rv-accent-strong: #4FD8C7;
+    --rv-accent-strong: color-mix(in srgb, var(--rv-accent) 78%, #000);
+    --rv-accent-soft: #12312D;
+    --rv-accent-soft: color-mix(in srgb, var(--rv-accent) 14%, var(--rv-surface));
     --rv-danger:#FF5C61; --rv-danger-strong:#FF8488;
     --rv-shadow: 0 16px 38px -14px rgba(0,0,0,.62), 0 2px 8px -3px rgba(0,0,0,.5);
   }
@@ -216,7 +235,11 @@ const WIDGET_CSS = `
 .rv-launch-mark {
   position: relative; flex: none; width: 40px; height: 40px; border-radius: 50%;
   display: grid; place-items: center; color: #fff;
+  /* solid fallback first → browsers without color-mix keep a filled accent disc
+     (never an invisible/transparent mark); modern browsers get the gradient. */
+  background: var(--rv-accent);
   background: radial-gradient(120% 120% at 30% 25%, color-mix(in srgb, var(--rv-accent) 88%, #fff) 0%, var(--rv-accent) 55%, var(--rv-accent-strong) 100%);
+  box-shadow: 0 4px 14px -4px rgba(0,0,0,.28);
   box-shadow: 0 4px 14px -4px color-mix(in srgb, var(--rv-accent) 60%, transparent);
 }
 .rv-logo { width: 22px; height: 22px; }
@@ -301,10 +324,16 @@ const WIDGET_CSS = `
 .rv-root[data-muted="true"] .rv-icon-btn.rv-mute { background: color-mix(in srgb, var(--rv-danger) 15%, var(--rv-surface)); color: var(--rv-danger-strong); }
 .rv-icon-btn.rv-end { background: var(--rv-danger); color: #fff; }
 .rv-icon-btn.rv-end:hover { background: var(--rv-danger-strong); }
-.rv-root[data-state="error"] .rv-icon-btn.rv-mute { display: none; }
-.rv-retry { display: none; border: none; cursor: pointer; background: var(--rv-accent); color: #fff;
-  border-radius: 999px; padding: 9px 16px; font: inherit; font-size: .84rem; font-weight: 550; }
+.rv-root[data-state="error"] .rv-icon-btn.rv-mute,
+.rv-root[data-state="paused"] .rv-icon-btn.rv-mute { display: none; }
+.rv-retry, .rv-resume { display: none; border: none; cursor: pointer; background: var(--rv-accent);
+  color: #fff; border-radius: 999px; padding: 9px 16px; font: inherit; font-size: .84rem; font-weight: 550; }
+.rv-retry:hover, .rv-resume:hover { background: var(--rv-accent-strong); }
 .rv-root[data-state="error"] .rv-retry { display: inline-block; }
+.rv-root[data-state="paused"] .rv-resume { display: inline-block; }
+/* paused (backgrounded): the avatar rests quietly (no pulse/ring/eq — those key
+   off live/connecting/speaking), signalling the call is held, not lost. */
+.rv-root[data-state="paused"] .rv-avatar { background: var(--rv-surface-2); color: var(--rv-ink-3); }
 
 .rv-root button:focus-visible { outline: 2px solid var(--rv-accent); outline-offset: 2px; }
 
