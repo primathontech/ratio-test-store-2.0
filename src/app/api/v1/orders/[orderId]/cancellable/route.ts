@@ -1,5 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCommerceClient } from "@/config/commerce";
+import { voiceGuard } from "@/lib/voiceGuard";
+
+// Order ids are opaque alphanumerics; validate before interpolating into the upstream
+// URL so a crafted value can't inject path/query segments.
+const SAFE_ID = /^[A-Za-z0-9_-]{1,128}$/;
 
 /**
  * GET /api/v1/orders/[orderId]/cancellable
@@ -13,12 +18,14 @@ export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ orderId: string }> }
 ) {
+  const blocked = voiceGuard(request, "order-cancellable", 60);
+  if (blocked) return blocked;
   try {
     const { orderId } = await params;
 
-    if (!orderId) {
+    if (!orderId || !SAFE_ID.test(orderId)) {
       return NextResponse.json(
-        { error: "orderId is required" },
+        { error: "A valid orderId is required" },
         { status: 400 }
       );
     }

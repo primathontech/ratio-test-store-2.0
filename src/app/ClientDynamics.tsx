@@ -26,6 +26,15 @@ const KwikCartRemounter = dynamic(
   { ssr: false }
 );
 
+// --- DEMO: voice assistant prototype (remove this block + import to uninstall) ---
+const VoiceAssistant = dynamic(
+  () =>
+    import("@/ui/voice/VoiceAssistantBoundary").then((mod) => ({
+      default: mod.VoiceAssistantBoundary,
+    })),
+  { ssr: false }
+);
+
 export function ClientDynamics({
   locale,
   hasKwikcartDisabled,
@@ -41,6 +50,7 @@ export function ClientDynamics({
       ) : (
         <KwikCartRemounter />
       )}
+      <VoiceAssistant />
     </>
   );
 }

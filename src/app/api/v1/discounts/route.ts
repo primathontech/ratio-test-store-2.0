@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getCommerceClient } from "@/config/commerce";
+import { voiceGuard, readJsonBody } from "@/lib/voiceGuard";
 
 export interface DiscountOffer {
   id: string;
@@ -58,8 +59,12 @@ export interface FetchDiscountsParams {
  * Mirrors the bblunt reference implementation.
  */
 export async function POST(request: NextRequest) {
+  const blocked = voiceGuard(request, "discounts", 60);
+  if (blocked) return blocked;
+  const parsed = await readJsonBody<FetchDiscountsParams>(request);
+  if (!parsed.ok) return parsed.response;
   try {
-    const body: FetchDiscountsParams = await request.json();
+    const body: FetchDiscountsParams = parsed.data;
 
     const apiUrl = process.env.NEXT_PUBLIC_GOKWIK_DISCOUNT_API_URL || "";
     const mid =
@@ -74,11 +79,15 @@ export async function POST(request: NextRequest) {
 
     const requestBody = {
       merchant_id: mid,
-      page: body.page || 1,
-      limit: body.limit || 100,
-      status: body.status || "published",
+      page: Math.max(1, Number(body.page) || 1),
+      limit: Math.min(100, Math.max(1, Number(body.limit) || 100)),
+      // FORCE published + always-visible SERVER-SIDE — these are NOT client-
+      // controllable. Honoring a client `status`/`visibility` let a caller enumerate
+      // HIDDEN / unpublished / user-targeted coupons that were never meant to be public
+      // (a coupon-abuse vector on a shared URL). Only public, published offers here.
+      status: "published",
       is_discount_set: body.is_discount_set || false,
-      visibility: body.visibility || "always",
+      visibility: "always",
     };
 
     const headers: Record<string, string> = {
@@ -95,7 +104,26 @@ export async function POST(request: NextRequest) {
       body: JSON.stringify(requestBody),
     });
 
-    return NextResponse.json(response.data);
+    // Strip user-targeting fields before returning coupons to the client — these can
+    // carry customer ids / segments that shouldn't leave the server.
+    const raw = response.data as DiscountResponse | undefined;
+    const offers = raw?.data?.data;
+    if (Array.isArray(offers)) {
+      raw!.data.data = offers.map((o) => {
+        const {
+          applicable_user_id,
+          applicable_user_categories,
+          exclude_applicable_user_id,
+          ...safe
+        } = o;
+        void applicable_user_id;
+        void applicable_user_categories;
+        void exclude_applicable_user_id;
+        return safe as DiscountOffer;
+      });
+    }
+
+    return NextResponse.json(raw);
   } catch (error) {
     console.error("Error fetching discounts:", error);
     return NextResponse.json(
