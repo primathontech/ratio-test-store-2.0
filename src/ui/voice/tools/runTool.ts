@@ -566,7 +566,9 @@ export function createRunTool(ctx: ToolContext) {
       if (!c0.isInitialized && typeof c0.initializeCart === "function")
         try {
           await c0.initializeCart();
-        } catch {}
+        } catch {
+          /* best-effort — non-fatal */
+        }
       const phone = await resolvePhone();
       if (!phone)
         return {
@@ -922,7 +924,9 @@ export function createRunTool(ctx: ToolContext) {
       if (!c0.isInitialized && typeof c0.initializeCart === "function")
         try {
           await c0.initializeCart();
-        } catch {}
+        } catch {
+          /* best-effort — non-fatal */
+        }
       let p =
         findP(args.product_id) ??
         currentProductRef.current ??
@@ -1062,7 +1066,9 @@ export function createRunTool(ctx: ToolContext) {
       if (!c0.isInitialized && typeof c0.initializeCart === "function")
         try {
           await c0.initializeCart();
-        } catch {}
+        } catch {
+          /* best-effort — non-fatal */
+        }
       // Accept a single product_id OR a product_ids[] (multi-remove in one step).
       const ids: string[] =
         Array.isArray(args?.product_ids) && args.product_ids.length
@@ -1114,7 +1120,9 @@ export function createRunTool(ctx: ToolContext) {
       if (!c0.isInitialized && typeof c0.initializeCart === "function")
         try {
           await c0.initializeCart();
-        } catch {}
+        } catch {
+          /* best-effort — non-fatal */
+        }
       const items = [...((cart().items ?? []) as any[])];
       if (!items.length)
         return { ok: true, message: "Your cart is already empty." };
@@ -1140,7 +1148,9 @@ export function createRunTool(ctx: ToolContext) {
       if (!c0.isInitialized && typeof c0.initializeCart === "function")
         try {
           await c0.initializeCart();
-        } catch {}
+        } catch {
+          /* best-effort — non-fatal */
+        }
       const m = lastMutationRef.current;
       if (!m)
         return { ok: false, message: "There's nothing to undo right now." };
@@ -1199,7 +1209,9 @@ export function createRunTool(ctx: ToolContext) {
       if (!c0.isInitialized && typeof c0.initializeCart === "function")
         try {
           await c0.initializeCart();
-        } catch {}
+        } catch {
+          /* best-effort — non-fatal */
+        }
       const line = findCartLine(args.product_id);
       if (!line) return { ok: false, error: "That item isn't in the cart." };
       const q = Math.max(

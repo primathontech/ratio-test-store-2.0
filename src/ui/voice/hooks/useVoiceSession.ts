@@ -390,7 +390,9 @@ export function useVoiceSession(): VoiceSessionApi {
     // a hydrated cart instead of an empty snapshot — fixes "works only on retry".
     try {
       void (useCartStore.getState() as any).initializeCart?.();
-    } catch {}
+    } catch {
+      /* best-effort — non-fatal */
+    }
     sendPageContext();
   }, [status, pathname, sendPageContext]);
 
@@ -771,7 +773,9 @@ export function useVoiceSession(): VoiceSessionApi {
       trackSessionEnd(reason);
       try {
         sessionRef.current?.close(); // stops the mic track + tears down the WebRTC pc
-      } catch {}
+      } catch {
+        /* best-effort — non-fatal */
+      }
       sessionRef.current = null;
       setStatus("idle");
       setCaption("");
@@ -1102,7 +1106,9 @@ export function useVoiceSession(): VoiceSessionApi {
       const bail = () => {
         try {
           session?.close(); // stops the mic track + tears down the WebRTC pc
-        } catch {}
+        } catch {
+          /* best-effort — non-fatal */
+        }
         if (sessionRef.current === session) sessionRef.current = null;
       };
 

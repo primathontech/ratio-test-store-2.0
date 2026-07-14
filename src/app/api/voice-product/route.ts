@@ -57,7 +57,7 @@ function flattenAttributes(metadata: any): Record<string, string> {
     const text = (typeof v === "string" ? v : lexText(v)).trim();
     if (text) {
       out[key.replace(/_/g, " ").trim()] = text
-        .replace(/ /g, " ")
+        .replace(/\u00A0/g, " ")
         .replace(/\s+/g, " ")
         .trim()
         .slice(0, 300);
