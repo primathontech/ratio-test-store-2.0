@@ -52,10 +52,20 @@ export interface FaqAnimatedSettings {
   colorScheme?: string;
   /** Open the first item on first paint. */
   openFirstRow?: boolean;
+  /** Allow multiple answers open at once (original: strictly single-open). */
+  multiOpen?: boolean;
   /** Top padding in px (desktop). Mobile uses ~55%. */
   paddingTop?: number;
   /** Bottom padding in px (desktop). Mobile uses ~55%. */
   paddingBottom?: number;
+  /** Row text scale: small 0.9× · medium 1× (original 17px) · large 1.15×. */
+  textSize?: "small" | "medium" | "large";
+  /** Question case. @default none */
+  textCase?: "none" | "uppercase";
+  /** Hairline + chevron-circle border thickness in px. @default 1 (original) */
+  dividerWidth?: number;
+  /** Container max-width in px; 0 = full width. @default 1000 (original) */
+  contentWidthPx?: number;
 }
 
 /** Props for the v3 look — renders ONLY the VM (vm.v3 is its extension). */

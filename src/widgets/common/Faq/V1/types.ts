@@ -81,6 +81,16 @@ export interface FaqCollapsibleSettings {
   paddingTop?: number;
   /** Bottom padding in px (desktop). Mobile uses ~75%. */
   paddingBottom?: number;
+
+  /* ---- Extensions (the source hardcoded these) ---- */
+  /** Row text scale: small 15/13px · medium 17–20/15–16px (original) · large 19–22/17–18px. */
+  textSize?: "small" | "medium" | "large";
+  /** Question case. @default none */
+  textCase?: "none" | "uppercase";
+  /** Hairline/card border thickness in px. @default 1 (original) */
+  dividerWidth?: number;
+  /** Container width override (original: narrow w/o image, page with image). */
+  contentWidth?: "narrow" | "page" | "full";
 }
 
 /** Props for the v1 look — renders ONLY the VM (vm.v1 is its extension). */

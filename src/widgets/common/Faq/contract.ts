@@ -44,16 +44,27 @@ export interface FaqSharedSettings {
   headingAlignment?: "default" | "left" | "center" | "right";
   faqs?: FaqItem[];
   openFirstRow?: boolean;
+  /** "multiple" lets several answers stay open (Animated look; the native
+   *  <details> looks are naturally multiple). */
+  openBehavior?: "default" | "single" | "multiple";
   iconStyle?: "default" | "caret" | "plus"; // v2 (v1 caret, v3 circled chevron)
+  /** Question + answer text scale ("default" = the variant's original). */
+  textSize?: "default" | "small" | "medium" | "large";
+  /** Question case. */
+  textCase?: "default" | "none" | "uppercase";
   dividers?: boolean;
   dividerColor?: string;
+  /** Divider thickness in px. */
+  dividerWidth?: number;
   questionColor?: string;
   answerColor?: string;
   rowStyle?: "default" | "hairline" | "boxed"; // v1
   image?: FaqImage | string; // v1 side image
   imageRatio?: "default" | "adapt" | "small" | "large"; // v1
   imagePosition?: "default" | "first" | "second"; // v1
-  sectionWidth?: "default" | "page" | "full"; // v2
+  /** Container width ("default" = the variant's original). */
+  contentWidth?: "default" | "narrow" | "page" | "full";
+  sectionWidth?: "default" | "page" | "full"; // v2 (legacy alias of contentWidth)
   paddingTop?: number;
   paddingBottom?: number;
   sectionBackground?: string;
@@ -72,7 +83,11 @@ export interface FaqVMShared {
   };
   /** Normalized Q&A rows (post sample fall-through — never empty). */
   rows: FaqItem[];
-  behavior: { openFirstRow: boolean };
+  behavior: { openFirstRow: boolean; multiOpen: boolean };
+  text: {
+    size?: "small" | "medium" | "large";
+    case?: "none" | "uppercase";
+  };
   appearance: {
     colorScheme: string; // scheme id — variants resolve via schemeColorVars()
     iconStyle?: "caret" | "plus";
@@ -188,6 +203,16 @@ export const FaqContract = {
       label: "Open First Question",
       default: false,
     },
+    openBehavior: {
+      type: "select" as const,
+      label: "Open Behavior (Animated Accordion)",
+      options: [
+        { value: "default", label: "Variant default" },
+        { value: "single", label: "One open at a time" },
+        { value: "multiple", label: "Allow multiple open" },
+      ],
+      default: "default",
+    },
 
     /* ── Accordion look ──────────────────────────────────────────────── */
     iconStyle: {
@@ -197,6 +222,27 @@ export const FaqContract = {
         { value: "default", label: "Variant default" },
         { value: "caret", label: "Caret" },
         { value: "plus", label: "Plus / minus" },
+      ],
+      default: "default",
+    },
+    textSize: {
+      type: "select" as const,
+      label: "Question & Answer Text Size",
+      options: [
+        { value: "default", label: "Variant default" },
+        { value: "small", label: "Small" },
+        { value: "medium", label: "Medium" },
+        { value: "large", label: "Large" },
+      ],
+      default: "default",
+    },
+    textCase: {
+      type: "select" as const,
+      label: "Question Case",
+      options: [
+        { value: "default", label: "Variant default" },
+        { value: "none", label: "Normal" },
+        { value: "uppercase", label: "Uppercase" },
       ],
       default: "default",
     },
@@ -210,6 +256,14 @@ export const FaqContract = {
       label: "Divider Color (hex, empty = default)",
       placeholder: "#e5e5e5",
       default: "",
+    },
+    dividerWidth: {
+      type: "number" as const,
+      label: "Divider Thickness (px)",
+      default: 1,
+      min: 0,
+      max: 8,
+      step: 1,
     },
     questionColor: {
       type: "text" as const,
@@ -267,6 +321,17 @@ export const FaqContract = {
       label: "Content Width (Accordion)",
       options: [
         { value: "default", label: "Variant default" },
+        { value: "page", label: "Page width" },
+        { value: "full", label: "Full width" },
+      ],
+      default: "default",
+    },
+    contentWidth: {
+      type: "select" as const,
+      label: "Container Width",
+      options: [
+        { value: "default", label: "Variant default" },
+        { value: "narrow", label: "Narrow (734px)" },
         { value: "page", label: "Page width" },
         { value: "full", label: "Full width" },
       ],
