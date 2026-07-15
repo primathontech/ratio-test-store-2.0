@@ -1,5 +1,7 @@
 import { WIDGET_TYPES } from "@/widgets/.generated/types";
 import { HeroContract } from "@/widgets/common/Hero/contract";
+import { FaqContract } from "@/widgets/common/Faq/contract";
+import { AnnouncementContract } from "@/widgets/common/Announcement/contract";
 
 /**
  * Widget Registry for Visual Editor
@@ -47,6 +49,8 @@ const commonWidgetSchemas = {
   // Common Sections library — schema lives IN the section folder (contract.ts);
   // this registry just points at it, so the folder stays the source of truth.
   [WIDGET_TYPES.Hero]: HeroContract,
+  [WIDGET_TYPES.Faq]: FaqContract,
+  [WIDGET_TYPES.Announcement]: AnnouncementContract,
 };
 
 // =============================================================================
