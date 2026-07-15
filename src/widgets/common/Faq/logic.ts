@@ -54,15 +54,20 @@ const SHARED_KEYS = [
   "headingAlignment",
   "faqs",
   "openFirstRow",
+  "openBehavior",
   "iconStyle",
+  "textSize",
+  "textCase",
   "dividers",
   "dividerColor",
+  "dividerWidth",
   "questionColor",
   "answerColor",
   "rowStyle",
   "image",
   "imageRatio",
   "imagePosition",
+  "contentWidth",
   "sectionWidth",
   "paddingTop",
   "paddingBottom",
@@ -93,6 +98,10 @@ const nativeRest = (s: FaqSharedSettings) => {
 /** Configured Q&A items, or null when the merchant has set none. */
 const configuredItems = (s: FaqSharedSettings): FaqItem[] | null =>
   Array.isArray(s.faqs) && s.faqs.length > 0 ? s.faqs : null;
+
+/** Divider thickness: OFF → 0; else the explicit px (undefined keeps native). */
+const dividerPx = (s: FaqSharedSettings): number | undefined =>
+  s.dividers === false ? 0 : s.dividerWidth;
 
 /* ── v1: collapsible content ───────────────────────────────────────────── */
 function toV1Ext(s: FaqSharedSettings): FaqCollapsibleSettings {
@@ -134,6 +143,10 @@ function toV1Ext(s: FaqSharedSettings): FaqCollapsibleSettings {
       questionColor: s.questionColor || undefined,
       answerColor: s.answerColor || undefined,
       dividerColor: s.dividerColor || undefined,
+      dividerWidth: dividerPx(s),
+      textSize: opt(s.textSize),
+      textCase: opt(s.textCase),
+      contentWidth: opt(s.contentWidth),
       image: src(s.image),
       imageAlt: alt(s.image),
       imageRatio,
@@ -186,11 +199,24 @@ function toV2Ext(s: FaqSharedSettings): FaqAccordionSettings {
       icon: opt(s.iconStyle),
       dividers: s.dividers,
       divider_color: s.dividerColor || undefined,
+      divider_width: s.dividerWidth,
+      text_size: opt(s.textSize),
+      text_case: opt(s.textCase),
       question_color: s.questionColor || undefined,
       answer_color: s.answerColor || undefined,
       color_scheme: s.colorScheme,
       section_background: s.sectionBackground || undefined,
-      section_width: sectionWidth ? sectionWidthMap[sectionWidth] : undefined,
+      // contentWidth wins over the legacy sectionWidth alias; "narrow" keeps
+      // the page container and caps the content column.
+      section_width:
+        opt(s.contentWidth) === "full"
+          ? "full-width"
+          : opt(s.contentWidth) === "page"
+            ? "page-width"
+            : sectionWidth
+              ? sectionWidthMap[sectionWidth]
+              : undefined,
+      content_max_width: opt(s.contentWidth) === "narrow" ? 734 : undefined,
       "padding-block-start": s.paddingTop,
       "padding-block-end": s.paddingBottom,
     }),
@@ -219,6 +245,23 @@ function toV3Ext(s: FaqSharedSettings): FaqAnimatedSettings {
       questionColor: s.questionColor || undefined,
       answerColor: s.answerColor || undefined,
       dividerColor: s.dividerColor || undefined,
+      dividerWidth: dividerPx(s),
+      textSize: opt(s.textSize),
+      textCase: opt(s.textCase),
+      multiOpen:
+        opt(s.openBehavior) === "multiple"
+          ? true
+          : opt(s.openBehavior) === "single"
+            ? false
+            : undefined,
+      contentWidthPx:
+        opt(s.contentWidth) === "narrow"
+          ? 734
+          : opt(s.contentWidth) === "page"
+            ? 1200
+            : opt(s.contentWidth) === "full"
+              ? 0
+              : undefined,
       colorScheme: s.colorScheme,
       sectionBackground: s.sectionBackground || undefined,
       openFirstRow: s.openFirstRow,
@@ -247,7 +290,14 @@ function buildShared(s: FaqSharedSettings): FaqVMShared {
           }
         : undefined,
     rows: items ?? SAMPLE_QA,
-    behavior: { openFirstRow: !!s.openFirstRow },
+    behavior: {
+      openFirstRow: !!s.openFirstRow,
+      multiOpen: opt(s.openBehavior) === "multiple",
+    },
+    text: {
+      size: opt(s.textSize) as FaqVMShared["text"]["size"],
+      case: opt(s.textCase) as FaqVMShared["text"]["case"],
+    },
     appearance: {
       colorScheme: s.colorScheme ?? "scheme-1",
       iconStyle: opt(s.iconStyle) as FaqVMShared["appearance"]["iconStyle"],
@@ -302,21 +352,40 @@ export interface FaqLogic {
 }
 
 /**
- * Single-open accordion state. Client-only (v3 consumes it); the pure
+ * Accordion open state — single-open by default (the animated look's
+ * original behavior), multi-open when `vm.shared.behavior.multiOpen` is set
+ * (the shared `openBehavior` field). Client-only (v3 consumes it); the pure
  * builder above stays importable from server code — this hook is only
  * evaluated inside "use client" variants.
  */
 export function useFaqLogic(vm: FaqVM): FaqLogic {
-  const [openIndex, setOpenIndex] = useState<number | null>(
-    vm.shared.behavior.openFirstRow ? 0 : null
+  const multiOpen = vm.shared.behavior.multiOpen;
+  const [openSet, setOpenSet] = useState<ReadonlySet<number>>(
+    () => new Set(vm.shared.behavior.openFirstRow ? [0] : [])
   );
   const toggle = useCallback(
-    (index: number) => setOpenIndex((prev) => (prev === index ? null : index)),
-    []
+    (index: number) =>
+      setOpenSet((prev) => {
+        const next = new Set(prev);
+        if (next.has(index)) {
+          next.delete(index);
+        } else {
+          if (!multiOpen) {
+            next.clear();
+          }
+          next.add(index);
+        }
+        return next;
+      }),
+    [multiOpen]
   );
+  let openIndex: number | null = null;
+  openSet.forEach((index) => {
+    openIndex = openIndex === null || index > openIndex ? index : openIndex;
+  });
   return {
     openIndex,
-    isOpen: (index: number) => openIndex === index,
+    isOpen: (index: number) => openSet.has(index),
     toggle,
   };
 }

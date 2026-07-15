@@ -71,12 +71,32 @@ export const V3 = memo(function V3({ vm, className }: FaqAnimatedProps) {
   const paddingTop = s.paddingTop ?? 75;
   const paddingBottom = s.paddingBottom ?? 75;
 
+  // Text/divider/width extensions (unset = the look's original values).
+  const scale =
+    s.textSize === "small" ? 0.9 : s.textSize === "large" ? 1.15 : 1;
+  const questionStyle: React.CSSProperties = {
+    fontSize: `${17 * scale}px`,
+    lineHeight: `${19.55 * scale}px`,
+    letterSpacing: "0.425px",
+    textTransform: s.textCase === "uppercase" ? "uppercase" : undefined,
+  };
+  const answerStyle: React.CSSProperties = {
+    fontSize: `${17 * scale}px`,
+    lineHeight: `${23.8 * scale}px`,
+    letterSpacing: "0.425px",
+  };
+  const maxWidth =
+    s.contentWidthPx === 0 ? "100%" : `${s.contentWidthPx ?? 1000}px`;
+
   const overrides: Record<string, string> = {
     "--cs-faq-v3-pt": `${paddingTop}px`,
     "--cs-faq-v3-pb": `${paddingBottom}px`,
     "--cs-faq-v3-pt-m": `${Math.round(paddingTop * 0.55)}px`,
     "--cs-faq-v3-pb-m": `${Math.round(paddingBottom * 0.55)}px`,
   };
+  if (s.dividerWidth !== undefined) {
+    overrides["--cs-faq-v3-line-w"] = `${s.dividerWidth}px`;
+  }
   if (s.headingColor) {
     overrides["--cs-faq-v3-heading-color"] = s.headingColor;
   }
@@ -104,7 +124,10 @@ export const V3 = memo(function V3({ vm, className }: FaqAnimatedProps) {
         } as React.CSSProperties
       }
     >
-      <div className="mx-auto w-full max-w-[1000px] px-[17px] min-[750px]:px-[40px]">
+      <div
+        className="mx-auto w-full px-[17px] min-[750px]:px-[40px]"
+        style={{ maxWidth }}
+      >
         <div
           className="mb-[20px]"
           style={
@@ -144,7 +167,8 @@ export const V3 = memo(function V3({ vm, className }: FaqAnimatedProps) {
                   aria-expanded={open}
                   aria-controls={panelId}
                   onClick={() => toggle(i)}
-                  className="cs-faq-v3__trigger flex w-full items-center justify-between py-[11px] text-left text-[17px] font-normal leading-[19.55px] tracking-[0.425px]"
+                  className="cs-faq-v3__trigger flex w-full items-center justify-between py-[11px] text-left font-normal"
+                  style={questionStyle}
                   data-testid="faq-question"
                 >
                   <span>{item.question}</span>
@@ -164,7 +188,8 @@ export const V3 = memo(function V3({ vm, className }: FaqAnimatedProps) {
                       preset={TypePreset.Custom}
                       html={item.answer}
                       testId="faq-answer"
-                      className="cs-faq-v3__answer pb-[30px] text-[17px] font-normal leading-[23.8px] tracking-[0.425px] [&_a]:underline [&_li]:mt-[4px] [&_p]:m-0 [&_p+p]:mt-[12px] [&_ul]:m-0 [&_ul]:list-disc [&_ul]:pl-[18px]"
+                      style={answerStyle}
+                      className="cs-faq-v3__answer pb-[30px] font-normal [&_a]:underline [&_li]:mt-[4px] [&_p]:m-0 [&_p+p]:mt-[12px] [&_ul]:m-0 [&_ul]:list-disc [&_ul]:pl-[18px]"
                     />
                   </div>
                 </div>

@@ -198,6 +198,30 @@ export const V1 = memo(function V1({ vm, className }: FaqCollapsibleProps) {
     colorOverrides["--cs-faq-v1-bg"] = s.sectionBackground;
   }
 
+  // Text/divider extensions (unset = the look's original CSS defaults).
+  const Q_SIZE: Record<string, { m: string; d: string }> = {
+    small: { m: "15px", d: "17px" },
+    medium: { m: "17px", d: "20px" },
+    large: { m: "19px", d: "22px" },
+  };
+  const A_SIZE: Record<string, { m: string; d: string }> = {
+    small: { m: "13px", d: "14px" },
+    medium: { m: "15px", d: "16px" },
+    large: { m: "17px", d: "18px" },
+  };
+  if (s.textSize && Q_SIZE[s.textSize]) {
+    colorOverrides["--cs-faq-v1-q-fs-m"] = Q_SIZE[s.textSize].m;
+    colorOverrides["--cs-faq-v1-q-fs-d"] = Q_SIZE[s.textSize].d;
+    colorOverrides["--cs-faq-v1-a-fs-m"] = A_SIZE[s.textSize].m;
+    colorOverrides["--cs-faq-v1-a-fs-d"] = A_SIZE[s.textSize].d;
+  }
+  if (s.textCase === "uppercase") {
+    colorOverrides["--cs-faq-v1-q-case"] = "uppercase";
+  }
+  if (s.dividerWidth !== undefined) {
+    colorOverrides["--cs-faq-v1-divider-w"] = `${s.dividerWidth}px`;
+  }
+
   const Accordions = (
     <div className="cs-faq-v1__accordions">
       {rows.map((row, i) => (
@@ -255,10 +279,15 @@ export const V1 = memo(function V1({ vm, className }: FaqCollapsibleProps) {
       <div className="cs-faq-v1__wrapper">
         <div
           className={
-            hasImage
-              ? "cs-faq-v1__inner cs-faq-v1__inner--wide"
-              : "cs-faq-v1__inner cs-faq-v1__inner--narrow"
+            s.contentWidth === "narrow"
+              ? "cs-faq-v1__inner cs-faq-v1__inner--narrow"
+              : s.contentWidth
+                ? "cs-faq-v1__inner cs-faq-v1__inner--wide"
+                : hasImage
+                  ? "cs-faq-v1__inner cs-faq-v1__inner--wide"
+                  : "cs-faq-v1__inner cs-faq-v1__inner--narrow"
           }
+          style={s.contentWidth === "full" ? { maxWidth: "100%" } : undefined}
         >
           <div
             className="cs-faq-v1__header"

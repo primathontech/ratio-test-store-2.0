@@ -56,6 +56,16 @@ export interface FaqAccordionSettings {
   question_color?: string;
   /** Answer body color. Empty = scheme foreground. */
   answer_color?: string;
+
+  /* ---- Extensions (the source drove these from presets/tokens only) ---- */
+  /** Row text scale: small 14/12px · medium presets (original) · large 18/16px. */
+  text_size?: "small" | "medium" | "large";
+  /** Question case. @default none */
+  text_case?: "none" | "uppercase";
+  /** Content max-width in px (the "narrow" container option). */
+  content_max_width?: number;
+  /** Divider thickness in px. @default 1 (original) */
+  divider_width?: number;
 }
 
 /** Props for the v2 look — renders ONLY the VM (vm.v2 is its extension). */

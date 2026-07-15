@@ -36,6 +36,10 @@ export const V1_COVERAGE = {
   sectionBackground: "shared",
   paddingTop: "shared",
   paddingBottom: "shared",
+  textSize: "shared",
+  textCase: "shared",
+  dividerWidth: "shared",
+  contentWidth: "shared",
 } satisfies Record<keyof FaqCollapsibleSettings, SettingsCoverage>;
 
 export const V2_COVERAGE = {
@@ -58,6 +62,10 @@ export const V2_COVERAGE = {
   rows: "shared", // fed from the shared `faqs` items (+ openFirstRow)
   question_color: "shared",
   answer_color: "shared",
+  text_size: "shared",
+  text_case: "shared",
+  divider_width: "shared",
+  content_max_width: "shared", // fed from the shared `contentWidth` (narrow)
 } satisfies Record<keyof FaqAccordionSettings, SettingsCoverage>;
 
 export const V3_COVERAGE = {
@@ -74,6 +82,11 @@ export const V3_COVERAGE = {
   sectionBackground: "shared",
   colorScheme: "shared",
   openFirstRow: "shared",
+  multiOpen: "shared", // fed from the shared `openBehavior`
   paddingTop: "shared",
   paddingBottom: "shared",
+  textSize: "shared",
+  textCase: "shared",
+  dividerWidth: "shared",
+  contentWidthPx: "shared", // fed from the shared `contentWidth`
 } satisfies Record<keyof FaqAnimatedSettings, SettingsCoverage>;

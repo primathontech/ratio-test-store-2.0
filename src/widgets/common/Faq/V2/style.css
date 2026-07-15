@@ -52,11 +52,11 @@
 
 /* Dividers between rows (on by default). */
 .cs-faq-v2__accordion--dividers .cs-faq-v2__row {
-  border-block-start: 1px solid
+  border-block-start: var(--cs-faq-v2-divider-w, 1px) solid
     var(--cs-faq-v2-divider, var(--color-border, rgba(0, 0, 0, 0.12)));
 }
 .cs-faq-v2__accordion--dividers .cs-faq-v2__row:last-child {
-  border-block-end: 1px solid
+  border-block-end: var(--cs-faq-v2-divider-w, 1px) solid
     var(--cs-faq-v2-divider, var(--color-border, rgba(0, 0, 0, 0.12)));
 }
 

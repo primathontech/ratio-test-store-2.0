@@ -61,6 +61,12 @@ function resolveRows(rows?: FaqAccordionRow[]): FaqAccordionRow[] {
   return Array.isArray(rows) ? rows.filter((r) => r && r.heading?.trim()) : [];
 }
 
+/** Bulk row text sizes (medium = the presets' original scale). */
+const ROW_TEXT_SIZE: Record<string, { title: string; body: string }> = {
+  small: { title: "14px", body: "12px" },
+  large: { title: "18px", body: "16px" },
+};
+
 /** Inline CSS-variable style for the section root (scheme colors + box vars). */
 function rootVars(s: FaqAccordionSettings): CSSProperties {
   const vars: Record<string, string> = {
@@ -71,6 +77,9 @@ function rootVars(s: FaqAccordionSettings): CSSProperties {
   };
   if (s.divider_color) {
     vars["--cs-faq-v2-divider"] = s.divider_color;
+  }
+  if (s.divider_width !== undefined) {
+    vars["--cs-faq-v2-divider-w"] = `${s.divider_width}px`;
   }
   if (s.heading_color) {
     vars["--cs-faq-v2-heading-color"] = s.heading_color;
@@ -99,6 +108,19 @@ export const V2 = memo(function V2({ vm, className }: FaqAccordionProps) {
   const showDividers = s.dividers !== false; // default: true
   const rowPreset = s.row_preset ?? TypePreset.H6;
 
+  // Bulk typography extensions (unset = the presets' original scale).
+  const rowSize = s.text_size ? ROW_TEXT_SIZE[s.text_size] : undefined;
+  const titleStyle: CSSProperties | undefined =
+    rowSize || s.text_case
+      ? {
+          fontSize: rowSize?.title,
+          textTransform: s.text_case === "uppercase" ? "uppercase" : undefined,
+        }
+      : undefined;
+  const bodyStyle: CSSProperties | undefined = rowSize
+    ? { fontSize: rowSize.body }
+    : undefined;
+
   const rootClass = [
     "cs-faq-v2",
     fullWidth ? "" : "cs-faq-v2--page",
@@ -117,7 +139,17 @@ export const V2 = memo(function V2({ vm, className }: FaqAccordionProps) {
 
   return (
     <section className={rootClass} style={rootVars(s)} data-testid="faq">
-      <div className="cs-faq-v2__content">
+      <div
+        className="cs-faq-v2__content"
+        style={
+          s.content_max_width
+            ? ({
+                maxWidth: `${s.content_max_width}px`,
+                marginInline: "auto",
+              } as CSSProperties)
+            : undefined
+        }
+      >
         {s.caption ? (
           <p
             className="cs-faq-v2__caption"
@@ -157,6 +189,7 @@ export const V2 = memo(function V2({ vm, className }: FaqAccordionProps) {
                   as="span"
                   preset={rowPreset}
                   className="cs-faq-v2__title"
+                  style={titleStyle}
                 >
                   {row.heading}
                 </PresetText>
@@ -173,6 +206,7 @@ export const V2 = memo(function V2({ vm, className }: FaqAccordionProps) {
                     preset={TypePreset.Rte}
                     html={row.body}
                     className="cs-faq-v2__body"
+                    style={bodyStyle}
                   />
                 </div>
               ) : null}
