@@ -28,14 +28,22 @@ export function minorToMajor(minor: unknown): number {
 }
 
 const DEFAULT_SYMBOL = process.env.NEXT_PUBLIC_VOICE_CURRENCY_SYMBOL || "₹";
-// Digit-grouping locale (cosmetic only — it changes thousands separators, never the
-// symbol). Indian grouping by default; every current merchant is INR.
+// The currency as a spoken WORD (e.g. "rupees"). CRITICAL: a real-time voice model
+// reads the digits out of a symbol-only string like "₹499" and, in English, attaches
+// its dominant "dollars" prior — so it says "499 dollars" (in Hindi it defaults to
+// rupees). The only deterministic fix is to give it the currency as an explicit WORD
+// it cannot misread. Config-driven (default "rupees" for INR).
+const CURRENCY_WORD = process.env.NEXT_PUBLIC_VOICE_CURRENCY_NAME || "rupees";
+// Digit-grouping locale (cosmetic only — Indian grouping by default; every current
+// merchant is INR).
 const GROUPING_LOCALE = "en-IN";
 
 /**
  * Format an amount (already in MAJOR units — rupees, not paise) as a ready-to-speak
- * price string, e.g. "₹1,299". Returns null when the amount is missing/invalid so
- * callers can OMIT the field rather than emit a bogus "₹0"/"₹NaN".
+ * price string that spells the currency as a WORD, e.g. "₹1,299 rupees". Both the
+ * symbol (for the reader/UI) AND the word (so the model can NEVER say "dollars") are
+ * included. Returns null when the amount is missing/invalid so callers can OMIT the
+ * field rather than emit a bogus "₹0 rupees"/"NaN".
  */
 export function formatMoney(
   amount: number | null | undefined,
@@ -47,5 +55,5 @@ export function formatMoney(
   }
   return `${symbol}${n.toLocaleString(GROUPING_LOCALE, {
     maximumFractionDigits: 2,
-  })}`;
+  })} ${CURRENCY_WORD}`;
 }
