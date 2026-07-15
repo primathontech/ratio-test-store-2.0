@@ -316,16 +316,12 @@ export function createRunTool(ctx: ToolContext) {
     product_id: p.id,
     handle: p.handle,
     title: p.title,
-    // Omit BOTH the number and the display when the price is unknown/≤0 (e.g. a
-    // null-variant combo priced 0) so the model has nothing to voice as "₹0"; per the
-    // persona it then offers to open the product to check. Real variant price is
-    // re-resolved at add time.
+    // Send ONLY the ready-to-speak ₹ string (+ a currency anchor), never a bare number
+    // the model could read as "$". Omitted entirely when the price is unknown/≤0 (e.g. a
+    // null-variant combo priced 0) → per the persona the agent offers to open it to
+    // check; the real price is re-resolved at add time.
     ...(p.price > 0
-      ? {
-          price: p.price,
-          currency: CURRENCY,
-          price_display: priceDisplay(p.price),
-        }
+      ? { currency: CURRENCY, price_display: priceDisplay(p.price) }
       : {}),
     available: p.available,
     on_sale: onSale(p),
@@ -1233,18 +1229,69 @@ export function createRunTool(ctx: ToolContext) {
       const want = String(args.handle || "")
         .trim()
         .toLowerCase();
-      const norm = (s: string) => s.toLowerCase().replace(/-/g, " ").trim();
-      const match =
+      const norm = (s: string) =>
+        s.toLowerCase().replace(/-/g, " ").replace(/\s+/g, " ").trim();
+      // Shoppers never say the exact handle/title ("open the hair spray collection",
+      // "spray collection", "sprays") — so match by TOKEN OVERLAP, not substring
+      // containment (which failed the moment the phrase was longer than the title, e.g.
+      // the extra word "collection"). Strip filler words, require every meaningful
+      // spoken token to appear in the collection (plural-tolerant), and pick the
+      // tightest such collection. Merchant-agnostic — no hardcoded names.
+      const FILLER = new Set([
+        "the",
+        "a",
+        "an",
+        "collection",
+        "collections",
+        "page",
+        "section",
+        "category",
+        "range",
+        "show",
+        "open",
+        "me",
+        "to",
+        "take",
+        "go",
+        "view",
+        "see",
+        "please",
+        "my",
+        "of",
+        "for",
+        "product",
+        "products",
+        "all",
+      ]);
+      const toks = (s: string) =>
+        norm(s)
+          .split(" ")
+          .filter((t) => t.length >= 2 && !FILLER.has(t));
+      const tokMatch = (a: string, b: string) =>
+        a === b ||
+        (a.length >= 3 &&
+          b.length >= 3 &&
+          (a.startsWith(b) || b.startsWith(a)));
+      const wantToks = toks(want);
+      let match =
         cols.find((c) => c.handle.toLowerCase() === want) ||
         cols.find((c) => norm(c.handle) === norm(want)) ||
-        cols.find((c) => c.title.toLowerCase() === want) ||
-        (want.length > 2
-          ? cols.find(
-              (c) =>
-                norm(c.handle).includes(norm(want)) ||
-                c.title.toLowerCase().includes(want)
-            )
-          : undefined);
+        cols.find((c) => norm(c.title) === norm(want));
+      if (!match && wantToks.length) {
+        const scored = cols
+          .map((c) => {
+            const cToks = Array.from(
+              new Set([...toks(c.title), ...toks(c.handle)])
+            );
+            const covered = wantToks.filter((w) =>
+              cToks.some((ct) => tokMatch(w, ct))
+            ).length;
+            return { c, covered, size: cToks.length };
+          })
+          .filter((s) => s.covered > 0 && s.covered === wantToks.length)
+          .sort((a, b) => b.covered - a.covered || a.size - b.size);
+        match = scored[0]?.c;
+      }
       if (match) {
         // Load the collection's products into the working set so the agent can act on
         // what's on screen (open/add/compare/filter) WITHOUT a fresh search — returning
