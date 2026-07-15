@@ -61,8 +61,17 @@ and one-line entries in `widget-registry.ts` + `available-sections-registry.ts`.
 
 1. **Render proof** — SSR probes on the demo route: every shared field
    exercised in the template asserts a DOM/CSS effect.
-2. **Editor proof** — palette add → sidebar shows real defaults → edit ≥3
-   fields incl. variant switch → visible change.
+2. **Editor proof** — verified IN the visual editor, not assumed ("editor
+   friendly, then only it's done"): palette add → sidebar shows real defaults →
+   edit ≥3 fields incl. variant switch → visible change. When the review host
+   is a merchant fork, that app needs the fork-side wiring first:
+   `widget-registry.ts` entry → the section's contract, palette entry in
+   `available-sections-registry.ts`, the `editor-integration/sections/common/`
+   preset, and the palette thumbnail. Put every variant on the HOME template
+   for review, and spread the section's full `defaults.ts` into each template
+   widget's settings (`{ ...XDefaults, variant: "vN" }`) — the sidebar reads
+   VALUES from template settings; schema defaults are labels only. Re-run
+   `migrate:theme` after template edits.
 3. **Portability proof** — `cp -R` the folder into a sibling app → `generate`
    → renders with zero edits.
 4. **Fidelity proof** — per-variant screenshot vs the source look.
@@ -100,6 +109,11 @@ covers all variants. UI-level alternative: slot/primitive override in
   `next/image` or the whole page error-boundaries.
 - Dev chunks must **never be cached immutable** (`bootstrap/next-config.js` is
   dev-aware; a year-cached stale chunk makes every fix invisible).
+- The editor IFRAME's cache is **partitioned by the editor's top-level
+  origin** — a stale service worker/chunk in that partition survives rebuilds
+  and hard refreshes and silently serves an old schema handshake (empty
+  sidebar). Cure: **bump the preview dev port** (new origin = clean partition)
+  and update `previewOrigin` in the editor URL.
 - **Click-probe every interactive element** during extraction — disclosure
   toggles can reveal content that belongs inside the section's scope.
 - Scheme tokens: variants read generic `--color-*` vars only; hosts without
