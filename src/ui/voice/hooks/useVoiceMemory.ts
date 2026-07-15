@@ -12,7 +12,7 @@
  */
 
 import { useCallback, useMemo, useRef } from "react";
-import type { TransformedProduct } from "@/utils/searchService";
+import type { TransformedProduct } from "../catalog";
 import type { VoiceProductDetail } from "../productDetail";
 
 /** The last reversible cart change, so "undo" / "take it back" can restore it.

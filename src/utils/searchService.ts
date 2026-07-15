@@ -1,4 +1,9 @@
 import { paiseToRupees } from "@/utils/apiTransforms";
+// The normalized product shape is OWNED by the voice module (so that module can be
+// extracted into a standalone SDK). Re-exported here under its historical name so
+// every existing importer of `TransformedProduct` from this util keeps working.
+import type { VoiceProduct } from "@/ui/voice/catalog";
+export type { VoiceProduct as TransformedProduct } from "@/ui/voice/catalog";
 
 export interface SearchProduct {
   id: string;
@@ -40,28 +45,8 @@ export interface SearchProduct {
   rating_count?: number;
 }
 
-export interface TransformedProduct {
-  id: string;
-  handle: string;
-  title: string;
-  imageUrl: string;
-  price: number;
-  compareAtPrice?: number;
-  available: boolean;
-  rating: number;
-  reviewCount: number;
-  variantId: string;
-  // Optional structured attributes (present only when the backend supplies them).
-  productType?: string;
-  brand?: string;
-  tags?: string[];
-  /** Distinct variant option values (e.g. colours / sizes), for reasoning + filtering. */
-  options?: string[];
-  /** Short plain-text description snippet — carried for attribute matching (e.g.
-   *  "sulfate-free", "vegan", ingredients), NOT sent to the model (keeps payload/
-   *  token cost flat). Present only when the search backend returns a description. */
-  description?: string;
-}
+// `TransformedProduct` now lives in @/ui/voice/catalog (as `VoiceProduct`) and is
+// imported + re-exported above. Internally we use `VoiceProduct` directly.
 
 /** Strip HTML tags + decode the common entities so description text matches cleanly
  *  (search returns rich HTML; raw tags/entities like "&amp;" break word matching). */
@@ -125,7 +110,7 @@ interface SearchApiResponse {
   };
 }
 
-function transformApiProduct(apiProduct: SearchProduct): TransformedProduct {
+function transformApiProduct(apiProduct: SearchProduct): VoiceProduct {
   const firstVariant = apiProduct.variants?.[0];
 
   const price = firstVariant?.price?.amount
@@ -177,7 +162,7 @@ export async function searchProducts(
   query: string,
   limit: number = 50,
   page: number = 1
-): Promise<{ products: TransformedProduct[]; totalCount: number }> {
+): Promise<{ products: VoiceProduct[]; totalCount: number }> {
   const response = await fetch("/api/v1/search", {
     method: "POST",
     headers: { "Content-Type": "application/json" },

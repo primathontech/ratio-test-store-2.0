@@ -40,6 +40,7 @@ const obj = (
  *  runTool.ts; TypeScript enforces both stay in lockstep. */
 export type ToolName =
   | "search_products"
+  | "open_product"
   | "recommend_products"
   | "get_product_details"
   | "navigate_to_product"
@@ -79,13 +80,27 @@ export type ToolName =
 
 export const TOOL_SCHEMAS: Record<ToolName, ToolSchema> = {
   search_products: {
-    description: "Search the catalog and open the search results page.",
+    description:
+      "BROWSE the catalog and open the search RESULTS page — for plural / exploratory intent ('show me shampoos', 'cheaper options', 'what conditioners do you have'). For a SPECIFIC product the shopper NAMES and wants to open, use open_product instead (it goes straight to the product page).",
     parameters: obj(
       {
         query: {
           type: "string",
           description:
             "A concrete product type or category to search for (a real product noun, not a vague phrase).",
+        },
+      },
+      ["query"]
+    ),
+  },
+  open_product: {
+    description:
+      "Open a SPECIFIC product the shopper NAMES — 'open the Onion Hair Oil', 'show me the XYZ Shampoo', 'take me to the ABC Conditioner'. Pass the product name in 'query'. It goes STRAIGHT to that product's page when the name confidently matches one product (NO detour through the results page); if the name is ambiguous (many close matches) it falls back to showing the results so the shopper can pick. Use this for a named single product; use search_products for BROWSE / plural intent.",
+    parameters: obj(
+      {
+        query: {
+          type: "string",
+          description: "The product name the shopper said, as spoken.",
         },
       },
       ["query"]
@@ -143,16 +158,22 @@ export const TOOL_SCHEMAS: Record<ToolName, ToolSchema> = {
   add_to_cart: {
     description:
       "Add a product to the cart, by product_id (from the last results, or the product currently open). Call this whenever the shopper signals they WANT this product — not only 'add to cart' but any equivalent intent: 'I'll take it', 'buy this', 'let's get it', 'this one', or the Hindi/Hinglish equivalent ('le lo', 'chahiye', 'daal do', 'order kar do'). Infer the intent — never require the word 'cart'. ALWAYS pass 'quantity' as the exact number of units the shopper asked for (e.g. 'add 5' -> quantity: 5); omit only when they didn't specify (defaults to 1). The tool returns the ACTUAL resulting cart quantity — confirm THAT number to the shopper, not what you assumed. If the tool returns sold_out:true, the item (or the chosen variant) is OUT OF STOCK — do NOT retry; tell the shopper it's sold out and offer to find a similar in-stock option instead. If it returns needs_variant:true, the product has options (size/colour/pack) the shopper hasn't chosen — ask which one using the returned 'options' list, call select_variant, THEN add.",
-    parameters: obj(
-      {
-        product_id: { type: "string" },
-        quantity: {
-          type: "number",
-          description: "Number of units to add. Default 1.",
-        },
+    parameters: obj({
+      product_id: {
+        type: "string",
+        description:
+          "The product to add — from the loaded results or the open product. PREFER this when you have it.",
       },
-      ["product_id"]
-    ),
+      query: {
+        type: "string",
+        description:
+          "A product NAME to add when you have no product_id and none is loaded (e.g. 'add the XYZ Shampoo'). Adds the confidently-matching product directly (no search-page detour); if the name is ambiguous it returns options for you to confirm. Provide product_id OR query.",
+      },
+      quantity: {
+        type: "number",
+        description: "Number of units to add. Default 1.",
+      },
+    }),
   },
   remove_from_cart: {
     description:

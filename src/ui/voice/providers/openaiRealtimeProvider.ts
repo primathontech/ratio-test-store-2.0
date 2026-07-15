@@ -436,9 +436,17 @@ export const openaiRealtimeProvider: VoiceProvider = {
           /* best-effort */
         }
       },
-      requestResponse: () => {
+      requestResponse: (opts) => {
         try {
-          dc.send(JSON.stringify({ type: "response.create" }));
+          // `instructions` overrides the prompt for THIS response only (used for the
+          // one-shot opening greeting) — the session persona/tools/voice are untouched.
+          const payload = opts?.instructions
+            ? {
+                type: "response.create",
+                response: { instructions: opts.instructions },
+              }
+            : { type: "response.create" };
+          dc.send(JSON.stringify(payload));
         } catch {
           /* best-effort */
         }

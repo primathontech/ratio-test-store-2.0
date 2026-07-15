@@ -49,11 +49,13 @@ export interface VoiceSession {
     opts?: { skipResponseCreate?: boolean }
   ) => void;
   /** Explicitly ask the model to respond now (a manual `response.create`). Used by
-   *  client-managed turn coalescing, where the server is configured NOT to
-   *  auto-respond (create_response:false) and the client decides when the turn is
-   *  over. No-op-safe: a redundant call while a response is active is ignored/erroring
-   *  harmlessly server-side. Optional — providers without manual control omit it. */
-  requestResponse?: () => void;
+   *  client-managed turn coalescing (server configured NOT to auto-respond) AND by
+   *  the proactive opening greeting. Pass `instructions` to shape THIS one response
+   *  without touching the persistent session persona (e.g. the connect greeting);
+   *  omit for a plain response. No-op-safe: a redundant call while a response is
+   *  active errors harmlessly server-side. Optional — providers without manual
+   *  control omit it. */
+  requestResponse?: (opts?: { instructions?: string }) => void;
   /** Mute/unmute the LOCAL MICROPHONE without tearing down the session — the
    *  outgoing audio track is disabled, so the model stops hearing the shopper (they
    *  still hear the model). Idempotent and safe to re-apply after a reconnect. The

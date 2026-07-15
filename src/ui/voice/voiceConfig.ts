@@ -97,9 +97,22 @@ export interface VoiceCurrency {
   symbol: string;
 }
 
+/** Proactive OPENING GREETING: the agent speaks first on a FRESH session so the
+ *  shopper immediately knows it's connected and listening (like ChatGPT Voice /
+ *  Gemini Live). `instruction` is a ONE-SHOT response directive the model renders
+ *  in the merchant's already-baked persona/tone — it is NOT a hardcoded line, so it
+ *  stays merchant-agnostic and multilingual-ready. Fires exactly once per new
+ *  session (never on reconnect, resume, or rapid re-open). */
+export interface VoiceGreeting {
+  enabled: boolean;
+  instruction: string;
+}
+
 export interface VoiceConfig {
   enabled: boolean;
   provider: VoiceProviderName;
+  /** Opening greeting behaviour (proactive first turn). */
+  greeting: VoiceGreeting;
   limits: VoiceLimits;
   session: VoiceSessionTiming;
   appearance: VoiceAppearance;
@@ -123,6 +136,16 @@ export function getVoiceConfig(): VoiceConfig {
   return {
     enabled: process.env.NEXT_PUBLIC_VOICE_ENABLED !== "false",
     searchPath: process.env.NEXT_PUBLIC_VOICE_SEARCH_PATH || "/search",
+    // Proactive greeting — ON by default. Set NEXT_PUBLIC_VOICE_GREETING_ENABLED=false
+    // to keep the old "silent until the shopper speaks" behaviour. NEXT_PUBLIC_VOICE_GREETING
+    // overrides the directive (still rendered in the store persona; keep it a single
+    // sentence). The default is intentionally generic so it works for ANY merchant.
+    greeting: {
+      enabled: process.env.NEXT_PUBLIC_VOICE_GREETING_ENABLED !== "false",
+      instruction:
+        process.env.NEXT_PUBLIC_VOICE_GREETING?.trim() ||
+        "The voice session just connected and the shopper hasn't spoken yet. Greet them now in your established persona and tone: ONE short, warm, natural sentence that welcomes them and invites them to shop (for example, ask what they're looking for today). Exactly one sentence — no lists, no product names, no menu of options. Default to English for this opening line since the shopper hasn't chosen a language yet, then mirror their language once they reply.",
+    },
     // Currency: env-driven, default INR/₹. Same env vars the persona reads
     // (agentConfig), so the spoken currency and the payload currency always agree.
     currency: {

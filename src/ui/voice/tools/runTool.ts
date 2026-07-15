@@ -1,6 +1,10 @@
-import { searchProducts, type TransformedProduct } from "@/utils/searchService";
+import type { TransformedProduct } from "../catalog";
+// NOTE: `searchProducts` is still a host util (it's shared with the storefront's
+// own Search widget). In the SDK pass it becomes an injected CatalogPort.search();
+// for now it's the one remaining host data-fetch import in the engine.
+import { searchProducts } from "@/utils/searchService";
 import { STORE_FACTS } from "../agentConfig";
-import { captureSentryException } from "@/lib/sentry/utils";
+import { captureVoiceError } from "../observability";
 import { fetchJson, fetchJsonWithStatus, toCatalogQuery } from "../voiceHttp";
 import { fetchCartOffers } from "../cart/offersSource";
 import { cartSupportsInCartCoupons } from "../cart/sideCartAdapter";
@@ -16,6 +20,8 @@ import {
   type GuardLimits,
 } from "./guardrails";
 import { createServiceHealth } from "../health/serviceHealth";
+import { formatMoney } from "../money";
+import { isModifiedListingView } from "../screenView";
 
 /**
  * The voice agent's ENTIRE tool business logic, as a pure factory over an
@@ -75,6 +81,27 @@ export function createRunTool(ctx: ToolContext) {
   // has a per-datum anchor and can never read a bare number as USD. Config-driven
   // (default INR); pairs with the persona's MONEY rule.
   const CURRENCY = config.currency?.code || "INR";
+  // The store's display symbol (₹ by default). Used to build ready-to-speak price
+  // strings so the model never currency-tags a bare number as USD. Config-driven,
+  // same source as the persona's MONEY rule.
+  const CURRENCY_SYMBOL = config.currency?.symbol || "₹";
+  const money = (amount: number | null | undefined) =>
+    formatMoney(amount, CURRENCY_SYMBOL);
+  // A PRODUCT price for the model to SPEAK: omit (null) when unknown / ≤0 (e.g. a
+  // null-variant combo the catalog priced at 0) so the agent never announces a real
+  // product as "₹0". Cart/order TOTALS keep money() — a 0 total is legitimate.
+  const priceDisplay = (amount: number | null | undefined) =>
+    Number(amount) > 0 ? money(amount) : null;
+  // True when the shopper has applied on-page filters/sorting/pagination, so the
+  // VISIBLE order no longer matches the loaded working set — positional references
+  // ("the second one") can't be trusted and must be confirmed by name.
+  const isModifiedView = () =>
+    typeof window !== "undefined" &&
+    isModifiedListingView(
+      window.location.pathname,
+      window.location.search,
+      SEARCH_PATH
+    );
   // How many products a single sort-by-rating rates (bounds the review fan-out).
   const RATING_FANOUT = 12;
   const GUARD_LIMITS: GuardLimits = {
@@ -145,6 +172,52 @@ export function createRunTool(ctx: ToolContext) {
       return p;
     };
 
+  // Load a COLLECTION's products into the working set — the same role doSearch
+  // plays for a query. This is what lets the agent act on the products a shopper
+  // can already SEE on a collection page (open/add/compare/filter) instead of
+  // re-searching and hopping to /search. Deduped via searchHistoryRef (keyed
+  // "collection:<handle>"), which also makes findP resolve those ids later.
+  const collectionKey = (handle: string) => `collection:${handle}`;
+  const loadCollectionProducts = async (
+    handle: string
+  ): Promise<TransformedProduct[]> => {
+    const key = collectionKey(handle);
+    const cached = searchHistoryRef.current.find((h) => h.query === key);
+    let products: TransformedProduct[];
+    if (cached) {
+      products = cached.products;
+    } else {
+      const d: any = await fetchJson(
+        `/api/voice-collection?handle=${encodeURIComponent(handle)}`
+      );
+      products = Array.isArray(d?.products) ? d.products : [];
+      if (products.length) {
+        const hist = searchHistoryRef.current.filter((h) => h.query !== key);
+        hist.push({ query: key, products });
+        searchHistoryRef.current = hist.slice(-3);
+      }
+    }
+    // Make this the ACTIVE result set so open_result / filter / sort / compare and
+    // "the second one" all resolve against what's on screen.
+    searchResultsRef.current = products;
+    lastResultsRef.current = products;
+    return products;
+  };
+
+  // Lazy fallback for the WRITE/OPEN path: the shopper is on a collection page but
+  // the working set is empty (they landed there themselves and the seed effect
+  // hasn't run yet), then immediately says "add the Argan shampoo" / "open the
+  // second one". Mirrors resolveOnScreenProduct for PDPs. Returns the loaded set
+  // (empty when off a collection page).
+  const resolveOnScreenCollection = async (): Promise<TransformedProduct[]> => {
+    const path = typeof window !== "undefined" ? window.location.pathname : "";
+    const handle = path.match(/\/collections\/([^/?#]+)/)?.[1];
+    if (!handle) {
+      return [];
+    }
+    return loadCollectionProducts(handle);
+  };
+
   // Detect the synthetic variant id the catalog transforms fabricate when a product
   // has no real variant (`${productId}-variant`). Such an id must NEVER reach the
   // cart — it targets a non-existent variant.
@@ -173,6 +246,13 @@ export function createRunTool(ctx: ToolContext) {
       if (fresh && !fresh.error) {
         d = currentProductDetailRef.current = fresh;
       }
+    }
+    // If `d` is for a DIFFERENT product (the refetch above failed and left the
+    // previously-viewed product's detail cached), do NOT derive THIS product's variant
+    // or stock from it — that would put the wrong variant on the cart line / report the
+    // wrong product's availability. Treat as no detail and fall back to p's own data.
+    if (d && p.handle && d.handle !== p.handle) {
+      d = undefined;
     }
     const variants: any[] = Array.isArray(d?.variants) ? d.variants : [];
     const vid = (v: any) =>
@@ -236,8 +316,17 @@ export function createRunTool(ctx: ToolContext) {
     product_id: p.id,
     handle: p.handle,
     title: p.title,
-    price: p.price,
-    currency: CURRENCY, // price is a number in THIS currency — never USD
+    // Omit BOTH the number and the display when the price is unknown/≤0 (e.g. a
+    // null-variant combo priced 0) so the model has nothing to voice as "₹0"; per the
+    // persona it then offers to open the product to check. Real variant price is
+    // re-resolved at add time.
+    ...(p.price > 0
+      ? {
+          price: p.price,
+          currency: CURRENCY,
+          price_display: priceDisplay(p.price),
+        }
+      : {}),
     available: p.available,
     on_sale: onSale(p),
     ...(p.brand ? { brand: p.brand } : {}),
@@ -338,27 +427,39 @@ export function createRunTool(ctx: ToolContext) {
     return "";
   };
 
-  const doSearch = async (rawQuery: string): Promise<ToolResult> => {
+  // Run ONE catalog search and seed the working set — WITHOUT navigating. Returns an
+  // `error` ToolResult for the guard cases (no keyword / backend down), else the
+  // { query, products }. Shared by the browse path (doSearch) and the direct-open /
+  // add-by-name paths, so a named product costs exactly one search, never two.
+  const runCatalogSearch = async (
+    rawQuery: string
+  ): Promise<
+    { error: ToolResult } | { query: string; products: TransformedProduct[] }
+  > => {
     const query = (await toCatalogQuery(rawQuery)).trim();
     if (!query) {
       return {
-        ok: false,
-        needQuery: true,
-        message:
-          "No product keyword was provided. Ask the shopper what they're looking for, or call list_collections to browse categories.",
+        error: {
+          ok: false,
+          needQuery: true,
+          message:
+            "No product keyword was provided. Ask the shopper what they're looking for, or call list_collections to browse categories.",
+        },
       };
     }
     // HONEST DEGRADATION: if the search backend is in cooldown (recently failed),
     // don't pretend the catalog is empty — tell the agent search is unavailable.
     if (health.isDown("search")) {
       return {
-        ok: false,
-        service_unavailable: true,
-        message:
-          "Product search is temporarily unavailable — I can still help with your cart or the page you're on.",
+        error: {
+          ok: false,
+          service_unavailable: true,
+          message:
+            "Product search is temporarily unavailable — I can still help with your cart or the page you're on.",
+        },
       };
     }
-    let products;
+    let products: TransformedProduct[];
     try {
       ({ products } = await searchProducts(query, WORKING_SET, 1));
       health.markUp("search");
@@ -367,10 +468,12 @@ export function createRunTool(ctx: ToolContext) {
       // skip further search calls for a short cooldown (don't hammer a down service).
       health.markDown("search");
       return {
-        ok: false,
-        service_unavailable: true,
-        message:
-          "Product search is temporarily unavailable — I can still help with your cart or the page you're on.",
+        error: {
+          ok: false,
+          service_unavailable: true,
+          message:
+            "Product search is temporarily unavailable — I can still help with your cart or the page you're on.",
+        },
       };
     }
     searchResultsRef.current = products;
@@ -382,6 +485,14 @@ export function createRunTool(ctx: ToolContext) {
       hist.push({ query, products });
       searchHistoryRef.current = hist.slice(-3);
     }
+    return { query, products };
+  };
+
+  // Navigate to the search RESULTS page for an already-run search + build the payload.
+  const navigateToResults = (
+    query: string,
+    products: TransformedProduct[]
+  ): ToolResult => {
     // NAVIGATION DISCIPLINE: only push when it actually changes the page. Re-running the
     // SAME query while already on that search page would be a wasted navigation (flicker,
     // scroll reset) — the results are refreshed in memory regardless.
@@ -411,6 +522,123 @@ export function createRunTool(ctx: ToolContext) {
     };
   };
 
+  const doSearch = async (rawQuery: string): Promise<ToolResult> => {
+    const r = await runCatalogSearch(rawQuery);
+    if ("error" in r) {
+      return r.error;
+    }
+    return navigateToResults(r.query, r.products);
+  };
+
+  // Is the top search result a CONFIDENT match for the spoken product NAME — enough to
+  // open/add it directly instead of showing a results list? Merchant-agnostic: a multi-
+  // word name whose every meaningful token appears in the top title, OR a single result
+  // that shares a token. A bare generic word ("shampoo", many results) is NOT confident,
+  // so it correctly falls back to browsing. Never opens/adds the WRONG product silently.
+  const NAME_STOPWORDS = new Set([
+    "the",
+    "a",
+    "an",
+    "this",
+    "that",
+    "these",
+    "those",
+    "my",
+    "me",
+    "to",
+    "for",
+    "of",
+    "in",
+    "on",
+    "open",
+    "show",
+    "find",
+    "get",
+    "add",
+    "buy",
+    "want",
+    "see",
+    "view",
+    "please",
+    "product",
+    "item",
+    "one",
+  ]);
+  const normalizeName = (s: unknown) =>
+    String(s ?? "")
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  const coreTokens = (s: string) =>
+    normalizeName(s)
+      .split(" ")
+      .filter((t) => t.length >= 2 && !NAME_STOPWORDS.has(t));
+  const isConfidentNameMatch = (
+    rawQuery: string,
+    top: TransformedProduct | undefined,
+    count: number
+  ): boolean => {
+    if (!top) {
+      return false;
+    }
+    const tokens = coreTokens(rawQuery);
+    const titleNorm = normalizeName(top.title);
+    return (
+      (tokens.length >= 2 && tokens.every((t) => titleNorm.includes(t))) ||
+      (count === 1 && tokens.some((t) => titleNorm.includes(t)))
+    );
+  };
+
+  // Which NAMED products are already in the loaded/visible working set? Returns the
+  // DEDUPED matches so callers can open a UNIQUE match with no search call (shortest
+  // path) but treat 2+ matches as ambiguous (ask the shopper) instead of silently
+  // grabbing the first. Requires ≥2 meaningful tokens so a bare generic word can't
+  // false-match locally. (lastResults + searchResults often share the same array, so
+  // dedup by id is essential — otherwise every product would look "ambiguous".)
+  const findLoadedByName = (rawQuery: string): TransformedProduct[] => {
+    const tokens = coreTokens(rawQuery);
+    if (tokens.length < 2) {
+      return [];
+    }
+    const pool = [...lastResultsRef.current, ...searchResultsRef.current];
+    const seen = new Set<string>();
+    const out: TransformedProduct[] = [];
+    for (const p of pool) {
+      if (!p.handle || seen.has(p.id)) {
+        continue;
+      }
+      const t = normalizeName(p.title);
+      if (tokens.every((tok) => t.includes(tok))) {
+        seen.add(p.id);
+        out.push(p);
+      }
+    }
+    return out;
+  };
+
+  // Open a product's page (shared by open_product's local-match + confident-search
+  // paths). Idempotent: no re-navigation when it's already the open PDP.
+  const openProductPage = (p: TransformedProduct): ToolResult => {
+    currentProductRef.current = p;
+    const alreadyOpen =
+      typeof window !== "undefined" &&
+      window.location.pathname === `/products/${p.handle}`;
+    if (!alreadyOpen) {
+      router.push(`/products/${p.handle}`);
+    }
+    setCaption(`📄 ${p.title}`);
+    track("open_product", { product_id: p.id });
+    return {
+      ok: true,
+      opened: p.title,
+      product_id: p.id,
+      price_display: priceDisplay(p.price),
+      available: p.available,
+      ...(alreadyOpen ? { already_open: true } : {}),
+    };
+  };
+
   // Shared by tools that behave identically under two names.
   const search: Handler = (args) => doSearch(args.query);
   const productSummary: Handler = (args) => {
@@ -423,6 +651,7 @@ export function createRunTool(ctx: ToolContext) {
       title: p.title,
       price: p.price,
       currency: CURRENCY,
+      price_display: priceDisplay(p.price),
       available: p.available,
       handle: p.handle,
     };
@@ -431,6 +660,52 @@ export function createRunTool(ctx: ToolContext) {
   const handlers: Record<ToolName, Handler> = {
     search_products: search,
     navigate_to_search: search,
+    // Direct-open a NAMED product: resolve the name and, when it confidently matches a
+    // single product, go STRAIGHT to its page (no results-page detour) — the shortest
+    // path for "open the XYZ Shampoo". Falls back to the results page only when the name
+    // is ambiguous, and reports honestly when nothing matches (never navigates to an
+    // empty search).
+    open_product: async (args) => {
+      const rawQ = String(args?.query ?? "");
+      // 1) Already loaded/visible → open a UNIQUE match with NO search call (respect
+      //    current context). If several loaded products match the name, ask instead of
+      //    guessing.
+      const local = findLoadedByName(rawQ);
+      if (local.length === 1) {
+        return openProductPage(local[0]);
+      }
+      if (local.length > 1) {
+        return {
+          ok: false,
+          ambiguous: true,
+          count: local.length,
+          products: local.slice(0, 6).map(resultCard),
+          message: `I see a few products matching "${rawQ}" — which one would you like?`,
+        };
+      }
+      // 2) Otherwise resolve via ONE catalog search.
+      const r = await runCatalogSearch(rawQ);
+      if ("error" in r) {
+        return r.error;
+      }
+      const { query, products } = r;
+      const top = products[0];
+      if (!top) {
+        return {
+          ok: false,
+          no_results: true,
+          message: `I couldn't find "${args?.query}". Want me to try a different name, or browse a collection?`,
+          retry_hint:
+            "No product matched that name. Retry ONCE with a simpler name, or call list_collections to browse.",
+        };
+      }
+      // Confident single match → open the product page DIRECTLY (no results detour).
+      if (isConfidentNameMatch(rawQ, top, products.length)) {
+        return openProductPage(top);
+      }
+      // Ambiguous → fall back to the results page so the shopper can choose.
+      return { ...navigateToResults(query, products), ambiguous: true };
+    },
     recommend_products: async (args) => {
       const hint = String(args?.query || "").trim();
       // Intent-based ("for oily skin", "wedding", "gift for mom") → catalog search.
@@ -506,6 +781,7 @@ export function createRunTool(ctx: ToolContext) {
         in_stock: !soldOut,
         price: p.price,
         currency: CURRENCY,
+        price_display: priceDisplay(p.price),
       };
     },
 
@@ -589,6 +865,7 @@ export function createRunTool(ctx: ToolContext) {
           status: o?.tracking?.status || o?.fulfillment_status || o?.status,
           payment_status: o?.payment_status,
           total: paiseToRupees(o?.total_price), // rupees (API sends paise)
+          total_display: money(paiseToRupees(o?.total_price)),
           currency: o?.currency || CURRENCY,
           items: Array.isArray(o?.line_items)
             ? o.line_items.map((li: any) => ({
@@ -778,19 +1055,32 @@ export function createRunTool(ctx: ToolContext) {
     }),
 
     get_current_product: async () => {
-      let d = currentProductDetailRef.current;
+      // The product now in focus: prefer the focus ref, else the PDP URL handle.
+      const cp = currentProductRef.current;
+      const urlHandle =
+        typeof window !== "undefined"
+          ? window.location.pathname.match(/\/products\/([^/?#]+)/)?.[1]
+          : undefined;
+      const targetHandle = cp?.handle ?? urlHandle;
+      let d = currentProductDetailRef.current as any;
+      // STALE-DETAIL GUARD: a navigation tool (open_result / open_product /
+      // navigate_to_product) sets a NEW focus WITHOUT refreshing the cached detail (the
+      // PDP-seed effect refreshes it only async, post-commit). So the cached detail can
+      // describe a DIFFERENT product than the one now open — discard it on a handle
+      // mismatch so we never read out the wrong product's price/description/variants.
+      if (d && targetHandle && d.handle !== targetHandle) {
+        d = null;
+      }
       if (!d) {
-        const cp = currentProductRef.current;
-        if (cp?.handle) {
+        if (targetHandle) {
           const j = await fetchJson(
-            `/api/voice-product?handle=${encodeURIComponent(cp.handle)}`
+            `/api/voice-product?handle=${encodeURIComponent(targetHandle)}`
           );
           if (j && !j.error) {
             d = currentProductDetailRef.current = j;
           }
         } else {
-          // No focus ref yet (e.g. a manually-opened PDP before the async seed
-          // lands) — resolve the on-screen product straight from the URL.
+          // No focus ref or URL handle yet — resolve the on-screen product from the URL.
           await resolveOnScreenProduct();
           d = currentProductDetailRef.current;
         }
@@ -894,6 +1184,7 @@ export function createRunTool(ctx: ToolContext) {
           options: target.options,
           price: target.price,
           currency: CURRENCY,
+          price_display: priceDisplay(target.price),
           available: target.available,
         },
       };
@@ -955,9 +1246,15 @@ export function createRunTool(ctx: ToolContext) {
             )
           : undefined);
       if (match) {
+        // Load the collection's products into the working set so the agent can act on
+        // what's on screen (open/add/compare/filter) WITHOUT a fresh search — returning
+        // them here is the same contract doSearch has. Best-effort: navigation still
+        // succeeds even if the product fetch fails.
+        const products = await loadCollectionProducts(match.handle);
+        const cards = products.slice(0, 8).map(resultCard);
         // Idempotent: if the shopper is ALREADY on this collection, don't re-navigate —
-        // tell the model it's open so it can just answer from the page (checks the real
-        // URL, so it's accurate however they got there).
+        // but STILL return the products so "open the second one" / "add the X" resolve
+        // (checks the real URL, so it's accurate however they got there).
         if (
           typeof window !== "undefined" &&
           window.location.pathname === `/collections/${match.handle}`
@@ -967,12 +1264,20 @@ export function createRunTool(ctx: ToolContext) {
             ok: true,
             already_open: true,
             title: match.title,
-            message: `The shopper is already on the ${match.title} collection — it's open on screen.`,
+            count: products.length,
+            products: cards,
+            message: `The shopper is already on the ${match.title} collection — it's open on screen. These are its products; act on them directly (open/add), don't search again.`,
           };
         }
         router.push(`/collections/${match.handle}`);
         setCaption(`📂 ${match.title}`);
-        return { ok: true, opened: match.handle, title: match.title };
+        return {
+          ok: true,
+          opened: match.handle,
+          title: match.title,
+          count: products.length,
+          products: cards,
+        };
       }
       const want2 = String(args.handle || "")
         .replace(/-/g, " ")
@@ -1005,6 +1310,56 @@ export function createRunTool(ctx: ToolContext) {
         findP(args.product_id) ??
         currentProductRef.current ??
         (await resolveOnScreenProduct());
+      // Still unresolved but the shopper is on a collection page they opened
+      // themselves (empty working set) — seed it from the page, then retry, so
+      // "add the Argan shampoo" works in place without hopping to search.
+      if (!p && args.product_id && !lastResultsRef.current.length) {
+        await resolveOnScreenCollection();
+        p = findP(args.product_id) ?? null;
+      }
+      // Named add with nothing loaded ("add the XYZ Shampoo") → resolve the name
+      // silently and add the CONFIDENT match directly, with no detour to /search. If
+      // the name is ambiguous, hand back options to confirm rather than add the wrong
+      // item. (Only when we still have no product and the model supplied a name.)
+      if (!p && args?.query) {
+        // Prefer a product already in the loaded/visible set (no search, no working-set
+        // churn); only hit the catalog when the named item isn't already loaded. A
+        // UNIQUE local match is used directly; 2+ matches are ambiguous → ask, never
+        // silently add the wrong one.
+        const local = findLoadedByName(String(args.query));
+        if (local.length === 1) {
+          p = local[0];
+        } else if (local.length > 1) {
+          return {
+            ok: false,
+            ambiguous: true,
+            count: local.length,
+            products: local.slice(0, 6).map(resultCard),
+            message: `I found a few matching "${args.query}" — which one would you like?`,
+          };
+        } else {
+          const r = await runCatalogSearch(String(args.query));
+          if (!("error" in r) && r.products.length) {
+            if (
+              isConfidentNameMatch(
+                String(args.query),
+                r.products[0],
+                r.products.length
+              )
+            ) {
+              p = r.products[0];
+            } else {
+              return {
+                ok: false,
+                ambiguous: true,
+                count: r.products.length,
+                products: r.products.slice(0, 6).map(resultCard),
+                message: `I found a few matches for "${args.query}" — which one would you like?`,
+              };
+            }
+          }
+        }
+      }
       if (!p) {
         return {
           ok: false,
@@ -1073,6 +1428,7 @@ export function createRunTool(ctx: ToolContext) {
             title: v.title,
             options: v.options,
             price: v.price,
+            price_display: priceDisplay(v.price),
             available: v.available,
           })),
           message: `${p.title} comes in a few options — which one would you like?`,
@@ -1350,12 +1706,16 @@ export function createRunTool(ctx: ToolContext) {
           : i.price?.amount != null
             ? i.price.amount / 100
             : 0;
-      const items = raw.map((i) => ({
-        product_id: i.productId ?? i.product_id,
-        title: i.title,
-        quantity: i.quantity,
-        price: rupees(i) || undefined,
-      }));
+      const items = raw.map((i) => {
+        const unit = rupees(i) || undefined;
+        return {
+          product_id: i.productId ?? i.product_id,
+          title: i.title,
+          quantity: i.quantity,
+          price: unit,
+          price_display: money(unit),
+        };
+      });
       const units = raw.reduce((n, i) => n + (Number(i.quantity) || 0), 0);
       const subtotal = Math.round(
         raw.reduce((t, i) => t + rupees(i) * (Number(i.quantity) || 1), 0)
@@ -1363,7 +1723,14 @@ export function createRunTool(ctx: ToolContext) {
       const currency =
         (typeof raw[0]?.price === "object" && raw[0].price?.currencyCode) ||
         CURRENCY;
-      return { items, count: items.length, units, subtotal, currency };
+      return {
+        items,
+        count: items.length,
+        units,
+        subtotal,
+        subtotal_display: money(subtotal),
+        currency,
+      };
     },
 
     open_cart: () => {
@@ -1517,6 +1884,7 @@ export function createRunTool(ctx: ToolContext) {
           title: p.title,
           price: p.price,
           currency: CURRENCY,
+          price_display: priceDisplay(p.price),
         })),
         _note:
           "Reordered only the shortlist you read back — the on-screen grid and its sort are UNCHANGED. Present these verbally (e.g. 'cheapest is … then …'); never say you sorted the page. If the shopper wants the visible page re-sorted, tell them to tap the Sort control on screen.",
@@ -1553,6 +1921,19 @@ export function createRunTool(ctx: ToolContext) {
     },
 
     compare_products: async (args) => {
+      // ORDINAL SAFETY: positions/defaults are unreliable on a modified view. Explicit
+      // product_ids are order-independent, so those are still fine; only refuse the
+      // index/default path.
+      const byExplicitIds =
+        Array.isArray(args.product_ids) && args.product_ids.length > 0;
+      if (!byExplicitIds && isModifiedView()) {
+        return {
+          ok: false,
+          view_reordered: true,
+          message:
+            "The shopper changed the on-page sorting or filters, so positions on screen don't match my list. Ask which products to compare by name, then I'll compare them.",
+        };
+      }
       const pool = searchResultsRef.current.length
         ? searchResultsRef.current
         : lastResultsRef.current;
@@ -1584,6 +1965,8 @@ export function createRunTool(ctx: ToolContext) {
             price: p.price,
             compare_at_price: p.compareAtPrice ?? null,
             currency: CURRENCY,
+            price_display: priceDisplay(p.price),
+            compare_at_display: priceDisplay(p.compareAtPrice ?? null),
             discount_pct: onSale(p)
               ? Math.round((1 - p.price / p.compareAtPrice!) * 100)
               : 0,
@@ -1712,6 +2095,23 @@ export function createRunTool(ctx: ToolContext) {
 
     open_result: async (args) => {
       const idx = Math.floor(Number(args.index) || 0);
+      // ORDINAL SAFETY: on a shopper-modified view (on-page filter/sort/paginate) the
+      // visible order no longer matches the loaded set, so a position would open the
+      // WRONG product. Refuse positional resolution and ask for the name instead.
+      if (idx >= 1 && isModifiedView()) {
+        return {
+          ok: false,
+          view_reordered: true,
+          message:
+            "The shopper changed the on-page sorting or filters, so I can't rely on the position on screen. Ask which product they mean by name (or read out the names shown), then open that one.",
+        };
+      }
+      // If asked for a positional result but nothing is loaded, the shopper is
+      // likely on a collection page they opened themselves — seed the working set
+      // from that page so "open the second one" resolves without a re-search.
+      if (idx >= 1 && !lastResultsRef.current.length) {
+        await resolveOnScreenCollection();
+      }
       const p =
         idx >= 1
           ? lastResultsRef.current[idx - 1]
@@ -1949,10 +2349,20 @@ export function createRunTool(ctx: ToolContext) {
         if (q < LARGE_QTY) {
           return null;
         }
-        const p = findP(args?.product_id) ?? currentProductRef.current;
+        // Label + key: for an add-BY-NAME (no product_id) use the spoken name — NOT the
+        // currently-focused product (findP(undefined) → currentProductRef would name the
+        // WRONG item in the confirmation, even though the key/handler add the right one).
+        // For an id-based add, resolve the product's real title.
+        const label = args?.product_id
+          ? ((findP(args.product_id) ?? currentProductRef.current)?.title ??
+            "this item")
+          : args?.query
+            ? String(args.query)
+            : "this item";
+        const keyId = args?.product_id ?? args?.query ?? "item";
         return {
-          key: `add:${args?.product_id}:${q}`,
-          summary: `That's ${q} of ${p?.title ?? "this item"} — add all ${q}?`,
+          key: `add:${keyId}:${q}`,
+          summary: `That's ${q} of ${label} — add all ${q}?`,
         };
       }
       case "update_cart_quantity": {
@@ -2069,9 +2479,7 @@ export function createRunTool(ctx: ToolContext) {
         ok: false,
         error: true,
       });
-      captureSentryException(e, {
-        tags: { flow: "voice", scope: "tool", tool: name },
-      });
+      captureVoiceError(e, { scope: "tool", tool: name });
       return { ok: false, error: String(e?.message ?? e) };
     }
   };

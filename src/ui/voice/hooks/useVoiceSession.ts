@@ -24,9 +24,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter, usePathname, useSearchParams } from "next/navigation";
 import { useCartStore } from "@shopkit/cart";
-import type { TransformedProduct } from "@/utils/searchService";
+import type { TransformedProduct } from "../catalog";
 import { newVoiceSession, voiceTrack } from "@/lib/voiceAnalytics";
-import { captureSentryException } from "@/lib/sentry/utils";
+import { captureVoiceError } from "../observability";
 import {
   getVoiceProvider,
   type VoiceSession,
@@ -34,6 +34,8 @@ import {
 } from "../providers";
 import { getVoiceConfig } from "../voiceConfig";
 import { fetchJson, timeoutSignal, voiceAccessCode } from "../voiceHttp";
+import { formatMoney } from "../money";
+import { isModifiedListingView } from "../screenView";
 import { createRunTool } from "../tools/runTool";
 import { resolveSideCartAdapter } from "../cart/sideCartAdapter";
 import { READ_ONLY_TOOLS, type ToolName } from "../tools/registry";
@@ -53,11 +55,13 @@ const MAX_TURNS = VOICE_CFG.limits.maxTurns; // auto-close after N model turns (
 const MAX_RECONNECTS = VOICE_CFG.session.maxReconnects;
 const RECONNECT_BASE_MS = VOICE_CFG.session.reconnectBaseMs;
 const TURN = VOICE_CFG.turn; // turn-taking / multi-speaker coalescing config
-// NOTE: no auto-greeting. Voice's value is immediate interaction — the shopper
-// speaks first and the agent replies directly (in the shopper's own language),
-// like ChatGPT Voice. A spoken intro would add friction and be language-hostile.
-// The mic going live is signalled silently (a "Listening…" caption + the pulsing
-// button), so there's a ready cue without a monologue.
+// PROACTIVE GREETING (config: VOICE_CFG.greeting): on a fresh session the agent
+// speaks a short opening line first — like ChatGPT Voice / Gemini Live — so the
+// shopper knows it's connected and listening. It's a ONE-SHOT response rendered in
+// the merchant persona, armed only on start() and fired once in onOpen; reconnect,
+// resume, and rapid re-open never replay it. Set NEXT_PUBLIC_VOICE_GREETING_ENABLED
+// =false to restore the old silent-until-spoken behaviour (the mic going live is
+// still signalled by the "Listening…" cue + pulsing button).
 
 export type VoiceStatus = "idle" | "connecting" | "live";
 
@@ -133,6 +137,11 @@ export function useVoiceSession(): VoiceSessionApi {
   // Analytics + cost-cap bookkeeping for the current session.
   const turnsRef = useRef(0);
   const toolCallsRef = useRef(0);
+  // Proactive-greeting latch. Armed ONLY by a fresh start() (below), consumed on the
+  // first successful onOpen. Reconnect (onClose→establish) and resume() go through
+  // establish WITHOUT re-arming it, so the greeting fires exactly once per NEW
+  // session and never replays on a drop/background/rapid re-open.
+  const greetPendingRef = useRef(false);
   // Per-session abuse-guard state (rate window + pending high-impact confirmation)
   // and the read_page debounce cache — both reset at every session start (onOpen).
   const guardStateRef = useRef<GuardState>(newGuardState());
@@ -353,11 +362,22 @@ export function useVoiceSession(): VoiceSessionApi {
         const v = d.variants.find(
           (x: any) => String(x.variant_id) === String(p.variantId)
         );
-        if (v?.title && !/^default/i.test(String(v.title)))
-          variantNote = ` The "${v.title}" option is currently selected (₹${p.price}).`;
+        if (v?.title && !/^default/i.test(String(v.title))) {
+          const priceNote =
+            p.price > 0
+              ? ` (${formatMoney(p.price, VOICE_CFG.currency.symbol)})`
+              : "";
+          variantNote = ` The "${v.title}" option is currently selected${priceNote}.`;
+        }
       }
       ctx = `CURRENT PAGE: the shopper is on the product detail page for ${name} right now.${variantNote} If they ask to open or see THIS product, tell them it's already open — do not search or navigate again.`;
-    } else if (pathname?.includes("/search")) {
+      // Detect the search-results page via the CONFIGURED path (merchants differ:
+      // Shopify `/search`, bblunt `/pages/searchtap-search`, …) — never a hardcoded
+      // "/search", which silently fails to match a custom path.
+    } else if (
+      VOICE_CFG.searchPath &&
+      pathname?.startsWith(VOICE_CFG.searchPath)
+    ) {
       const q =
         typeof window !== "undefined"
           ? new URLSearchParams(window.location.search).get("q")
@@ -371,9 +391,41 @@ export function useVoiceSession(): VoiceSessionApi {
       const title = memory.collectionsRef.current.find(
         (c) => c.handle === h
       )?.title;
-      ctx = title
-        ? `CURRENT PAGE: the "${title}" collection.`
-        : `CURRENT PAGE: a collection page (${h}).`;
+      const name = title
+        ? `the "${title}" collection`
+        : `a collection page (${h})`;
+      // If this collection's products are loaded (seeded below or by the tool), LIST
+      // the visible ones so the agent resolves "open the second one" / "add the Argan
+      // shampoo" against what's on screen — no re-search, no hop to /search. The listed
+      // order matches the on-screen grid (and open_result's index).
+      const sym = VOICE_CFG.currency.symbol;
+      const loaded =
+        memory.searchHistoryRef.current.find(
+          (c) => c.query === `collection:${h}`
+        )?.products ?? [];
+      // If the shopper applied on-page filters/sorting/pagination, the visible order
+      // no longer matches the loaded set — DON'T present positions (they'd be wrong);
+      // steer the agent to resolve by name instead. Detected generically (no facet-key
+      // parsing), so it's merchant-agnostic and ignores ad/tracking params.
+      const modifiedView = isModifiedListingView(
+        pathname,
+        searchParams?.toString() ?? "",
+        VOICE_CFG.searchPath
+      );
+      if (modifiedView) {
+        ctx = `CURRENT PAGE: ${name}. The shopper has applied on-page filters, sorting, or pagination, so the products now visible (and their order) DIFFER from any list you loaded — do NOT use position numbers ("the second one") here. Resolve a product they name by its NAME; if you're unsure what's on screen, call read_page. To reset to a known order, re-open the collection.`;
+      } else if (loaded.length) {
+        const lines = loaded
+          .slice(0, 8)
+          .map(
+            (p, i) =>
+              `${i + 1}. ${p.title}${p.price > 0 ? ` (${formatMoney(p.price, sym)})` : ""}`
+          )
+          .join("; ");
+        ctx = `CURRENT PAGE: ${name}. Products visible on screen — act on these DIRECTLY (open_result by position, add_to_cart by product_id); do NOT search again for one that's in this list: ${lines}.`;
+      } else {
+        ctx = `CURRENT PAGE: ${name}.`;
+      }
     } else if (pathname && pathname !== "/") {
       ctx = `CURRENT PAGE: ${pathname}.`;
     } else {
@@ -395,6 +447,47 @@ export function useVoiceSession(): VoiceSessionApi {
     }
     sendPageContext();
   }, [status, pathname, sendPageContext]);
+
+  // COLLECTION AWARENESS: whenever a session is active and the shopper is on a
+  // collection page (reached by voice OR their own click), load that collection's
+  // products into the working set — the analog of the PDP seed above. This is what
+  // lets the agent act on the products already ON SCREEN (open / add / compare)
+  // instead of running a fresh search and hopping to /search. Once loaded, it
+  // re-sends the page context so those products are listed for reference. Deduped
+  // via searchHistoryRef (keyed "collection:<handle>"), so revisiting is free.
+  useEffect(() => {
+    if (status !== "live") return;
+    if (!pathname?.startsWith("/collections/")) return;
+    // A nested product URL (/collections/x/products/y) IS a product page — the PDP
+    // seed above owns it. Skip here so we don't do a wasted collection fetch or
+    // mislabel the page as a collection.
+    if (pathname.includes("/products/")) return;
+    const handle = pathname.split("/collections/")[1]?.split(/[/?#]/)[0] || "";
+    if (!handle) return;
+    const key = `collection:${handle}`;
+    // Already loaded → the products (and enriched context) are in place.
+    if (memory.searchHistoryRef.current.some((h) => h.query === key)) return;
+    let cancelled = false;
+    fetchJson(`/api/voice-collection?handle=${encodeURIComponent(handle)}`)
+      .then((d: any) => {
+        if (cancelled) return;
+        const products = Array.isArray(d?.products) ? d.products : [];
+        if (!products.length) return;
+        const hist = memory.searchHistoryRef.current.filter(
+          (h) => h.query !== key
+        );
+        hist.push({ query: key, products });
+        memory.searchHistoryRef.current = hist.slice(-3);
+        memory.searchResultsRef.current = products;
+        memory.lastResultsRef.current = products;
+        // Re-emit page context now that we can list the on-screen products.
+        sendPageContext();
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [status, pathname, memory, sendPageContext]);
 
   // AMBIENT CART AWARENESS: push a one-line cart summary (units + subtotal) so the agent
   // knows the cart WITHOUT spending a get_cart round-trip, and stays correct if the
@@ -421,7 +514,7 @@ export function useVoiceSession(): VoiceSessionApi {
         }, 0)
       );
       session.sendContext(
-        `CART: ${units} item${units > 1 ? "s" : ""} across ${items.length} product${items.length > 1 ? "s" : ""}, subtotal ₹${subtotal}.`
+        `CART: ${units} item${units > 1 ? "s" : ""} across ${items.length} product${items.length > 1 ? "s" : ""}, subtotal ${formatMoney(subtotal, VOICE_CFG.currency.symbol)}.`
       );
     } catch {
       /* best-effort */
@@ -902,10 +995,21 @@ export function useVoiceSession(): VoiceSessionApi {
             model: liveModel,
             path: pathname,
           });
-          // Silent ready cue — the shopper can speak immediately (no spoken intro).
           // The bar derives its own "Listening…" label from status/activity, so we
           // keep the caption EMPTY here; it now carries only progress/error text.
           setCaption("");
+          // PROACTIVE GREETING: on a genuinely-fresh session (armed in connect(), and
+          // only when enabled) the agent speaks first so the shopper knows it's ready.
+          // Consume the latch BEFORE sending so a duplicate onOpen (rapid re-open /
+          // race) can never double-greet; reconnect & resume never arm it, so they
+          // never replay. One-shot instruction rendered in the store persona — the
+          // session VAD drives every turn after this one.
+          if (greetPendingRef.current) {
+            greetPendingRef.current = false;
+            sessionRef.current?.requestResponse?.({
+              instructions: VOICE_CFG.greeting.instruction,
+            });
+          }
           // Cost guards: an IDLE timeout (the real forgotten-mic guard — resets on
           // activity, so it never cuts off an active chat) PLUS a generous hard
           // CEILING so even a stuck / echo-looping session can't run forever.
@@ -1033,9 +1137,7 @@ export function useVoiceSession(): VoiceSessionApi {
         onError: (e) => {
           if (stale()) return;
           console.error("🔴 Voice ERROR:", e);
-          captureSentryException(e, {
-            tags: { flow: "voice", scope: "session" },
-          });
+          captureVoiceError(e, { scope: "session" });
           setCaption("⚠️ Voice error — please try again");
           clearTurnTimers();
           responseActiveRef.current = false;
@@ -1171,9 +1273,7 @@ export function useVoiceSession(): VoiceSessionApi {
         }
         // A denied mic prompt is a user choice, not an error worth reporting.
         if ((e as any)?.name !== "NotAllowedError")
-          captureSentryException(e, {
-            tags: { flow: "voice", scope: "start" },
-          });
+          captureVoiceError(e, { scope: "start" });
         bail();
         if (!stale()) {
           // Terminal: mic permission denied or the connect failed outright. Surface
@@ -1280,9 +1380,17 @@ export function useVoiceSession(): VoiceSessionApi {
         type: "start",
         id: tabIdRef.current,
       });
-      // Fresh start clears the working memory; resume() keeps it so the paused
+      // Fresh start clears the working memory; resume() keeps memory so the paused
       // conversation continues (reconnect also keeps it — see onClose).
-      if (freshMemory) memory.reset();
+      if (freshMemory) {
+        memory.reset();
+      }
+      // Arm the one-time opening greeting ONLY for a fresh start. Setting it here
+      // UNCONDITIONALLY (false on resume/reconnect) is deliberate: if the tab is
+      // backgrounded during the connecting window — before the first onOpen consumes
+      // the latch — teardown leaves it armed; a subsequent resume() going through
+      // connect(false) must clear it, otherwise the greeting would replay on resume.
+      greetPendingRef.current = freshMemory && VOICE_CFG.greeting.enabled;
       try {
         await establish();
       } finally {

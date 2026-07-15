@@ -1,4 +1,4 @@
-import type { TransformedProduct } from "@/utils/searchService";
+import type { TransformedProduct } from "../catalog";
 import type { VoiceConfig } from "../voiceConfig";
 import type { VoiceProductDetail } from "../productDetail";
 import type { CustomerAuthPort } from "../auth/customerAuth";

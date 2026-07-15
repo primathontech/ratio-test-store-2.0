@@ -14,6 +14,9 @@ export type VoiceProductVariant = {
   title: string;
   options?: string[];
   price: number;
+  /** Ready-to-speak price with the store's currency symbol (e.g. "₹499"). The model
+   *  reads THIS verbatim; the bare `price` above is for internal logic only. */
+  price_display?: string | null;
   available: boolean;
 };
 
@@ -27,6 +30,10 @@ export type VoiceProductDetail = {
   tags: string[];
   price: number;
   compare_at_price: number | null;
+  /** Ready-to-speak strings with the currency symbol baked in (e.g. "₹499"). The
+   *  model must SPEAK these; the bare numeric fields are internal-only. */
+  price_display?: string | null;
+  compare_at_display?: string | null;
   on_sale: boolean;
   discount_pct: number;
   available: boolean;

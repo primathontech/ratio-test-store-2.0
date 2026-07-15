@@ -12,7 +12,7 @@
  */
 
 import React from "react";
-import { captureSentryException } from "@/lib/sentry/utils";
+import { captureVoiceError } from "./observability";
 import { VoiceAssistant } from "./VoiceAssistant";
 
 const VOICE_ENABLED = process.env.NEXT_PUBLIC_VOICE_ENABLED !== "false";
@@ -26,9 +26,7 @@ class VoiceErrorBoundary extends React.Component<
     return { failed: true };
   }
   componentDidCatch(error: unknown) {
-    captureSentryException(error, {
-      tags: { flow: "voice", scope: "widget-boundary" },
-    });
+    captureVoiceError(error, { scope: "widget-boundary" });
   }
   render() {
     if (this.state.failed) return null; // storefront stays fully intact

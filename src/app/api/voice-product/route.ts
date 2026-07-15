@@ -16,8 +16,8 @@
  */
 
 import { getCommerceClient } from "@/config";
-import { paiseToRupees } from "@/utils/apiTransforms";
 import type { VoiceProductDetail } from "@/ui/voice/productDetail";
+import { formatMoney, minorToMajor } from "@/ui/voice/money";
 import { voiceGuard } from "@/lib/voiceGuard";
 
 // Flatten a lexical rich-text node (metadata values) to plain text.
@@ -83,9 +83,9 @@ export async function GET(req: Request) {
     if (!p || typeof p !== "object" || !p.id)
       return Response.json({ error: "not found" }, { status: 404 });
 
-    const price = paiseToRupees(p.price);
+    const price = minorToMajor(p.price);
     const compareAt =
-      p.compare_at_price != null ? paiseToRupees(p.compare_at_price) : null;
+      p.compare_at_price != null ? minorToMajor(p.compare_at_price) : null;
     const onSale = compareAt != null && compareAt > price;
 
     const rawVariants: any[] = Array.isArray(p.variants) ? p.variants : [];
@@ -95,13 +95,19 @@ export async function GET(req: Request) {
       (rawVariants[0]?.option_values &&
         rawVariants[0].option_values[0] !== "Default Title");
     const variants = meaningful
-      ? rawVariants.slice(0, 20).map((v) => ({
-          variant_id: String(v.id),
-          title: v.title,
-          options: v.option_values,
-          price: paiseToRupees(v.price),
-          available: !!v.availableForSale,
-        }))
+      ? rawVariants.slice(0, 20).map((v) => {
+          const vPrice = minorToMajor(v.price);
+          return {
+            variant_id: String(v.id),
+            title: v.title,
+            options: v.option_values,
+            price: vPrice,
+            // Ready-to-speak: variant prices are the #1 USD-leak spot (bare numbers,
+            // far from any currency anchor), so bake the symbol in here.
+            price_display: vPrice > 0 ? formatMoney(vPrice) : null,
+            available: !!v.availableForSale,
+          };
+        })
       : [];
 
     const detail: VoiceProductDetail = {
@@ -116,6 +122,8 @@ export async function GET(req: Request) {
         : [],
       price,
       compare_at_price: compareAt,
+      price_display: price > 0 ? formatMoney(price) : null,
+      compare_at_display: formatMoney(compareAt),
       on_sale: onSale,
       discount_pct: onSale ? Math.round((1 - price / compareAt!) * 100) : 0,
       available: !!p.availableForSale,
