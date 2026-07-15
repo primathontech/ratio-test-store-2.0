@@ -55,6 +55,11 @@ const MAX_TURNS = VOICE_CFG.limits.maxTurns; // auto-close after N model turns (
 const MAX_RECONNECTS = VOICE_CFG.session.maxReconnects;
 const RECONNECT_BASE_MS = VOICE_CFG.session.reconnectBaseMs;
 const TURN = VOICE_CFG.turn; // turn-taking / multi-speaker coalescing config
+// How long to hold back non-essential startup work (cart warm, page/cart context,
+// collection fetch) after the opening greeting starts, so it doesn't contend with the
+// greeting's first audio. ~1.2s covers audio spin-up; context is only needed for the
+// first USER turn (after the greeting), so this is invisible to the shopper.
+const STARTUP_DEFER_MS = 1200;
 // PROACTIVE GREETING (config: VOICE_CFG.greeting): on a fresh session the agent
 // speaks a short opening line first — like ChatGPT Voice / Gemini Live — so the
 // shopper knows it's connected and listening. It's a ONE-SHOT response rendered in
@@ -142,6 +147,11 @@ export function useVoiceSession(): VoiceSessionApi {
   // establish WITHOUT re-arming it, so the greeting fires exactly once per NEW
   // session and never replays on a drop/background/rapid re-open.
   const greetPendingRef = useRef(false);
+  // Timestamp (ms) until which we're in the opening-greeting "startup grace" window.
+  // Set in onOpen when the greeting fires; the startup side-effects (cart warm, page/
+  // cart context, collection fetch) defer to the end of it so they don't contend with
+  // the greeting's first audio (which caused a ~1s stutter). 0 = not in a grace window.
+  const startupGraceUntilRef = useRef(0);
   // Per-session abuse-guard state (rate window + pending high-impact confirmation)
   // and the read_page debounce cache — both reset at every session start (onOpen).
   const guardStateRef = useRef<GuardState>(newGuardState());
@@ -438,14 +448,30 @@ export function useVoiceSession(): VoiceSessionApi {
   // model's page awareness stays current throughout the conversation.
   useEffect(() => {
     if (status !== "live") return;
-    // Warm the cart store so the FIRST voice cart command (add / change qty) finds
-    // a hydrated cart instead of an empty snapshot — fixes "works only on retry".
-    try {
-      void (useCartStore.getState() as any).initializeCart?.();
-    } catch {
-      /* best-effort — non-fatal */
+    const warmAndContext = () => {
+      // Warm the cart store so the FIRST voice cart command (add / change qty) finds
+      // a hydrated cart instead of an empty snapshot — fixes "works only on retry".
+      try {
+        void (useCartStore.getState() as any).initializeCart?.();
+      } catch {
+        /* best-effort — non-fatal */
+      }
+      sendPageContext();
+    };
+    // STARTUP SMOOTHNESS: during the opening-greeting grace window (set in onOpen) the
+    // greeting's first audio is spinning up. Cart hydration + context injection aren't
+    // needed for the greeting (only for the first USER turn, which follows it), so
+    // running them synchronously here contends with audio startup and causes the ~1s
+    // greeting stutter — DEFER them to the end of the grace window. Outside the window
+    // (mid-session navigation), update immediately.
+    const graceLeft = startupGraceUntilRef.current - Date.now();
+    if (graceLeft > 0) {
+      const t = setTimeout(() => {
+        if (statusRef.current === "live") warmAndContext();
+      }, graceLeft);
+      return () => clearTimeout(t);
     }
-    sendPageContext();
+    warmAndContext();
   }, [status, pathname, sendPageContext]);
 
   // COLLECTION AWARENESS: whenever a session is active and the shopper is on a
@@ -468,24 +494,32 @@ export function useVoiceSession(): VoiceSessionApi {
     // Already loaded → the products (and enriched context) are in place.
     if (memory.searchHistoryRef.current.some((h) => h.query === key)) return;
     let cancelled = false;
-    fetchJson(`/api/voice-collection?handle=${encodeURIComponent(handle)}`)
-      .then((d: any) => {
-        if (cancelled) return;
-        const products = Array.isArray(d?.products) ? d.products : [];
-        if (!products.length) return;
-        const hist = memory.searchHistoryRef.current.filter(
-          (h) => h.query !== key
-        );
-        hist.push({ query: key, products });
-        memory.searchHistoryRef.current = hist.slice(-3);
-        memory.searchResultsRef.current = products;
-        memory.lastResultsRef.current = products;
-        // Re-emit page context now that we can list the on-screen products.
-        sendPageContext();
-      })
-      .catch(() => {});
+    // Hold the fetch until the greeting's startup-grace window ends, so this network
+    // call + the follow-up context injection don't contend with the greeting's first
+    // audio. Outside the window (mid-session), graceLeft ≤ 0 → runs immediately.
+    const graceLeft = Math.max(0, startupGraceUntilRef.current - Date.now());
+    const startTimer = setTimeout(() => {
+      if (cancelled) return;
+      fetchJson(`/api/voice-collection?handle=${encodeURIComponent(handle)}`)
+        .then((d: any) => {
+          if (cancelled) return;
+          const products = Array.isArray(d?.products) ? d.products : [];
+          if (!products.length) return;
+          const hist = memory.searchHistoryRef.current.filter(
+            (h) => h.query !== key
+          );
+          hist.push({ query: key, products });
+          memory.searchHistoryRef.current = hist.slice(-3);
+          memory.searchResultsRef.current = products;
+          memory.lastResultsRef.current = products;
+          // Re-emit page context now that we can list the on-screen products.
+          sendPageContext();
+        })
+        .catch(() => {});
+    }, graceLeft);
     return () => {
       cancelled = true;
+      clearTimeout(startTimer);
     };
   }, [status, pathname, memory, sendPageContext]);
 
@@ -1006,6 +1040,9 @@ export function useVoiceSession(): VoiceSessionApi {
           // session VAD drives every turn after this one.
           if (greetPendingRef.current) {
             greetPendingRef.current = false;
+            // Open a startup-grace window so the (non-essential) startup side-effects
+            // defer past the greeting's first audio — prevents the ~1s greeting stutter.
+            startupGraceUntilRef.current = Date.now() + STARTUP_DEFER_MS;
             sessionRef.current?.requestResponse?.({
               instructions: VOICE_CFG.greeting.instruction,
             });

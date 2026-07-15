@@ -316,12 +316,17 @@ export function createRunTool(ctx: ToolContext) {
     product_id: p.id,
     handle: p.handle,
     title: p.title,
-    // Send ONLY the ready-to-speak ₹ string (+ a currency anchor), never a bare number
-    // the model could read as "$". Omitted entirely when the price is unknown/≤0 (e.g. a
-    // null-variant combo priced 0) → per the persona the agent offers to open it to
-    // check; the real price is re-resolved at add time.
+    // Price fields (consistent with every other price payload): the bare number for
+    // the model's reasoning, the currency anchor, and the ready-to-speak ₹ string it
+    // SPEAKS (per the persona MONEY rule). All omitted when the price is unknown/≤0
+    // (e.g. a null-variant combo priced 0) so the agent never voices "₹0" — it offers
+    // to open the product; the real price is re-resolved at add time.
     ...(p.price > 0
-      ? { currency: CURRENCY, price_display: priceDisplay(p.price) }
+      ? {
+          price: p.price,
+          currency: CURRENCY,
+          price_display: priceDisplay(p.price),
+        }
       : {}),
     available: p.available,
     on_sale: onSale(p),
@@ -2428,6 +2433,41 @@ export function createRunTool(ctx: ToolContext) {
     }
   };
 
+  // FINAL, PERMANENT currency safeguard. Evidence: even with a "₹559" price_display in
+  // the payload AND the persona MONEY rule, the model ignored them, read the BARE
+  // `price: 559`, and guessed the currency from the language it was speaking
+  // (English → "559 dollars", Hindi → "559"). Prompt rules can't reliably override that
+  // language-conditioned prior. The only deterministic cure is to never hand the model a
+  // bare money NUMBER — so we strip them from every model-facing tool result here,
+  // leaving ONLY the ready-to-speak "*_display" strings. Internal refs (working set,
+  // product detail) keep their numbers for filter/sort/variant logic; this touches only
+  // what the model sees. Non-money numbers (quantity, count, rating, discount_pct,
+  // index, units) are untouched. Applies to every current AND future tool.
+  const MONEY_NUMBER_KEYS = new Set([
+    "price",
+    "compare_at_price",
+    "compareAtPrice",
+    "subtotal",
+    "total",
+    "total_price",
+  ]);
+  const stripBareMoney = (v: any): any => {
+    if (Array.isArray(v)) {
+      return v.map(stripBareMoney);
+    }
+    if (v && typeof v === "object") {
+      const out: Record<string, unknown> = {};
+      for (const [k, val] of Object.entries(v)) {
+        if (MONEY_NUMBER_KEYS.has(k) && typeof val === "number") {
+          continue; // drop the bare amount; the "*_display" string carries it
+        }
+        out[k] = stripBareMoney(val);
+      }
+      return out;
+    }
+    return v;
+  };
+
   return async function runTool(name: string, args: any): Promise<ToolResult> {
     track("tool_called", { tool: name });
     const handler = (handlers as Record<string, Handler | undefined>)[name];
@@ -2518,7 +2558,8 @@ export function createRunTool(ctx: ToolContext) {
         ok: (res as any)?.ok !== false,
         timeout: (res as any)?.timeout === true,
       });
-      return res;
+      // Strip bare money numbers so the model can only speak the ₹ "*_display" strings.
+      return stripBareMoney(res);
     } catch (e: any) {
       track("tool_done", {
         tool: name,
