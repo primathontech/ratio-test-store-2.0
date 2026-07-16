@@ -360,6 +360,17 @@ function createNextConfig(options = {}) {
     ...(dockerBuild && { output: "standalone" }),
     reactStrictMode,
 
+    // Cross-pod shared cache (per infra plan Phase 2). Register the handler in
+    // production; the handler itself decides Redis-vs-in-memory at RUNTIME from
+    // REDIS_URL. Gating on NODE_ENV (not REDIS_URL) is important for standalone:
+    // next.config is frozen at build time, and NODE_ENV is reliably "production"
+    // then, so the handler is always baked into a prod build and a REDIS_URL
+    // injected only at K8s runtime still engages it.
+    ...(process.env.NODE_ENV === "production" && {
+      cacheHandler: require.resolve("../../cache-handler.js"),
+      cacheMaxMemorySize: 0, // disable Next's in-memory LRU → the handler owns caching
+    }),
+
     eslint,
     typescript,
 

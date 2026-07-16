@@ -82,7 +82,9 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "sharp": "^0.34.3",
-    "zustand": "^5.0.6"
+    "zustand": "^5.0.6",
+    "@fortedigital/nextjs-cache-handler": "2.5.3",
+    "redis": "^5"
   },
   "devDependencies": {
     "@next/eslint-plugin-next": "^16.0.1",
