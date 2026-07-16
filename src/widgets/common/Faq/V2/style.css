@@ -1,0 +1,141 @@
+/* FaqAccordion (v2) — heading + native <details> accordion rows.
+ * Per-instance values arrive via --cs-faq-v2-* custom properties on the root;
+ * colors resolve through the scheme's generic --color-* vars with per-field
+ * override vars.
+ */
+
+.cs-faq-v2 {
+  position: relative;
+  background: var(--cs-faq-v2-bg, var(--color-background, #fff));
+  color: var(--color-foreground, #1c1c1c);
+  padding-block: var(--cs-faq-v2-pt, 48px) var(--cs-faq-v2-pb, 48px);
+}
+
+.cs-faq-v2__content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: var(--cs-faq-v2-gap, 24px);
+  padding-inline: clamp(1rem, 4vw, 2rem);
+}
+.cs-faq-v2--page .cs-faq-v2__content {
+  /* 1200px fallback keeps page width sane in hosts without the token
+   * (the source host resolves its token to the same 1200px). */
+  max-width: var(--normal-page-width, 1200px);
+  margin-inline: auto;
+}
+
+.cs-faq-v2__caption {
+  margin: 0 0 -12px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  letter-spacing: 1.3px;
+  text-transform: uppercase;
+  color: var(--cs-faq-v2-heading-color, var(--color-foreground, #1c1c1c));
+}
+
+.cs-faq-v2__heading {
+  margin: 0;
+  color: var(
+    --cs-faq-v2-heading-color,
+    var(--color-foreground-heading, var(--color-foreground, #1c1c1c))
+  );
+}
+
+/* ── Accordion ─────────────────────────────────────────────────────────── */
+.cs-faq-v2__accordion {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* Dividers between rows (on by default). */
+.cs-faq-v2__accordion--dividers .cs-faq-v2__row {
+  border-block-start: var(--cs-faq-v2-divider-w, 1px) solid
+    var(--cs-faq-v2-divider, var(--color-border, rgba(0, 0, 0, 0.12)));
+}
+.cs-faq-v2__accordion--dividers .cs-faq-v2__row:last-child {
+  border-block-end: var(--cs-faq-v2-divider-w, 1px) solid
+    var(--cs-faq-v2-divider, var(--color-border, rgba(0, 0, 0, 0.12)));
+}
+
+.cs-faq-v2__row {
+  width: 100%;
+}
+
+.cs-faq-v2__summary {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+  list-style: none;
+  padding-block: 16px;
+}
+.cs-faq-v2__summary::-webkit-details-marker {
+  display: none;
+}
+.cs-faq-v2__summary::marker {
+  content: "";
+}
+
+.cs-faq-v2__title {
+  flex: 1 1 auto;
+  margin: 0;
+  color: var(--cs-faq-v2-question-color, var(--color-foreground, #1c1c1c));
+}
+
+.cs-faq-v2__icon {
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: var(--cs-faq-v2-question-color, currentColor);
+}
+.cs-faq-v2__icon svg {
+  width: 100%;
+  height: auto;
+}
+
+/* Show only the icon matching the accordion's `icon` setting. */
+.cs-faq-v2__accordion--caret .cs-faq-v2__icon--plus,
+.cs-faq-v2__accordion--plus .cs-faq-v2__icon--caret {
+  display: none;
+}
+
+/* Caret rotates open; plus loses its vertical bar to read as a minus. */
+.cs-faq-v2__icon--caret svg {
+  transition: transform 0.2s ease;
+}
+.cs-faq-v2__row[open] .cs-faq-v2__icon--caret svg {
+  transform: rotate(180deg);
+}
+.cs-faq-v2__plus-bar {
+  transition: opacity 0.2s ease;
+}
+.cs-faq-v2__row[open] .cs-faq-v2__icon--plus .cs-faq-v2__plus-bar {
+  opacity: 0;
+}
+
+.cs-faq-v2__panel {
+  padding-block-end: 16px;
+}
+.cs-faq-v2__body {
+  margin: 0;
+  color: var(--cs-faq-v2-answer-color, var(--color-foreground, #1c1c1c));
+}
+.cs-faq-v2__body > :first-child {
+  margin-block-start: 0;
+}
+.cs-faq-v2__body > :last-child {
+  margin-block-end: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-faq-v2__icon--caret svg,
+  .cs-faq-v2__plus-bar {
+    transition: none;
+  }
+}
