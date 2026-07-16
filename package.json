@@ -14,6 +14,8 @@
     "lint:fix": "next lint --fix",
     "format": "prettier --write .",
     "check-types": "tsc --noEmit",
+    "check:parity": "node scripts/check-settings-parity.mjs",
+    "create:section": "node scripts/create-section.mjs",
     "prepare": "husky",
     "predev": "bun run generate",
     "prebuild": "bun run generate",

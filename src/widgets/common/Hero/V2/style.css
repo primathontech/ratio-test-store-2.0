@@ -1,0 +1,127 @@
+/* ── Hero widget (v2) ────────────────────────────────────────────────
+   Server-rendered: per-instance values are passed as inline CSS vars
+   (--hero-min-height[-md|-lg], --hero-cols, --blur-opacity, color
+   scheme vars). No per-instance <style> / client JS required.
+   Imported by V2/index.tsx so the styles ship only with the widget.  */
+.cs-hero-v2 {
+  position: relative;
+  /* Lift the hero into its own stacking context above whatever section follows
+     it, so the blurred reflection (a z-index:-1 child) can bleed below the hero
+     box and paint OVER the next section's background — visible regardless of
+     that section's color scheme, and general for any following section (the
+     reflection belongs to the hero, not to the next section). The reflection's
+     over-hero portion stays hidden behind the opaque media. */
+  z-index: 1;
+  min-height: var(--hero-min-height, 25rem);
+  color: var(--color-foreground, #111111);
+  background: var(--color-background, #ffffff);
+}
+@media screen and (min-width: 40em) {
+  .cs-hero-v2 {
+    min-height: var(--hero-min-height-md, var(--hero-min-height, 25rem));
+  }
+}
+@media screen and (min-width: 60em) {
+  .cs-hero-v2 {
+    min-height: var(
+      --hero-min-height-lg,
+      var(--hero-min-height-md, var(--hero-min-height, 25rem))
+    );
+  }
+}
+.cs-hero-v2__container {
+  position: relative;
+  overflow: hidden;
+  min-height: inherit;
+  display: flex;
+  width: 100%;
+}
+.cs-hero-v2__media-grid {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-columns: repeat(var(--hero-cols, 1), 1fr);
+}
+.cs-hero-v2__media-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+.cs-hero-v2__media {
+  height: 100%;
+  width: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+img.cs-hero-v2__media {
+  position: absolute;
+  inset: 0;
+}
+.cs-hero-v2__media--mobile {
+  display: none;
+}
+.cs-hero-v2__link {
+  position: absolute;
+  inset: 0;
+  /* Below the content layer (z-2) so block buttons/links stay clickable; above
+     the media (z-0). The content wrapper is pointer-events:none except its
+     interactive children, so clicks on empty banner area fall through here. */
+  z-index: 1;
+}
+.cs-hero-v2__content-wrapper {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 100%;
+  min-height: inherit;
+  pointer-events: none;
+}
+.cs-hero-v2__content-wrapper :is(a, button, input, textarea, select) {
+  pointer-events: auto;
+}
+.cs-hero-v2__blurred-image {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  transform: translateY(50%);
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 60%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(to bottom, #000 0%, #000 60%, transparent 100%);
+}
+.cs-hero-v2__blurred-image img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(20px) saturate(1.5);
+  opacity: var(--blur-opacity, 0.75);
+  transform: scale(2, 1.25);
+}
+
+/* Content buttons — identical to the Slideshow button styles: pill shape with
+   the scheme's button tokens; primary (filled) / secondary (outline) / link. */
+/* Button styles are shared — see _shared/blocks.css (`.sk-button`). */
+@media screen and (max-width: 749px) {
+  .cs-hero-v2__media--desktop-has-mobile {
+    display: none;
+  }
+  .cs-hero-v2__media--mobile {
+    display: block;
+  }
+  .cs-hero-v2--stack-mobile .cs-hero-v2__media-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(var(--hero-cols, 1), 1fr);
+  }
+  .cs-hero-v2__content-wrapper.mobile-column {
+    /* !important so it beats the inline flex-direction set by the widget
+       (an inline style otherwise wins over a normal stylesheet rule). */
+    flex-direction: column !important;
+    align-items: stretch !important;
+  }
+}
