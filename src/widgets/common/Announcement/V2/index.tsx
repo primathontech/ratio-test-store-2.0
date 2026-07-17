@@ -195,6 +195,8 @@ export const V2 = memo(function V2({ vm, className }: AnnouncementFadeProps) {
     s.section_width === "full-width"
       ? "cs-announcement-v2--full-width"
       : "cs-announcement-v2--page-width",
+    // "text" hugs the arrows around the slide; default spreads to the edges.
+    s.arrow_position === "text" ? "cs-announcement-v2--arrows-text" : "",
     className ?? "",
   ]
     .filter(Boolean)

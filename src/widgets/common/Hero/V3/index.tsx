@@ -96,6 +96,21 @@ export const V3 = memo(function V3({ vm, className }: HeroVideoProps) {
     Number.isFinite(headingPx) && headingPx > 0 ? headingPx : 60;
   const headingMobile = Math.round(headingDesktop / 2);
 
+  // Library-extension overrides (shared headingCase/headingSpacing/textSize/
+  // contentWidth) — undefined keeps the look's original values.
+  const headingSpacing = settings?.headingSpacing
+    ? { tight: "-0.5px", normal: "0", wide: "4px" }[settings.headingSpacing]
+    : undefined;
+  const subtitleSize = settings?.textSize
+    ? { small: "17px", medium: "21px", large: "25px" }[settings.textSize]
+    : undefined;
+  const contentMaxWidth =
+    settings?.contentMaxWidth === undefined
+      ? undefined
+      : settings.contentMaxWidth === 0
+        ? "none"
+        : `${settings.contentMaxWidth}px`;
+
   // Heights.
   const heightDesktop = heightCss(settings?.desktopHeight, "650");
   const heightMobile = heightCss(settings?.mobileHeight, "400");
@@ -258,15 +273,24 @@ export const V3 = memo(function V3({ vm, className }: HeroVideoProps) {
           <div
             className={`cs-hero-v3__textContent relative z-[4] table-cell py-[15px] text-white lm:py-[45px] ${vAlign} ${hAlign}`}
           >
-            <div className="cs-hero-v3__textShadow relative inline-block">
+            <div
+              className="cs-hero-v3__textShadow relative inline-block"
+              style={
+                contentMaxWidth ? { maxWidth: contentMaxWidth } : undefined
+              }
+            >
               <h2
                 data-testid="hero-heading"
                 className="cs-hero-v3__title m-0 font-heading text-[length:var(--hv-hs-m)] font-[500] leading-[1.1] text-white lm:text-[length:var(--hv-hs-d)]"
-                style={
-                  settings?.headingColor
+                style={{
+                  ...(settings?.headingColor
                     ? { color: settings.headingColor }
-                    : undefined
-                }
+                    : {}),
+                  ...(settings?.headingCase
+                    ? { textTransform: settings.headingCase }
+                    : {}),
+                  ...(headingSpacing ? { letterSpacing: headingSpacing } : {}),
+                }}
               >
                 <div className="cs-hero-v3__cropper inline-flex overflow-hidden">
                   <div className="cs-hero-v3__contents cs-hero-v3__rise block [animation-delay:0.3s] [animation-duration:0.8s] motion-reduce:animate-none motion-reduce:[transform:none]">
@@ -279,11 +303,14 @@ export const V3 = memo(function V3({ vm, className }: HeroVideoProps) {
                 <div
                   data-testid="hero-subtitle"
                   className="cs-hero-v3__subtitle mb-[30px] mt-[15px] font-body text-[21px] font-[400] leading-[29.4px] tracking-[0.4px] text-white"
-                  style={
-                    settings?.subtitleColor
+                  style={{
+                    ...(settings?.subtitleColor
                       ? { color: settings.subtitleColor }
-                      : undefined
-                  }
+                      : {}),
+                    ...(subtitleSize
+                      ? { fontSize: subtitleSize, lineHeight: 1.4 }
+                      : {}),
+                  }}
                 >
                   <div className="cs-hero-v3__cropper inline-flex overflow-hidden">
                     <div className="cs-hero-v3__contents cs-hero-v3__rise block [animation-delay:0.7s] [animation-duration:1s] motion-reduce:animate-none motion-reduce:[transform:none]">

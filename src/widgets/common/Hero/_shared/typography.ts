@@ -69,12 +69,12 @@ export function typePresetTag(
 }
 
 const HEADING_SIZE_VAR: Record<string, string> = {
-  [TypePreset.H1]: "var(--font-h1--size)",
-  [TypePreset.H2]: "var(--font-h2--size)",
-  [TypePreset.H3]: "var(--font-h3--size)",
-  [TypePreset.H4]: "var(--font-h4--size)",
-  [TypePreset.H5]: "var(--font-h5--size)",
-  [TypePreset.H6]: "var(--font-h6--size)",
+  [TypePreset.H1]: "var(--font-h1--size, 72px)",
+  [TypePreset.H2]: "var(--font-h2--size, 48px)",
+  [TypePreset.H3]: "var(--font-h3--size, 32px)",
+  [TypePreset.H4]: "var(--font-h4--size, 24px)",
+  [TypePreset.H5]: "var(--font-h5--size, 18px)",
+  [TypePreset.H6]: "var(--font-h6--size, 16px)",
 };
 
 /**
@@ -91,7 +91,7 @@ export function typePresetStyle(preset?: TypePreset): CSSProperties {
   }
   if (preset === TypePreset.Paragraph || preset === TypePreset.Rte) {
     return {
-      fontSize: "var(--font-paragraph--size)",
+      fontSize: "var(--font-paragraph--size, 16px)",
       lineHeight: "var(--font-body--line-height, 1.6)",
     };
   }

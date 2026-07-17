@@ -69,7 +69,22 @@ export function TextBlock({ block }: { block: HeroTextBlock }) {
         textWrap:
           s.wrap && s.wrap !== TextWrapOption.Nowrap ? s.wrap : undefined,
       }
-    : { fontFamily: FONT_FAMILY };
+    : {
+        fontFamily: FONT_FAMILY,
+        // Preset path honours EXPLICIT typography overrides (the shared
+        // headingCase/headingSpacing/textSize fields ride these keys);
+        // unset keys keep the preset's own styling.
+        ...(s.font_size ? { fontSize: s.font_size } : {}),
+        ...(s.letter_spacing
+          ? { letterSpacing: LETTER_SPACING_VALUES[s.letter_spacing] }
+          : {}),
+        ...(s.case
+          ? {
+              textTransform:
+                s.case === TextCase.Uppercase ? "uppercase" : "none",
+            }
+          : {}),
+      };
 
   // Non-rte presets honour the color setting; rte inherits the scheme color
   // unless a color is explicitly set (lets the shared textColor field work).

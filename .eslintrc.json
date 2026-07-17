@@ -15,9 +15,15 @@
       }
     },
     {
-      "files": ["next.config.js", "*.config.js", "src/bootstrap/*.js"],
+      "files": ["next.config.js", "*.config.js", "src/bootstrap/*.js", "cache-handler.js"],
       "rules": {
         "@typescript-eslint/no-var-requires": "off"
+      }
+    },
+    {
+      "files": ["cache-handler.js"],
+      "rules": {
+        "no-console": "off"
       }
     },
     {

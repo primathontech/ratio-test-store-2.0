@@ -103,6 +103,20 @@ const TEXT_STYLES: Record<
   },
 };
 
+/** Shared textSize override → [mobile, desktop] px (medium = original body). */
+const TEXT_SIZE_OVERRIDES: Record<string, [string, string]> = {
+  small: ["13px", "14px"],
+  medium: ["15px", "16px"],
+  large: ["17px", "18px"],
+};
+
+/** Shared headingSpacing override → letter-spacing (original = 0.6px class). */
+const HEADING_SPACING_VALUES: Record<string, string> = {
+  tight: "-0.5px",
+  normal: "0",
+  wide: "4px",
+};
+
 /** Map desktop_content_position → flex alignment for the content row. */
 function positionToFlex(position: ImageBannerContentPosition): {
   vertical: string;
@@ -280,6 +294,21 @@ export const V1 = memo(function V1({ vm, className }: ImageBannerProps) {
     HEADING_SIZES[headingSize] ?? HEADING_SIZES.h0;
   const textStyleSpec = TEXT_STYLES[textStyle] ?? TEXT_STYLES.body;
 
+  // Library-extension overrides (shared textSize/headingCase/headingSpacing/
+  // contentWidth) — undefined keeps the look's original values.
+  const textSizeOverride = settings?.textSize
+    ? TEXT_SIZE_OVERRIDES[settings.textSize]
+    : undefined;
+  const headingSpacingOverride = settings?.headingSpacing
+    ? HEADING_SPACING_VALUES[settings.headingSpacing]
+    : undefined;
+  const contentMaxWidth =
+    settings?.contentMaxWidth === undefined
+      ? undefined
+      : settings.contentMaxWidth === 0
+        ? "none"
+        : `${settings.contentMaxWidth}px`;
+
   const buttons: ImageBannerButton[] =
     settings?.buttons && settings.buttons.length > 0
       ? settings.buttons
@@ -393,6 +422,7 @@ export const V1 = memo(function V1({ vm, className }: ImageBannerProps) {
             // Desktop alignment from settings; mobile is centered.
             alignItems: vertical,
             justifyContent: horizontal,
+            ...(contentMaxWidth ? { maxWidth: contentMaxWidth } : {}),
           }}
         >
           <div
@@ -414,6 +444,12 @@ export const V1 = memo(function V1({ vm, className }: ImageBannerProps) {
                     fontWeight: 400,
                     textAlign: alignToText(desktopContentAlignment),
                     ...(headingColor ? { color: headingColor } : {}),
+                    ...(settings?.headingCase
+                      ? { textTransform: settings.headingCase }
+                      : {}),
+                    ...(headingSpacingOverride
+                      ? { letterSpacing: headingSpacingOverride }
+                      : {}),
                     ["--cs-hero-v1-bh-m" as string]: headingSizeMobile,
                     ["--cs-hero-v1-bh-d" as string]: headingSizeDesktop,
                   } as React.CSSProperties
@@ -434,8 +470,10 @@ export const V1 = memo(function V1({ vm, className }: ImageBannerProps) {
                     letterSpacing: textStyleSpec.letterSpacing,
                     fontStyle: textStyleSpec.fontStyle,
                     textTransform: textStyleSpec.textTransform,
-                    ["--cs-hero-v1-bt-m" as string]: textStyleSpec.sizeMobile,
-                    ["--cs-hero-v1-bt-d" as string]: textStyleSpec.sizeDesktop,
+                    ["--cs-hero-v1-bt-m" as string]:
+                      textSizeOverride?.[0] ?? textStyleSpec.sizeMobile,
+                    ["--cs-hero-v1-bt-d" as string]:
+                      textSizeOverride?.[1] ?? textStyleSpec.sizeDesktop,
                   } as React.CSSProperties
                 }
               >

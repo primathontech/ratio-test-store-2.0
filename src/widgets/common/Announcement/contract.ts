@@ -45,6 +45,10 @@ export interface AnnouncementSharedSettings {
   pauseOnHover?: "default" | "on" | "off";
   /** Show the prev/next arrows (v1/v2; the ticker has none). */
   showArrows?: boolean;
+  /** Arrow placement: bar edges vs hugging the message (v1/v2). */
+  arrowPosition?: "default" | "edges" | "text";
+  /** Two-part messages: single joined line vs title stacked above text (v1/v2). */
+  messageLayout?: "default" | "inline" | "stacked";
   displayMode?: "default" | "rotate" | "inline"; // v3 compact vs side-by-side
   /* text styling ("default" = keep the variant's original) */
   textSize?: "default" | "small" | "medium" | "large";
@@ -76,12 +80,14 @@ export interface AnnouncementVMShared {
     intervalSeconds: number;
     pauseOnHover?: boolean;
     showArrows: boolean;
+    arrowPosition?: "edges" | "text";
   };
   text: {
     size?: "small" | "medium" | "large";
     align?: "left" | "center" | "right";
     case?: "none" | "uppercase";
     letterSpacing?: "tight" | "normal" | "loose";
+    layout?: "inline" | "stacked";
     openInNewTab: boolean;
   };
   appearance: {
@@ -185,6 +191,26 @@ export const AnnouncementContract = {
       type: "boolean" as const,
       label: "Show Prev/Next Arrows (Minimal Bar, Crossfade Slider)",
       default: true,
+    },
+    arrowPosition: {
+      type: "select" as const,
+      label: "Arrow Position (needs Arrows)",
+      options: [
+        { value: "default", label: "Variant default" },
+        { value: "edges", label: "Bar edges" },
+        { value: "text", label: "Next to text" },
+      ],
+      default: "default",
+    },
+    messageLayout: {
+      type: "select" as const,
+      label: "Message Layout (title + text)",
+      options: [
+        { value: "default", label: "Variant default" },
+        { value: "inline", label: "Single line" },
+        { value: "stacked", label: "Two lines (title above text)" },
+      ],
+      default: "default",
     },
     displayMode: {
       type: "select" as const,

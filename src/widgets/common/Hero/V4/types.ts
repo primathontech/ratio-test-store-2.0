@@ -103,6 +103,14 @@ export interface ShoppableHeroSettings {
   textPosition?: string;
   /** Hotspot icon glyph: `plus` | `dot` | `tag` | `bag`. */
   hotspotIconStyle?: string;
+  /** Subheading scale override — library extension (default = 15/16px). */
+  textSize?: "small" | "medium" | "large";
+  /** Heading case override — library extension. */
+  headingCase?: "none" | "uppercase";
+  /** Heading letter-spacing override — library extension. */
+  headingSpacing?: "tight" | "normal" | "wide";
+  /** Content box max-width px (0 = uncapped) — library extension. */
+  contentMaxWidth?: number;
 }
 
 /**

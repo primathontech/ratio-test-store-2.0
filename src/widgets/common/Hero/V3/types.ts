@@ -55,6 +55,14 @@ export interface HeroVideoSettings {
   ctaTextColor?: string;
   /** Section base background behind the video — live `#ffffff`. */
   sectionBackground?: string;
+  /** Subtitle scale override — library extension (default = 21px). */
+  textSize?: "small" | "medium" | "large";
+  /** Heading case override — library extension. */
+  headingCase?: "none" | "uppercase";
+  /** Heading letter-spacing override — library extension. */
+  headingSpacing?: "tight" | "normal" | "wide";
+  /** Content block max-width px (0 = uncapped) — library extension. */
+  contentMaxWidth?: number;
 }
 
 /** No dataSource — this is a purely static section. */

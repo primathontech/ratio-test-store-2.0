@@ -21,15 +21,7 @@ export interface HeroTextBlockSettings {
   alignment?: "left" | "center" | "right";
   /** Typography preset. */
   type_preset?:
-    | "rte"
-    | "paragraph"
-    | "h1"
-    | "h2"
-    | "h3"
-    | "h4"
-    | "h5"
-    | "h6"
-    | "custom";
+    "rte" | "paragraph" | "h1" | "h2" | "h3" | "h4" | "h5" | "h6" | "custom";
   /** Font family (custom preset only). */
   font?: string;
   /** Font size (custom preset only). */
@@ -140,29 +132,24 @@ export interface HeroSettings {
   align_baseline?: boolean;
   /** Horizontal alignment (column direction). */
   horizontal_alignment_flex_direction_column?:
-    | "flex-start"
-    | "center"
-    | "flex-end";
+    "flex-start" | "center" | "flex-end";
   /** Vertical alignment (column direction). */
   vertical_alignment_flex_direction_column?:
-    | "flex-start"
-    | "center"
-    | "flex-end"
-    | "space-between";
+    "flex-start" | "center" | "flex-end" | "space-between";
   /** Gap between content blocks (px). */
   gap?: number;
   /** Content container width. */
   section_width?: "page-width" | "full-width";
   /** Section height preset. */
   section_height?:
-    | "auto"
-    | "small"
-    | "medium"
-    | "large"
-    | "full-screen"
-    | "custom";
+    "auto" | "small" | "medium" | "large" | "full-screen" | "custom";
   /** Custom section height in svh (when section_height = custom). */
   section_height_custom?: number;
+  /**
+   * Content container max-width px (0 = uncapped) — library extension for the
+   * shared contentWidth "narrow" option (no native narrow slot).
+   */
+  content_max_width?: number;
 
   /* --- Appearance --- */
   /** Color scheme key (scheme-1 .. scheme-5). */

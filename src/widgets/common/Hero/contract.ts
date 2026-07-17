@@ -33,8 +33,14 @@ export interface HeroSharedSettings {
   heading?: string;
   headingSize?: "small" | "medium" | "large" | "xl"; // medium = variant's original
   headingColor?: string; // hex; empty = variant default
+  /** Heading case ("default" = the variant's original). */
+  headingCase?: "default" | "none" | "uppercase";
+  /** Heading letter spacing ("default" = the variant's original). */
+  headingSpacing?: "default" | "tight" | "normal" | "wide";
   text?: string;
   textColor?: string;
+  /** Body/subtitle text scale ("default" = the variant's original). */
+  textSize?: "default" | "small" | "medium" | "large";
   ctaLabel?: string;
   ctaHref?: string;
   secondaryCtaLabel?: string;
@@ -48,7 +54,9 @@ export interface HeroSharedSettings {
   imageBehavior?: "default" | "none" | "ambient" | "fixed" | "zoom-in"; // v1
   height?: "small" | "medium" | "large" | "full";
   mobileHeight?: "default" | "small" | "medium" | "large" | "full"; // v3
-  sectionWidth?: "default" | "page" | "full"; // v2
+  /** Content container width ("default" = the variant's original). */
+  contentWidth?: "default" | "narrow" | "page" | "full";
+  sectionWidth?: "default" | "page" | "full"; // v2 (legacy alias of contentWidth)
   overlayOpacity?: number; // 0..100
   overlayColor?: string; // hex (v2)
   overlayStyle?: "default" | "solid" | "gradient-up" | "gradient-down"; // v2
@@ -82,8 +90,14 @@ export interface HeroVMShared {
     text: string;
     size: "small" | "medium" | "large" | "xl";
     color?: string;
+    case?: "none" | "uppercase";
+    spacing?: "tight" | "normal" | "wide";
   };
-  text?: { value: string; color?: string };
+  text?: {
+    value: string;
+    color?: string;
+    size?: "small" | "medium" | "large";
+  };
   ctas: HeroCta[];
   media: { desktop?: HeroMediaRef; mobile?: HeroMediaRef; videoId?: string };
   layout: {
@@ -92,6 +106,7 @@ export interface HeroVMShared {
     align: "left" | "center" | "right";
     verticalPosition?: "top" | "middle" | "bottom";
     stackOnMobile: boolean;
+    contentWidth?: "narrow" | "page" | "full";
     sectionWidth?: "page" | "full";
   };
   appearance: {
@@ -184,6 +199,27 @@ export const HeroContract = {
       ],
       default: "medium",
     },
+    headingCase: {
+      type: "select" as const,
+      label: "Heading Case",
+      options: [
+        { value: "default", label: "Variant default" },
+        { value: "none", label: "Normal" },
+        { value: "uppercase", label: "Uppercase" },
+      ],
+      default: "default",
+    },
+    headingSpacing: {
+      type: "select" as const,
+      label: "Heading Letter Spacing",
+      options: [
+        { value: "default", label: "Variant default" },
+        { value: "tight", label: "Tight" },
+        { value: "normal", label: "Normal" },
+        { value: "wide", label: "Wide" },
+      ],
+      default: "default",
+    },
     headingColor: {
       type: "text" as const,
       label: "Heading Color (hex, empty = default)",
@@ -194,6 +230,17 @@ export const HeroContract = {
       type: "text" as const,
       label: "Text",
       default: "Atypical leather goods",
+    },
+    textSize: {
+      type: "select" as const,
+      label: "Text Size",
+      options: [
+        { value: "default", label: "Variant default" },
+        { value: "small", label: "Small" },
+        { value: "medium", label: "Medium" },
+        { value: "large", label: "Large" },
+      ],
+      default: "default",
     },
     textColor: {
       type: "text" as const,
@@ -300,9 +347,20 @@ export const HeroContract = {
       ],
       default: "default",
     },
+    contentWidth: {
+      type: "select" as const,
+      label: "Content Width",
+      options: [
+        { value: "default", label: "Variant default" },
+        { value: "narrow", label: "Narrow" },
+        { value: "page", label: "Page width" },
+        { value: "full", label: "Full width" },
+      ],
+      default: "default",
+    },
     sectionWidth: {
       type: "select" as const,
-      label: "Content Width (Media Hero)",
+      label: "Content Width (Media Hero, legacy)",
       options: [
         { value: "default", label: "Variant default" },
         { value: "page", label: "Page width" },

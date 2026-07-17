@@ -17,22 +17,32 @@ import type { HeroVideoSettings } from "./types";
  *
  * Flat shape: each field is read directly as `settings?.X ?? DEFAULT_HERO_VIDEO.X`.
  */
-export const DEFAULT_HERO_VIDEO: Required<Omit<HeroVideoSettings, "variant">> =
-  {
-    heading: "Made to move with ease",
-    headingSize: "60",
-    headingColor: "#ffffff",
-    subtitle: "Quiet texture, warm light, and pieces designed for slower days.",
-    subtitleColor: "#ffffff",
-    ctaText: "Explore the lookbook",
-    ctaHref: "/pages/the-lookbook",
-    backgroundVideoId: "kAaV5gfdsG0",
-    videoTitle: "Video hero",
-    textAlignment: "middle-center",
-    overlayOpacity: "0",
-    desktopHeight: "650",
-    mobileHeight: "400",
-    ctaBackground: "#edebe7",
-    ctaTextColor: "#000000",
-    sectionBackground: "#ffffff",
-  };
+// Library-extension overrides (textSize/headingCase/headingSpacing/
+// contentMaxWidth) have no sample values — undefined = the look's original.
+export const DEFAULT_HERO_VIDEO: Required<
+  Omit<
+    HeroVideoSettings,
+    | "variant"
+    | "textSize"
+    | "headingCase"
+    | "headingSpacing"
+    | "contentMaxWidth"
+  >
+> = {
+  heading: "Made to move with ease",
+  headingSize: "60",
+  headingColor: "#ffffff",
+  subtitle: "Quiet texture, warm light, and pieces designed for slower days.",
+  subtitleColor: "#ffffff",
+  ctaText: "Explore the lookbook",
+  ctaHref: "/pages/the-lookbook",
+  backgroundVideoId: "kAaV5gfdsG0",
+  videoTitle: "Video hero",
+  textAlignment: "middle-center",
+  overlayOpacity: "0",
+  desktopHeight: "650",
+  mobileHeight: "400",
+  ctaBackground: "#edebe7",
+  ctaTextColor: "#000000",
+  sectionBackground: "#ffffff",
+};

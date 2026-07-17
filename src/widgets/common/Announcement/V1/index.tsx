@@ -67,17 +67,32 @@ const CaretIcon = () => (
 );
 
 const Message = ({
+  title,
   text,
   link,
   style,
   newTab,
 }: {
+  title?: string;
   text: string;
   link?: string;
   style: React.CSSProperties;
   newTab: boolean;
 }) => {
-  const inner = (
+  // A title means the stacked (two-line) layout: bold lead over lighter text.
+  const inner = title ? (
+    <p
+      className="m-0 inline-flex flex-col items-center justify-center px-0 font-normal"
+      style={style}
+      data-testid="announcement-message"
+    >
+      <span className="inline-flex items-center" style={{ fontWeight: 600 }}>
+        {title}
+        {link ? <ArrowIcon /> : null}
+      </span>
+      <span style={{ fontSize: "0.92em", opacity: 0.8 }}>{text}</span>
+    </p>
+  ) : (
     <p
       className="m-0 inline-flex items-center justify-center px-0 font-normal"
       style={style}
@@ -174,6 +189,9 @@ export const V1 = memo(function V1({ vm, className }: AnnouncementBasicProps) {
         : "justify-center";
 
   const showArrows = s.showArrows ?? true;
+  // "edges" (original) spreads the carets to the bar edges; "text" hugs them
+  // around the message.
+  const arrowsAtEdges = (s.arrowPosition ?? "edges") !== "text";
   const pauseOnHover = s.pauseOnHover ?? false;
   const dividerColor =
     s.dividerColor ||
@@ -203,6 +221,7 @@ export const V1 = memo(function V1({ vm, className }: AnnouncementBasicProps) {
         {!isCarousel ? (
           announcements[0] ? (
             <Message
+              title={announcements[0].title}
               text={announcements[0].text ?? ""}
               link={announcements[0].link}
               style={messageStyle}
@@ -210,7 +229,9 @@ export const V1 = memo(function V1({ vm, className }: AnnouncementBasicProps) {
             />
           ) : null
         ) : (
-          <div className={`flex w-full items-center ${justify} gap-[8px]`}>
+          <div
+            className={`flex ${arrowsAtEdges ? "w-full" : ""} items-center ${justify} gap-[8px]`}
+          >
             {showArrows ? (
               <button
                 type="button"
@@ -225,13 +246,14 @@ export const V1 = memo(function V1({ vm, className }: AnnouncementBasicProps) {
             ) : null}
 
             <div
-              className={`flex min-w-0 ${showArrows ? "flex-1" : ""} items-center ${justify} overflow-hidden`}
+              className={`flex min-w-0 ${showArrows && arrowsAtEdges ? "flex-1" : ""} items-center ${justify} overflow-hidden`}
             >
               <div
                 key={rotation.index}
                 className={`flex items-center justify-center ${animClass}`}
               >
                 <Message
+                  title={announcements[rotation.index]?.title}
                   text={announcements[rotation.index]?.text ?? ""}
                   link={announcements[rotation.index]?.link}
                   style={messageStyle}
