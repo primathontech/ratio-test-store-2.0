@@ -151,7 +151,12 @@ export function V2({ vm, className }: HeroV2Props) {
     gap: `${s.gap ?? DEFAULTS.gap}px`,
     justifyContent,
     alignItems,
-    maxWidth: isFullWidth ? "none" : PAGE_CONTENT_MAX_WIDTH,
+    // content_max_width (shared contentWidth "narrow") wins over the presets.
+    maxWidth: s.content_max_width
+      ? `${s.content_max_width}px`
+      : isFullWidth
+        ? "none"
+        : PAGE_CONTENT_MAX_WIDTH,
     marginInline: "auto",
     paddingInline: isFullWidth ? FULL_INLINE_PADDING : PAGE_INLINE_PADDING,
     paddingBlock: CONTENT_BLOCK_PADDING,

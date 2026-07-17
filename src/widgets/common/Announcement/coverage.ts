@@ -31,6 +31,7 @@ export const V1_COVERAGE = {
   textCase: "shared",
   letterSpacing: "shared",
   showArrows: "shared",
+  arrowPosition: "shared", // edges (original) / next to text
   pauseOnHover: "shared",
   openInNewTab: "shared",
   paddingTop: "shared",
@@ -41,6 +42,7 @@ export const V2_COVERAGE = {
   variant: "shared",
   speed: "shared", // fed from the shared `rotationSpeed`
   auto_rotate: "shared", // fed from the shared `autoRotate`
+  arrow_position: "shared", // edges (original) / next to text
   section_width: "shared",
   color_scheme: "shared",
   divider_width: "shared", // dividers bool → 0; exact px via `dividerWidth`

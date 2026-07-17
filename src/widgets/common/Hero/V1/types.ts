@@ -44,9 +44,7 @@ export type ImageBannerHeadingSize = "h2" | "h1" | "h0" | "hxl" | "hxxl";
 
 /** Text block style (text block `text_style`). */
 export type ImageBannerTextStyle =
-  | "body"
-  | "subtitle"
-  | "caption-with-letter-spacing";
+  "body" | "subtitle" | "caption-with-letter-spacing";
 
 /**
  * ImageBanner variant (v1) settings.
@@ -114,6 +112,14 @@ export interface ImageBannerSettings {
   textStyle?: ImageBannerTextStyle;
   /** Sub-text color (default white @ 75%). */
   textColor?: string;
+  /** Text scale override — library extension (default = textStyle's size). */
+  textSize?: "small" | "medium" | "large";
+  /** Heading case override — library extension. */
+  headingCase?: "none" | "uppercase";
+  /** Heading letter-spacing override — library extension. */
+  headingSpacing?: "tight" | "normal" | "wide";
+  /** Outer content container max-width px (0 = uncapped) — library extension. */
+  contentMaxWidth?: number;
 
   // ---- Button colors (defaults preserve the classic look) ----------------
   /** Solid-button background / outline-button ring+text color override. */

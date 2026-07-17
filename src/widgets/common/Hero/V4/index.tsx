@@ -141,6 +141,20 @@ export const V4 = memo(function V4({ vm, className }: ShoppableHeroProps) {
   const headingSizeClasses =
     HEADING_SIZE_MAP[headingSize] ?? HEADING_SIZE_MAP.large;
   const posClasses = positionClasses(textPosition);
+  // Library-extension overrides (shared headingCase/headingSpacing/textSize/
+  // contentWidth) — undefined keeps the look's original values.
+  const headingSpacing = settings?.headingSpacing
+    ? { tight: "-0.5px", normal: "0", wide: "4px" }[settings.headingSpacing]
+    : undefined;
+  const subheadingSize = settings?.textSize
+    ? { small: "13px", medium: "15px", large: "18px" }[settings.textSize]
+    : undefined;
+  const contentMaxWidth =
+    settings?.contentMaxWidth === undefined
+      ? undefined
+      : settings.contentMaxWidth === 0
+        ? "none"
+        : `${settings.contentMaxWidth}px`;
   // ─────────────────────────────────────────────────────────────────────────
 
   // Live products (folded into the extension by logic.ts); hotspot[i] → products[i].
@@ -305,6 +319,7 @@ export const V4 = memo(function V4({ vm, className }: ShoppableHeroProps) {
         >
           <div
             className={`relative z-[3] flex w-full flex-col ${alignClasses} gap-[12px] p-[17px] min-[768px]:max-w-[508px] min-[1024px]:max-w-[592px] min-[1024px]:p-[40px] min-[1440px]:max-w-[742px]`}
+            style={contentMaxWidth ? { maxWidth: contentMaxWidth } : undefined}
           >
             {preheading ? (
               <p
@@ -317,6 +332,12 @@ export const V4 = memo(function V4({ vm, className }: ShoppableHeroProps) {
             <h2
               data-testid="hero-heading"
               className={`m-0 mt-[-4px] font-heading font-[500] ${headingSizeClasses} text-[var(--cs-hero-v4-text-mobile)] min-[768px]:text-[var(--cs-hero-v4-overlay-text)]`}
+              style={{
+                ...(settings?.headingCase
+                  ? { textTransform: settings.headingCase }
+                  : {}),
+                ...(headingSpacing ? { letterSpacing: headingSpacing } : {}),
+              }}
             >
               {heading}
             </h2>
@@ -324,6 +345,11 @@ export const V4 = memo(function V4({ vm, className }: ShoppableHeroProps) {
               <p
                 data-testid="hero-subtitle"
                 className="m-0 font-body text-[15px] font-[400] leading-[21px] tracking-[0.4px] text-[var(--cs-hero-v4-text-mobile)] min-[768px]:text-[16px] min-[768px]:leading-[22.4px] min-[768px]:text-[var(--cs-hero-v4-overlay-text)]"
+                style={
+                  subheadingSize
+                    ? { fontSize: subheadingSize, lineHeight: 1.4 }
+                    : undefined
+                }
               >
                 {subheading}
               </p>

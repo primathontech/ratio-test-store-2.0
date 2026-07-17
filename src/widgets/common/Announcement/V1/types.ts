@@ -11,6 +11,8 @@ import type { AnnouncementVM } from "../contract";
 
 /** One announcement message (flat — editor-friendly). */
 export interface AnnouncementBasicMessage {
+  /** Bold lead line — set only in the stacked (two-line) layout. */
+  title?: string;
   /** Message text. */
   text?: string;
   /** Optional URL — when set the message becomes a link with an arrow icon. */
@@ -56,6 +58,8 @@ export interface AnnouncementBasicSettings {
   letterSpacing?: "tight" | "normal" | "loose";
   /** Show the prev/next carets (2+ messages). @default true */
   showArrows?: boolean;
+  /** Caret placement: bar edges (original) or hugging the message. */
+  arrowPosition?: "edges" | "text";
   /** Suspend auto-rotate while hovered. @default false (original) */
   pauseOnHover?: boolean;
   /** Open message links in a new tab. @default false */

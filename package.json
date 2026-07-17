@@ -1,6 +1,6 @@
 {
   "name": "storefront-starter-app",
-  "version": "0.2.11",
+  "version": "0.2.12",
   "private": true,
   "workspaces": [
     "src/app/editor"
@@ -52,6 +52,7 @@
     "perf:audit": "shopkit perf:audit"
   },
   "dependencies": {
+    "@fortedigital/nextjs-cache-handler": "2.5.3",
     "@radix-ui/react-checkbox": "^1.1.4",
     "@radix-ui/react-icons": "^1.3.2",
     "@radix-ui/react-label": "^2.1.2",
@@ -65,14 +66,14 @@
     "@shopkit/app-shell": "^2.0.0",
     "@shopkit/asset-cache": "^1.0.1",
     "@shopkit/builder": "^0.1.5",
-    "@shopkit/navigation": "^1.4.0",
+    "@shopkit/navigation": "^1.5.0",
     "@shopkit/cart": "^0.1.4",
     "@shopkit/cli": "^0.4.0",
     "@shopkit/core": "^0.1.4",
     "@shopkit/data-layer": "^1.3.0",
     "@shopkit/discounts": "^0.1.3",
-    "@shopkit/events": "^0.10.0",
     "@shopkit/editor-bridge": "^0.8.0",
+    "@shopkit/events": "^0.10.0",
     "@shopkit/i18n": "^0.1.4",
     "@shopkit/seo": "^1.2.0",
     "@shopkit/webhooks": "^0.1.1",
@@ -81,6 +82,7 @@
     "next-intl": "^4.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "redis": "^5",
     "sharp": "^0.34.3",
     "zustand": "^5.0.6"
   },

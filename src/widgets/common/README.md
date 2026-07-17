@@ -17,7 +17,10 @@ common/<Section>/
 │                    makes tsc name any unclassified key
 ├── metadata.ts      per-variant tags (industries/vibes/goals/density/pages)
 │                    + preview_image — feeds the editor picker + AI generator
-├── variants.ts      { v1..vN, default } — variants receive ONLY the VM
+├── variants.ts      { v1..vN, default } — variants receive ONLY the VM.
+│                    Each entry is `dynamic(() => import("./VN")…)` (SSR on)
+│                    so a storefront only downloads the variant its template
+│                    renders — never static-import a variant component here
 ├── V1/ V2/ …        one folder per look; its types.ts = the vm.vN extension,
 │                    its sample-data.ts = the curated zero-settings look
 │                    (settings → data → sample fall-through — EVERY variant

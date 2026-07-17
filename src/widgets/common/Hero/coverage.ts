@@ -47,6 +47,10 @@ export const V1_COVERAGE = {
   text: "shared",
   textStyle: "passthrough", // body / subtitle / caption
   textColor: "shared", // library extension (source hardcoded white @ 75%)
+  textSize: "shared", // library extension — text scale override
+  headingCase: "shared", // library extension
+  headingSpacing: "shared", // library extension
+  contentMaxWidth: "shared", // contentWidth (narrow/page/full → px)
   ctaBackground: "shared", // library extension (solid bg / outline ring)
   ctaTextColor: "shared", // library extension
   // ctaLabel/ctaHref + secondaryCta*; primary solid vs outline via buttonStyle
@@ -71,7 +75,8 @@ export const V2_COVERAGE = {
   horizontal_alignment_flex_direction_column: "shared",
   vertical_alignment_flex_direction_column: "shared",
   gap: "passthrough", // px between blocks
-  section_width: "shared", // sectionWidth (page/full)
+  section_width: "shared", // contentWidth (page/full; legacy sectionWidth alias)
+  content_max_width: "shared", // contentWidth narrow → 734px cap
   section_height: "shared", // height (full → full-screen)
   section_height_custom: "passthrough", // svh, with section_height=custom
   color_scheme: "shared", // colorScheme
@@ -116,6 +121,10 @@ export const V3_COVERAGE = {
   ctaBackground: "shared", // v3 ignores colorScheme — own colors
   ctaTextColor: "shared",
   sectionBackground: "shared",
+  textSize: "shared", // library extension — subtitle scale override
+  headingCase: "shared", // library extension
+  headingSpacing: "shared", // library extension
+  contentMaxWidth: "shared", // contentWidth (narrow/page/full → px)
 } satisfies Record<keyof HeroVideoSettings, SettingsCoverage>;
 
 /* ── V4 (Shoppable Hero) ───────────────────────────────────────────────── */
@@ -140,5 +149,9 @@ export const V4_COVERAGE = {
   textAlignment: "shared", // align
   textPosition: "shared", // verticalPosition × align (default bottom-left)
   hotspotIconStyle: "passthrough", // plus/dot/tag/bag
+  textSize: "shared", // library extension — subheading scale override
+  headingCase: "shared", // library extension
+  headingSpacing: "shared", // library extension
+  contentMaxWidth: "shared", // contentWidth (narrow/page/full → px)
   products: "generated", // folded from the data layer (PRODUCTS dataSource)
 } satisfies Record<keyof ShoppableHeroExt, SettingsCoverage>;

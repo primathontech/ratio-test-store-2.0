@@ -36,6 +36,8 @@ export interface AnnouncementFadeSettings {
   speed?: number;
   /** Pause autoplay entirely (extension; the look originally always rotated). */
   auto_rotate?: boolean;
+  /** Arrow placement: bar edges (original) or hugging the slide text. */
+  arrow_position?: "edges" | "text";
   section_width?: "page-width" | "full-width";
   color_scheme?: string;
   /** Bottom divider thickness (px). */

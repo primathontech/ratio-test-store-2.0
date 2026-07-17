@@ -112,3 +112,12 @@
     transition: none;
   }
 }
+
+/* Arrow Position = "Next to text" — hug the slide instead of the bar edges. */
+.cs-announcement-v2--arrows-text .cs-announcement-v2__slides {
+  width: auto;
+  margin-inline: 0;
+}
+.cs-announcement-v2--arrows-text .cs-announcement-v2__slider {
+  width: fit-content;
+}

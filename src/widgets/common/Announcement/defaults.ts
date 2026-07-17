@@ -15,6 +15,8 @@ export const AnnouncementDefaults: AnnouncementSharedSettings = {
   rotationSpeed: 5,
   pauseOnHover: "default",
   showArrows: true,
+  arrowPosition: "default",
+  messageLayout: "default",
   displayMode: "default",
   textSize: "default",
   textAlign: "default",

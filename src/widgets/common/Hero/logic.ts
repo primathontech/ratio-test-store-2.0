@@ -49,8 +49,11 @@ const SHARED_KEYS = [
   "heading",
   "headingSize",
   "headingColor",
+  "headingCase",
+  "headingSpacing",
   "text",
   "textColor",
+  "textSize",
   "ctaLabel",
   "ctaHref",
   "secondaryCtaLabel",
@@ -64,6 +67,7 @@ const SHARED_KEYS = [
   "imageBehavior",
   "height",
   "mobileHeight",
+  "contentWidth",
   "sectionWidth",
   "overlayOpacity",
   "overlayColor",
@@ -111,6 +115,16 @@ const overlayRgb = (hex: string | undefined, alpha: number): string => {
 };
 
 const clampPct = (n: number) => Math.min(100, Math.max(0, n));
+
+/**
+ * Content container max-width per contentWidth option (px; 0 = uncapped).
+ * Same scale as the Faq section — narrow is the RTE column, page the grid.
+ */
+const CONTENT_WIDTH_PX: Record<string, number> = {
+  narrow: 734,
+  page: 1200,
+  full: 0,
+};
 
 const nativeRest = (s: HeroSharedSettings) => {
   const rest: Record<string, unknown> = { ...s };
@@ -168,8 +182,14 @@ function toV1Ext(s: HeroSharedSettings): ImageBannerSettings {
       heading: s.heading,
       headingSize: s.headingSize ? headingSizeMap[s.headingSize] : undefined,
       headingColor: s.headingColor || undefined,
+      headingCase: opt(s.headingCase),
+      headingSpacing: opt(s.headingSpacing),
       text: s.text,
       textColor: s.textColor || undefined,
+      textSize: opt(s.textSize),
+      contentMaxWidth: opt(s.contentWidth)
+        ? CONTENT_WIDTH_PX[s.contentWidth!]
+        : undefined,
       ctaBackground: s.ctaBackground || undefined,
       ctaTextColor: s.ctaTextColor || undefined,
       imageBehavior: opt(s.imageBehavior),
@@ -219,6 +239,20 @@ function toV2Ext(s: HeroSharedSettings, data?: HeroData): HeroV2NativeSettings {
     large: { type_preset: "custom", font_size: "56px" },
     xl: { type_preset: "custom", font_size: "72px" },
   };
+  // Shared heading case/spacing ride the native text-block keys.
+  const headingSpacingMap: Record<string, string> = {
+    tight: "tight",
+    normal: "normal",
+    wide: "loose",
+  };
+  const headingCase = opt(s.headingCase);
+  const headingSpacing = opt(s.headingSpacing);
+  // Body text scale — medium keeps the rte preset's own size.
+  const textSizeMap: Record<string, string> = {
+    small: "14px",
+    large: "18px",
+  };
+  const textSize = opt(s.textSize);
   const verticalPosition = opt(s.verticalPosition);
   const rest = nativeRest(s);
   const media =
@@ -246,6 +280,10 @@ function toV2Ext(s: HeroSharedSettings, data?: HeroData): HeroV2NativeSettings {
                   ...(headingPresetMap[s.headingSize ?? "medium"] ??
                     headingPresetMap.medium),
                   ...(s.headingColor ? { color: s.headingColor } : {}),
+                  ...(headingCase ? { case: headingCase } : {}),
+                  ...(headingSpacing
+                    ? { letter_spacing: headingSpacingMap[headingSpacing] }
+                    : {}),
                 },
               ]
             : []),
@@ -256,6 +294,9 @@ function toV2Ext(s: HeroSharedSettings, data?: HeroData): HeroV2NativeSettings {
                   text: s.text,
                   type_preset: "rte",
                   ...(s.textColor ? { color: s.textColor } : {}),
+                  ...(textSize && textSizeMap[textSize]
+                    ? { font_size: textSizeMap[textSize] }
+                    : {}),
                 },
               ]
             : []),
@@ -311,9 +352,15 @@ function toV2Ext(s: HeroSharedSettings, data?: HeroData): HeroV2NativeSettings {
       section_background: s.sectionBackground || undefined,
       cta_background: s.ctaBackground || undefined,
       cta_text_color: s.ctaTextColor || undefined,
-      section_width: opt(s.sectionWidth)
-        ? sectionWidthMap[s.sectionWidth!]
-        : undefined,
+      // contentWidth wins over the legacy sectionWidth alias entirely; narrow
+      // caps the content container instead (no native narrow slot).
+      section_width: opt(s.contentWidth)
+        ? sectionWidthMap[s.contentWidth!] // narrow → undefined by design
+        : opt(s.sectionWidth)
+          ? sectionWidthMap[s.sectionWidth!]
+          : undefined,
+      content_max_width:
+        opt(s.contentWidth) === "narrow" ? CONTENT_WIDTH_PX.narrow : undefined,
       overlay_style:
         overlayStyle && overlayStyle !== "solid" ? "gradient" : undefined,
       gradient_direction:
@@ -383,8 +430,14 @@ function toV3Ext(s: HeroSharedSettings): HeroVideoSettings {
       heading: s.heading,
       headingSize: s.headingSize ? headingSizeMap[s.headingSize] : undefined,
       headingColor: s.headingColor || undefined,
+      headingCase: opt(s.headingCase),
+      headingSpacing: opt(s.headingSpacing),
       subtitle: s.text,
       subtitleColor: s.textColor || undefined,
+      textSize: opt(s.textSize),
+      contentMaxWidth: opt(s.contentWidth)
+        ? CONTENT_WIDTH_PX[s.contentWidth!]
+        : undefined,
       ctaText: s.ctaLabel,
       ctaHref: s.ctaHref,
       ctaBackground: s.ctaBackground || undefined,
@@ -433,6 +486,12 @@ function toV4Ext(
       image,
       mobileImage,
       headingSize: s.headingSize ? headingSizeMap[s.headingSize] : undefined,
+      headingCase: opt(s.headingCase),
+      headingSpacing: opt(s.headingSpacing),
+      textSize: opt(s.textSize),
+      contentMaxWidth: opt(s.contentWidth)
+        ? CONTENT_WIDTH_PX[s.contentWidth!]
+        : undefined,
       // Desktop text overlays the photo; mobile text stacks below on white.
       overlayTextColor: s.headingColor || undefined,
       mobileTextColor: s.textColor || undefined,
@@ -483,10 +542,17 @@ function buildShared(s: HeroSharedSettings): HeroVMShared {
           text: s.heading,
           size: s.headingSize ?? "medium",
           color: s.headingColor || undefined,
+          case: opt(s.headingCase) as "none" | "uppercase" | undefined,
+          spacing: opt(s.headingSpacing) as
+            "tight" | "normal" | "wide" | undefined,
         }
       : undefined,
     text: s.text
-      ? { value: s.text, color: s.textColor || undefined }
+      ? {
+          value: s.text,
+          color: s.textColor || undefined,
+          size: opt(s.textSize) as "small" | "medium" | "large" | undefined,
+        }
       : undefined,
     ctas,
     media: {
@@ -504,6 +570,9 @@ function buildShared(s: HeroSharedSettings): HeroVMShared {
         s.verticalPosition
       ) as HeroVMShared["layout"]["verticalPosition"],
       stackOnMobile: !!s.stackOnMobile,
+      contentWidth: opt(
+        s.contentWidth
+      ) as HeroVMShared["layout"]["contentWidth"],
       sectionWidth: opt(
         s.sectionWidth
       ) as HeroVMShared["layout"]["sectionWidth"],

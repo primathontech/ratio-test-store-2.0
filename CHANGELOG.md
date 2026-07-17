@@ -1,5 +1,13 @@
 # storefront-starter-app
 
+## 0.2.12
+
+### Patch Changes
+
+- Render each top-level nav item's own image (icon/featured) in the reference Header (desktop + mobile) via `entry.image`; data-gated so no image means no markup change.
+- Updated dependencies
+  - @shopkit/navigation@1.5.0
+
 ## 0.2.11
 
 ### Patch Changes

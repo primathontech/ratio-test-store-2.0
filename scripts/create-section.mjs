@@ -11,11 +11,7 @@
  * Usage: bun run create:section FeatureGrid
  * Reference implementation: src/widgets/common/Hero/
  */
-import {
-  mkdirSync,
-  writeFileSync,
-  existsSync,
-} from "node:fs";
+import { mkdirSync, writeFileSync, existsSync } from "node:fs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -150,9 +146,9 @@ export const ${name}Metadata: Record<"v1", VariantMetadata> = {
 };
 `,
 
-  "variants.ts": `import React from "react";
+  "variants.ts": `import type React from "react";
+import dynamic from "next/dynamic";
 import type { ${name}VM } from "./contract";
-import { V1 } from "./V1";
 
 /** Props every variant receives — the VM seam (never raw settings). */
 export interface ${name}VariantProps {
@@ -161,7 +157,14 @@ export interface ${name}VariantProps {
   locale?: string;
 }
 
-export const ${name}Variants: Record<string, React.FC<${name}VariantProps>> = {
+// Each look is a lazy chunk (SSR stays on) so a storefront only downloads the
+// variant its template actually renders — the others never reach the shopper.
+const V1 = dynamic(() => import("./V1").then((m) => m.V1));
+
+export const ${name}Variants: Record<
+  string,
+  React.ComponentType<${name}VariantProps>
+> = {
   v1: V1,
   default: V1,
 };

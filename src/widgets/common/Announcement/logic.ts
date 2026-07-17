@@ -52,6 +52,8 @@ const SHARED_KEYS = [
   "rotationSpeed",
   "pauseOnHover",
   "showArrows",
+  "arrowPosition",
+  "messageLayout",
   "displayMode",
   "textSize",
   "textAlign",
@@ -111,12 +113,20 @@ const dividerPx = (s: AnnouncementSharedSettings): number | undefined =>
 /* ── v1: minimal bar ───────────────────────────────────────────────────── */
 function toV1Ext(s: AnnouncementSharedSettings): AnnouncementBasicSettings {
   const items = configuredMessages(s);
+  // Stacked layout keeps title/text separate; otherwise the look's original
+  // single joined line ("title — text").
+  const stacked = opt(s.messageLayout) === "stacked";
   const announcements: AnnouncementBasicMessage[] = items
-    ? items.map((m) => ({ text: joined(m), link: m.link }))
+    ? items.map((m) =>
+        stacked && m.title && m.text
+          ? { title: m.title, text: m.text, link: m.link }
+          : { text: joined(m), link: m.link }
+      )
     : V1_SAMPLE_MESSAGES;
   return {
     ...compact({
       announcements,
+      arrowPosition: opt(s.arrowPosition),
       autoRotate: s.autoRotate,
       changeSlidesSpeed: s.rotationSpeed,
       backgroundColor: s.backgroundColor || undefined,
@@ -142,11 +152,16 @@ function toV1Ext(s: AnnouncementSharedSettings): AnnouncementBasicSettings {
 /* ── v2: crossfade slider ──────────────────────────────────────────────── */
 function toV2Ext(s: AnnouncementSharedSettings): AnnouncementFadeSettings {
   const items = configuredMessages(s);
+  // Stacked layout breaks the two parts onto separate lines; otherwise the
+  // look's original single joined line ("title — text").
+  const stacked = opt(s.messageLayout) === "stacked";
   const announcements: AnnouncementFadeItem[] = items
     ? items.map((m, i) => ({
         id: `msg-${i}`,
         text: m.title
-          ? `<strong>${m.title}</strong>${m.text ? ` — ${m.text}` : ""}`
+          ? `<strong>${m.title}</strong>${
+              m.text ? `${stacked ? "<br>" : " — "}${m.text}` : ""
+            }`
           : (m.text ?? ""),
         link: m.link,
       }))
@@ -161,6 +176,7 @@ function toV2Ext(s: AnnouncementSharedSettings): AnnouncementFadeSettings {
       announcements,
       speed: s.rotationSpeed,
       auto_rotate: s.autoRotate,
+      arrow_position: opt(s.arrowPosition),
       section_width: sectionWidth ? sectionWidthMap[sectionWidth] : undefined,
       color_scheme: s.colorScheme,
       divider_width: dividerPx(s) ?? (s.dividers === undefined ? undefined : 1),
@@ -228,6 +244,9 @@ function buildShared(s: AnnouncementSharedSettings): AnnouncementVMShared {
       intervalSeconds: s.rotationSpeed ?? 5,
       pauseOnHover: onOff(s.pauseOnHover),
       showArrows: s.showArrows !== false,
+      arrowPosition: opt(
+        s.arrowPosition
+      ) as AnnouncementVMShared["rotation"]["arrowPosition"],
     },
     text: {
       size: opt(s.textSize) as AnnouncementVMShared["text"]["size"],
@@ -236,6 +255,7 @@ function buildShared(s: AnnouncementSharedSettings): AnnouncementVMShared {
       letterSpacing: opt(
         s.letterSpacing
       ) as AnnouncementVMShared["text"]["letterSpacing"],
+      layout: opt(s.messageLayout) as AnnouncementVMShared["text"]["layout"],
       openInNewTab: !!s.openInNewTab,
     },
     appearance: {
