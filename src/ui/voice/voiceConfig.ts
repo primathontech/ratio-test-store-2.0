@@ -105,6 +105,13 @@ export interface VoiceCurrency {
  *  session (never on reconnect, resume, or rapid re-open). */
 export interface VoiceGreeting {
   enabled: boolean;
+  /** Language the OPENING greeting line is spoken in. Config-driven (default
+   *  "English"). This is ONLY the cold-open said BEFORE the shopper speaks — it
+   *  does NOT lock the conversation language: the persona matches the shopper's
+   *  own language from their first reply on (see agentConfig's Language section).
+   *  India-first deployments set NEXT_PUBLIC_VOICE_GREETING_LANGUAGE to e.g.
+   *  "Hindi or natural Hinglish". */
+  language: string;
   instruction: string;
 }
 
@@ -133,18 +140,32 @@ const num = (v: string | undefined, d: number) => {
 };
 
 export function getVoiceConfig(): VoiceConfig {
+  // The opening-greeting language (cold-open spoken BEFORE the shopper speaks).
+  // Defaults to the store's PRIMARY language (NEXT_PUBLIC_VOICE_LANGUAGE), which ALSO
+  // drives the persona's default reply language (agentConfig reads the same env) — so
+  // ONE knob keeps the cold-open and the conversation coherent (e.g. "Hindi or Hinglish"
+  // for an India store). Can be overridden alone via NEXT_PUBLIC_VOICE_GREETING_LANGUAGE.
+  // Falls back to English for a generic store.
+  const greetingLanguage =
+    process.env.NEXT_PUBLIC_VOICE_GREETING_LANGUAGE?.trim() ||
+    process.env.NEXT_PUBLIC_VOICE_LANGUAGE?.trim() ||
+    "English";
   return {
     enabled: process.env.NEXT_PUBLIC_VOICE_ENABLED !== "false",
     searchPath: process.env.NEXT_PUBLIC_VOICE_SEARCH_PATH || "/search",
     // Proactive greeting — ON by default. Set NEXT_PUBLIC_VOICE_GREETING_ENABLED=false
-    // to keep the old "silent until the shopper speaks" behaviour. NEXT_PUBLIC_VOICE_GREETING
-    // overrides the directive (still rendered in the store persona; keep it a single
-    // sentence). The default is intentionally generic so it works for ANY merchant.
+    // to keep the old "silent until the shopper speaks" behaviour.
+    // NEXT_PUBLIC_VOICE_GREETING overrides the whole directive (keep it ONE sentence);
+    // NEXT_PUBLIC_VOICE_GREETING_LANGUAGE sets just the LANGUAGE of the opening line
+    // (default English). The opening line's language does NOT lock the conversation —
+    // the persona mirrors the shopper from their first reply (see agentConfig Language),
+    // so this stays merchant-agnostic and multilingual. Defaults are generic for ANY store.
     greeting: {
       enabled: process.env.NEXT_PUBLIC_VOICE_GREETING_ENABLED !== "false",
+      language: greetingLanguage,
       instruction:
         process.env.NEXT_PUBLIC_VOICE_GREETING?.trim() ||
-        "The voice session just connected and the shopper hasn't spoken yet. Greet them now in your established persona and tone: ONE short, warm, natural sentence that welcomes them and invites them to shop (for example, ask what they're looking for today). Exactly one sentence — no lists, no product names, no menu of options. Default to English for this opening line since the shopper hasn't chosen a language yet, then mirror their language once they reply.",
+        `The voice session just connected and the shopper hasn't spoken yet. Greet them now warmly and naturally in ${greetingLanguage}: ONE short, welcoming sentence that invites them to shop (for example, ask what they're looking for today). Exactly one sentence — no lists, no product names, no menu of options.`,
     },
     // Currency: env-driven, default INR/₹. Same env vars the persona reads
     // (agentConfig), so the spoken currency and the payload currency always agree.
