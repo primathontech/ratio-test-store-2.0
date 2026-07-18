@@ -45,6 +45,33 @@ const VAD_EAGERNESS = (
   process.env.OPENAI_VAD_EAGERNESS || "medium"
 ).toLowerCase();
 
+// OUTPUT VOICE — OpenAI recommends "marin" and "cedar" (newest, most natural). Env-
+// overridable and ALLOW-LISTED, so a typo'd value can't 400 the mint (it falls back to
+// marin). Merchant-agnostic: a generic default any store can override by env — no
+// merchant-specific value is baked in here.
+const OPENAI_VOICES = [
+  "alloy",
+  "ash",
+  "ballad",
+  "coral",
+  "echo",
+  "sage",
+  "shimmer",
+  "verse",
+  "marin",
+  "cedar",
+];
+const VOICE = (() => {
+  const v = process.env.OPENAI_REALTIME_VOICE?.trim().toLowerCase();
+  return v && OPENAI_VOICES.includes(v) ? v : "marin";
+})();
+// SPEAKING SPEED (0.25–1.5, default 1.0). Env-tunable by ear; clamped so a bad value
+// can't distort audio. Pacing is ALSO shaped in the persona (## Pacing) per OpenAI's guide.
+const VOICE_SPEED = (() => {
+  const n = Number(process.env.OPENAI_REALTIME_SPEED);
+  return Number.isFinite(n) && n >= 0.25 && n <= 1.5 ? n : 1.0;
+})();
+
 /** Build the turn_detection block. Barge-in stays SERVER-AUTHORITATIVE in every
  *  mode (interrupt_response). WHO triggers the response differs:
  *   - semantic_vad: the model decides turn-ends server-side (create_response:true).
@@ -119,6 +146,12 @@ function buildSessionConfig(persona: AgentPersona): Record<string, unknown> {
         // reply in-language from turn one) and surfaces the user's transcript for the
         // UI. Pinning a `language` here would defeat auto-detection, so we never set it.
         transcription: { model: "whisper-1" },
+      },
+      output: {
+        // Voice + speaking speed (see VOICE / VOICE_SPEED). The output FORMAT is left
+        // to WebRTC's SDP negotiation (Opus) — we deliberately don't pin it here.
+        voice: VOICE,
+        speed: VOICE_SPEED,
       },
     },
     tools: toOpenAiTools(persona.enabledTools),

@@ -150,6 +150,17 @@ export function getVoiceConfig(): VoiceConfig {
     process.env.NEXT_PUBLIC_VOICE_GREETING_LANGUAGE?.trim() ||
     process.env.NEXT_PUBLIC_VOICE_LANGUAGE?.trim() ||
     "English";
+  // Store IDENTITY for the greeting — merchant-agnostic, config-driven (NOTHING merchant-
+  // specific is hardcoded here). Name reuses the platform's existing merchant env; the
+  // specialty is a short phrase for what the store is known for (e.g. "skincare",
+  // "sportswear") and is OPTIONAL — if a merchant doesn't set it, the greeting drops to a
+  // store-name-only welcome. A merchant's actual specialty lives in ITS env, never here.
+  const storeName =
+    process.env.NEXT_PUBLIC_VOICE_STORE_NAME?.trim() ||
+    process.env.NEXT_PUBLIC_MERCHANT_NAME ||
+    process.env.NEXT_PUBLIC_SITE_NAME ||
+    "our store";
+  const storeSpecialty = process.env.NEXT_PUBLIC_VOICE_STORE_SPECIALTY?.trim();
   return {
     enabled: process.env.NEXT_PUBLIC_VOICE_ENABLED !== "false",
     searchPath: process.env.NEXT_PUBLIC_VOICE_SEARCH_PATH || "/search",
@@ -165,7 +176,7 @@ export function getVoiceConfig(): VoiceConfig {
       language: greetingLanguage,
       instruction:
         process.env.NEXT_PUBLIC_VOICE_GREETING?.trim() ||
-        `The voice session just connected and the shopper hasn't spoken yet. Greet them now warmly and naturally in ${greetingLanguage}: ONE short, welcoming sentence that invites them to shop (for example, ask what they're looking for today). Exactly one sentence — no lists, no product names, no menu of options.`,
+        `The voice session just connected and the shopper hasn't spoken yet. Greet them now warmly and naturally in ${greetingLanguage}: ONE short, welcoming sentence — welcome them to ${storeName}${storeSpecialty ? `, known for ${storeSpecialty}` : ""}, and invite them to shop (for example, ask what they're looking for today). Exactly one sentence — no lists, no reciting what you can do, no product names.`,
     },
     // Currency: env-driven, default INR/₹. Same env vars the persona reads
     // (agentConfig), so the spoken currency and the payload currency always agree.
