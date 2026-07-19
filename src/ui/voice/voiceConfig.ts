@@ -143,13 +143,14 @@ export function getVoiceConfig(): VoiceConfig {
   // The opening-greeting language (cold-open spoken BEFORE the shopper speaks).
   // Defaults to the store's PRIMARY language (NEXT_PUBLIC_VOICE_LANGUAGE), which ALSO
   // drives the persona's default reply language (agentConfig reads the same env) — so
-  // ONE knob keeps the cold-open and the conversation coherent (e.g. "Hindi or Hinglish"
-  // for an India store). Can be overridden alone via NEXT_PUBLIC_VOICE_GREETING_LANGUAGE.
-  // Falls back to English for a generic store.
+  // ONE knob keeps the cold-open and the conversation coherent. Can be overridden alone
+  // via NEXT_PUBLIC_VOICE_GREETING_LANGUAGE. Falls back to "Hindi or Hinglish" — the
+  // platform's all-India default (a platform constant, mirroring agentConfig's default
+  // reply language and the INR currency default); a non-Hindi store overrides it.
   const greetingLanguage =
     process.env.NEXT_PUBLIC_VOICE_GREETING_LANGUAGE?.trim() ||
     process.env.NEXT_PUBLIC_VOICE_LANGUAGE?.trim() ||
-    "English";
+    "Hindi or Hinglish";
   // Store IDENTITY for the greeting — merchant-agnostic, config-driven (NOTHING merchant-
   // specific is hardcoded here). Name reuses the platform's existing merchant env; the
   // specialty is a short phrase for what the store is known for (e.g. "skincare",

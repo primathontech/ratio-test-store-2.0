@@ -139,15 +139,18 @@ export function buildPersona(cfg: AgentPersona): string {
       ? cfg.categories.slice(0, 3).join(", ")
       : "its own range of products");
   const catLang = cfg.catalogLanguage?.trim() || "English";
-  // DEFAULT REPLY / conversation language — what the agent SPEAKS by default
-  // (config-driven; NEXT_PUBLIC_VOICE_LANGUAGE, default "English"). This is the KEY
-  // reliability lever: OpenAI's realtime guide + community data show an EXPLICIT default
-  // language is followed ~10/10, while IMPLICIT "detect-and-mirror" is only ~6/10 for
-  // Hindi/Hinglish (the model's English prior wins and sticks). So we set a concrete
-  // default (e.g. "Hindi or Hinglish" for an India store) and switch only on a
-  // substantive utterance in another language. NOT catLang (that's the tool-query lang).
+  // DEFAULT REPLY / conversation language — what the agent SPEAKS by default.
+  // Defaults to "Hindi or Hinglish": this is an all-India commerce platform, so the
+  // primary language is a PLATFORM CONSTANT (the same for every store), NOT a per-store
+  // variable — the same reasoning by which currency already defaults to INR. It is still
+  // overridable per store via NEXT_PUBLIC_VOICE_LANGUAGE (e.g. "English"/"Tamil") for the
+  // rare non-Hindi-first store. This explicit default is also the KEY reliability lever:
+  // OpenAI's realtime guide + community data show an EXPLICIT default language is followed
+  // ~10/10, while IMPLICIT "detect-and-mirror" is only ~6/10 for Hindi/Hinglish (the
+  // model's English prior wins and sticks); the agent still switches on a substantive
+  // utterance in another language. NOT catLang (that's the tool-query language).
   const defaultLang =
-    process.env.NEXT_PUBLIC_VOICE_LANGUAGE?.trim() || "English";
+    process.env.NEXT_PUBLIC_VOICE_LANGUAGE?.trim() || "Hindi or Hinglish";
   const tone = TONE_LINES[cfg.tone ?? "warm"];
   // Currency is config, never inferred. Falls back to env then INR/₹, so the rule
   // ALWAYS has a concrete symbol even if the persona object omitted it.
