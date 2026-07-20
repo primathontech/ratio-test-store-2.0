@@ -2,7 +2,7 @@
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
-import { resolveCommercePageSEO } from "@shopkit/seo";
+import { getPageMetadata } from "@shopkit/seo";
 import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
@@ -36,11 +36,11 @@ export async function generateMetadata(props: {
   try {
     const params = await props.params;
     const product = await fetchProduct(params.handle);
-    return resolveCommercePageSEO(
-      "product",
-      product,
-      `/products/${params.handle}`
-    );
+    return getPageMetadata({
+      pageType: "product",
+      path: `/products/${params.handle}`,
+      data: product,
+    });
   } catch {
     return {};
   }

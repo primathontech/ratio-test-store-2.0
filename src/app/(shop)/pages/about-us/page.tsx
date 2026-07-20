@@ -6,18 +6,17 @@ import { getPageBuilder } from "@/bootstrap/builder";
 import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
 import type { PageConfig } from "@shopkit/builder";
 import { Metadata } from "next";
-import { resolvePageSEO } from "@shopkit/seo";
-import { getSEOConfig } from "@/config";
+import { getPageMetadata } from "@shopkit/seo";
 
-export function generateMetadata(): Metadata {
-  const { siteUrl, siteName } = getSEOConfig();
-  return resolvePageSEO(
-    {
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata({
+    pageType: "page",
+    path: "/about-us",
+    fallback: {
       title: "About Us - BBlunt",
       description: "Learn more about BBlunt.",
     },
-    { siteUrl, siteName, path: "/pages/about-us" }
-  );
+  });
 }
 
 export default async function AboutUsPage({

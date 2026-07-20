@@ -134,6 +134,9 @@ function handleCacheInvalidation(data: any): void {
         revalidatePath(webhookData.path);
       }
       revalidateTag("seo");
+      // Flush the admin-managed SEO config (@shopkit/seo fetchDefaultSeoConfig).
+      // Merchant-wide default → invalidate the tag so every page re-fetches on next render.
+      revalidateTag("seo-config");
       break;
 
     case "cache.clear_all":
