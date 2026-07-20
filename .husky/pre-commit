@@ -2,6 +2,22 @@
 
 echo '🏗️👷 Running storefront-starter pre-commit checks...'
 
+# ── Phase 0: Library integrity ──
+
+# Read-only guard: block local edits to the upstream-owned common/ library.
+# Fires in merchant forks (this is their active hook); dormant in the core
+# monorepo (the root hook runs there instead). Override: ALLOW_COMMON_EDITS=1.
+echo ''
+echo '🔒 Checking common/ library is untouched...'
+node scripts/guard-common-readonly.mjs || exit 1
+
+# Settings coverage: every variant-based section must ship coverage.ts (typed
+# maps `satisfies Record<keyof <VariantSettings>, SettingsCoverage>`; key
+# completeness itself is enforced by tsc in the check-types/build steps).
+echo ''
+echo '🧭 Checking settings coverage...'
+bun run check:parity || exit 1
+
 # ── Phase 1: Performance Governance ──
 
 # Validate widget structure (only staged widget files)

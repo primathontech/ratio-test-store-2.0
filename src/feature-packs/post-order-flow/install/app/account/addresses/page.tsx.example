@@ -6,17 +6,12 @@ import { getPageBuilder } from "@/bootstrap/builder";
 import { getRouteTranslations } from "@/utils";
 import { Metadata } from "next";
 import ProtectedRoute from "@/ui/components/ProtectedRoute";
-import { resolvePageSEO } from "@shopkit/seo";
-import { getSEOConfig } from "@/config";
+import { getPageMetadata } from "@shopkit/seo";
 
 export const dynamic = "force-dynamic";
 
 export function generateMetadata(): Metadata {
-  const { siteUrl, siteName } = getSEOConfig();
-  return resolvePageSEO(
-    { noIndex: true },
-    { siteUrl, siteName, path: "/account/addresses" }
-  );
+  return getPageMetadata({ pageType: "page", path: "/account/addresses", fallback: { noIndex: true } });
 }
 
 export default async function AddressesPage() {
