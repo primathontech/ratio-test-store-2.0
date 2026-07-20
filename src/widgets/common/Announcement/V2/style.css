@@ -1,0 +1,123 @@
+/* AnnouncementFade (v2) — crossfade bar. Colors resolve through the scheme's
+ * generic --color-* vars (schemeColorVars on the root) with per-field
+ * --cs-announcement-v2-* override vars. The crossfade is driven by each
+ * slide's aria-hidden state. */
+
+.cs-announcement-v2 {
+  position: relative;
+  width: 100%;
+  background: var(--cs-announcement-v2-bg, var(--color-background, #fff));
+  color: var(--cs-announcement-v2-text, var(--color-foreground, #1c1c1c));
+  border-block-end-width: var(--cs-announcement-v2-divider-width, 0);
+  border-block-end-style: solid;
+  border-block-end-color: var(
+    --cs-announcement-v2-divider,
+    var(--color-border, rgba(0, 0, 0, 0.12))
+  );
+}
+
+.cs-announcement-v2__slider {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin-inline: auto;
+  gap: 8px;
+}
+
+.cs-announcement-v2--page-width .cs-announcement-v2__slider {
+  /* 1200px fallback keeps page width sane in hosts without the token. */
+  max-width: var(--normal-page-width, 1200px);
+  padding-inline: 20px;
+}
+
+.cs-announcement-v2__slides {
+  display: grid;
+  grid-template-areas: "stack";
+  width: 100%;
+  max-width: 680px;
+  margin-inline: auto;
+}
+
+.cs-announcement-v2__slides > * {
+  grid-area: stack;
+}
+
+.cs-announcement-v2__slide {
+  display: grid;
+  place-content: center;
+  text-align: center;
+  line-height: 1;
+  /* Containing block for the full-cover link: without this the absolute
+   * link resolves to the SLIDER and blankets the prev/next arrows, making
+   * them unclickable whenever the active message has a link (probe-caught;
+   * latent in the source look). */
+  position: relative;
+  transition:
+    opacity 0.5s ease-in-out,
+    visibility 0.5s ease-in-out;
+}
+
+.cs-announcement-v2__slide[aria-hidden="true"] {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.cs-announcement-v2__text {
+  margin: 0;
+}
+
+.cs-announcement-v2__link {
+  position: absolute;
+  inset: 0;
+}
+
+.cs-announcement-v2__arrow {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  flex: 0 0 auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.cs-announcement-v2__arrow:hover {
+  opacity: 1;
+}
+
+.cs-announcement-v2__visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cs-announcement-v2__slide {
+    transition: none;
+  }
+}
+
+/* Arrow Position = "Next to text" — hug the slide instead of the bar edges. */
+.cs-announcement-v2--arrows-text .cs-announcement-v2__slides {
+  width: auto;
+  margin-inline: 0;
+}
+.cs-announcement-v2--arrows-text .cs-announcement-v2__slider {
+  width: fit-content;
+}

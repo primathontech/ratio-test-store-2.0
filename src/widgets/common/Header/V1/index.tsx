@@ -134,6 +134,25 @@ function DesktopItem({
 }) {
   const hasPanel = entry.kind === "mega" || entry.kind === "dropdown";
 
+  // Label + optional leading icon. `entry.image` is the item's own image (icon or
+  // featured), surfaced by the platform on EVERY entry kind. Data-driven: renders
+  // only when the merchant attached one in admin — no image, no markup change.
+  const label = (
+    <>
+      {entry.image?.src && (
+        <Image
+          src={entry.image.src}
+          alt={entry.image.alt_text || entry.label}
+          className="sf-nav__icon"
+          width={20}
+          height={20}
+          unoptimized
+        />
+      )}
+      {entry.label}
+    </>
+  );
+
   return (
     <li
       className={`sf-nav__item ${open ? "is-open" : ""}`}
@@ -148,11 +167,11 @@ function DesktopItem({
           rel="noopener noreferrer"
           aria-label={entry.ariaLabel}
         >
-          {entry.label}
+          {label}
         </a>
       ) : entry.kind === "link" ? (
         <Link href={entry.href} className="sf-nav__link">
-          {entry.label}
+          {label}
         </Link>
       ) : entry.href ? (
         // mega / dropdown that is ALSO a link → label navigates, hover opens panel.
@@ -166,7 +185,7 @@ function DesktopItem({
             aria-haspopup="true"
             aria-expanded={open}
           >
-            {entry.label}
+            {label}
             <span className="sf-nav__chevron" aria-hidden="true">
               ▾
             </span>
@@ -178,7 +197,7 @@ function DesktopItem({
             aria-haspopup="true"
             aria-expanded={open}
           >
-            {entry.label}
+            {label}
             <span className="sf-nav__chevron" aria-hidden="true">
               ▾
             </span>
@@ -191,7 +210,7 @@ function DesktopItem({
           aria-haspopup="true"
           aria-expanded={open}
         >
-          {entry.label}
+          {label}
           <span className="sf-nav__chevron" aria-hidden="true">
             ▾
           </span>
@@ -255,6 +274,23 @@ function MobileItem({ entry }: { entry: NavEntry }) {
   const [expanded, setExpanded] = useState(false);
   const hasChildren = entry.kind === "mega" || entry.kind === "dropdown";
 
+  // Label + optional leading icon (see DesktopItem). Data-driven from entry.image.
+  const label = (
+    <>
+      {entry.image?.src && (
+        <Image
+          src={entry.image.src}
+          alt={entry.image.alt_text || entry.label}
+          className="sf-drawer__icon"
+          width={20}
+          height={20}
+          unoptimized
+        />
+      )}
+      {entry.label}
+    </>
+  );
+
   if (!hasChildren) {
     return entry.kind === "external" ? (
       <a
@@ -263,11 +299,11 @@ function MobileItem({ entry }: { entry: NavEntry }) {
         target="_blank"
         rel="noopener noreferrer"
       >
-        {entry.label}
+        {label}
       </a>
     ) : (
       <Link href={entry.href} className="sf-drawer__link">
-        {entry.label}
+        {label}
       </Link>
     );
   }
@@ -304,11 +340,11 @@ function MobileItem({ entry }: { entry: NavEntry }) {
               target="_blank"
               rel="noopener noreferrer"
             >
-              {entry.label}
+              {label}
             </a>
           ) : (
             <Link href={entry.href} className="sf-drawer__link">
-              {entry.label}
+              {label}
             </Link>
           )}
           <button
@@ -326,7 +362,7 @@ function MobileItem({ entry }: { entry: NavEntry }) {
           aria-expanded={expanded}
           onClick={() => setExpanded((v) => !v)}
         >
-          {entry.label}
+          {label}
           <span aria-hidden="true">{expanded ? "−" : "+"}</span>
         </button>
       )}

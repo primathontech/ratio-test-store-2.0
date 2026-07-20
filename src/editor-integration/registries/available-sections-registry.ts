@@ -3,6 +3,10 @@ import customHtml from "@/editor-integration/sections/common/custom-html";
 import shineAcademyBanner from "@/editor-integration/sections/common/shine-academy-banner";
 import testimonials from "@/editor-integration/sections/common/testimonials";
 
+import hero from "@/editor-integration/sections/common/hero";
+import faq from "@/editor-integration/sections/common/faq";
+import announcement from "@/editor-integration/sections/common/announcement";
+
 // bblunt-2 theme sections
 import announcementBar from "@/editor-integration/sections/bblunt-2/announcement-bar";
 import bannerCarousel from "@/editor-integration/sections/bblunt-2/banner-carousel";
@@ -23,6 +27,9 @@ const commonSections = {
   "custom-html": customHtml,
   "shine-academy-banner": shineAcademyBanner,
   testimonials,
+  hero,
+  faq,
+  announcement,
 };
 
 const bblunt2Sections = {
