@@ -1,0 +1,43 @@
+{
+  "ratio_refund-policy_default": {
+    "eyebrow": "Legal",
+    "title": "Refund & Return Policy",
+    "subtitle": "We want you to love what you ordered. If something isn't right, here's how returns, exchanges, and refunds work.",
+    "updatedAt": "January 1, 2026",
+    "sections": [
+      {
+        "heading": "Returns",
+        "body": "You may return most items within 30 days of delivery for a refund or exchange, provided they are unused, in their original condition, and in the original packaging."
+      },
+      {
+        "heading": "Non-Returnable Items",
+        "body": "Certain items cannot be returned, including:",
+        "bullets": [
+          "Items marked as final sale",
+          "Gift cards",
+          "Personal-care items that have been opened or used",
+          "Products damaged through misuse"
+        ]
+      },
+      {
+        "heading": "How to Start a Return",
+        "body": [
+          "To start a return, contact our support team with your order number and the item(s) you'd like to return.",
+          "Once your request is approved, we'll share return instructions and the return shipping address."
+        ]
+      },
+      {
+        "heading": "Refunds",
+        "body": "After we receive and inspect your return, we'll notify you of the approval status. Approved refunds are issued to your original payment method within 5–10 business days."
+      },
+      {
+        "heading": "Exchanges",
+        "body": "If you need a different size or variant, the fastest way is to return the original item and place a new order once your return is approved."
+      },
+      {
+        "heading": "Damaged or Incorrect Items",
+        "body": "If you received a damaged, defective, or incorrect item, contact us within 48 hours of delivery and we'll make it right at no extra cost."
+      }
+    ]
+  }
+}

@@ -40,29 +40,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
+  // Static content + policy routes. Kept in sync with the handles served by
+  // the /pages/[handle] route (merchant-agnostic).
+  const contentPaths = [
+    "/pages/about-us",
+    "/pages/contact",
+    "/pages/faq",
+    "/pages/privacy-policy",
+    "/pages/refund-policy",
+    "/pages/terms-of-service",
+    "/pages/shipping-policy",
+  ];
+
   const staticEntries: MetadataRoute.Sitemap = [
     { url: siteUrl, changeFrequency: "daily", priority: 1.0 },
-    { url: `${siteUrl}/about-us`, changeFrequency: "monthly", priority: 0.5 },
-    {
-      url: `${siteUrl}/privacy-policy`,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${siteUrl}/terms-of-use`,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${siteUrl}/shipping-policy`,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${siteUrl}/cancellation-policy`,
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
+    ...contentPaths.map((path) => ({
+      url: `${siteUrl}${path}`,
+      changeFrequency: "monthly" as const,
+      priority: 0.5,
+    })),
   ];
 
   return [...staticEntries, ...productEntries, ...collectionEntries];

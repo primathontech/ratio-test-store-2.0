@@ -8,7 +8,7 @@ export interface VideoAppProductData {
 }
 
 /**
- * Standard data-aggregator envelope that bblunt-2.0 emits for
+ * Standard data-aggregator envelope that ratio.0 emits for
  * `dataSourceKey: "productData"`. Same shape as FBT.
  *
  * On home (no productData), the widget receives no data and falls

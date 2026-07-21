@@ -1,13 +1,17 @@
 "use client";
 
 import React, { memo, useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
+import { Image } from "@/ui/atomic/Image";
 import { useCartStore } from "@shopkit/cart";
 import { ProductCardTheme } from "./types";
 import type { ProductCardProps } from "./types";
 import SoldOutBadge from "./SoldOutBadge";
 import { ProductCardToast } from "./Toast";
+
+/* Neutral placeholder shown when a product image URL 404s / fails to load. */
+const IMAGE_PLACEHOLDER =
+  "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='360'%20height='360'%3E%3Crect%20width='100%25'%20height='100%25'%20fill='%23f3f4f6'/%3E%3C/svg%3E";
 
 /* ------------------------------------------------------------------ */
 /*  Star rating                                                        */
@@ -191,8 +195,8 @@ const LIGHT_THEME = {
   buttonHoverColor: "#ffffff",
   buttonHoverBorder: "2px solid #000000",
   discountColor: "#f04438",
-  imageRadius: "10px",
-  buttonRadius: "4px",
+  imageRadius: "12px",
+  buttonRadius: "9999px",
 };
 
 const DARK_THEME = {
@@ -219,8 +223,8 @@ const DARK_THEME = {
   buttonHoverColor: "#ffffff",
   buttonHoverBorder: "2px solid #000000",
   discountColor: "#f04438",
-  imageRadius: "10px",
-  buttonRadius: "4px",
+  imageRadius: "12px",
+  buttonRadius: "9999px",
 };
 
 /* ------------------------------------------------------------------ */
@@ -440,6 +444,7 @@ export const ProductCard = memo(function ProductCard({
               <Image
                 src={product.mainImage}
                 alt={product.alt}
+                fallbackSrc={IMAGE_PLACEHOLDER}
                 width={360}
                 height={360}
                 loading="lazy"
@@ -451,8 +456,24 @@ export const ProductCard = memo(function ProductCard({
             ) : (
               <div
                 aria-hidden="true"
-                className={`absolute inset-0 w-full h-full bg-[#f4f6f8] rounded-[2px] ${productImageClassName}`.trim()}
-              />
+                className={`absolute inset-0 flex h-full w-full items-center justify-center rounded-[2px] bg-gradient-to-br from-neutral-100 to-neutral-200 ${productImageClassName}`.trim()}
+              >
+                <svg
+                  className="h-10 w-10 text-neutral-300"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                >
+                  <rect x="3" y="3" width="18" height="18" rx="2" />
+                  <circle cx="8.5" cy="8.5" r="1.5" />
+                  <path
+                    d="M21 15l-5-5L5 21"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </div>
             )}
 
             {product.hoverImage &&
@@ -461,6 +482,7 @@ export const ProductCard = memo(function ProductCard({
                 <Image
                   src={product.hoverImage}
                   alt={product.alt}
+                  fallbackSrc={IMAGE_PLACEHOLDER}
                   width={360}
                   height={360}
                   loading="lazy"

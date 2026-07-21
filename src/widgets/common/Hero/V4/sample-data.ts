@@ -15,7 +15,7 @@ export const SAMPLE_SUBHEADING =
 
 export const SAMPLE_CTA_TEXT = "Shop Linen";
 
-export const SAMPLE_CTA_HREF = "/collections/all";
+export const SAMPLE_CTA_HREF = "/collections";
 
 /** Full-bleed hero image (decorative → alt=""). Desktop = landscape 1536×1024. */
 export const SAMPLE_IMAGE: ShoppableHeroImage = {

@@ -1,5 +1,5 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
-import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
+import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getSEOConfig } from "@/config";
 import { resolvePageSEO } from "@shopkit/seo";
@@ -16,9 +16,9 @@ export function generateMetadata(): Metadata {
   const { siteUrl, siteName } = getSEOConfig();
   return resolvePageSEO(
     {
-      title: "Collections – BBlunt",
+      title: "Collections",
       description:
-        "Shop for Rs. 499 on BBlunt & Get 2 Intense Moisture Products Free (Code: FREEIM). Buy salon-quality Shampoos, Conditioners, Colors, Sprays & Combos in India.",
+        "Explore all collections at Ratio — shop our full range of curated everyday essentials.",
     },
     { siteUrl, siteName, path: "/collections" }
   );

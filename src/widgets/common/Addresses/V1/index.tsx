@@ -173,7 +173,7 @@ export const AddressesV1: React.FC<AddressesProps> = ({
   return (
     <div className="bg-white min-h-[600px] md:min-h-[341px]">
       <div className="mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_3fr] gap-4 px-[15px] md:px-[30px] xl:px-[70px]">
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_3fr] gap-6 px-[15px] md:px-[30px] xl:px-[70px] py-6 md:py-10">
           {/* Left Sidebar */}
           <LeftSideBar
             showGetAppBanner={showGetAppBanner}

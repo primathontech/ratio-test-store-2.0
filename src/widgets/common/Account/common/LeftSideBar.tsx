@@ -77,7 +77,7 @@ export const LeftSideBar: React.FC<LeftSideBarProps> = ({
     <aside>
       {/* Get the App Banner */}
       {showGetAppBanner && (
-        <div className="bg-primary rounded-lg px-4 pt-4 pb-5 mb-2.5 flex items-center gap-2">
+        <div className="bg-primary rounded-2xl px-4 pt-4 pb-5 mb-2.5 flex items-center gap-2">
           <AppIcon />
           <div className="flex-1">
             <p className="text-white font-extrabold text-sm leading-7">
@@ -91,7 +91,7 @@ export const LeftSideBar: React.FC<LeftSideBarProps> = ({
             href={getAppButtonUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-white px-3 py-2 border border-white rounded-[5px] text-xs font-bold whitespace-nowrap"
+            className="text-white px-3 py-2 border border-white rounded-full text-xs font-bold whitespace-nowrap"
           >
             {getAppButtonText}
           </a>
@@ -105,8 +105,8 @@ export const LeftSideBar: React.FC<LeftSideBarProps> = ({
           const isLogout = item.id === NavItemId.Logout;
           const content = (
             <div
-              className={`flex items-center px-[15px] py-2.5 border-b border-gray-200 transition-colors text-black ${
-                item.isActive ? "bg-gray-100" : "hover:bg-gray-100"
+              className={`flex items-center px-[15px] py-2.5 border-b border-neutral-200 transition-colors text-black ${
+                item.isActive ? "bg-neutral-100" : "hover:bg-neutral-100"
               }`}
             >
               <span className="flex-shrink-0">{renderIcon(item.id)}</span>
@@ -119,7 +119,7 @@ export const LeftSideBar: React.FC<LeftSideBarProps> = ({
             </div>
           );
           return (
-            <div className="rounded-t-[5px] border border-b-0 border-gray-200 rounded-b-none">
+            <div className="rounded-t-2xl border border-b-0 border-neutral-200 rounded-b-none overflow-hidden">
               {isLogout ? (
                 <button
                   key={item.id}
@@ -140,7 +140,7 @@ export const LeftSideBar: React.FC<LeftSideBarProps> = ({
       {/* From Order history onward - sticky, touches header */}
       {navigationItems.length > 1 && (
         <nav
-          className={`rounded-b-[5px] rounded-t-none border border-gray-200 -mt-px ${
+          className={`rounded-b-2xl rounded-t-none border border-neutral-200 -mt-px overflow-hidden ${
             isNavSticky ? "md:sticky md:top-[70px] self-start" : ""
           }`}
         >
@@ -148,8 +148,8 @@ export const LeftSideBar: React.FC<LeftSideBarProps> = ({
             const isLogout = item.id === NavItemId.Logout;
             const content = (
               <div
-                className={`flex items-center px-[15px] py-2.5 border-b border-gray-200 transition-colors text-black ${
-                  item.isActive ? "bg-gray-100" : "hover:bg-gray-100"
+                className={`flex items-center px-[15px] py-2.5 border-b border-neutral-200 transition-colors text-black ${
+                  item.isActive ? "bg-neutral-100" : "hover:bg-neutral-100"
                 }`}
               >
                 <span className="flex-shrink-0">{renderIcon(item.id)}</span>

@@ -320,7 +320,8 @@ export function VariantPicker({
                     className="flex items-center gap-1 flex-nowrap text-left mr-3 md:mr-4"
                   >
                     <span className="text-base font-bold leading-[25.6px] text-primary whitespace-nowrap">
-                      ₹{priceInRupees}
+                      {rupeeSymbol}
+                      {priceInRupees}
                     </span>
                     {variantHasDiscount && (
                       <>

@@ -258,7 +258,7 @@ export const HeroContract = {
     ctaHref: {
       type: "text" as const,
       label: "Button Link",
-      default: "/collections/all",
+      default: "/collections",
     },
     secondaryCtaLabel: {
       type: "text" as const,

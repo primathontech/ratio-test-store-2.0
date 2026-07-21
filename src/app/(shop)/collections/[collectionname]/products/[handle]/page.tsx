@@ -1,5 +1,5 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
-import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
+import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
 import { getPageMetadata } from "@shopkit/seo";
@@ -12,13 +12,15 @@ import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
 import { KwikPassProductView } from "@/integrations/kwikpass-custom";
+import { createCollectionProductStaticParams } from "@shopkit/data-layer";
 
+// ISR: prerender collection×product pairs at build time, revalidate hourly, and
+// still render (then cache) any pair not in the build set via on-demand ISR.
 export const revalidate = 3600;
 export const dynamicParams = true;
 
-// TODO: generateStaticParams has been enabled for this route to support static generation when needed.
-// export const generateStaticParams =
-//   createCollectionProductStaticParams(getCommerceClient);
+export const generateStaticParams =
+  createCollectionProductStaticParams(getCommerceClient);
 
 export async function generateMetadata(props: {
   params: Promise<{ collectionname: string; handle: string }>;

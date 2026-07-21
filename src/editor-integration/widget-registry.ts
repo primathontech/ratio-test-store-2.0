@@ -58,13 +58,13 @@ const commonWidgetSchemas = {
 // =============================================================================
 
 const merchantWidgetSchemas = {
-  // ── bblunt-2 chrome (forked from common Header/Footer) ──
+  // ── ratio chrome (forked from common Header/Footer) ──
   // Navigation is admin-managed via useNav, so the editable settings are the
   // menu handle(s) + branding/search/app fields. The old per-item nav label/
   // link settings are gone (the menu now drives the nav).
-  [WIDGET_TYPES.BbluntHeader]: {
-    type: WIDGET_TYPES.BbluntHeader,
-    name: "Header",
+  [WIDGET_TYPES.RatioHeader]: {
+    type: WIDGET_TYPES.RatioHeader,
+    name: "Site Header",
     description:
       "Site header with logo, admin-managed navigation (useNav), search, and cart",
     settingsSchema: {
@@ -77,11 +77,6 @@ const merchantWidgetSchemas = {
         type: "image" as const,
         label: "Logo Image",
         default: { src: "", alt: "" },
-      },
-      searchPlaceholder: {
-        type: "text" as const,
-        label: "Search Placeholder",
-        default: "",
       },
       searchSuggestions: {
         type: "array" as const,
@@ -125,9 +120,9 @@ const merchantWidgetSchemas = {
       },
     },
   },
-  [WIDGET_TYPES.BbluntFooter]: {
-    type: WIDGET_TYPES.BbluntFooter,
-    name: "Footer",
+  [WIDGET_TYPES.RatioFooter]: {
+    type: WIDGET_TYPES.RatioFooter,
+    name: "Site Footer",
     description:
       "Site footer. Each link column is admin-managed via its own nav menu (useNav); titles + links come from the menu.",
     settingsSchema: {
@@ -236,13 +231,33 @@ const merchantWidgetSchemas = {
         fields: ["id", "text", "href"],
         default: [],
       },
+      backgroundColor: {
+        type: "text" as const,
+        label: "Background Color (hex)",
+        default: "#000000",
+      },
+      textColor: {
+        type: "text" as const,
+        label: "Text Color (hex)",
+        default: "#ffffff",
+      },
+      speed: {
+        type: "number" as const,
+        label: "Marquee Speed (px/sec)",
+        default: 35,
+      },
+      pauseOnHover: {
+        type: "boolean" as const,
+        label: "Pause on Hover",
+        default: true,
+      },
     },
   },
   [WIDGET_TYPES.SEOMetadata]: {
     type: WIDGET_TYPES.SEOMetadata,
     name: "SEO Metadata",
     description:
-      "Page-level SEO metadata widget for title, description, canonical, and Open Graph image.",
+      "Page-level SEO metadata widget for title, description, and canonical URL.",
     settingsSchema: {
       title: {
         type: "text" as const,
@@ -254,44 +269,14 @@ const merchantWidgetSchemas = {
         label: "Meta Description",
         default: "",
       },
-    },
-  },
-  [WIDGET_TYPES.HairCareBFFs]: {
-    type: WIDGET_TYPES.HairCareBFFs,
-    name: "Hair Care BFFs",
-    description: "Tabbed product carousel with rich heading and background",
-    settingsSchema: {
-      heading: {
+      canonical: {
         type: "text" as const,
-        label: "Section Heading (rich text)",
+        label: "Canonical URL",
         default: "",
       },
-      backgroundImage: {
-        type: "image" as const,
-        label: "Background Image (desktop)",
-        default: { src: "", alt: "" },
-      },
-      backgroundImageMobile: {
-        type: "image" as const,
-        label: "Background Image (mobile)",
-        default: { src: "", alt: "" },
-      },
-      collections: {
-        type: "objectArray" as const,
-        label: "Tabs (matches data source handles order)",
-        fields: ["label", "viewAllCollectionHandle"],
-        default: [],
-      },
-      actionButtonText: {
-        type: "text" as const,
-        label: "Add to Cart Button Text",
-        default: "",
-      },
-      soldOutText: {
-        type: "text" as const,
-        label: "Sold Out Text",
-        default: "",
-      },
+      // NOTE: OG `image` is intentionally not an editor field — the widget reads
+      // it as {url, altText} from SEO/remote data, which the editor image
+      // control ({src, alt}) would not match. Driven by data, not per-instance.
     },
   },
   [WIDGET_TYPES.FeaturedCollectionCarousel]: {
@@ -506,6 +491,11 @@ const merchantWidgetSchemas = {
         label: "Section Title",
         default: "",
       },
+      allowWriteReview: {
+        type: "boolean" as const,
+        label: "Allow customers to write reviews",
+        default: false,
+      },
       writeReviewButtonText: {
         type: "text" as const,
         label: "Write Review Button Text",
@@ -549,6 +539,26 @@ const merchantWidgetSchemas = {
       title: {
         type: "text" as const,
         label: "Section Title",
+        default: "",
+      },
+      sectionTitle: {
+        type: "text" as const,
+        label: "Section Title (override)",
+        default: "",
+      },
+      marketedBy: {
+        type: "text" as const,
+        label: "Marketed By",
+        default: "",
+      },
+      countryOfOrigin: {
+        type: "text" as const,
+        label: "Country of Origin",
+        default: "",
+      },
+      customerCareDetails: {
+        type: "text" as const,
+        label: "Customer Care Details",
         default: "",
       },
       defaultExpanded: {
@@ -603,33 +613,6 @@ const merchantWidgetSchemas = {
       },
     },
   },
-  [WIDGET_TYPES.HowItWorksBanner]: {
-    type: WIDGET_TYPES.HowItWorksBanner,
-    name: "How It Works Banner",
-    description: "Static how-it-works image banner (desktop + mobile)",
-    settingsSchema: {
-      mobileAspectRatio: {
-        type: "text" as const,
-        label: "Mobile Aspect Ratio (e.g. 1500/1167)",
-        default: "",
-      },
-      desktopAspectRatio: {
-        type: "text" as const,
-        label: "Desktop Aspect Ratio (e.g. 5692/692)",
-        default: "",
-      },
-      desktopImage: {
-        type: "image" as const,
-        label: "Desktop Image",
-        default: { src: "", alt: "" },
-      },
-      mobileImage: {
-        type: "image" as const,
-        label: "Mobile Image",
-        default: { src: "", alt: "" },
-      },
-    },
-  },
   [WIDGET_TYPES.CountdownTimer]: {
     type: WIDGET_TYPES.CountdownTimer,
     name: "Countdown Timer",
@@ -678,10 +661,20 @@ const merchantWidgetSchemas = {
         label: "Expiry Text",
         default: "",
       },
+      counterTitle: {
+        type: "text" as const,
+        label: "Countdown Title",
+        default: "",
+      },
       endDateString: {
         type: "text" as const,
         label: "Countdown End Date (e.g. Jan 22, 2026 12:59:59)",
         default: "",
+      },
+      timerInterval: {
+        type: "number" as const,
+        label: "Timer Tick Interval (ms)",
+        default: 1000,
       },
       bannerCtaLabel: {
         type: "text" as const,
@@ -796,62 +789,6 @@ const merchantWidgetSchemas = {
         type: "text" as const,
         label: "Success Message",
         default: "",
-      },
-    },
-  },
-  [WIDGET_TYPES.ShineAcademyBanner]: {
-    type: WIDGET_TYPES.ShineAcademyBanner,
-    name: "Shine Academy Banner",
-    description: "Static banner section with logo, tagline, and mosaic image",
-    settingsSchema: {
-      logoSrc: {
-        type: "image" as const,
-        label: "Logo Image",
-        default: { src: "", alt: "" },
-      },
-      logoAlt: {
-        type: "text" as const,
-        label: "Logo Alt Text",
-        default: "",
-      },
-      tagline: {
-        type: "text" as const,
-        label: "Tagline",
-        default: "",
-      },
-      mosaicSrcDesktop: {
-        type: "image" as const,
-        label: "Mosaic Image (desktop)",
-        default: { src: "", alt: "" },
-      },
-      mosaicSrcMobile: {
-        type: "image" as const,
-        label: "Mosaic Image (mobile)",
-        default: { src: "", alt: "" },
-      },
-      mosaicAlt: {
-        type: "text" as const,
-        label: "Mosaic Alt Text",
-        default: "",
-      },
-    },
-  },
-  [WIDGET_TYPES.ShopByConcerns]: {
-    type: WIDGET_TYPES.ShopByConcerns,
-    name: "Shop by Concerns",
-    description: "Carousel of concern tiles with a section heading",
-    settingsSchema: {
-      heading: {
-        type: "text" as const,
-        label: "Section Heading (rich text)",
-        default: "",
-      },
-      tiles: {
-        type: "objectArray" as const,
-        label: "Concern Tiles",
-        fields: ["href", "image:image", "alt"],
-        fieldTypes: { image: "image" },
-        default: [],
       },
     },
   },
@@ -1270,6 +1207,26 @@ const merchantWidgetSchemas = {
         label: "Show Filter And Sort",
         default: true,
       },
+      autoLoadMore: {
+        type: "boolean",
+        label: "Auto Load More",
+        default: false,
+      },
+      showActionButton: {
+        type: "boolean",
+        label: "Show Action Button",
+        default: true,
+      },
+      showBadge: {
+        type: "boolean",
+        label: "Show Badge",
+        default: true,
+      },
+      showRating: {
+        type: "boolean",
+        label: "Show Rating",
+        default: true,
+      },
       soldOutText: {
         type: "text",
         label: "Sold Out Text",
@@ -1283,6 +1240,21 @@ const merchantWidgetSchemas = {
       sortDropdownText: {
         type: "text",
         label: "Sort Dropdown Label",
+        default: "",
+      },
+      actionButtonTextColor: {
+        type: "text",
+        label: "Action Button Text Color (hex)",
+        default: "",
+      },
+      sectionTextColor: {
+        type: "text",
+        label: "Section Text Color (hex)",
+        default: "",
+      },
+      productCardBackgroundColor: {
+        type: "text",
+        label: "Product Card Background Color (hex)",
         default: "",
       },
       title: {
@@ -1318,32 +1290,238 @@ const merchantWidgetSchemas = {
       },
     },
   },
-  // [WIDGET_TYPES.Footer]: {
-  //   type: WIDGET_TYPES.Footer,
-  //   name: "Footer",
-  //   description: "Site footer with links and branding",
-  //   settingsSchema: {
-  //     variant: {
-  //       type: "select",
-  //       label: "Widget Variant",
-  //       options: [{ value: "v1", label: "Version 1 (Classic)" }],
-  //       default: "",
-  //     },
-  //   },
-  // },
-  // [WIDGET_TYPES.PageContent]: {
-  //   type: WIDGET_TYPES.PageContent,
-  //   name: "Page Content",
-  //   description: "Generic page content block",
-  //   settingsSchema: {
-  //     variant: {
-  //       type: "select",
-  //       label: "Widget Variant",
-  //       options: [{ value: "v1", label: "Version 1 (Classic)" }],
-  //       default: "",
-  //     },
-  //   },
-  // },
+  [WIDGET_TYPES.HomeShowcase]: {
+    type: WIDGET_TYPES.HomeShowcase,
+    name: "Home Showcase",
+    description:
+      "Homepage hero + trust badges + featured products + shop-by-collection rail (data-driven from the commerce API)",
+    settingsSchema: {
+      heroEyebrow: {
+        type: "text" as const,
+        label: "Hero Eyebrow",
+        default: "New season, new essentials",
+      },
+      heroHeadline: {
+        type: "text" as const,
+        label: "Hero Headline",
+        default: "Everything you love, in one place",
+      },
+      heroSubtext: {
+        type: "text" as const,
+        label: "Hero Subtext",
+        default:
+          "Discover our full range of curated products — quality picks, honest prices, delivered to your door.",
+      },
+      heroCtaText: {
+        type: "text" as const,
+        label: "Hero CTA Text",
+        default: "Shop all products",
+      },
+      heroCtaHref: {
+        type: "text" as const,
+        label: "Hero CTA Link",
+        default: "/collections",
+      },
+      featuredHeading: {
+        type: "text" as const,
+        label: "Featured Products Heading",
+        default: "Featured products",
+      },
+      collectionsHeading: {
+        type: "text" as const,
+        label: "Collections Heading",
+        default: "Shop by collection",
+      },
+    },
+  },
+  [WIDGET_TYPES.StickyAddToCart]: {
+    type: WIDGET_TYPES.StickyAddToCart,
+    name: "Sticky Add To Cart",
+    description:
+      "Sticky bottom add-to-cart bar shown on the product detail page as the user scrolls",
+    settingsSchema: {
+      mrpLabel: {
+        type: "text" as const,
+        label: "MRP Label",
+        default: "M.R.P.",
+      },
+      inclusiveOfAllTaxesText: {
+        type: "text" as const,
+        label: "Tax Note",
+        default: "Incl. of all taxes",
+      },
+      buttonText: {
+        type: "text" as const,
+        label: "Add to Cart Button Text",
+        default: "Add to cart",
+      },
+      soldOutText: {
+        type: "text" as const,
+        label: "Sold Out Text",
+        default: "Sold Out",
+      },
+    },
+  },
+  [WIDGET_TYPES.CollectionHeading]: {
+    type: WIDGET_TYPES.CollectionHeading,
+    name: "Collection Heading",
+    description: "Collection title with an optional horizontal divider",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Title",
+        default: "",
+      },
+      showDivider: {
+        type: "boolean" as const,
+        label: "Show Divider",
+        default: true,
+      },
+      dividerColor: {
+        type: "text" as const,
+        label: "Divider Color (hex/rgb)",
+        default: "rgb(217, 217, 217)",
+      },
+    },
+  },
+  [WIDGET_TYPES.CollectionList]: {
+    type: WIDGET_TYPES.CollectionList,
+    name: "Collection List",
+    description: "Paginated grid of all collections with a section heading",
+    settingsSchema: {
+      heading: {
+        type: "text" as const,
+        label: "Section Heading",
+        default: "All Collections",
+      },
+      pageSize: {
+        type: "number" as const,
+        label: "Collections Per Page",
+        default: 6,
+      },
+    },
+  },
+  [WIDGET_TYPES.Breadcrumb]: {
+    type: WIDGET_TYPES.Breadcrumb,
+    name: "Breadcrumb",
+    description:
+      "Breadcrumb navigation trail. Falls back to these items when no product data is present.",
+    settingsSchema: {
+      items: {
+        type: "objectArray" as const,
+        label: "Breadcrumb Items",
+        fields: ["text", "href"],
+        default: [],
+      },
+    },
+  },
+  [WIDGET_TYPES.VideoApp]: {
+    type: WIDGET_TYPES.VideoApp,
+    name: "Video App",
+    description:
+      "Shoppable video rail rendered by the external Video Widget SDK. Settings are forwarded to the SDK config.",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Section Heading",
+        default: "",
+      },
+      layout: {
+        type: "select" as const,
+        label: "Layout",
+        options: [
+          { value: "grid", label: "Grid" },
+          { value: "carousel", label: "Carousel" },
+          { value: "slider", label: "Slider" },
+          { value: "stories", label: "Stories" },
+        ],
+        default: "carousel",
+      },
+      itemsPerRow: {
+        type: "number" as const,
+        label: "Items Per Row (grid layout)",
+        default: 4,
+      },
+      autoplay: {
+        type: "boolean" as const,
+        label: "Autoplay Videos",
+        default: false,
+      },
+      muteByDefault: {
+        type: "boolean" as const,
+        label: "Mute By Default",
+        default: true,
+      },
+      showVideoControls: {
+        type: "boolean" as const,
+        label: "Show Video Controls",
+        default: false,
+      },
+      enableCtaButton: {
+        type: "boolean" as const,
+        label: "Show CTA Button",
+        default: false,
+      },
+      buttonText: {
+        type: "text" as const,
+        label: "CTA Button Text",
+        default: "",
+      },
+      ctaButtonTextColor: {
+        type: "text" as const,
+        label: "CTA Button Text Color (hex)",
+        default: "",
+      },
+      ctaButtonBackgroundColor: {
+        type: "text" as const,
+        label: "CTA Button Background Color (hex)",
+        default: "",
+      },
+      destinationUrl: {
+        type: "text" as const,
+        label: "CTA Destination URL",
+        default: "/products",
+      },
+    },
+  },
+  [WIDGET_TYPES.PageContent]: {
+    type: WIDGET_TYPES.PageContent,
+    name: "Content Section",
+    description:
+      "Generic content block: eyebrow, title, intro, and text sections — for policy, info, and long-form pages",
+    settingsSchema: {
+      eyebrow: {
+        type: "text" as const,
+        label: "Eyebrow (small label)",
+        default: "",
+      },
+      title: {
+        type: "text" as const,
+        label: "Title",
+        default: "",
+      },
+      subtitle: {
+        type: "text" as const,
+        label: "Intro / Subtitle",
+        default: "",
+      },
+      updatedAt: {
+        type: "text" as const,
+        label: "Last updated (optional)",
+        default: "",
+      },
+      // NOTE: `contact` (email/phone/address/hours) is intentionally NOT an
+      // editor field. The widget sources it env-first via getStoreContact()
+      // (NEXT_PUBLIC_STORE_*) with the theme locale as fallback — merchant-
+      // agnostic by config, not per-instance editing.
+      sections: {
+        type: "objectArray" as const,
+        label: "Content Sections",
+        fields: ["heading", "body", "bullets"],
+        default: [],
+      },
+    },
+  },
 };
 
 export const widgetRegistry: Record<string, any> = {

@@ -39,10 +39,10 @@ export const ReasonSelectionStep: React.FC<ReasonSelectionStepProps> = ({
     <>
       {/* Modal Header */}
       <div className="text-center">
-        <h2 className="text-[22px] md:text-[28px] text-primary font-normal">
+        <h2 className="text-[22px] md:text-[28px] text-[#1D1D1D] font-semibold tracking-tight">
           Cancel confirmation
         </h2>
-        <p className="text-lg mt-[15px] text-primary">
+        <p className="text-lg mt-[15px] text-neutral-600">
           Reason for cancellation.
         </p>
 
@@ -50,7 +50,7 @@ export const ReasonSelectionStep: React.FC<ReasonSelectionStepProps> = ({
           <select
             value={selectedReason}
             onChange={(e) => onReasonSelect(e.target.value)}
-            className="w-full text-sm p-2.5 border border-[#ccc] rounded-[10px] bg-white text-primary focus:outline-none appearance-none text-left"
+            className="w-full text-sm p-2.5 border border-neutral-200 rounded-xl bg-white text-[#1D1D1D] focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 appearance-none text-left"
           >
             <option value="">Select reason</option>
             {cancellationReasons.map((reason) => (
@@ -87,7 +87,7 @@ export const ReasonSelectionStep: React.FC<ReasonSelectionStepProps> = ({
               value={customReason}
               onChange={(e) => onCustomReasonChange?.(e.target.value)}
               placeholder="Type a reason why you want to cancel order?"
-              className="w-full text-sm text-primary p-2.5 border border-[#ccc] rounded-[10px] focus:outline-none text-left"
+              className="w-full text-sm text-[#1D1D1D] p-2.5 border border-neutral-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 text-left"
               rows={6}
             />
             {hasTextareaError && (
@@ -104,10 +104,10 @@ export const ReasonSelectionStep: React.FC<ReasonSelectionStepProps> = ({
         <button
           onClick={onConfirm}
           disabled={isConfirmDisabled}
-          className={`px-14 py-4 rounded-md text-sm border border-black font-semibold transition-colors flex items-center justify-center ${
+          className={`px-12 py-3 rounded-full text-sm font-semibold transition-colors flex items-center justify-center ${
             isConfirmDisabled
-              ? "opacity-50 cursor-not-allowed text-gray-400 border-gray-300"
-              : "text-black hover:border-[#0089dd] hover:text-[#0089dd]"
+              ? "opacity-50 cursor-not-allowed bg-neutral-300 text-white"
+              : "bg-black text-white hover:bg-neutral-800"
           }`}
         >
           {isLoading ? (

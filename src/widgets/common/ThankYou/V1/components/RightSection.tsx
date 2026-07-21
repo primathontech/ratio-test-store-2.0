@@ -54,7 +54,7 @@ export const RightSection: React.FC<RightSectionProps> = ({
 
   return (
     <div
-      className={`bg-white rounded-lg pt-[11px] pb-[21px] px-[21px] lg:p-[21px] flex flex-col gap-[21px] ${className ?? ""}`}
+      className={`bg-white rounded-2xl ring-1 ring-black/[0.06] shadow-sm pt-[11px] pb-[21px] px-[21px] lg:p-[21px] flex flex-col gap-[21px] ${className ?? ""}`}
     >
       {/* Product List */}
       {order.line_items && order.line_items.length > 0 && (
@@ -212,13 +212,13 @@ export const RightSection: React.FC<RightSectionProps> = ({
           <span className="text-[19px] text-black font-semibold">Total</span>
           <div className="text-right">
             <div className="font-semibold">
-              <span className="text-xs text-[#707070] mr-1">INR</span>₹
+              <span className="text-xs text-neutral-500 mr-1">INR</span>₹
               {(parseFloat(order.total_price) / 100).toFixed(2)}
             </div>
           </div>
         </div>
 
-        <div className="text-xs text-[#707070]">
+        <div className="text-xs text-neutral-500">
           Including ₹{(parseFloat(order.total_tax || "0") / 100).toFixed(2)} in
           taxes
         </div>

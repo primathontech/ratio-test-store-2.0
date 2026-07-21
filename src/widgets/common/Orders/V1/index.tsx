@@ -264,8 +264,8 @@ export const OrdersV1: React.FC<OrdersProps> = ({
             {loading ? (
               <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Loading orders...</p>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900 mx-auto mb-4"></div>
+                  <p className="text-neutral-500">Loading orders...</p>
                 </div>
               </div>
             ) : error ? (
@@ -275,7 +275,7 @@ export const OrdersV1: React.FC<OrdersProps> = ({
                   <p className="text-red-600 mb-4">{error}</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    className="bg-black text-white px-6 py-3 rounded-full hover:bg-neutral-800 transition-colors"
                   >
                     Retry
                   </button>

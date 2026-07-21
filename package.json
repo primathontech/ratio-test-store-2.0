@@ -2,9 +2,6 @@
   "name": "storefront-starter-app",
   "version": "0.2.12",
   "private": true,
-  "workspaces": [
-    "src/app/editor"
-  ],
   "scripts": {
     "dev": "next dev -p 4344",
     "build": "next build",

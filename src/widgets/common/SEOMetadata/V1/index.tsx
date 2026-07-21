@@ -2,14 +2,14 @@ import React from "react";
 import { Props } from "../types";
 
 const SEO_DEFAULTS = {
-  title: "BBlunt | Buy 3 Haircare Products at ₹799 | FLAT3",
+  title: "Ratio — Shop Our Collections",
   description:
-    "At BBlunt, you'll find the best quality products, such as hair care, color & styling. Buy 3 Products for ₹799 + Extra 5% Off on Online Orders.Use Code : FLAT3",
-  canonical: process.env.NEXT_PUBLIC_BASE_URL || "https://bblunt.com/",
+    "Ratio — quality everyday essentials with secure checkout and fast delivery.",
+  canonical: process.env.NEXT_PUBLIC_BASE_URL || "/",
   image: {
-    id: "bblunt-logo",
-    url: "/bblunt/images/bblunt-logo.avif",
-    altText: "BBlunt Logo",
+    id: "ratio-logo",
+    url: "/ratio-logo.svg",
+    altText: "Ratio Logo",
     width: 1200,
     height: 630,
   },

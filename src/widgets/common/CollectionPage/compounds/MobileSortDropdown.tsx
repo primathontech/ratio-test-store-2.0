@@ -42,13 +42,13 @@ export const MobileSortDropdown = ({
         data-testid="mobile-sort-dropdown-toggle-button"
         onClick={onToggle}
         disabled={isLoading}
-        className={`flex items-center justify-between gap-2 p-2 rounded transition-colors duration-200 text-left max-w-[82px] border ${
+        className={`flex items-center justify-between gap-2 px-3 py-2 rounded-full transition-colors duration-200 text-left max-w-[92px] border ${
           selectedSort && selectedSort !== "featured" && selectedSort !== ""
-            ? "border-[#AFB7FF] bg-[#EBEDFF]"
-            : "bg-white border-[#D9D9D980]"
+            ? "border-[#1D1D1D] bg-neutral-100"
+            : "bg-white border-neutral-200"
         }`}
       >
-        <span className="text-xs text-primary whitespace-nowrap font-medium leading-none text-center">
+        <span className="text-xs text-[#1D1D1D] whitespace-nowrap font-medium leading-none text-center">
           {sortDropdownText}
         </span>
         <svg
@@ -77,7 +77,7 @@ export const MobileSortDropdown = ({
           />
           <div
             data-testid="mobile-sort-dropdown-bottom-sheet"
-            className={`fixed bottom-0 left-0 right-0 rounded-t-lg z-[3000] ${
+            className={`fixed bottom-0 left-0 right-0 rounded-t-2xl z-[3000] ${
               isDropdownClosing
                 ? "animate-slide-down-slow"
                 : "animate-slide-up-slow"
@@ -109,7 +109,7 @@ export const MobileSortDropdown = ({
 
             <div
               data-testid="mobile-sort-dropdown-options-container"
-              className="max-h-[68vh] overflow-y-auto bg-white py-[15px] rounded-lg"
+              className="max-h-[68vh] overflow-y-auto bg-white py-[15px] rounded-t-2xl"
             >
               <div
                 data-testid="mobile-sort-dropdown-options-list"
@@ -128,7 +128,7 @@ export const MobileSortDropdown = ({
                     <label
                       key={option.id}
                       data-testid={`mobile-sort-dropdown-option-${option.id}`}
-                      className="flex items-center px-5 my-[13px] hover:bg-gray-50 cursor-pointer transition-colors duration-150"
+                      className="flex items-center px-5 py-2.5 hover:bg-neutral-50 cursor-pointer transition-colors duration-150"
                     >
                       <div
                         data-testid={`mobile-sort-dropdown-option-content-${option.id}`}
@@ -143,18 +143,18 @@ export const MobileSortDropdown = ({
                         />
                         <div
                           data-testid={`mobile-sort-dropdown-radio-${option.id}`}
-                          className="size-5 rounded-full border border-black flex items-center justify-center transition-colors"
+                          className="size-5 rounded-full border border-[#1D1D1D] flex items-center justify-center transition-colors"
                         >
                           {isActiveSort && (
                             <div
                               data-testid={`mobile-sort-dropdown-radio-indicator-${option.id}`}
-                              className="size-3 bg-black rounded-full"
+                              className="size-3 bg-[#1D1D1D] rounded-full"
                             />
                           )}
                         </div>
                         <span
                           data-testid={`mobile-sort-dropdown-option-label-${option.id}`}
-                          className={`ml-3 text-sm leading-[30px] font-medium ${isActiveSort ? "text-black" : "text-[#545454]"}`}
+                          className={`ml-3 text-sm leading-[30px] font-medium ${isActiveSort ? "text-[#1D1D1D]" : "text-neutral-600"}`}
                         >
                           {option.label}
                         </span>

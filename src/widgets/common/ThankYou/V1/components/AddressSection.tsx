@@ -11,11 +11,11 @@ export const AddressSection: React.FC<AddressSectionProps> = ({ order }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg p-[21px] flex flex-col md:flex-row gap-[17px]">
+    <div className="bg-white rounded-2xl ring-1 ring-black/[0.06] shadow-sm p-[21px] flex flex-col md:flex-row gap-[17px]">
       <div className="flex-1 flex flex-col gap-y-[21px]">
         {/* Contact Information */}
         <div>
-          <h3 className="text-sm text-black font-medium mb-2">
+          <h3 className="text-sm text-[#1D1D1D] font-semibold mb-2">
             Contact information
           </h3>
           <div className="text-sm text-black">
@@ -28,7 +28,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({ order }) => {
         {/* Shipping Address */}
         {order.shipping_address && (
           <div>
-            <h3 className="text-sm text-black font-medium mb-2">
+            <h3 className="text-sm text-[#1D1D1D] font-semibold mb-2">
               Shipping address
             </h3>
             <div className="text-sm text-black space-y-1">
@@ -49,7 +49,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({ order }) => {
         {/* Shipping Method */}
         {order.shipping_lines && order.shipping_lines.length > 0 && (
           <div className="flex-1">
-            <h3 className="text-sm text-black font-medium mb-2">
+            <h3 className="text-sm text-[#1D1D1D] font-semibold mb-2">
               Shipping method
             </h3>
             <div className="text-sm text-black">
@@ -62,7 +62,7 @@ export const AddressSection: React.FC<AddressSectionProps> = ({ order }) => {
       {/* Billing Address */}
       {order.billing_address && (
         <div>
-          <h3 className="text-sm text-black font-medium mb-2">
+          <h3 className="text-sm text-[#1D1D1D] font-semibold mb-2">
             Billing address
           </h3>
           <div className="text-sm text-black space-y-1">

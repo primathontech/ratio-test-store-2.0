@@ -38,7 +38,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <button
           type="button"
           onClick={() => onPageChange(currentPage - 1)}
-          className="flex items-center justify-center w-9 h-9 rounded-[10px] bg-black text-white transition-colors px-[22.6px] py-[19.5px] shine-link-button]"
+          className="flex items-center justify-center w-9 h-9 rounded-full bg-black text-white hover:bg-neutral-800 transition-colors px-[22.6px] py-[19.5px] shine-link-button"
           aria-label="Previous page"
         >
           <svg
@@ -60,7 +60,7 @@ export const Pagination: React.FC<PaginationProps> = ({
           key={page}
           type="button"
           onClick={() => onPageChange(page)}
-          className={`flex shine-link-button items-center justify-center min-w-9 h-9 px-[18.4px] py-[19.5px] rounded-[10px] text-sm font-semibold transition-colors ${
+          className={`flex shine-link-button items-center justify-center min-w-9 h-9 px-[18.4px] py-[19.5px] rounded-full text-sm font-semibold transition-colors ${
             currentPage === page ? "bg-white text-black" : "bg-black text-white"
           }`}
           style={
@@ -85,7 +85,7 @@ export const Pagination: React.FC<PaginationProps> = ({
         <button
           type="button"
           onClick={() => onPageChange(currentPage + 1)}
-          className="flex items-center shine-link-button justify-center px-[22.6px] py-[19.5px] w-9 h-9 rounded-[10px] bg-black text-white transition-colors"
+          className="flex items-center shine-link-button justify-center px-[22.6px] py-[19.5px] w-9 h-9 rounded-full bg-black text-white hover:bg-neutral-800 transition-colors"
           aria-label="Next page"
         >
           <svg

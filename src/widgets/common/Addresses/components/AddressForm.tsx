@@ -14,8 +14,8 @@ const DEFAULT_FORM_LABELS = {
   country_region: "Country/region",
   select_placeholder: "---",
   india: "India",
-  province: "Province",
-  postal_zip_code: "Postal/ZIP code",
+  province: "State",
+  postal_zip_code: "PIN code",
   phone: "Phone",
   set_as_default: "Set as default address",
   cancel: "Cancel",
@@ -45,9 +45,9 @@ export const AddressForm: React.FC<AddressFormProps> = ({
   };
 
   return (
-    <div className="px-[15px] md:px-10 pt-2.5 pb-5 mt-5 border border-gray-200 rounded-[10px]">
+    <div className="px-[15px] md:px-10 pt-2.5 pb-5 mt-5 border border-neutral-200 rounded-2xl shadow-sm">
       {/* Page Title */}
-      <h2 className="text-[28px] font-normal text-black my-5 text-center">
+      <h2 className="text-2xl font-semibold tracking-tight text-[#1D1D1D] my-5 text-center">
         {title}
       </h2>
 
@@ -56,7 +56,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           <div className="relative">
             <label
-              className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none transform ${
+              className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none transform ${
                 isFloating("firstName")
                   ? "top-1 text-xs"
                   : "top-1/2 -translate-y-1/2 text-sm"
@@ -72,12 +72,12 @@ export const AddressForm: React.FC<AddressFormProps> = ({
               onFocus={() => onFocus("firstName")}
               onBlur={() => onBlur("firstName")}
               disabled={isSubmitting}
-              className="w-full px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] !text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+              className="w-full px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl !text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
             />
           </div>
           <div className="relative">
             <label
-              className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none transform ${
+              className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none transform ${
                 isFloating("lastName")
                   ? "top-1 text-xs"
                   : "top-1/2 -translate-y-1/2 text-sm"
@@ -93,14 +93,14 @@ export const AddressForm: React.FC<AddressFormProps> = ({
               onFocus={() => onFocus("lastName")}
               onBlur={() => onBlur("lastName")}
               disabled={isSubmitting}
-              className="w-full px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] !text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+              className="w-full px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl !text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
             />
           </div>
         </div>
 
         <div className="mt-[15px] relative">
           <label
-            className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none transform ${
+            className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none transform ${
               isFloating("company")
                 ? "top-1 text-xs"
                 : "top-1/2 -translate-y-1/2 text-sm"
@@ -116,13 +116,13 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             onFocus={() => onFocus("company")}
             onBlur={() => onBlur("company")}
             disabled={isSubmitting}
-            className="w-full px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] !text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+            className="w-full px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl !text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
           />
         </div>
 
         <div className="mt-[15px] relative">
           <label
-            className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none transform ${
+            className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none transform ${
               isFloating("address1")
                 ? "top-1 text-xs"
                 : "top-1/2 -translate-y-1/2 text-sm"
@@ -138,13 +138,13 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             onFocus={() => onFocus("address1")}
             onBlur={() => onBlur("address1")}
             disabled={isSubmitting}
-            className="w-full px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] !text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+            className="w-full px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl !text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
           />
         </div>
 
         <div className="mt-[15px] relative">
           <label
-            className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none transform ${
+            className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none transform ${
               isFloating("address2")
                 ? "top-1 text-xs"
                 : "top-1/2 -translate-y-1/2 text-sm"
@@ -160,13 +160,13 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             onFocus={() => onFocus("address2")}
             onBlur={() => onBlur("address2")}
             disabled={isSubmitting}
-            className="w-full px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] !text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+            className="w-full px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl !text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
           />
         </div>
 
         <div className="mt-[15px] relative">
           <label
-            className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none transform ${
+            className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none transform ${
               isFloating("city")
                 ? "top-1 text-xs"
                 : "top-1/2 -translate-y-1/2 text-sm"
@@ -182,12 +182,12 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             onFocus={() => onFocus("city")}
             onBlur={() => onBlur("city")}
             disabled={isSubmitting}
-            className="w-full px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] !text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+            className="w-full px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl !text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
           />
         </div>
 
         <div className="mt-[15px]">
-          <p className=" text-gray-500 text-sm font-body">
+          <p className=" text-neutral-500 text-sm font-body">
             {labels.country_region}
           </p>
           <div className="relative">
@@ -198,7 +198,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
               onFocus={() => onFocus("country")}
               onBlur={() => onBlur("country")}
               disabled={isSubmitting}
-              className="w-full px-[18px] py-[13px] border border-gray-200 rounded-[3px] !text-sm text-gray-500 focus:outline-none appearance-none bg-white pr-10 disabled:bg-gray-50 disabled:cursor-not-allowed cursor-pointer focus:border-black"
+              className="w-full px-[18px] py-[13px] border border-neutral-200 rounded-xl !text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 appearance-none bg-white pr-10 disabled:bg-neutral-50 disabled:cursor-not-allowed cursor-pointer focus:border-neutral-400"
             >
               <option value="" className="text-primary">
                 {labels.select_placeholder}
@@ -228,7 +228,9 @@ export const AddressForm: React.FC<AddressFormProps> = ({
         </div>
 
         <div className="mt-[15px]">
-          <p className=" text-gray-500 text-sm font-body">{labels.province}</p>
+          <p className=" text-neutral-500 text-sm font-body">
+            {labels.province}
+          </p>
           <div className="relative">
             <select
               name="state"
@@ -237,13 +239,13 @@ export const AddressForm: React.FC<AddressFormProps> = ({
               onFocus={() => onFocus("state")}
               onBlur={() => onBlur("state")}
               disabled={isSubmitting}
-              className="w-full px-[18px] py-[13px] border border-gray-200 rounded-[3px] !text-sm text-gray-500 focus:outline-none appearance-none bg-white pr-10 disabled:bg-gray-50 disabled:cursor-not-allowed cursor-pointer focus:border-black"
+              className="w-full px-[18px] py-[13px] border border-neutral-200 rounded-xl !text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 appearance-none bg-white pr-10 disabled:bg-neutral-50 disabled:cursor-not-allowed cursor-pointer focus:border-neutral-400"
             >
               <option value="" className="text-primary">
                 {labels.select_placeholder}
               </option>
               {INDIAN_STATES.map((state) => (
-                <option key={state} value={state} className="text-gray-500">
+                <option key={state} value={state} className="text-neutral-600">
                   {state}
                 </option>
               ))}
@@ -270,7 +272,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
 
         <div className="mt-[15px] relative">
           <label
-            className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none transform ${
+            className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none transform ${
               isFloating("zip")
                 ? "top-1 text-xs"
                 : "top-1/2 -translate-y-1/2 text-sm"
@@ -286,8 +288,8 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             onFocus={() => onFocus("zip")}
             onBlur={() => onBlur("zip")}
             disabled={isSubmitting}
-            className={`w-full px-[18px] pt-5 pb-1.5 border rounded-[3px] !text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed ${
-              errors.zip ? "border-red-500" : "border-gray-200"
+            className={`w-full px-[18px] pt-5 pb-1.5 border rounded-xl !text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed ${
+              errors.zip ? "border-red-500" : "border-neutral-200"
             }`}
           />
           {errors.zip && (
@@ -299,7 +301,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
 
         <div className="mt-[15px] relative">
           <label
-            className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none transform ${
+            className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none transform ${
               isFloating("phone")
                 ? "top-1 text-xs"
                 : "top-1/2 -translate-y-1/2 text-sm"
@@ -315,8 +317,8 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             onFocus={() => onFocus("phone")}
             onBlur={() => onBlur("phone")}
             disabled={isSubmitting}
-            className={`w-full px-[18px] pt-5 pb-1.5 border rounded-[3px] text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed ${
-              errors.phone ? "border-red-500" : "border-gray-200"
+            className={`w-full px-[18px] pt-5 pb-1.5 border rounded-xl text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed ${
+              errors.phone ? "border-red-500" : "border-neutral-200"
             }`}
           />
           {errors.phone && (
@@ -334,9 +336,9 @@ export const AddressForm: React.FC<AddressFormProps> = ({
               checked={formData.isDefault}
               onChange={onInputChange}
               disabled={isSubmitting}
-              className="w-4 h-4 text-black border-gray-200 rounded focus:ring-black disabled:cursor-not-allowed"
+              className="w-4 h-4 text-black border-neutral-200 rounded focus:ring-black/20 disabled:cursor-not-allowed"
             />
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-neutral-700">
               {labels.set_as_default}
             </span>
           </label>
@@ -347,7 +349,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-black text-white   px-[25px] md:px-[31px] py-[7x] md:py-[12.1px] rounded-2xl text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shine-link-button"
+            className="bg-black text-white px-[25px] md:px-[31px] py-2 md:py-3 rounded-full text-sm font-semibold hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shine-link-button"
           >
             {submitButtonText}
           </button>
@@ -355,7 +357,7 @@ export const AddressForm: React.FC<AddressFormProps> = ({
             type="button"
             onClick={onCancel}
             disabled={isSubmitting}
-            className="bg-black text-white border border-gray-200 ml-5  px-6 md:px-[30px] py-[7px] md:py-[12.1px] rounded-2xl text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-white text-black ring-1 ring-black/10 ml-5 px-6 md:px-[30px] py-2 md:py-3 rounded-full text-sm font-semibold hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {labels.cancel}
           </button>

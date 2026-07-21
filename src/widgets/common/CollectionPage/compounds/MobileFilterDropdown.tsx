@@ -105,21 +105,21 @@ export const MobileFilterDropdown = ({
         data-testid="mobile-filter-dropdown-toggle-button"
         onClick={onToggle}
         disabled={isLoading}
-        className={`flex items-center justify-between gap-2.5 p-2 rounded transition-colors duration-200 border relative ${
+        className={`flex items-center justify-between gap-2.5 px-3 py-2 rounded-full transition-colors duration-200 border relative ${
           hasAppliedFilters
-            ? "border-[#AFB7FF] bg-[#EBEDFF]"
-            : "bg-white border-[#D9D9D980]"
+            ? "border-[#1D1D1D] bg-neutral-100"
+            : "bg-white border-neutral-200"
         }`}
       >
         {appliedCount > 0 && (
           <span
             data-testid="mobile-filter-dropdown-count-badge"
-            className="bg-[#DB2C20] text-white text-[10px] font-bold rounded-full min-w-4 h-4 flex items-center justify-center px-1"
+            className="bg-[#1D1D1D] text-white text-[10px] font-bold rounded-full min-w-4 h-4 flex items-center justify-center px-1"
           >
             {appliedCount}
           </span>
         )}
-        <span className="text-xs text-primary font-bold leading-none text-center">
+        <span className="text-xs text-[#1D1D1D] font-semibold leading-none text-center">
           {filterTitle}
         </span>
         <div className="flex items-center gap-1">
@@ -150,7 +150,7 @@ export const MobileFilterDropdown = ({
           />
           <div
             data-testid="mobile-filter-dropdown-bottom-sheet"
-            className={`flex flex-col h-[70%] w-full fixed bottom-0 left-0 right-0 z-[3000] ${
+            className={`flex flex-col h-[70%] w-full fixed bottom-0 left-0 right-0 z-[3000] rounded-t-2xl overflow-hidden ${
               isDropdownClosing
                 ? "animate-slide-down-slow"
                 : "animate-slide-up-slow"
@@ -190,7 +190,7 @@ export const MobileFilterDropdown = ({
               >
                 <h2
                   data-testid="mobile-filter-dropdown-content-title"
-                  className="text-base text-primary leading-none p-4 pt-6 border-b border-[#DDD]"
+                  className="text-base font-semibold tracking-tight text-[#1D1D1D] leading-none p-4 pt-6 border-b border-neutral-200"
                 >
                   Filters
                 </h2>
@@ -212,7 +212,7 @@ export const MobileFilterDropdown = ({
                 >
                   <div
                     data-testid="mobile-filter-dropdown-left-column"
-                    className="flex-shrink-0 w-[45%] min-w-[45%] bg-[#F4F6F8] border-r border-[#DDD] overflow-y-auto"
+                    className="flex-shrink-0 w-[45%] min-w-[45%] bg-neutral-50 border-r border-neutral-200 overflow-y-auto"
                   >
                     {filters.map((filter) => {
                       const selectedCount =
@@ -227,9 +227,9 @@ export const MobileFilterDropdown = ({
                           key={filter.id}
                           data-testid={`mobile-filter-dropdown-filter-name-${filter.id}`}
                           onClick={() => setSelectedFilterId(filter.id)}
-                          className={`w-full text-left py-2 px-4 border-b border-[#DDD] transition-colors text-sm text-primary leading-[18px] flex items-center justify-between ${
+                          className={`w-full text-left py-2.5 px-4 border-b border-neutral-200 transition-colors text-sm text-[#1D1D1D] leading-[18px] flex items-center justify-between ${
                             selectedFilterId === filter.id
-                              ? "bg-white font-bold"
+                              ? "bg-white font-semibold"
                               : "bg-transparent font-normal"
                           }`}
                         >
@@ -291,8 +291,8 @@ export const MobileFilterDropdown = ({
                                     selectedFilterId,
                                     value.value
                                   )
-                                    ? "bg-primary border-primary"
-                                    : "border-[#A3A3A3]"
+                                    ? "bg-[#1D1D1D] border-[#1D1D1D]"
+                                    : "border-neutral-300"
                                 }`}
                               >
                                 {isOptionSelected(
@@ -315,7 +315,7 @@ export const MobileFilterDropdown = ({
                               </div>
                               <span
                                 data-testid={`mobile-filter-dropdown-option-label-${selectedFilterId}-${index}`}
-                                className="text-sm text-primary leading-[18px]"
+                                className="text-sm text-[#1D1D1D] leading-[18px]"
                               >
                                 {value.value}
                               </span>
@@ -337,8 +337,8 @@ export const MobileFilterDropdown = ({
                   disabled={!hasDraftFilters}
                   className={`transition-colors tracking-[-0.194px] text-base leading-none ${
                     hasDraftFilters
-                      ? "text-primary font-bold"
-                      : "text-[#A3A3A3] cursor-not-allowed font-normal"
+                      ? "text-[#1D1D1D] font-semibold"
+                      : "text-neutral-400 cursor-not-allowed font-normal"
                   }`}
                 >
                   Clear all
@@ -346,7 +346,7 @@ export const MobileFilterDropdown = ({
                 <button
                   data-testid="mobile-filter-dropdown-show-results-button"
                   onClick={handleApplyAndClose}
-                  className="basis-[55%] flex justify-center items-center py-[14.5px] rounded bg-primary text-white hover:bg-gray-800 transition-colors tracking-[-0.194px] text-base leading-none font-bold"
+                  className="basis-[55%] flex justify-center items-center py-[14.5px] rounded-full bg-[#1D1D1D] text-white hover:bg-neutral-800 transition-colors tracking-[-0.194px] text-base leading-none font-semibold"
                 >
                   Show {resultCount} results
                 </button>

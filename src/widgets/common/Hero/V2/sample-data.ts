@@ -44,7 +44,7 @@ export const SAMPLE_BLOCKS: HeroBlock[] = [
     type: "button",
     settings: {
       label: "Shop now",
-      link: "/collections/all",
+      link: "/collections",
       style_class: "button-secondary",
     },
   },

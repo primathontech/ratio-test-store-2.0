@@ -18,13 +18,13 @@ export default {
 
   widgets: [
     {
-      id: "bblunt-2-testimonials",
+      id: "ratio-testimonials",
       name: "Testimonials",
       type: WIDGET_TYPES.Testimonials,
       settings: {
         variant: "v1",
-        heading: "t:common.testimonials.heading__rich",
-        testimonials: "t:common.testimonials.items",
+        heading: "t:sections.testimonials.heading__rich",
+        testimonials: "t:sections.testimonials.items",
       },
     },
   ],

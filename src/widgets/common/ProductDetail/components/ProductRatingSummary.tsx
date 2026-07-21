@@ -86,11 +86,11 @@ export const ProductRatingSummary: React.FC<ProductRatingSummaryProps> = ({
       >
         {average ?? "—"}
       </span>
-      <span className="text-sm md:text-base font-medium mx-[2px] text-primary">
+      <span className="text-sm md:text-base font-medium mx-[2px] text-neutral-300">
         ┃
       </span>
       <span
-        className="text-[#3C4CFF] font-medium text-sm md:text-base leading-[1.4em] cursor-pointer hover:opacity-70 transition-opacity"
+        className="text-neutral-600 underline underline-offset-2 decoration-neutral-300 font-medium text-sm md:text-base leading-[1.4em] cursor-pointer hover:text-[#1D1D1D] transition-colors"
         onClick={handleClick}
         role="button"
         tabIndex={0}

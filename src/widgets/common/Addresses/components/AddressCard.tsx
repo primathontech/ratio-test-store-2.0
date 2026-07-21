@@ -28,7 +28,7 @@ export const AddressCard: React.FC<AddressCardProps> = ({
     <div className="text-center space-y-2">
       {/* Default label for default address */}
       {address.isDefault && (
-        <div className="text-[28px] text-black my-[22px] leading-tight">
+        <div className="text-2xl font-semibold tracking-tight text-[#1D1D1D] my-[22px] leading-tight">
           {labels.default_label}
         </div>
       )}
@@ -72,7 +72,7 @@ export const AddressCard: React.FC<AddressCardProps> = ({
           type="button"
           onClick={() => onEdit(address)}
           disabled={isDeleting}
-          className="bg-black text-white px-[25px] md:px-[31px] my-10 rounded-[10px] text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[38.8px] md:min-h-[46.8px] shine-link-button"
+          className="bg-black text-white px-[25px] md:px-[31px] my-10 rounded-full text-sm font-medium hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed min-h-[38.8px] md:min-h-[46.8px] shine-link-button"
         >
           {labels.edit_button}
         </button>
@@ -86,7 +86,7 @@ export const AddressCard: React.FC<AddressCardProps> = ({
             }
           }}
           disabled={isDeleting}
-          className="bg-white text-black border border-black px-6 md:px-[30px] rounded-[10px] text-sm font-medium hover:text-[#0089DD] transition-colors disabled:opacity-50 disabled:cursor-not-allowed my-10 ml-5 min-h-[38.8px] md:min-h-[46.8px] hover:border-[#0089DD]"
+          className="bg-white text-black ring-1 ring-black/10 px-6 md:px-[30px] rounded-full text-sm font-medium hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed my-10 ml-5 min-h-[38.8px] md:min-h-[46.8px]"
         >
           {isDeleting ? labels.deleting_button : labels.delete_button}
         </button>

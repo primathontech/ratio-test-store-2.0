@@ -38,9 +38,9 @@ export const DesktopSortDropdown = ({
         data-testid="desktop-sort-dropdown-toggle-button"
         onClick={onToggle}
         disabled={isLoading}
-        className="w-full flex items-center justify-end gap-[9px] transition-colors duration-300 disabled:opacity-50"
+        className="ml-auto flex items-center gap-2.5 rounded-full ring-1 ring-black/10 bg-white px-5 py-2.5 transition-colors duration-300 hover:bg-neutral-50 disabled:opacity-50"
       >
-        <span className="text-base leading-none text-center font-medium text-primary">
+        <span className="text-sm leading-none text-center font-medium text-[#1D1D1D]">
           {isLoading ? "Sorting..." : sortDropdownText}
         </span>
         <svg
@@ -71,11 +71,11 @@ export const DesktopSortDropdown = ({
 
           <div
             data-testid="desktop-sort-dropdown-menu"
-            className="absolute top-full left-0 right-0 mt-5 bg-white border border-gray-200 rounded-md shadow-[0_0_5px_#0000001a] z-[50] overflow-hidden"
+            className="absolute top-full left-0 right-0 mt-2 bg-white ring-1 ring-black/[0.06] rounded-2xl shadow-lg z-[50] overflow-hidden"
           >
             <div
               data-testid="desktop-sort-dropdown-options-container"
-              className="pt-6 pb-5"
+              className="py-3"
             >
               {options.map((option) => {
                 const isActiveSort = selectedSort === option.id;
@@ -84,8 +84,8 @@ export const DesktopSortDropdown = ({
                   <label
                     key={option.id}
                     data-testid={`desktop-sort-dropdown-option-${option.id}`}
-                    className={`flex items-center px-5 my-[13px] cursor-pointer transition-colors duration-150 ${
-                      isActiveSort ? "bg-[#F2F2F2]" : "hover:bg-gray-50"
+                    className={`flex items-center px-5 py-2.5 cursor-pointer transition-colors duration-150 ${
+                      isActiveSort ? "bg-neutral-100" : "hover:bg-neutral-50"
                     }`}
                   >
                     <div
@@ -101,18 +101,18 @@ export const DesktopSortDropdown = ({
                       />
                       <div
                         data-testid={`desktop-sort-dropdown-radio-${option.id}`}
-                        className="size-5 rounded-full border border-black flex items-center justify-center transition-colors"
+                        className="size-5 rounded-full border border-[#1D1D1D] flex items-center justify-center transition-colors"
                       >
                         {isActiveSort && (
                           <div
                             data-testid={`desktop-sort-dropdown-radio-indicator-${option.id}`}
-                            className="size-3 bg-black rounded-full"
+                            className="size-3 bg-[#1D1D1D] rounded-full"
                           />
                         )}
                       </div>
                       <span
                         data-testid={`desktop-sort-dropdown-option-label-${option.id}`}
-                        className={`ml-3 text-sm leading-[30px] font-medium ${isActiveSort ? "text-black" : "text-[#545454]"}`}
+                        className={`ml-3 text-sm leading-[30px] font-medium ${isActiveSort ? "text-[#1D1D1D]" : "text-neutral-600"}`}
                       >
                         {option.label}
                       </span>

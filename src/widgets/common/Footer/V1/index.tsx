@@ -81,7 +81,7 @@ export const V1 = memo(function V1({ settings }: FooterProps) {
           }
 
           // dropdown / mega → heading + its links. The heading is itself clickable
-          // when the group points somewhere (e.g. "Shop" → /collections/all), and
+          // when the group points somewhere (e.g. "Shop" → /collections), and
           // that link may be external.
           return (
             <div key={entry.id} className="sf-footer__col">

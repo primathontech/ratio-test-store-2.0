@@ -137,12 +137,6 @@ export const V1: React.FC<FBTProps> = ({ data }) => {
 
   const [sdkLoading, setSdkLoading] = useState(true);
   const [productFound, setProductFound] = useState(true);
-  const [collectionId, setCollectionId] = useState<string | null>(null);
-
-  const collectionHandle = useMemo(() => {
-    const m = pathname?.match(/^\/collections\/([^/]+)/i);
-    return m ? decodeURIComponent(m[1]) : null;
-  }, [pathname]);
 
   /**
    * Resolve the product id from one of:
@@ -174,14 +168,11 @@ export const V1: React.FC<FBTProps> = ({ data }) => {
   }, [data]);
 
   const sourceId = useMemo(() => {
-    if (collectionId) {
-      return collectionId;
-    }
     if (productId === null || productId === undefined) {
       return null;
     }
     return String(productId);
-  }, [collectionId, productId]);
+  }, [productId]);
 
   const itemsRef = useRef<CartItemWithGid[]>(items);
   useEffect(() => {
@@ -198,43 +189,15 @@ export const V1: React.FC<FBTProps> = ({ data }) => {
     setSdkLoading(true);
   }, [sourceId]);
 
-  /* ── Resolve a collection handle to its numeric/gid id (for /collections/* pages) ── */
-  useEffect(() => {
-    let alive = true;
-    (async () => {
-      if (!collectionHandle) {
-        setCollectionId(null);
-        return;
-      }
-      try {
-        // eslint-disable-next-line no-restricted-syntax
-        const res = await fetch(
-          `/api/v1/collection?handle=${encodeURIComponent(collectionHandle)}`
-        );
-        if (!alive) {
-          return;
-        }
-        if (res.ok) {
-          const json = await res.json();
-          setCollectionId(json?.collection?.id ?? null);
-        } else {
-          setCollectionId(null);
-        }
-      } catch {
-        if (alive) {
-          setCollectionId(null);
-        }
-      }
-    })();
-    return () => {
-      alive = false;
-    };
-  }, [collectionHandle]);
-
   /* ── Boot the SDK once we have a sourceId ── */
   useEffect(() => {
     let unmount: null | (() => void) = null;
-    if (!sourceId || !productFound) {
+    // Only attempt to boot when the SDK is actually configured. Without a
+    // configured SDK URL the widget hides (see render guard below), so there is
+    // nothing to load — and trying would either reject ("SDK URL missing") or,
+    // if another script already put ProductBundler on window, init the SDK with
+    // an undefined merchantId and throw. Bail out cleanly instead.
+    if (!sourceId || !productFound || !sdkUrl) {
       return () => undefined;
     }
 
@@ -427,7 +390,10 @@ export const V1: React.FC<FBTProps> = ({ data }) => {
     };
   }, []);
 
-  if (!productFound) {
+  // FBT is optional. When the external product-bundler SDK isn't configured
+  // (no NEXT_PUBLIC_SDK_URL), it can never inject content, so hide the section
+  // entirely instead of showing a skeleton that loads forever.
+  if (!productFound || !sdkUrl) {
     return null;
   }
 

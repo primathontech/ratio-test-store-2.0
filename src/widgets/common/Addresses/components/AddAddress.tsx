@@ -240,7 +240,7 @@ export const AddAddress: React.FC<AddAddressProps> = ({
   return (
     <>
       {submitError && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl">
           <p className="text-red-600 text-sm">{submitError}</p>
         </div>
       )}

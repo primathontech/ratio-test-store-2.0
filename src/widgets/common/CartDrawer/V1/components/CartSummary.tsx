@@ -26,12 +26,12 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
 }) => {
   return (
     <Box
-      className="cart-summary bg-white flex flex-col gap-2.5 px-[15px] md:px-4 pt-2.5 pb-[15px] md:py-2.5 border-t border-[#ebebeb] font-body"
-      data-testid="bblunt-cart-summary"
+      className="cart-summary bg-white flex flex-col gap-2.5 px-[15px] md:px-4 pt-2.5 pb-[15px] md:py-2.5 border-t border-neutral-200 font-body"
+      data-testid="ratio-cart-summary"
     >
       <div
         className="flex items-center gap-2"
-        data-testid="bblunt-cart-summary-prepaid-offer"
+        data-testid="ratio-cart-summary-prepaid-offer"
       >
         <Image
           src="https://cdn.shopify.com/s/files/1/0646/0057/2090/files/cart_prepaid.gif?v=1707984487"
@@ -39,12 +39,12 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
           width={20}
           height={20}
           loading="lazy"
-          data-testid="bblunt-cart-summary-prepaid-icon"
+          data-testid="ratio-cart-summary-prepaid-icon"
           unoptimized
         />
         <p
           className="drawer_text text-xs text-primary !leading-none"
-          data-testid="bblunt-cart-summary-prepaid-text"
+          data-testid="ratio-cart-summary-prepaid-text"
         >
           Pay online and get extra 5% off
         </p>
@@ -55,17 +55,17 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
         justify="between"
         align="center"
         className="total-section"
-        data-testid="bblunt-cart-summary-total-section"
+        data-testid="ratio-cart-summary-total-section"
       >
         <p
-          className="text-xl leading-tight font-normal text-black"
-          data-testid="bblunt-cart-summary-subtotal-label"
+          className="text-xl leading-tight font-normal text-[#1D1D1D]"
+          data-testid="ratio-cart-summary-subtotal-label"
         >
           Subtotal
         </p>
         <p
-          className="text-xl text-black font-semibold"
-          data-testid="bblunt-cart-summary-subtotal-amount"
+          className="text-xl text-[#1D1D1D] font-semibold tracking-tight"
+          data-testid="ratio-cart-summary-subtotal-amount"
         >
           {formatPaiseToINR(Number(totalAmount))}
         </p>
@@ -73,7 +73,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
 
       {/* Checkout Button */}
       <CheckoutButtonCustom
-        className={`checkout-btn w-full h-[45px] bg-primary text-white border-none rounded-[10px] cursor-pointer transition-colors flex items-center justify-center py-[5px] px-[45px] font-body ${isLoading ? "bg-black/50" : "bg-black"}`}
+        className={`checkout-btn w-full h-[45px] text-white border-none rounded-full cursor-pointer transition-colors flex items-center justify-center py-[5px] px-[45px] font-body ${isLoading ? "bg-black/50" : "bg-black hover:bg-neutral-800"}`}
         onCheckoutSuccess={onCheckoutSuccess}
         onCheckoutError={onCheckoutError}
         data-testid="aqualogica-cart-summary-checkout-button"

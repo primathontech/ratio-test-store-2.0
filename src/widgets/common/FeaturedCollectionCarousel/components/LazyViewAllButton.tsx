@@ -48,7 +48,7 @@ interface LazyViewAllButtonProps {
   /**
    * Visual theme. "light" (default) = light grey bg + dark text
    * (FeaturedCollectionCarousel). "dark" = near-black bg + white text
-   * (HairCareBFFs).
+   * (FeaturedCollectionCarousel).
    */
   theme?: LazyViewAllButtonTheme;
 }

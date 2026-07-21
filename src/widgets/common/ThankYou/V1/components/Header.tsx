@@ -82,10 +82,12 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <div className="mb-8">
       {/* Order Details Grid */}
-      <div className="border rounded-lg border-[#d6d6d6]">
-        <div className="flex justify-between p-3.5 border-b border-[#d6d6d6]">
-          <span className="text-black text-sm font-semibold">Order Date:</span>
-          <span className="ml-2 text-black text-sm">
+      <div className="rounded-2xl ring-1 ring-black/[0.06] bg-white overflow-hidden">
+        <div className="flex justify-between p-3.5 border-b border-neutral-200">
+          <span className="text-[#1D1D1D] text-sm font-semibold">
+            Order Date:
+          </span>
+          <span className="ml-2 text-[#1D1D1D] text-sm">
             {new Date(order.created_at).toLocaleDateString("en-US", {
               day: "2-digit",
               month: "short",
@@ -94,18 +96,20 @@ export const Header: React.FC<HeaderProps> = ({
           </span>
         </div>
 
-        <div className="p-3.5 border-b border-[#d6d6d6]">
+        <div className="p-3.5 border-b border-neutral-200">
           <div className="flex justify-between">
-            <span className="text-black text-sm font-semibold flex flex-col">
+            <span className="text-[#1D1D1D] text-sm font-semibold flex flex-col">
               Delivery Estimate:
             </span>
-            <span className="ml-2 text-black text-sm">{getDeliveryDate()}</span>
+            <span className="ml-2 text-[#1D1D1D] text-sm">
+              {getDeliveryDate()}
+            </span>
           </div>
-          <span className="text-xs text-[#666]">
+          <span className="text-xs text-neutral-500">
             Standard delivery time is within 3-5 days
           </span>
         </div>
-        <p className="text-xs md:text-sm italic bg-[#ededed] text-[#666] p-3.5">
+        <p className="text-xs md:text-sm italic bg-neutral-100 text-neutral-500 p-3.5">
           ⓘ Please note that once your order is packed, it cannot be cancelled.
           For further queries, reach out to our Customer Support.
         </p>
@@ -113,10 +117,10 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Status timeline */}
       {isOrderDelivered ? (
-        <div className="mt-[21px] bg-white rounded-lg p-[21px]">
+        <div className="mt-[21px] bg-white rounded-2xl ring-1 ring-black/[0.06] shadow-sm p-[21px]">
           <div className="relative">
             <div
-              className="absolute left-[17px] top-[18px] w-px border-l border-dashed border-[#d6d6d6]"
+              className="absolute left-[17px] top-[18px] w-px border-l border-dashed border-neutral-200"
               style={{ height: "calc(1rem + 1.5rem)" }}
             />
             {/* Delivered */}
@@ -125,11 +129,11 @@ export const Header: React.FC<HeaderProps> = ({
                 <CheckIcon />
               </div>
               <div className="ml-3 flex flex-col">
-                <span className="text-sm text-black font-semibold">
+                <span className="text-sm text-[#1D1D1D] font-semibold">
                   Delivered
                 </span>
                 {currentStatusDate && (
-                  <span className="text-xs text-[#707070]">
+                  <span className="text-xs text-neutral-500">
                     {formatTimelineDate(currentStatusDate)}
                   </span>
                 )}
@@ -138,7 +142,7 @@ export const Header: React.FC<HeaderProps> = ({
 
             <div className="relative">
               <div
-                className="absolute left-[17px] top-[18px] w-px border-l border-dashed border-[#d6d6d6]"
+                className="absolute left-[17px] top-[18px] w-px border-l border-dashed border-neutral-200"
                 style={{ height: "calc(1rem + 0.25rem + 0.375rem)" }}
               />
 
@@ -148,11 +152,11 @@ export const Header: React.FC<HeaderProps> = ({
                   <TruckIcon />
                 </div>
                 <div className="ml-3 flex flex-col">
-                  <span className="text-sm text-black font-semibold">
+                  <span className="text-sm text-[#1D1D1D] font-semibold">
                     On its way
                   </span>
                   {shippedStatusDate && (
-                    <span className="text-xs text-[#707070]">
+                    <span className="text-xs text-neutral-500">
                       {formatTimelineDate(shippedStatusDate)}
                     </span>
                   )}
@@ -162,14 +166,14 @@ export const Header: React.FC<HeaderProps> = ({
               {/* Confirmed */}
               <div className="flex items-start mt-4 relative pl-2 z-10">
                 <div className="size-[18px] flex-shrink-0 flex items-center justify-center mt-1">
-                  <div className="size-1.5 rounded-full bg-[#707070]" />
+                  <div className="size-1.5 rounded-full bg-neutral-500" />
                 </div>
                 <div className="ml-3 flex flex-col">
-                  <span className="text-sm text-black font-semibold">
+                  <span className="text-sm text-[#1D1D1D] font-semibold">
                     Confirmed
                   </span>
                   {confirmedStatusDate && (
-                    <span className="text-xs text-[#707070]">
+                    <span className="text-xs text-neutral-500">
                       {formatTimelineDate(confirmedStatusDate)}
                     </span>
                   )}
@@ -179,10 +183,10 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       ) : isOrderShipped ? (
-        <div className="mt-[21px] bg-white rounded-lg p-[21px]">
+        <div className="mt-[21px] bg-white rounded-2xl ring-1 ring-black/[0.06] shadow-sm p-[21px]">
           <div className="relative">
             <div
-              className="absolute left-[17px] top-[18px] w-px border-l border-dashed border-[#d6d6d6]"
+              className="absolute left-[17px] top-[18px] w-px border-l border-dashed border-neutral-200"
               style={{ height: "calc(1rem + 0.25rem + 0.375rem)" }}
             />
             <div className="flex items-start relative z-10 pl-2">
@@ -190,10 +194,10 @@ export const Header: React.FC<HeaderProps> = ({
                 <TruckIcon />
               </div>
               <div className="ml-3 flex flex-col">
-                <span className="text-sm text-black font-semibold">
+                <span className="text-sm text-[#1D1D1D] font-semibold">
                   On its way
                 </span>
-                <span className="text-xs text-[#707070]">
+                <span className="text-xs text-neutral-500">
                   {shippedStatusDate
                     ? formatTimelineDate(shippedStatusDate)
                     : ""}
@@ -203,13 +207,13 @@ export const Header: React.FC<HeaderProps> = ({
 
             <div className="flex items-start mt-4 relative pl-2 z-10">
               <div className="size-[18px] flex-shrink-0 flex items-center justify-center mt-1">
-                <div className="size-1.5 rounded-full bg-[#707070]" />
+                <div className="size-1.5 rounded-full bg-neutral-500" />
               </div>
               <div className="ml-3 flex flex-col">
-                <span className="text-sm text-black font-semibold">
+                <span className="text-sm text-[#1D1D1D] font-semibold">
                   Confirmed
                 </span>
-                <span className="text-xs text-[#707070]">
+                <span className="text-xs text-neutral-500">
                   {confirmedStatusDate
                     ? formatTimelineDate(confirmedStatusDate)
                     : ""}
@@ -219,29 +223,33 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       ) : isOrderPending || isOrderConfirmed ? (
-        <div className="mt-[21px] flex items-start bg-white rounded-lg p-[21px]">
-          <div className="text-[#707070] mt-1">
+        <div className="mt-[21px] flex items-start bg-white rounded-2xl ring-1 ring-black/[0.06] shadow-sm p-[21px]">
+          <div className="text-neutral-500 mt-1">
             <CheckIcon />
           </div>
           <div className="ml-3 flex flex-col">
-            <span className="text-sm text-black font-semibold">Confirmed</span>
-            <span className="text-xs text-[#707070]">
+            <span className="text-sm text-[#1D1D1D] font-semibold">
+              Confirmed
+            </span>
+            <span className="text-xs text-neutral-500">
               {formatTimelineDate(order.created_at)}
             </span>
           </div>
         </div>
       ) : isOrderCancelled ? (
-        <div className="mt-[21px] flex items-start bg-white rounded-lg p-[21px]">
-          <div className="text-[#707070] flex-shrink-0 mt-1">
+        <div className="mt-[21px] flex items-start bg-white rounded-2xl ring-1 ring-black/[0.06] shadow-sm p-[21px]">
+          <div className="text-neutral-500 flex-shrink-0 mt-1">
             <XCircleIcon />
           </div>
           <div className="ml-3 flex flex-col">
-            <span className="text-sm text-black font-medium">Cancelled</span>
-            <span className="text-xs text-[#707070] mt-1">
+            <span className="text-sm text-[#1D1D1D] font-medium">
+              Cancelled
+            </span>
+            <span className="text-xs text-neutral-500 mt-1">
               Your order has been cancelled
             </span>
             {currentStatusDate && (
-              <span className="text-xs text-[#707070] mt-1">
+              <span className="text-xs text-neutral-500 mt-1">
                 {formatTimelineDate(currentStatusDate)}
               </span>
             )}
@@ -259,7 +267,7 @@ const CheckIcon = () => (
     viewBox="0 0 15 15"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className="text-[#707070]"
+    className="text-neutral-500"
   >
     <path
       d="M11.4669 3.72684C11.7558 3.91574 11.8369 4.30308 11.648 4.59198L7.39799 11.092C7.29783 11.2452 7.13556 11.3467 6.95402 11.3699C6.77247 11.3931 6.58989 11.3355 6.45446 11.2124L3.70446 8.71241C3.44905 8.48022 3.43023 8.08494 3.66242 7.82953C3.89461 7.57412 4.28989 7.55529 4.5453 7.78749L6.75292 9.79441L10.6018 3.90792C10.7907 3.61902 11.178 3.53795 11.4669 3.72684Z"
@@ -277,7 +285,7 @@ const TruckIcon = () => (
     viewBox="0 0 24 24"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
-    className="text-[#707070]"
+    className="text-neutral-500"
   >
     <path
       d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5l-3-4zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zm13.5-9l1.96 2.5H17V9.5h2.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"

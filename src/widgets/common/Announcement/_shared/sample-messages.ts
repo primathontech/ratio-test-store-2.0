@@ -17,6 +17,6 @@ export const SAMPLE_MESSAGES: SampleMessage[] = [
   {
     title: "New drop",
     text: "the summer collection is live",
-    link: "/collections/all",
+    link: "/collections",
   },
 ];

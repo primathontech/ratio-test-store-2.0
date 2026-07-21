@@ -59,7 +59,7 @@ export const OrderStatusCell: React.FC<OrderStatusCellProps> = ({
     return (
       <button
         onClick={() => onCancelOrder(order.id)}
-        className="transition-colors text-sm bg-black py-1 px-2.5 rounded-[5px] text-white font-normal hover:shadow-[0px_0px_10px_#0000007a]"
+        className="transition-colors text-sm bg-black py-1.5 px-4 rounded-full text-white font-medium hover:bg-neutral-800"
       >
         Cancel
       </button>

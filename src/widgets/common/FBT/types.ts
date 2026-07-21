@@ -10,7 +10,7 @@ export interface FBTProductData {
 }
 
 /**
- * Standard data-aggregator envelope that bblunt-2.0 emits for
+ * Standard data-aggregator envelope that ratio.0 emits for
  * `dataSourceKey: "productData"`. Mirrors what ProductDetail/V1
  * consumes (`data?.success ? data.data : null`).
  */

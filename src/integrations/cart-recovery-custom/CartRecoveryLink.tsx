@@ -18,7 +18,7 @@ import {
  * Restores an abandoned cart and opens the cart drawer when a shopper arrives
  * via a KwikEngage recovery link of the form:
  *
- *   https://themomsco.com/?cart_token=<token>&cart_open=true
+ *   https://your-store.com/?cart_token=<token>&cart_open=true
  *
  * The GoKwik KwikCart side-cart (`side-cart.js`) only auto-opens on its own
  * `?openCart=true` param and reads the cart from the `merchant_*_cartToken`

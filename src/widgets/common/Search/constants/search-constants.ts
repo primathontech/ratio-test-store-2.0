@@ -80,13 +80,3 @@ export const AVAILABILITY_FILTER: IFilter = {
     },
   ],
 };
-
-/** Popular collections shown in the pre-search dropdown */
-export const POPULAR_PRODUCTS = [
-  { label: "Tarini Exclusive", collectionHandle: "tarini-range" },
-  { label: "Shampoo", collectionHandle: "shampoo" },
-  { label: "Conditioner", collectionHandle: "conditioner" },
-  { label: "Hair Mask", collectionHandle: "hair-mask" },
-  { label: "Serum", collectionHandle: "serum" },
-  { label: "New Launches", collectionHandle: "new-launches" },
-];

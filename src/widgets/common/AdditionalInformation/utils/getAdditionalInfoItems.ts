@@ -96,11 +96,11 @@ export function getAdditionalInfoItems(
   return items.filter((item) => item.value !== null);
 }
 
+// Merchant-agnostic defaults: no real third-party data ships. Values are
+// empty so nothing renders unless a merchant provides its own settings.
 export const DEFAULT_ADDITIONAL_INFO_SETTINGS: Required<AdditionalInfoSettings> =
   {
-    marketedBy:
-      "Honasa Consumer Limited, 10th and 11th Floor, Capital Cyberscape, Sector 59, Gurugram, Haryana, 122101",
-    countryOfOrigin: "India",
-    customerCareDetails:
-      "Supratim Sarkar - nodal@honasa.in | +91 7303086765 (refer to Marketed By address)",
+    marketedBy: "",
+    countryOfOrigin: "",
+    customerCareDetails: "",
   };

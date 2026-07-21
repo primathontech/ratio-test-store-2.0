@@ -349,8 +349,8 @@ export const OrderDetailsV1: React.FC<OrderDetailsProps> = ({
             <main className="flex-1">
               <div className="flex items-center justify-center min-h-[400px]">
                 <div className="text-center">
-                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Loading order details...</p>
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-900 mx-auto mb-4"></div>
+                  <p className="text-neutral-500">Loading order details...</p>
                 </div>
               </div>
             </main>
@@ -383,7 +383,7 @@ export const OrderDetailsV1: React.FC<OrderDetailsProps> = ({
                   <p className="text-red-600 mb-4">{error}</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    className="bg-black text-white px-6 py-3 rounded-full hover:bg-neutral-800 transition-colors"
                   >
                     Retry
                   </button>

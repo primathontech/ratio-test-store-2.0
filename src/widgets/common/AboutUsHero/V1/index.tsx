@@ -23,7 +23,7 @@ export const V1 = memo(function AboutUsHeroV1({
   });
   const imageSrc = banner.src;
   const imageAlt = banner.alt;
-  const href = settings?.href || "/products";
+  const href = settings?.href || "/collections";
   const imageWidth = settings?.imageWidth || 1522;
   const imageHeight = settings?.imageHeight || 476;
 

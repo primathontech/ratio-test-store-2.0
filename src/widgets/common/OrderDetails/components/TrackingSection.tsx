@@ -112,7 +112,7 @@ export const TrackingSection: React.FC<TrackingSectionProps> = ({
                   data-testid={`tracking-section-status-label-${index}`}
                   className={`text-xs mt-[15px] leading-none ${
                     isCompleted
-                      ? "text-[#565959] font-bold"
+                      ? "text-neutral-600 font-semibold"
                       : "font-normal text-gray-400"
                   }`}
                 >
@@ -121,7 +121,7 @@ export const TrackingSection: React.FC<TrackingSectionProps> = ({
                 <p
                   data-testid={`tracking-section-status-date-${index}`}
                   className={`text-xs mt-3 md:mt-2 leading-none ${
-                    isCompleted ? "text-[#565959]" : "text-[#565959]"
+                    isCompleted ? "text-neutral-500" : "text-neutral-500"
                   }`}
                 >
                   {statusItem.date || ""}

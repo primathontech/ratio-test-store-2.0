@@ -150,7 +150,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
       <div data-testid="order-details-content">
         <h2
           data-testid="order-details-title"
-          className="text-base font-bold text-black mb-4"
+          className="text-lg font-semibold tracking-tight text-[#1D1D1D] mb-4"
         >
           Order history
         </h2>
@@ -158,11 +158,11 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
         {/* Order Summary Card */}
         <div
           data-testid="order-details-summary-card"
-          className="bg-white border border-order-detail-border rounded-2xl mb-6"
+          className="bg-white ring-1 ring-black/[0.06] shadow-sm rounded-2xl mb-6"
         >
           <div
             data-testid="order-details-header"
-            className="bg-lighter-gray rounded-t-[16px] py-2 px-4"
+            className="bg-neutral-50 rounded-t-[16px] py-2 px-4"
           >
             <div
               data-testid="order-details-header-content"
@@ -190,7 +190,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                     data-testid="order-details-order-id"
                     className="flex items-center gap-1"
                   >
-                    <p className="text-xs text-[#727272] font-bold leading-[22px]">
+                    <p className="text-xs text-neutral-500 font-bold leading-[22px]">
                       Order Id:
                     </p>
                     {order.external_order_name ? (
@@ -241,7 +241,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                   <button
                     data-testid="order-details-cancel-button"
                     onClick={() => onCancelOrder?.(order.id)}
-                    className="transition-colors text-sm bg-black py-[5px] px-2.5 rounded-[5px] text-white font-bold hover:shadow-[0px_0px_10px_#0000007a]"
+                    className="transition-colors text-sm bg-black py-[6px] px-4 rounded-full text-white font-semibold hover:bg-neutral-800"
                   >
                     CANCEL
                   </button>
@@ -398,7 +398,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                             {formatPaiseToINR(Number(product.price))}
                           </p>
 
-                          <p className="text-xs text-[#727272] ">
+                          <p className="text-xs text-neutral-500 ">
                             Qty:{" "}
                             <span className="text-xs font-medium text-[#1d1d1d]">
                               {isCancelled
@@ -425,7 +425,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             <div data-testid="order-details-shipping-address">
               <h3
                 data-testid="order-details-shipping-address-title"
-                className="text-sm font-[800] text-black mb-2.5"
+                className="text-sm font-semibold tracking-tight text-[#1D1D1D] mb-2.5"
               >
                 Shipping Address
               </h3>
@@ -452,7 +452,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             <div data-testid="order-details-price-details">
               <h3
                 data-testid="order-details-price-details-title"
-                className="text-sm font-[800] text-black mb-2.5"
+                className="text-sm font-semibold tracking-tight text-[#1D1D1D] mb-2.5"
               >
                 Price Details
               </h3>
@@ -461,8 +461,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                   data-testid="order-details-price-subtotal"
                   className="flex justify-between"
                 >
-                  <span className="text-xs text-[#545454]">Subtotal</span>
-                  <span className="text-xs text-[#545454] lg:pr-10 xl:pr-10">
+                  <span className="text-xs text-neutral-500">Subtotal</span>
+                  <span className="text-xs text-neutral-500 lg:pr-10 xl:pr-10">
                     {formatPaiseToINR(Number(order.total_line_items_price))}
                   </span>
                 </div>
@@ -472,8 +472,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                       data-testid="order-details-price-subtotal"
                       className="flex justify-between"
                     >
-                      <span className="text-xs text-[#545454]">Discount</span>
-                      <span className="text-xs text-[#545454]  lg:pr-10 xl:pr-10 ">
+                      <span className="text-xs text-neutral-500">Discount</span>
+                      <span className="text-xs text-neutral-500  lg:pr-10 xl:pr-10 ">
                         -{formatPaiseToINR(Number(order.total_discount))} (
                         {order.discount_applications?.[0]?.code})
                       </span>
@@ -483,10 +483,10 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                   data-testid="order-details-price-shipping"
                   className="flex justify-between"
                 >
-                  <span className="text-xs text-[#545454]">
+                  <span className="text-xs text-neutral-500">
                     {shippingCharge?.label || "Shipping (Standard Shipping)"}:
                   </span>
-                  <span className="text-xs text-[#545454] lg:pr-10 xl:pr-10 items-start">
+                  <span className="text-xs text-neutral-500 lg:pr-10 xl:pr-10 items-start">
                     {formatPaiseToINR(Number(shippingCharge?.amount ?? 0))}
                   </span>
                 </div>
@@ -496,12 +496,12 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                     data-testid="order-details-price-shipping"
                     className="flex justify-between"
                   >
-                    <span className="text-xs text-[#545454]">
+                    <span className="text-xs text-neutral-500">
                       Shipping{" "}
-                      <span className="text-[#545454]">(COD Charges)</span>
+                      <span className="text-neutral-500">(COD Charges)</span>
                     </span>
 
-                    <span className="text-xs text-[#545454] lg:pr-10 xl:pr-10 items-start">
+                    <span className="text-xs text-neutral-500 lg:pr-10 xl:pr-10 items-start">
                       {formatPaiseToINR(Number(codCharge.amount))}
                     </span>
                   </div>
@@ -518,10 +518,10 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                         key={`${charge.type}-${index}`}
                         className="flex justify-between"
                       >
-                        <span className="text-xs text-[#545454]">
+                        <span className="text-xs text-neutral-500">
                           {chargeLabel}:
                         </span>
-                        <span className="text-xs text-[#545454] lg:pr-10 xl:pr-10 items-start">
+                        <span className="text-xs text-neutral-500 lg:pr-10 xl:pr-10 items-start">
                           {formatPaiseToINR(Number(charge.amount))}
                         </span>
                       </div>
@@ -534,8 +534,8 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                     data-testid="order-details-price-total-tax"
                     className="flex justify-between"
                   >
-                    <span className="text-xs text-[#545454]">Taxes</span>
-                    <span className="text-xs text-[#545454] lg:pr-10 xl:pr-10">
+                    <span className="text-xs text-neutral-500">Taxes</span>
+                    <span className="text-xs text-neutral-500 lg:pr-10 xl:pr-10">
                       {formatPaiseToINR(Number(order.total_tax))}
                     </span>
                   </div>
@@ -543,10 +543,12 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 
                 <div
                   data-testid="order-details-price-total"
-                  className="flex justify-between pt-2"
+                  className="flex justify-between pt-2 mt-2 border-t border-neutral-200"
                 >
-                  <span className="text-xs text-[#545454]">Total:</span>
-                  <span className="text-xs text-[#545454]  lg:pr-10 xl:pr-10">
+                  <span className="text-xs text-[#1D1D1D] font-semibold">
+                    Total:
+                  </span>
+                  <span className="text-xs text-[#1D1D1D] font-semibold  lg:pr-10 xl:pr-10">
                     {formatPaiseToINR(Number(order.total_price))}
                   </span>
                 </div>

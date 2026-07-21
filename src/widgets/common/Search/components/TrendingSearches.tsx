@@ -1,8 +1,8 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import React, { useMemo } from "react";
-import { POPULAR_PRODUCTS } from "../constants/search-constants";
+import React, { useEffect, useState } from "react";
+import { getTrendingSearchesForComponent } from "../services/search-api";
 
 export interface TrendingSearch {
   id: string;
@@ -20,9 +20,10 @@ export interface TrendingSearchesProps {
 }
 
 /**
- * Renders a row of "popular choices" buttons. Sources from POPULAR_PRODUCTS
- * constant — no API. Buttons navigate to /collections/{handle} and close the
- * parent dropdown/overlay.
+ * Renders a row of "popular choices" buttons. Generic: uses the `trendingSearches`
+ * prop when provided, otherwise fetches the merchant's own collections (via
+ * getTrendingSearchesForComponent) — no hardcoded handles. Buttons navigate to
+ * /collections/{handle} and close the parent dropdown/overlay.
  */
 export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
   trendingSearches,
@@ -32,16 +33,33 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
 }) => {
   const router = useRouter();
 
-  const display = useMemo<TrendingSearch[]>(() => {
+  const [fetched, setFetched] = useState<TrendingSearch[]>([]);
+
+  // Only self-fetch when the parent didn't supply chips. Derives "Popular
+  // Choices" from the merchant's collections so it's merchant-agnostic.
+  useEffect(() => {
     if (trendingSearches && trendingSearches.length > 0) {
-      return trendingSearches;
+      return;
     }
-    return POPULAR_PRODUCTS.map((p, i) => ({
-      id: `trending-${i + 1}`,
-      label: p.label,
-      href: `/collections/${p.collectionHandle}`,
-    }));
+    let cancelled = false;
+    getTrendingSearchesForComponent()
+      .then((results) => {
+        if (!cancelled) {
+          setFetched(results);
+        }
+      })
+      .catch(() => {
+        /* best-effort; section simply hides if it can't load */
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [trendingSearches]);
+
+  const display: TrendingSearch[] =
+    trendingSearches && trendingSearches.length > 0
+      ? trendingSearches
+      : fetched;
 
   if (display.length === 0) {
     return null;
@@ -54,7 +72,7 @@ export const TrendingSearches: React.FC<TrendingSearchesProps> = ({
           xmlns="http://www.w3.org/2000/svg"
           className="w-[18px] h-[18px] mr-[7px]"
           viewBox="0 0 48 48"
-          fill="#4F1136"
+          fill="#1D1D1D"
           aria-hidden="true"
         >
           <path d="M32 12l4.59 4.59-9.76 9.75-8-8-14.83 14.83 2.83 2.83 12-12 8 8 12.58-12.59 4.59 4.59v-12z" />

@@ -119,7 +119,7 @@ export const CancelOrderModal: React.FC<CancelOrderModalProps> = ({
     <div className="fixed inset-0 z-[1300] flex items-center justify-center">
       {/* Modal */}
       <div
-        className={`relative bg-white rounded-lg shadow-[0_0_10px_rgba(0,0,0,0.4)] p-[30px] transform transition-all duration-500 ease-linear mx-auto ${currentStep === ModalStep.REASON_SELECTION ? "max-w-[420px] w-full" : ""} ${
+        className={`relative bg-white rounded-2xl ring-1 ring-black/[0.06] shadow-[0_10px_40px_rgba(0,0,0,0.15)] p-[30px] transform transition-all duration-500 ease-linear mx-auto ${currentStep === ModalStep.REASON_SELECTION ? "max-w-[420px] w-full" : ""} ${
           isAnimating ? "translate-y-0" : "-translate-y-[400px]"
         }`}
       >

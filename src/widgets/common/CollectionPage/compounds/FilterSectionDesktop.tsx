@@ -94,12 +94,14 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
   }, [filters]);
 
   return (
-    <div className="w-full">
-      <h2 className="text-2xl font-bold text-black mb-12">{filterTitle}</h2>
+    <div className="w-full rounded-2xl ring-1 ring-black/[0.06] bg-white shadow-sm p-5">
+      <h2 className="text-xl md:text-2xl font-semibold tracking-tight text-[#1D1D1D] mb-6 pb-4 border-b border-neutral-200">
+        {filterTitle}
+      </h2>
 
       <div
         data-testid="filter-section-desktop-filters-list"
-        className="space-y-8"
+        className="space-y-6"
       >
         {filters.map((filter) => {
           const isExpanded = filterState.expanded.has(filter.id);
@@ -109,7 +111,7 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
             <div
               key={filter.id}
               data-testid={`filter-section-desktop-filter-${filter.id}`}
-              className="border-b border-gray-200 pb-8"
+              className="border-b border-neutral-200 pb-6 last:border-b-0 last:pb-0"
             >
               <div
                 data-testid={`filter-section-desktop-filter-header-${filter.id}`}
@@ -122,7 +124,7 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
                 >
                   <h3
                     data-testid={`filter-section-desktop-filter-label-${filter.id}`}
-                    className="text-base font-medium text-black"
+                    className="text-base font-semibold tracking-tight text-[#1D1D1D]"
                   >
                     {filter.filter_label}
                   </h3>
@@ -156,7 +158,7 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
                 data-testid={`filter-section-desktop-filter-options-container-${filter.id}`}
                 className={`overflow-hidden transition-all duration-300 ease-linear ${
                   isExpanded
-                    ? "max-h-fit opacity-100 mt-8"
+                    ? "max-h-fit opacity-100 mt-5"
                     : "max-h-0 opacity-0"
                 }`}
               >
@@ -211,8 +213,8 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
                             data-testid={`filter-section-desktop-filter-option-checkbox-${optionId}`}
                             className={`size-[18px] border rounded flex items-center justify-center transition-colors ${
                               isSelected
-                                ? "bg-black border-black"
-                                : "border-[#A3A3A3] group-hover:border-gray-400"
+                                ? "bg-[#1D1D1D] border-[#1D1D1D]"
+                                : "border-neutral-300 group-hover:border-neutral-400"
                             }`}
                           >
                             {isSelected && (
@@ -233,7 +235,7 @@ export const FilterSectionDesktop: React.FC<FilterSectionProps> = ({
                         </div>
                         <span
                           data-testid={`filter-section-desktop-filter-option-label-${optionId}`}
-                          className="text-sm font-medium text-black group-hover:text-gray-700"
+                          className="text-sm font-medium text-[#1D1D1D] group-hover:text-neutral-600"
                         >
                           {value.value}
                         </span>

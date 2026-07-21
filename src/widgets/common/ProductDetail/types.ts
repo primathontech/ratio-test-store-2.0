@@ -355,7 +355,7 @@ export interface ProductDetailSettings {
   badgeText?: string;
 
   /* ------------------------------------------------------------------ */
-  /*  BbluntProductInfo content / translation strings                    */
+  /*  RatioProductInfo content / translation strings                    */
   /* ------------------------------------------------------------------ */
 
   /** Plural-friendly suffix after review count (e.g. "reviews"). */

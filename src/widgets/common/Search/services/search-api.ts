@@ -1,24 +1,49 @@
 import { getCommerceClient } from "@/config/commerce";
 import { TrendingSearch } from "../components/TrendingSearches";
-import { POPULAR_PRODUCTS } from "../constants/search-constants";
+
+// Products tagged with this are hidden from the storefront; their PDPs redirect
+// to home (see src/app/(shop)/products/[handle]/page.tsx). They must not leak
+// into search results or product rails.
+const HIDDEN_PRODUCT_TAG = "hide__products";
 
 /**
- * Fetches trending searches from mock data
+ * Mirrors the PDP hidden-product predicate: tags may be plain strings or
+ * `{ name }` objects. Case-insensitive match against `hide__products`.
+ * NOTE: if the list API does not return a `tags` field on products, this is a
+ * no-op (nothing to filter on) — the limitation is documented here.
+ */
+function isHiddenProduct(product: any): boolean {
+  const tags = product?.tags
+    ?.map((tag: any) => (typeof tag === "string" ? tag : tag?.name || ""))
+    .filter((tag: string) => tag.length > 0)
+    .map((tag: string) => tag.toLowerCase());
+  return Array.isArray(tags) && tags.includes(HIDDEN_PRODUCT_TAG);
+}
+
+/**
+ * "Popular Choices" chips — derived GENERICALLY from the merchant's own
+ * collections (no hardcoded handles). Each collection becomes a chip linking to
+ * its PLP, so this works for any merchant just by changing the merchant ID.
  * @returns Promise with transformed trending search data
  */
 export async function fetchTrendingSearches(): Promise<TrendingSearch[]> {
   try {
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    const client = getCommerceClient();
+    const resp = (await client.getCollections({ first: 8 } as never)) as {
+      data?: unknown[];
+    };
+    const collections: any[] = Array.isArray(resp?.data)
+      ? (resp.data as any[])
+      : [];
 
-    // Transform popularProducts to TrendingSearch format
-    const trendingSearches = POPULAR_PRODUCTS.map((product, index) => ({
-      id: `trending-${index + 1}`,
-      label: product.label,
-      href: `/collections/${product.collectionHandle}`,
-    }));
-
-    return trendingSearches;
+    return collections
+      .filter((c) => c && c.handle)
+      .slice(0, 8)
+      .map((c, index) => ({
+        id: `trending-${index + 1}`,
+        label: String(c.title || c.handle),
+        href: `/collections/${c.handle}`,
+      }));
   } catch (error) {
     throw new TrendingSearchApiError(
       error instanceof Error
@@ -116,303 +141,129 @@ export async function searchProducts(
   try {
     const page = filters?.page || 1;
     const pageSize = filters?.limit || 20;
-    const collection = filters?.collection;
-    const productType = filters?.productType;
-    const sortBy = filters?.sortBy;
-    const sortOrder = filters?.sortOrder;
-    const inStock = filters?.inStock !== false;
-    // `onSale` is opt-in: only sent when a caller explicitly sets it. Passing
-    // `onSale=true` by default restricts results to discounted products and hides
-    // non-sale items (incl. exact-match products), so we omit it unless requested.
-    const onSale = filters?.onSale;
     const minPrice = filters?.minPrice;
     const maxPrice = filters?.maxPrice;
-    const minDiscount = filters?.minDiscount;
-    const maxDiscount = filters?.maxDiscount;
 
-    const searchApiUrl = process.env.NEXT_PUBLIC_SEARCH_API_URL;
-    if (!searchApiUrl) {
-      throw new Error("Search API URL not configured");
-    }
+    // GENERIC, INDEX-FREE SEARCH.
+    //
+    // The dedicated search backend (NEXT_PUBLIC_SEARCH_API_URL) requires a
+    // per-merchant index that is not provisioned for every merchant, and the
+    // product API does not text-filter server-side. So search is powered
+    // generically from the merchant's OWN catalog: pull available products via
+    // the commerce client (works on any configured backend, injects merchant
+    // auth automatically) and filter them CLIENT-SIDE by the query. This makes
+    // "whatever the merchant has" searchable with zero search-index dependency.
+    const client = getCommerceClient();
+    // The custom adapter caps `first` at 100; that's the browse-able catalog we
+    // filter over. (Enough for a generic store; raise via server search once a
+    // real index exists.)
+    const resp = (await client.getProducts({ first: 100 } as never)) as {
+      data?: unknown[];
+    };
+    const rawAll: any[] = Array.isArray(resp?.data) ? (resp.data as any[]) : [];
+    // Drop hidden products so they never surface in search (their PDPs redirect
+    // to home, which would be a broken result).
+    const all = rawAll.filter((p) => !isHiddenProduct(p));
 
-    let apiUrl = `${searchApiUrl}/products/search?q=${encodeURIComponent(
-      query
-    )}&page=${page}&pageSize=${pageSize}`;
+    const q = (query || "").trim().toLowerCase();
+    const matches = q
+      ? all.filter((p) => {
+          const hay = [p?.title, p?.handle, p?.productType, p?.product_type]
+            .filter(Boolean)
+            .map((s: unknown) => String(s).toLowerCase());
+          return hay.some((s) => s.includes(q));
+        })
+      : all;
 
-    if (Array.isArray(collection)) {
-      collection.forEach((value) => {
-        if (value) {
-          apiUrl += `&collection=${encodeURIComponent(value)}`;
-        }
-      });
-    } else if (collection) {
-      apiUrl += `&collection=${encodeURIComponent(collection)}`;
-    }
-
-    if (Array.isArray(productType)) {
-      productType.forEach((value) => {
-        if (value) {
-          apiUrl += `&productType=${encodeURIComponent(value)}`;
-        }
-      });
-    } else if (productType) {
-      apiUrl += `&productType=${encodeURIComponent(productType)}`;
-    }
-
-    if (sortBy) {
-      apiUrl += `&sortBy=${encodeURIComponent(sortBy)}`;
-    }
-    if (sortOrder) {
-      apiUrl += `&sortOrder=${encodeURIComponent(sortOrder)}`;
-    }
-    apiUrl += `&inStock=${inStock}`;
-    if (onSale !== undefined) {
-      apiUrl += `&onSale=${onSale}`;
-    }
-    if (minPrice != null && !Number.isNaN(Number(minPrice))) {
-      apiUrl += `&minPrice=${Number(minPrice)}`;
-    }
-    if (maxPrice != null && !Number.isNaN(Number(maxPrice))) {
-      apiUrl += `&maxPrice=${Number(maxPrice)}`;
-    }
-    if (minDiscount != null && !Number.isNaN(Number(minDiscount))) {
-      apiUrl += `&minDiscount=${Number(minDiscount)}`;
-    }
-    if (maxDiscount != null && !Number.isNaN(Number(maxDiscount))) {
-      apiUrl += `&maxDiscount=${Number(maxDiscount)}`;
-    }
-
-    // Search is driven by runtime query/filters/pagination; must fetch from widget
-    // eslint-disable-next-line no-restricted-syntax
-    const response = await fetch(apiUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "gk-merchant-id":
-          process.env.NEXT_PUBLIC_MERCHANT_ID || process.env.MERCHANT_ID || "",
-      },
+    // Optional client-side price-range narrowing (prices are in paise).
+    const priceOf = (p: any) => Number(p?.price ?? p?.minPrice ?? 0);
+    const filtered = matches.filter((p) => {
+      const price = priceOf(p);
+      if (
+        minPrice != null &&
+        !Number.isNaN(Number(minPrice)) &&
+        price < Number(minPrice)
+      ) {
+        return false;
+      }
+      if (
+        maxPrice != null &&
+        !Number.isNaN(Number(maxPrice)) &&
+        price > Number(maxPrice)
+      ) {
+        return false;
+      }
+      return true;
     });
 
-    if (!response.ok) {
-      throw new Error(
-        `Search API request failed: ${response.status} ${response.statusText}`
-      );
-    }
+    // Client-side pagination over the filtered catalog.
+    const start = (page - 1) * pageSize;
+    const pageItems = filtered.slice(start, start + pageSize);
 
-    const apiData = await response.json();
-    const collectionDetailsMap = new Map<string, string>();
-    if (Array.isArray(apiData.products)) {
-      for (const product of apiData.products) {
-        const details = product.collectionDetails;
-        if (Array.isArray(details)) {
-          for (const c of details) {
-            const title = (c.title ?? "").trim();
-            const handle = (c.handle ?? "").trim();
-            if (title && handle && !collectionDetailsMap.has(title)) {
-              collectionDetailsMap.set(title, handle);
-            }
-          }
-        }
-      }
-    }
-    const collectionDetails = Array.from(collectionDetailsMap.entries()).map(
-      ([title, handle]) => ({ title, handle })
-    );
-
-    const transformedProducts = apiData.products.map((product: any) => {
-      const firstVariant = product.variants?.[0];
-      const variantId = firstVariant?.variantId;
-      const variant = firstVariant
-        ? {
-            id: firstVariant.variantId,
-            title: firstVariant.title ?? "Default Title",
-            sku: firstVariant.sku,
-          }
-        : undefined;
-      const pricePaise = firstVariant?.price ?? product.minPrice ?? 0;
+    const transformedProducts = pageItems.map((product: any) => {
+      const rawImages = Array.isArray(product.images) ? product.images : [];
+      const firstImageUrl =
+        typeof rawImages[0] === "string" ? rawImages[0] : rawImages[0]?.url;
+      const mainImage =
+        product.image_url ||
+        product.mainImage ||
+        product.image ||
+        firstImageUrl ||
+        "";
+      const pricePaise = Number(product.price ?? product.minPrice ?? 0);
       const compareAtPricePaise =
-        firstVariant?.compareAtPrice != null
-          ? firstVariant.compareAtPrice
-          : null;
-      const mainImage = product.mainImage ?? product.image ?? "";
-
-      // Pass tags through so the shared ProductCard badge resolver
-      // (`getProductLabel` → handleized tag lookup) can pick up
-      // "Best Seller", "Trending", "New Launch", etc. Search API returns
-      // tags in human form, e.g. "Best Seller" → handleized to
-      // "best-seller" → matched against PRODUCT_TAG_LABELS_MAP.
+        product.compare_at_price != null
+          ? Number(product.compare_at_price)
+          : product.compareAtPrice != null
+            ? Number(product.compareAtPrice)
+            : null;
+      const inStock = product.product_availability ?? product.inStock ?? true;
+      const variantId =
+        product.variants?.[0]?.variantId ?? `${product.id}-variant`;
       const tags: string[] = Array.isArray(product.tags) ? product.tags : [];
 
-      // Reshape the search API's flat `metafields: [{namespace, key, value}]`
-      // array into the `metadata.{key}.value` map shape that
-      // `toCardProduct` reads (mirrors how the collection / PDP APIs
-      // expose metafields). Empty array → empty object, badge logic
-      // falls through to the tag map cleanly.
-      const metadata: Record<string, { value: unknown }> = {};
-      if (Array.isArray(product.metafields)) {
-        for (const m of product.metafields) {
-          if (m && typeof m.key === "string") {
-            metadata[m.key] = { value: m.value };
-          }
-        }
-      }
-
       return {
-        id: product.productId,
+        id: product.id ?? product.productId,
         title: product.title,
         handle: product.handle,
-        productType: product.productType,
+        productType: product.productType ?? product.product_type,
         image: mainImage,
-        images: product.images,
+        images: rawImages,
         imageUrls: product.imageUrls,
         price: pricePaise,
         compareAtPrice: compareAtPricePaise,
-        discountedPrice: product.onSale ? pricePaise : pricePaise,
+        discountedPrice: pricePaise,
         discount: product.discountPercentage ?? 0,
-        rating: product.averageRating || 0,
-        reviewsCount: product.ratingCount || 0,
-        inStock: product.inStock,
-        onSale: product.onSale,
-        isInStock: product.inStock,
+        rating: Number(product.average_rating ?? product.rating ?? 0) || 0,
+        reviewsCount:
+          Number(product.rating_count ?? product.reviewsCount ?? 0) || 0,
+        inStock,
+        onSale: compareAtPricePaise != null && compareAtPricePaise > pricePaise,
+        isInStock: inStock,
         variantId,
-        variant,
+        variant: { id: variantId, title: "Default Title" },
         tags,
-        metadata,
+        metadata: {},
       };
     });
-    const transformedFilters: any[] = [];
-    if (
-      apiData.facets?.productTypes &&
-      apiData.facets.productTypes.length > 0
-    ) {
-      transformedFilters.push({
-        id: "product_type",
-        filter_label: "Product Type",
-        source_type: "text",
-        position: 1,
-        sort_order: "asc",
-        values: apiData.facets.productTypes.map((type: any) => ({
-          value: type.value,
-          count: type.count,
-        })),
-      });
-    }
-    if (apiData.facets?.collections && apiData.facets.collections.length > 0) {
-      transformedFilters.push({
-        id: "st_newcollections",
-        filter_label: "Collections",
-        source_type: "text",
-        position: 2,
-        sort_order: "asc",
-        values: apiData.facets.collections.map((collection: any) => ({
-          value: collection.value,
-          count: collection.count,
-        })),
-      });
-    }
 
-    if (apiData.facets?.priceRanges && apiData.facets.priceRanges.length > 0) {
-      transformedFilters.push({
-        id: "discounted_price",
-        filter_label: "Price",
-        source_type: "numeric",
-        position: 3,
-        sort_order: "asc",
-        values: apiData.facets.priceRanges.map((range: any) => {
-          const min = range.min;
-          const max = range.max ?? null;
-          let label = "";
-          if (min === 0 && max !== null) {
-            label = `Below ₹${max}`;
-          } else if (max !== null) {
-            label = `₹${min} – ₹${max}`;
-          } else {
-            label = `₹${min} & Above`;
-          }
-          return {
-            value: label,
-            count: range.count,
-            min,
-            max,
-          };
-        }),
-      });
-    }
+    const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
 
-    // Add Tags filter if available
-    if (apiData.facets?.tags && apiData.facets.tags.length > 0) {
-      transformedFilters.push({
-        id: "tags",
-        filter_label: "Tags",
-        source_type: "text",
-        position: 4,
-        sort_order: "asc",
-        values: apiData.facets.tags.map((tag: any) => ({
-          value: tag.value,
-          count: tag.count,
-        })),
-      });
-    }
-
-    // Transform facets: pass through handle when provided by backend for stable collection identifiers
-    const collectionsFromApi =
-      apiData.facets?.collections ?? apiData.collections ?? [];
-    const textFacets = {
-      st_newcollections: Array.isArray(collectionsFromApi)
-        ? collectionsFromApi.map((collection: any) => ({
-            label: collection.value ?? collection.title ?? "",
-            value: collection.count ?? 0,
-            handle: collection.handle,
-          }))
-        : [],
-      product_type:
-        apiData.facets?.productTypes?.map((type: any) => ({
-          label: type.value,
-          value: type.count,
-        })) || [],
-    };
-    const discountRanges =
-      apiData.facets?.discountRanges ?? apiData.discountRanges ?? [];
-    const priceRanges = apiData.facets?.priceRanges ?? [];
-    const maxPriceFromApi = Math.max(
-      0,
-      ...priceRanges.map((r: any) => r.max).filter((m: any) => m != null)
-    );
-    const numericFacets = {
-      discounted_price: priceRanges
-        .filter((r: any) => r.count > 0)
-        .map((r: any) => ({
-          min: r.min,
-          max: r.max ?? null,
-          count: r.count,
-          minDisplay: r.min / 100,
-          maxDisplay: r.max != null ? r.max / 100 : null,
-          ...(r.max == null && maxPriceFromApi >= 0
-            ? { maxForApi: maxPriceFromApi }
-            : {}),
-        })),
-      discount: discountRanges
-        .filter((r: any) => r.count > 0)
-        .map((r: any) => ({
-          min: r.min,
-          max: r.max ?? null,
-          count: r.count,
-        })),
-    };
-
+    // No server-side facets in catalog-filter mode — the filter sidebar simply
+    // shows no facet options (graceful: the grid + query still work).
     return {
       products: transformedProducts,
-      totalHits: apiData.total,
+      totalHits: filtered.length,
       query: query,
-      filters: transformedFilters,
-      textFacets: textFacets,
-      numericFacets: numericFacets,
-      collectionDetails,
+      filters: [] as any[],
+      textFacets: { st_newcollections: [], product_type: [] },
+      numericFacets: { discounted_price: [], discount: [] },
+      collectionDetails: [] as { title: string; handle: string }[],
       pagination: {
-        currentPage: apiData.page,
-        limit: apiData.pageSize,
-        totalPages: apiData.totalPages,
-        totalResults: apiData.total,
+        currentPage: page,
+        limit: pageSize,
+        totalPages,
+        totalResults: filtered.length,
       },
     };
   } catch (error) {
@@ -498,62 +349,33 @@ export async function getBestsellingProductsForNoResults() {
 }
 
 /**
- * Fetches products from the "most-loved-home-page" collection handle using the collection API
+ * Products for the "Recommended for you" rail and the no-results page — sourced
+ * GENERICALLY from the merchant's catalog (no hardcoded collection handle). Any
+ * merchant with products gets a populated rail just by changing the merchant ID.
  * @param productLimit - Number of products to fetch (default: 12)
- * @returns Promise with products from the most-loved-home-page collection
+ * @returns Promise with available products
  */
 export async function fetchMostLovedProducts(productLimit: number = 12) {
   try {
     const client = getCommerceClient();
-    // `getCollectionsByHandles` is the typed v2 commerce client method that
-    // auto-injects platform auth (gk-merchant-id, store id, signed token)
-    // — much more reliable than calling the underlying URL directly.
-    const response = await client.getCollectionsByHandles({
-      handles: ["bestseller"],
-      productLimit,
-    });
+    // The custom adapter reads pagination from `params.first` (caps at 100) and
+    // injects merchant auth automatically.
+    const response = (await client.getProducts({
+      first: Math.min(Math.max(productLimit, 1), 100),
+    } as never)) as { data?: unknown[]; success?: boolean; message?: string };
 
-    if (!response.success) {
-      throw new Error(
-        response.message || "Failed to fetch bestseller collection"
-      );
+    if (response && response.success === false) {
+      throw new Error(response.message || "Failed to fetch products");
     }
 
-    // Shopkit's custom adapter normalises each collection into a wrapper:
-    //   { handle, data: <raw collection with products>, meta, success, ... }
-    // So products live at `entry.data.products`. We also fall back to
-    // `entry.products` and `data.collections[].data.products` defensively.
-    type RawCollection = {
-      handle?: string;
-      products?: unknown[];
-      title?: string;
-    };
-    type NormalisedEntry = {
-      handle?: string;
-      data?: RawCollection;
-      products?: unknown[];
-    };
-    const rawData = response.data as
-      NormalisedEntry[] | { collections?: NormalisedEntry[] } | null;
-    const entries: NormalisedEntry[] = Array.isArray(rawData)
-      ? rawData
-      : Array.isArray(rawData?.collections)
-        ? (rawData!.collections as NormalisedEntry[])
-        : [];
-
-    const bestsellerEntry =
-      entries.find((c) => c?.handle === "bestseller") ?? entries[0];
-
-    const products: unknown[] = Array.isArray(bestsellerEntry?.data?.products)
-      ? (bestsellerEntry!.data!.products as unknown[])
-      : Array.isArray(bestsellerEntry?.products)
-        ? (bestsellerEntry!.products as unknown[])
-        : [];
+    const products: unknown[] = (
+      Array.isArray(response?.data) ? (response.data as unknown[]) : []
+    ).filter((p) => !isHiddenProduct(p));
 
     return {
       products,
       totalHits: products.length,
-      collectionHandle: bestsellerEntry?.handle ?? "bestseller",
+      collectionHandle: "",
       productLimit,
       apiResponse: response,
     };

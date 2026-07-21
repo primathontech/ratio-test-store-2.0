@@ -10,9 +10,9 @@ import { THEMES } from "@/editor-integration/theme-constants";
 
 // Theme-scoped registry with lazy components (created once)
 export const STATIC_TEMPLATES_REGISTRY = {
-  [THEMES.BBLUNT_2.id]: {
+  [THEMES.RATIO.id]: {
     // Add static (non-page-builder) templates here, e.g.:
-    // [THEMES.BBLUNT_2.static_templates.PRIVACY_POLICY]: lazy(() => import("@/editor-integration/static-templates/privacy-policy")),
+    // [THEMES.RATIO.static_templates.PRIVACY_POLICY]: lazy(() => import("@/editor-integration/static-templates/privacy-policy")),
   },
 } as const;
 

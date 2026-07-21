@@ -26,14 +26,14 @@ export const OrderSummaryAccordion: React.FC<OrderSummaryAccordionProps> = ({
       {/* Accordion Header */}
       <button
         onClick={toggleAccordion}
-        className="w-full flex items-center justify-between border-b border-[#d6d6d6] p-[21px]"
+        className="w-full flex items-center justify-between border-b border-neutral-200 p-[21px]"
       >
         <div className="flex items-center space-x-2">
-          <span className="text-[#005bd1] text-sm font-normal">
+          <span className="text-[#1D1D1D] text-sm font-medium">
             Order summary
           </span>
           <svg
-            className={`size-2.5 text-[#005bd1] transition-transform ${
+            className={`size-2.5 text-[#1D1D1D] transition-transform ${
               isExpanded ? "rotate-180" : ""
             }`}
             fill="none"
@@ -57,7 +57,7 @@ export const OrderSummaryAccordion: React.FC<OrderSummaryAccordionProps> = ({
       <div
         className={`overflow-hidden transition-all duration-300 ease-in-out ${
           isExpanded
-            ? "max-h-[1000px] opacity-100 border-b border-[#d6d6d6]"
+            ? "max-h-[1000px] opacity-100 border-b border-neutral-200"
             : "max-h-0 opacity-0"
         }`}
       >

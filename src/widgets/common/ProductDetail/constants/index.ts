@@ -59,7 +59,7 @@ export const GALLERY_CONFIG = {
 } as const;
 
 /**
- * bblunt-tuned gallery defaults — the widget uses these directly,
+ * ratio-tuned gallery defaults — the widget uses these directly,
  * there is no settings-driven tuning today.
  */
 export const GALLERY_DEFAULTS = {

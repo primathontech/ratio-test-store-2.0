@@ -9,7 +9,7 @@ import {
   ProductMetadataKey,
 } from "../types";
 import { ProductGallery } from "../components/ProductGallery";
-import { BbluntProductInfo } from "../components/BbluntProductInfo";
+import { RatioProductInfo } from "../components/RatioProductInfo";
 import { getProductLabel } from "@/utils/metafield";
 
 /* ------------------------------------------------------------------ */
@@ -55,7 +55,7 @@ export const V1 = memo(function V1({
     ) ?? null;
 
   // Optional template-driven copy overrides — passed through to
-  // BbluntProductInfo. Each prop defaults to a bblunt-tuned string inside
+  // RatioProductInfo. Each prop defaults to a ratio-tuned string inside
   // the component, so anything left undefined falls through to that default.
   const infoProps = {
     addToCartText: settings?.addToCartText,
@@ -84,9 +84,9 @@ export const V1 = memo(function V1({
       <div className="pt-0 pb-0 lg:pt-[47px] xl:pt-14 lg:pb-[27px] xl:pb-8">
         <div className="px-0 md:px-[30px] xl:px-[70px] pt-4 md:pt-0">
           {/* Mobile — info stacks above gallery (gallery slot is rendered
-              inside BbluntProductInfo via `renderGallery`). */}
+              inside RatioProductInfo via `renderGallery`). */}
           <div className="block md:hidden">
-            <BbluntProductInfo
+            <RatioProductInfo
               data={product}
               renderGallery={
                 <ProductGallery images={images} productLabel={productLabel} />
@@ -108,7 +108,7 @@ export const V1 = memo(function V1({
 
             <div data-testid="product-info-section" className="flex-1 min-w-0">
               <div className="sticky top-[30px] pl-0 xl:pl-[13px]">
-                <BbluntProductInfo data={product} {...infoProps} />
+                <RatioProductInfo data={product} {...infoProps} />
               </div>
             </div>
           </div>

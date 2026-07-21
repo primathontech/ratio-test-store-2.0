@@ -17,7 +17,7 @@ import { CollectionHeadingProps } from "../types";
  * Container: max-width 1400px at 1440px, auto-centered
  */
 export const V1 = memo(function V1({ settings }: CollectionHeadingProps) {
-  const title = settings?.title || "Shampoo";
+  const title = settings?.title || "Products";
   const showDivider = settings?.showDivider !== false;
   const dividerColor = settings?.dividerColor || "rgb(217, 217, 217)";
 

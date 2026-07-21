@@ -1,5 +1,5 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
-import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
+import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getPageMetadata } from "@shopkit/seo";
 import { getMerchantName, getThemeName } from "@/utils";
@@ -7,15 +7,35 @@ import { getPageBuilder } from "@/bootstrap/builder";
 import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
 import { Metadata } from "next";
 import { getRouteTranslations } from "@/utils";
+import { cache } from "react";
+import { JsonLd, extractJsonLd, stripJsonLd } from "@/components/seo/JsonLd";
 
 /** ISR — revalidate collection data every 3600 seconds */
 import type { PageConfig } from "@shopkit/builder";
 
 export const revalidate = 3600;
 
-// Generate metadata for home page
+// Descriptive, merchant-agnostic home metadata derived from the configured
+// site name (with a generic fallback). cache() so generateMetadata and the
+// page component share a single computation per request.
+const getHomeMetadata = cache(async (): Promise<Metadata> => {
+  const siteName = process.env.NEXT_PUBLIC_SITE_NAME || "Our Store";
+  return getPageMetadata({
+    pageType: "home",
+    path: "/",
+    fallback: {
+      title: `${siteName} | Shop Online`,
+      description:
+        process.env.NEXT_PUBLIC_SITE_DESCRIPTION ||
+        `Shop the latest products at ${siteName}. Discover our full range and enjoy a fast, secure checkout.`,
+    },
+  });
+});
+
+// Generate metadata for home page (JSON-LD stripped from `other`; rendered as a
+// real <script> in the page body instead).
 export async function generateMetadata(): Promise<Metadata> {
-  return getPageMetadata({ pageType: "home", path: "/" });
+  return stripJsonLd(await getHomeMetadata());
 }
 
 export default async function HomePage({
@@ -64,5 +84,12 @@ export default async function HomePage({
     pageConfig: previewPageConfig,
   });
 
-  return <>{pageContent}</>;
+  const jsonLd = extractJsonLd(await getHomeMetadata());
+
+  return (
+    <>
+      {pageContent}
+      <JsonLd data={jsonLd} />
+    </>
+  );
 }

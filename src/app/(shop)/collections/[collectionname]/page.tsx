@@ -1,5 +1,5 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
-import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
+import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getPageMetadata } from "@shopkit/seo";
@@ -11,12 +11,16 @@ import { KwikPassCollectionView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
+import { JsonLd, extractJsonLd, stripJsonLd } from "@/components/seo/JsonLd";
+import { createCollectionStaticParams } from "@shopkit/data-layer";
 
-// export const revalidate = 30;
-// export const dynamicParams = true;
+// ISR: prerender every collection at build time, revalidate hourly, and still
+// render (then cache) any handle not in the build set via on-demand ISR.
+export const revalidate = 3600;
+export const dynamicParams = true;
 
-// export const generateStaticParams =
-//   createCollectionStaticParams(getCommerceClient);
+export const generateStaticParams =
+  createCollectionStaticParams(getCommerceClient);
 
 export async function generateMetadata(props: {
   params: Promise<{ collectionname: string }>;
@@ -26,12 +30,16 @@ export async function generateMetadata(props: {
     const searchParams = await props.searchParams;
     const params = await props.params;
     const collection = await fetchCollection(params.collectionname);
-    return getPageMetadata({
-      pageType: "collection",
-      path: `/collections/${params.collectionname}`,
-      data: collection,
-      searchParams,
-    });
+    // JSON-LD is rendered as a real <script> in the page body (see below), so
+    // strip it from `other` to avoid the broken <meta> duplicate.
+    return stripJsonLd(
+      await getPageMetadata({
+        pageType: "collection",
+        path: `/collections/${params.collectionname}`,
+        data: collection,
+        searchParams,
+      })
+    );
   } catch {
     return {};
   }
@@ -81,6 +89,17 @@ export default async function CollectionPage(props: {
       pageConfig: previewPageConfig,
     });
 
+    // Real JSON-LD <script> from the same schema the SEO layer computes for the
+    // metadata (collection already fetched above — pure CPU, no extra call).
+    // Returns null for filtered/noindex collection views, matching the metadata.
+    const jsonLd = extractJsonLd(
+      await getPageMetadata({
+        pageType: "collection",
+        path: `/collections/${params.collectionname}`,
+        data: collection,
+      })
+    );
+
     return (
       // Reserve viewport height while the collection content streams in. The
       // footer is rendered by the (shop) <Chrome> layout OUTSIDE this boundary,
@@ -91,6 +110,7 @@ export default async function CollectionPage(props: {
       // resolves, so the final rendered UI is unchanged.
       <Suspense fallback={<div className="min-h-screen" aria-hidden />}>
         {pageContent}
+        <JsonLd data={jsonLd} />
         <KwikPassCollectionView collection={collection} />
       </Suspense>
     );

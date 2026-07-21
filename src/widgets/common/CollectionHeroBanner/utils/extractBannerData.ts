@@ -8,19 +8,21 @@ import {
 } from "../../AdditionalInformation/utils/getAdditionalInfoItems";
 import type { CollectionBannerItem, CollectionHeroBannerData } from "../types";
 
-function extractPathFromBbluntUrl(url: string): string {
+// Strip any absolute origin so links resolve on the current merchant domain.
+// For an absolute URL we keep only pathname + search + hash; relative URLs and
+// "#" pass through unchanged. Merchant-agnostic: works for any host.
+function extractPathFromUrl(url: string): string {
   if (!url || url === "#") {
     return "#";
   }
 
-  const bbluntIndex = url.indexOf("bblunt.com");
-  if (bbluntIndex !== -1) {
-    const pathStart = bbluntIndex + "bblunt.com".length;
-    const path = url.substring(pathStart);
-    return path.startsWith("/") ? path : `/${path}`;
+  try {
+    const parsed = new URL(url);
+    return `${parsed.pathname}${parsed.search}${parsed.hash}`;
+  } catch {
+    // Not an absolute URL (e.g. already a relative path) — return as-is.
+    return url;
   }
-
-  return url;
 }
 
 export function extractBannerData(
@@ -46,7 +48,7 @@ export function extractBannerData(
           getFirstValue(banner.fields?.mobile_image?.value) || "";
         const rawRedirectionLink =
           getFirstValue(banner.fields?.redirection_link?.value) || "#";
-        const redirectionLink = extractPathFromBbluntUrl(rawRedirectionLink);
+        const redirectionLink = extractPathFromUrl(rawRedirectionLink);
         const redirectInNewTab =
           banner.fields?.redirect_in_new_tab?.value || false;
 
@@ -69,7 +71,7 @@ export function extractBannerData(
   if (metadata.mobile_banner || metadata.collection_banner_image) {
     const rawFallbackLink =
       getFirstValue(metadata.collection_redirection?.value) || "#";
-    const fallbackLink = extractPathFromBbluntUrl(rawFallbackLink);
+    const fallbackLink = extractPathFromUrl(rawFallbackLink);
 
     const mobileBanner = getFirstValue(metadata.mobile_banner?.value);
     const desktopBanner = getFirstValue(

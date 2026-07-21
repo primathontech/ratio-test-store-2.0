@@ -172,8 +172,8 @@ export const V1: React.FC<ThankYouProps> = () => {
     return (
       <div className="min-h-screen flex items-center justify-center bg-white">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-gray-900 mx-auto mb-4" />
-          <p className="text-gray-600">Loading your order details...</p>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1D1D1D] mx-auto mb-4" />
+          <p className="text-neutral-500">Loading your order details...</p>
         </div>
       </div>
     );
@@ -199,13 +199,13 @@ export const V1: React.FC<ThankYouProps> = () => {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">
+          <h1 className="text-2xl font-semibold tracking-tight text-[#1D1D1D] mb-2">
             Unable to Load Order
           </h1>
-          <p className="text-gray-600 mb-4">{error || "Order not found"}</p>
+          <p className="text-neutral-500 mb-4">{error || "Order not found"}</p>
           <Link
             href={"/"}
-            className="px-6 py-3 bg-black text-white rounded-md hover:bg-gray-800 transition-colors"
+            className="inline-flex items-center justify-center px-6 py-3 bg-black text-white rounded-full hover:bg-neutral-800 transition-colors"
           >
             Return to Home
           </Link>
@@ -242,19 +242,19 @@ export const V1: React.FC<ThankYouProps> = () => {
         </Link>
       </div>
 
-      <div className="bg-[#f5f5f5]">
+      <div className="bg-neutral-50">
         <OrderSummaryAccordion order={orderData.order} className="md:hidden" />
 
         {/* Order Header */}
         <div className="py-[21px] md:py-4 px-[21px] md:px-[38px] max-w-[1200px] mx-auto flex flex-col gap-y-[26px] md:flex-row justify-between">
           <div>
-            <h2 className="text-[21px] text-black font-semibold flex items-center gap-2">
+            <h2 className="text-[21px] text-[#1D1D1D] font-semibold tracking-tight flex items-center gap-2">
               Order{" "}
               {orderData?.order?.external_order_name ?? (
-                <span className="inline-block h-5 w-[100px] bg-gray-200 animate-pulse rounded" />
+                <span className="inline-block h-5 w-[100px] bg-neutral-200 animate-pulse rounded" />
               )}
             </h2>
-            <p className="text-sm text-[#666]">
+            <p className="text-sm text-neutral-500">
               Confirmed{" "}
               {new Date(orderData?.order?.created_at).toLocaleDateString(
                 "en-US",
@@ -265,7 +265,7 @@ export const V1: React.FC<ThankYouProps> = () => {
 
           <Link
             href="/"
-            className="bg-white p-3.5 border rounded-lg border-[#d6d6d6] text-[#005bd1] text-sm font-semibold text-center"
+            className="inline-flex items-center justify-center bg-white px-6 py-3 ring-1 ring-black/10 rounded-full text-[#1D1D1D] text-sm font-medium text-center hover:bg-neutral-100 transition-colors"
           >
             Go Back to Homepage
           </Link>

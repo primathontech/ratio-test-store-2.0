@@ -1,5 +1,5 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
-import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
+import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
@@ -11,10 +11,12 @@ import { getPageMetadata } from "@shopkit/seo";
 export async function generateMetadata(): Promise<Metadata> {
   return getPageMetadata({
     pageType: "page",
-    path: "/about-us",
+    path: "/pages/about-us",
     fallback: {
-      title: "About Us - BBlunt",
-      description: "Learn more about BBlunt.",
+      title: "About Us",
+      description: `Learn more about ${
+        process.env.NEXT_PUBLIC_SITE_NAME || "our store"
+      }.`,
     },
   });
 }

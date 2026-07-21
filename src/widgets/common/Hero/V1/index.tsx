@@ -197,7 +197,7 @@ const Button = ({
   textColor?: string;
 }) => {
   const label = button?.label ?? "";
-  const link = button?.link ?? "/collections/all";
+  const link = button?.link ?? "/collections";
   const secondary = button?.secondary ?? true;
 
   if (!label) {
@@ -312,7 +312,7 @@ export const V1 = memo(function V1({ vm, className }: ImageBannerProps) {
   const buttons: ImageBannerButton[] =
     settings?.buttons && settings.buttons.length > 0
       ? settings.buttons
-      : [{ label: "Shop now", link: "/collections/all", secondary: true }];
+      : [{ label: "Shop now", link: "/collections", secondary: true }];
 
   // Derived layout values.
   const desktopHeight = DESKTOP_HEIGHTS[imageHeight] ?? DESKTOP_HEIGHTS.large;

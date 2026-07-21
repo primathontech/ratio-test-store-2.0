@@ -18,7 +18,7 @@ import { LazyLoadShimmerProps } from "../types";
 /*  How the "hide-after-shimmer" trick works:                          */
 /*  Each widget on this page is wrapped by the renderer in its own     */
 /*  <section>. When this widget mounts we tag its parent section with  */
-/*  `bblunt-shimmer-host`. A global CSS rule in globals.css then       */
+/*  `ratio-shimmer-host`. A global CSS rule in globals.css then       */
 /*  collapses every `section ~ section` that follows. When the         */
 /*  IntersectionObserver fires (or reduced-motion fallback), we set    */
 /*  `hidden` -> render null, useEffect cleanup strips the class,       */
@@ -29,7 +29,7 @@ const PRODUCT_CARD_COUNT = 5;
 const REEL_CARD_COUNT = 4;
 const TESTIMONIAL_CARD_COUNT = 4;
 
-const HOST_CLASS = "bblunt-shimmer-host";
+const HOST_CLASS = "ratio-shimmer-host";
 
 /* Tailwind utility chunks reused across many bars */
 const SHIMMER_BASE =

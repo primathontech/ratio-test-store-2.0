@@ -134,7 +134,7 @@ export const Addresses: React.FC<AddressesProps> = ({
           {/* Show loading state only when initially loading and no addresses */}
           {isInitialLoading && displayAddresses.length === 0 ? (
             <div className="flex items-center justify-center min-h-[200px]">
-              <div className="text-gray-500 text-sm">
+              <div className="text-neutral-500 text-sm">
                 {listLabels.loading_addresses}
               </div>
             </div>
@@ -143,7 +143,7 @@ export const Addresses: React.FC<AddressesProps> = ({
               {paginatedAddresses.map((address) => (
                 <div
                   key={address.address_id}
-                  className={`border border-gray-200 rounded-[10px] p-2.5 !mb-[50px] !mt-0 ${
+                  className={`rounded-2xl ring-1 ring-black/[0.06] shadow-sm p-2.5 !mb-[50px] !mt-0 ${
                     isDeleting === address.address_id ? "opacity-50" : ""
                   }`}
                 >
@@ -181,7 +181,7 @@ export const Addresses: React.FC<AddressesProps> = ({
             <div className="flex flex-col justify-center items-center mb-5">
               <button
                 onClick={handleAddNewAddress}
-                className="bg-black text-white px-[24.5px] md:px-[30.5px] py-2 md:py-3 rounded-[10px] text-sm font-semibold hover:bg-gray-800 transition-colors"
+                className="bg-black text-white px-[24.5px] md:px-[30.5px] py-2 md:py-3 rounded-full text-sm font-semibold hover:bg-neutral-800 transition-colors"
               >
                 {listLabels.add_new_address_button}
               </button>
@@ -200,7 +200,7 @@ export const Addresses: React.FC<AddressesProps> = ({
           <div className="flex flex-col justify-center items-center my-0 md:my-5">
             <button
               onClick={handleAddNewAddress}
-              className="bg-black text-white px-[24.5px] md:px-[30.5px] py-2 md:py-3 rounded-[10px] text-sm font-semibold transition-colors shine-link-button"
+              className="bg-black text-white px-[24.5px] md:px-[30.5px] py-2 md:py-3 rounded-full text-sm font-semibold hover:bg-neutral-800 transition-colors shine-link-button"
             >
               {listLabels.add_new_address_button}
             </button>

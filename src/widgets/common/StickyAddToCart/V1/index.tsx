@@ -11,7 +11,7 @@ import { StickyAddToCartProps } from "../types";
 
 /**
  * Build the cart item shape expected by `@shopkit/cart`'s `addItem`.
- * Mirrors the helper used in `BbluntProductInfo` so behaviour matches PDP.
+ * Mirrors the helper used in `RatioProductInfo` so behaviour matches PDP.
  */
 function buildCartItem(product: ApiProduct, variantId?: string): CartItem {
   const lineId = variantId ?? product.id;
@@ -229,7 +229,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               alt={productImageAlt}
               width={120}
               height={120}
-              className="w-[120px] h-[120px] rounded-3xl object-cover"
+              className="w-[120px] h-[120px] rounded-2xl object-cover ring-1 ring-black/[0.06]"
             />
           </div>
 
@@ -281,7 +281,7 @@ export const V1 = memo(function V1({ data, settings }: StickyAddToCartProps) {
               type="button"
               onClick={handleAddToCart}
               disabled={isLoading || !isAvailable}
-              className="flex items-center justify-center w-64 h-[53px] bg-black text-secondary rounded-[10px] border border-black text-xl leading-[24px] font-bold text-center cursor-pointer transition-[background-color,color,border] duration-[250ms] ease-in-out hover:bg-[#222222] disabled:cursor-not-allowed relative overflow-hidden"
+              className="flex items-center justify-center w-64 h-[52px] bg-black text-secondary rounded-full border border-black text-base tracking-tight leading-[24px] font-semibold text-center cursor-pointer transition-all duration-200 ease-in-out hover:bg-neutral-800 disabled:cursor-not-allowed disabled:opacity-60 relative overflow-hidden"
               aria-label={`${isAvailable ? buttonText : soldOutText} ${price}`}
             >
               {isLoading ? (

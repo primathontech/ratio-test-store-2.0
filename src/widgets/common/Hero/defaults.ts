@@ -17,7 +17,7 @@ export const HeroDefaults: HeroSharedSettings = {
   textColor: "",
   textSize: "default",
   ctaLabel: "Shop now",
-  ctaHref: "/collections/all",
+  ctaHref: "/collections",
   secondaryCtaLabel: "",
   secondaryCtaHref: "",
   buttonStyle: "default",

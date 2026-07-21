@@ -31,7 +31,7 @@ interface ProductGalleryProps {
  * magnifier, lightbox/zoom modal, keyboard nav, and the desktop thumbnail
  * strip — composed via the components in this folder.
  *
- * Settings are hardcoded to the bblunt-tuned defaults in
+ * Settings are hardcoded to the ratio-tuned defaults in
  * [`../constants`](../constants/index.ts) per the porting decision in
  * `docs/PDP_PRODUCT_GALLERY_FLOW.md` §7.2.
  */
@@ -96,16 +96,45 @@ export const ProductGallery: React.FC<ProductGalleryProps> = React.memo(
           onHoverPreviewChange?.(false);
         }
       }
+      // Depend on the specific STABLE setters (useCallback([]) in
+      // useGalleryState), not the whole `galleryState` object — that object is
+      // recreated on every render ({...state, ...setters}), so depending on it
+      // re-runs this effect every render and, with the setState calls above,
+      // causes an infinite update loop ("Maximum update depth exceeded").
     }, [
       isHoveringNavigationArrow,
       isMobile,
-      galleryState,
+      galleryState.setIsHoverPreviewVisible,
+      galleryState.setMousePosition,
       onHoverPreviewChange,
       settings.enableHoverPreview,
     ]);
 
     if (!images || images.length === 0) {
-      return null;
+      // Graceful placeholder so the PDP never shows a blank gallery column when
+      // a product has no image (common for demo / newly-created products).
+      return (
+        <div aria-label="Product image" role="region" className={className}>
+          <div className="flex aspect-square w-full items-center justify-center rounded-2xl bg-gradient-to-br from-neutral-100 to-neutral-200 ring-1 ring-black/[0.05]">
+            <svg
+              className="h-16 w-16 text-neutral-300"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              aria-hidden="true"
+            >
+              <rect x="3" y="3" width="18" height="18" rx="2" />
+              <circle cx="8.5" cy="8.5" r="1.5" />
+              <path
+                d="M21 15l-5-5L5 21"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+        </div>
+      );
     }
 
     const handleMainImageClick = (e?: React.MouseEvent) => {

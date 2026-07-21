@@ -86,7 +86,7 @@ export const V1 = memo(function V1({
             }`}
           >
             <Image
-              src="/bblunt-2/svg/additional-info-arrow.svg"
+              src="/ratio/svg/additional-info-arrow.svg"
               alt="Toggle arrow"
               width={18}
               height={10}

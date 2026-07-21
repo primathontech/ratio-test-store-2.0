@@ -11,5 +11,11 @@ export default function ShopLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <Chrome>{children}</Chrome>;
+  return (
+    <Chrome>
+      {/* Primary landmark for assistive tech + skip-link target (see root
+          layout). Non-visual wrapper — block-level like the previous fragment. */}
+      <main id="main-content">{children}</main>
+    </Chrome>
+  );
 }

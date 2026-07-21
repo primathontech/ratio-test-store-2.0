@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import React, { Suspense, useEffect, useState } from "react";
 import { getCommerceClient } from "@/config/commerce";
@@ -143,14 +144,34 @@ const CollectionListContent: React.FC<CollectionListProps> = ({
     };
   }, [currentPage, data, pageSize]);
 
+  const containerClass =
+    "px-[15px] md:px-[30px] md:max-w-[1360px] xl:px-[50px] xl:max-w-[1400px] pb-[66px] md:pb-[74px] xl:pb-[88px] mx-auto";
+
+  const PageHeader = () => (
+    <header className="pt-[44px] pb-8 text-center md:pt-[60px] md:pb-10">
+      <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-neutral-400">
+        Shop
+      </p>
+      <h1 className="font-body text-3xl font-semibold tracking-tight text-[#1D1D1D] md:text-[38px]">
+        {heading}
+      </h1>
+      <p className="mx-auto mt-3 max-w-md text-sm leading-relaxed text-neutral-500 md:text-base">
+        Explore our full range — every collection, in one place.
+      </p>
+    </header>
+  );
+
   if (loading) {
     return (
-      <section className="px-[15px] md:px-[30px] md:max-w-[1360px] xl:px-[50px] xl:max-w-[1400px] pb-[66px] md:pb-[74px] xl:pb-[88px] mx-auto">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4" />
-            <p className="text-text-light text-sm">Loading collections...</p>
-          </div>
+      <section className={containerClass}>
+        <PageHeader />
+        <div className="grid grid-cols-2 gap-3 pb-[25px] md:grid-cols-3 md:gap-5 md:pb-[30px] xl:grid-cols-4">
+          {Array.from({ length: pageSize }).map((_, i) => (
+            <div
+              key={i}
+              className="aspect-square animate-pulse rounded-2xl bg-neutral-100 ring-1 ring-black/[0.04]"
+            />
+          ))}
         </div>
       </section>
     );
@@ -158,10 +179,35 @@ const CollectionListContent: React.FC<CollectionListProps> = ({
 
   if (error) {
     return (
-      <section className="px-[15px] md:px-[30px] md:max-w-[1360px] xl:px-[50px] xl:max-w-[1400px] pb-[66px] md:pb-[74px] xl:pb-[88px] mx-auto">
-        <div className="flex items-center justify-center min-h-[400px]">
-          <div className="text-center">
-            <p className="text-red-600 mb-4">{error}</p>
+      <section className={containerClass}>
+        <PageHeader />
+        <div className="flex min-h-[320px] items-center justify-center">
+          <div className="mx-auto max-w-sm text-center">
+            <div className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-full bg-neutral-100 text-neutral-400">
+              <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <path
+                  d="M12 9v4m0 4h.01M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0Z"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            </div>
+            <p className="mb-5 text-[15px] text-neutral-600">{error}</p>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="inline-flex items-center rounded-full bg-[#1D1D1D] px-6 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            >
+              Try again
+            </button>
           </div>
         </div>
       </section>
@@ -170,24 +216,49 @@ const CollectionListContent: React.FC<CollectionListProps> = ({
 
   if (collections.length === 0) {
     return (
-      <div className="flex items-center justify-center min-h-[300px]">
-        <p className="text-text-light text-base">No collections found.</p>
-      </div>
+      <section className={containerClass}>
+        <PageHeader />
+        <div className="flex min-h-[320px] items-center justify-center">
+          <div className="mx-auto max-w-sm text-center">
+            <div className="mx-auto mb-5 grid h-14 w-14 place-items-center rounded-full bg-neutral-100 text-neutral-400">
+              <svg
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                aria-hidden="true"
+              >
+                <rect x="3" y="3" width="7" height="7" rx="1.5" />
+                <rect x="14" y="3" width="7" height="7" rx="1.5" />
+                <rect x="3" y="14" width="7" height="7" rx="1.5" />
+                <rect x="14" y="14" width="7" height="7" rx="1.5" />
+              </svg>
+            </div>
+            <h2 className="mb-2 text-lg font-semibold text-[#1D1D1D]">
+              No collections yet
+            </h2>
+            <p className="mb-6 text-[15px] leading-relaxed text-neutral-500">
+              There are no collections to show right now. Check back soon.
+            </p>
+            <Link
+              href="/"
+              className="inline-flex items-center rounded-full bg-[#1D1D1D] px-6 py-2.5 text-sm font-medium text-white transition-opacity hover:opacity-90"
+            >
+              Back to home
+            </Link>
+          </div>
+        </div>
+      </section>
     );
   }
 
   return (
-    <section
-      className="px-[15px] md:px-[30px] md:max-w-[1360px] xl:px-[50px] xl:max-w-[1400px] pb-[66px] md:pb-[74px] xl:pb-[88px] mx-auto"
-      data-testid="collection-list"
-    >
-      {heading && (
-        <h1 className="text-xl md:text-[32px] lg:text-center md:pb-8 md:border-b border-[#D9D9D9] font-normal my-[62px] md:my-[70px] lg:my-[83px] text-black">
-          {heading}
-        </h1>
-      )}
+    <section className={containerClass} data-testid="collection-list">
+      <PageHeader />
 
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-4 pt-[50px] md:pt-14 xl:pt-[66px] pb-[25px] md:pb-[30px]">
+      <div className="grid grid-cols-2 gap-3 pb-[25px] sm:grid-cols-2 md:grid-cols-3 md:gap-5 md:pb-[30px] xl:grid-cols-4">
         {collections.map((collection, index) => (
           <CollectionCard
             key={collection.id ?? collection.handle}

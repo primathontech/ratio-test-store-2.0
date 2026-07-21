@@ -46,6 +46,10 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
     title = "Customer Reviews",
     writeReviewButtonText = "Write a review",
     cancelReviewButtonText = "Cancel review",
+    // When false, reviews are read-only: the "Write a review" button + submit
+    // form are hidden (no review-submit backend / upload key needed). Defaults
+    // to true so merchants with a configured review provider keep the flow.
+    allowWriteReview = true,
   } = settings || {};
 
   // Derive productId / externalId from various inputs
@@ -290,25 +294,29 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
                   )}
                 </div>
 
-                <div
-                  className="hidden lg:block w-px self-stretch bg-[#E0E0E0]"
-                  aria-hidden
-                />
+                {allowWriteReview && (
+                  <>
+                    <div
+                      className="hidden lg:block w-px self-stretch bg-[#E0E0E0]"
+                      aria-hidden
+                    />
 
-                <div className="flex justify-center mt-6 md:mt-10 mb-6 md:mb-4 lg:mt-0 lg:mb-0 w-full lg:w-auto">
-                  <button
-                    id="write-review"
-                    aria-label="Write a review"
-                    onClick={toggleReviewForm}
-                    className="w-full lg:w-60 py-2.5 px-5 rounded-[30px] bg-black text-white text-sm font-bold hover:opacity-90 transition-opacity whitespace-nowrap leading-[14px]"
-                  >
-                    {reviewSubmitted
-                      ? "Refresh page"
-                      : showReviewForm
-                        ? cancelReviewButtonText
-                        : writeReviewButtonText}
-                  </button>
-                </div>
+                    <div className="flex justify-center mt-6 md:mt-10 mb-6 md:mb-4 lg:mt-0 lg:mb-0 w-full lg:w-auto">
+                      <button
+                        id="write-review"
+                        aria-label="Write a review"
+                        onClick={toggleReviewForm}
+                        className="w-full lg:w-60 py-2.5 px-5 rounded-[30px] bg-black text-white text-sm font-bold hover:opacity-90 transition-opacity whitespace-nowrap leading-[14px]"
+                      >
+                        {reviewSubmitted
+                          ? "Refresh page"
+                          : showReviewForm
+                            ? cancelReviewButtonText
+                            : writeReviewButtonText}
+                      </button>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div
@@ -330,20 +338,22 @@ const ReviewSummaryCustom: React.FC<CustomerReviewsProps> = ({
             aria-hidden
           />
 
-          <ReviewFormCustom
-            embedInCard
-            isOpen={showReviewForm}
-            onClose={() => setShowReviewForm(false)}
-            productId={productId}
-            externalId={externalId}
-            setReviewSubmitted={setReviewSubmitted}
-            onSubmit={async () => {
-              setReviewSubmitted(true);
-              if (onReviewSubmitted) {
-                onReviewSubmitted();
-              }
-            }}
-          />
+          {allowWriteReview && (
+            <ReviewFormCustom
+              embedInCard
+              isOpen={showReviewForm}
+              onClose={() => setShowReviewForm(false)}
+              productId={productId}
+              externalId={externalId}
+              setReviewSubmitted={setReviewSubmitted}
+              onSubmit={async () => {
+                setReviewSubmitted(true);
+                if (onReviewSubmitted) {
+                  onReviewSubmitted();
+                }
+              }}
+            />
+          )}
 
           <div
             className={`grid transition-[grid-template-rows,opacity] duration-500 ease-in-out ${

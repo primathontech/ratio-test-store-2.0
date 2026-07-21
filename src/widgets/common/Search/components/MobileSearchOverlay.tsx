@@ -26,7 +26,7 @@ export const MobileSearchOverlay: React.FC<MobileSearchOverlayProps> = ({
   isOpen,
   onClose,
   placeholder = "Search",
-  searchRoutePattern = "/pages/searchtap-search?q={q}",
+  searchRoutePattern = "/search?q={q}",
 }) => {
   const router = useRouter();
   const inputRef = useRef<HTMLInputElement>(null);

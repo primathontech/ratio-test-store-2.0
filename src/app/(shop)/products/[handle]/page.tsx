@@ -1,5 +1,5 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
-import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
+import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getPageMetadata } from "@shopkit/seo";
@@ -13,9 +13,18 @@ import { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { cache } from "react";
 import { ApiProduct } from "@/widgets/common/ProductDetail/types";
+import { JsonLd, extractJsonLd, stripJsonLd } from "@/components/seo/JsonLd";
+import { createProductViaCollectionsStaticParams } from "@shopkit/data-layer";
 
-// export const revalidate = 30;
-// export const dynamicParams = true;
+// ISR: prerender every product at build time, revalidate hourly, and still
+// render (then cache) any handle not in the build set via on-demand ISR.
+export const revalidate = 3600;
+export const dynamicParams = true;
+
+// Custom backend has no products-list endpoint — collection traversal is the
+// only way to discover all handles (helper from @shopkit/data-layer).
+export const generateStaticParams =
+  createProductViaCollectionsStaticParams(getCommerceClient);
 
 const HIDDEN_PRODUCT_TAG = "hide__products";
 
@@ -36,11 +45,15 @@ export async function generateMetadata(props: {
   try {
     const params = await props.params;
     const product = await fetchProduct(params.handle);
-    return getPageMetadata({
-      pageType: "product",
-      path: `/products/${params.handle}`,
-      data: product,
-    });
+    // JSON-LD is rendered as a real <script> in the page body (see below), so
+    // strip it from `other` to avoid the broken <meta> duplicate.
+    return stripJsonLd(
+      await getPageMetadata({
+        pageType: "product",
+        path: `/products/${params.handle}`,
+        data: product,
+      })
+    );
   } catch {
     return {};
   }
@@ -94,10 +107,22 @@ export default async function ProductPage(props: {
       pageConfig: previewPageConfig,
     });
 
+    // Real JSON-LD <script> from the same schema the SEO layer computes for the
+    // metadata (product already fetched above, so this is pure CPU — no extra
+    // network call).
+    const jsonLd = extractJsonLd(
+      await getPageMetadata({
+        pageType: "product",
+        path: `/products/${params.handle}`,
+        data: product,
+      })
+    );
+
     return (
       <>
         <AppProductTracker product={product} />
         {pageContent}
+        <JsonLd data={jsonLd} />
         <KwikPassProductView product={product} />
       </>
     );

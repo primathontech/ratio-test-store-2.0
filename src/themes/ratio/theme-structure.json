@@ -1,0 +1,507 @@
+{
+  "id": "ratio",
+  "name": "Ratio",
+  "templateStructure": [
+    {
+      "name": "Home",
+      "templates": [
+        {
+          "id": "ratio_home_default",
+          "name": "Home (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "home",
+            "type": "home",
+            "path": "/",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "templates": [
+        {
+          "id": "ratio_products_default",
+          "name": "Products (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "products",
+            "path": "/products/high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
+            "params": {
+              "handle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32"
+            },
+            "query": {},
+            "productHandle": "high-shine-conditioning-hair-colour-honey-light-golden-brown-shade-5-32",
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Collection",
+      "templates": [
+        {
+          "id": "ratio_collection_default",
+          "name": "Collection (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "collection",
+            "path": "/collections/colour-bundles",
+            "params": {
+              "handle": "colour-bundles"
+            },
+            "query": {},
+            "collectionHandle": "colour-bundles",
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Collection List",
+      "templates": [
+        {
+          "id": "ratio_collection-list_default",
+          "name": "Collection List (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "collection-list",
+            "path": "/collections",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shine Squad Weekly Offer",
+      "templates": [
+        {
+          "id": "ratio_shine-squad-weekly-offer_default",
+          "name": "Shine Squad Weekly Offer (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "shine-squad-weekly-offer",
+            "path": "/pages/shine-squad-weekly-offer",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Aff Get4 Freebies",
+      "templates": [
+        {
+          "id": "ratio_aff-get4-freebies_default",
+          "name": "Aff Get4 Freebies (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "aff-get4-freebies",
+            "path": "/pages/aff-get4-freebies",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Affiliate Flat250 Off Above698",
+      "templates": [
+        {
+          "id": "ratio_affiliate-flat250-off-above698_default",
+          "name": "Affiliate Flat250 Off Above698 (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "affiliate-flat250-off-above698",
+            "path": "/pages/affiliate-flat250-off-above698",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Aff Offer Flat250",
+      "templates": [
+        {
+          "id": "ratio_aff-offer-flat250_default",
+          "name": "Aff Offer Flat250 (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "aff-offer-flat250",
+            "path": "/pages/aff-offer-flat250",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Bau Offer Page",
+      "templates": [
+        {
+          "id": "ratio_bau-offer-page_default",
+          "name": "Bau Offer Page (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "bau-offer-page",
+            "path": "/pages/bau-offer-page",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Crm Shine Squad Mega",
+      "templates": [
+        {
+          "id": "ratio_crm-shine-squad-mega_default",
+          "name": "Crm Shine Squad Mega (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "crm-shine-squad-mega",
+            "path": "/pages/crm-shine-squad-mega",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fb Advance Smoothening Category Sale",
+      "templates": [
+        {
+          "id": "ratio_fb-advance-smoothening-category-sale_default",
+          "name": "Fb Advance Smoothening Category Sale (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "fb-advance-smoothening-category-sale",
+            "path": "/pages/fb-advance-smoothening-category-sale",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fb Hair Colour Category Sale",
+      "templates": [
+        {
+          "id": "ratio_fb-hair-colour-category-sale_default",
+          "name": "Fb Hair Colour Category Sale (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "fb-hair-colour-category-sale",
+            "path": "/pages/fb-hair-colour-category-sale",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fb Hairfall Category Sale",
+      "templates": [
+        {
+          "id": "ratio_fb-hairfall-category-sale_default",
+          "name": "Fb Hairfall Category Sale (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "fb-hairfall-category-sale",
+            "path": "/pages/fb-hairfall-category-sale",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fb Heat Protection Category Sale",
+      "templates": [
+        {
+          "id": "ratio_fb-heat-protection-category-sale_default",
+          "name": "Fb Heat Protection Category Sale (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "fb-heat-protection-category-sale",
+            "path": "/pages/fb-heat-protection-category-sale",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Fb Intense Moisture Category Sale",
+      "templates": [
+        {
+          "id": "ratio_fb-intense-moisture-category-sale_default",
+          "name": "Fb Intense Moisture Category Sale (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "fb-intense-moisture-category-sale",
+            "path": "/pages/fb-intense-moisture-category-sale",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Flat3",
+      "templates": [
+        {
+          "id": "ratio_flat3_default",
+          "name": "Flat3 (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "flat3",
+            "path": "/pages/flat3",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Flat4",
+      "templates": [
+        {
+          "id": "ratio_flat4_default",
+          "name": "Flat4 (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "flat4",
+            "path": "/pages/flat4",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Combo Kit",
+      "templates": [
+        {
+          "id": "ratio_combo-kit_default",
+          "name": "Combo Kit (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "combo-kit",
+            "path": "/pages/combo-kit",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shine Squad B2g2",
+      "templates": [
+        {
+          "id": "ratio_shine-squad-b2g2_default",
+          "name": "Shine Squad B2g2 (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "shine-squad-b2g2",
+            "path": "/pages/shine-squad-b2g2",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shine Squad Bb30 Offer",
+      "templates": [
+        {
+          "id": "ratio_shine-squad-bb30-offer_default",
+          "name": "Shine Squad Bb30 Offer (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "shine-squad-bb30-offer",
+            "path": "/pages/shine-squad-bb30-offer",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shine Squad Get999",
+      "templates": [
+        {
+          "id": "ratio_shine-squad-get999_default",
+          "name": "Shine Squad Get999 (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "shine-squad-get999",
+            "path": "/pages/shine-squad-get999",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Shine Squad Mega Offer",
+      "templates": [
+        {
+          "id": "ratio_shine-squad-mega-offer_default",
+          "name": "Shine Squad Mega Offer (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "shine-squad-mega-offer",
+            "path": "/pages/shine-squad-mega-offer",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "About Us",
+      "templates": [
+        {
+          "id": "ratio_about-us_default",
+          "name": "About Us (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "about-us",
+            "path": "/pages/about-us",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Privacy Policy",
+      "templates": [
+        {
+          "id": "ratio_privacy-policy_default",
+          "name": "Privacy Policy (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "privacy-policy",
+            "path": "/pages/privacy-policy",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Return Policy",
+      "templates": [
+        {
+          "id": "ratio_return-policy_default",
+          "name": "Return Policy (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "return-policy",
+            "path": "/pages/return-policy",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    },
+    {
+      "name": "Terms And Conditions",
+      "templates": [
+        {
+          "id": "ratio_terms-and-conditions_default",
+          "name": "Terms And Conditions (Default)",
+          "variant": "default",
+          "isDynamic": true,
+          "supportedLanguages": ["en"],
+          "routeContext": {
+            "templateName": "terms-and-conditions",
+            "path": "/pages/terms-and-conditions",
+            "params": {},
+            "query": {},
+            "fetchAPITemplate": true
+          }
+        }
+      ]
+    }
+  ]
+}

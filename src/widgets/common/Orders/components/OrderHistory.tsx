@@ -220,7 +220,7 @@ export const OrderHistory: React.FC<OrderHistoryProps> = ({
       <div data-testid="order-history-content">
         <h2
           data-testid="order-history-title"
-          className="text-base font-bold text-black my-[18px]"
+          className="text-lg font-semibold tracking-tight text-[#1D1D1D] my-[18px]"
         >
           Order history
         </h2>
@@ -228,7 +228,7 @@ export const OrderHistory: React.FC<OrderHistoryProps> = ({
         {orders.length === 0 ? (
           <div
             data-testid="order-history-empty-state"
-            className="border-2 border-order-text rounded-[2.5px] py-[14px] px-[25px] mt-8 flex items-center gap-4"
+            className="border-2 border-order-text rounded-xl py-[14px] px-[25px] mt-8 flex items-center gap-4"
           >
             {/* Circular green icon with white checkmark */}
             <div
@@ -262,30 +262,30 @@ export const OrderHistory: React.FC<OrderHistoryProps> = ({
             {/* Desktop Table View - Hidden on mobile */}
             <div
               data-testid="order-history-desktop-table"
-              className="hidden md:block border border-gray-200 rounded-lg overflow-hidden"
+              className="hidden md:block rounded-2xl ring-1 ring-black/[0.06] shadow-sm overflow-hidden"
             >
               <table className="w-full">
                 <thead>
-                  <tr className="border-b border-gray-light">
-                    <th className="text-center font-bold text-primary text-sm py-[18px] px-2.5">
+                  <tr className="border-b border-gray-light bg-neutral-50">
+                    <th className="text-center font-semibold tracking-wide text-neutral-500 text-xs py-[18px] px-2.5">
                       ORDER
                     </th>
-                    <th className="text-center font-bold text-primary text-sm py-[18px] px-2.5">
+                    <th className="text-center font-semibold tracking-wide text-neutral-500 text-xs py-[18px] px-2.5">
                       PLACED ON
                     </th>
-                    <th className="text-center font-bold text-primary text-sm py-[18px] px-2.5">
+                    <th className="text-center font-semibold tracking-wide text-neutral-500 text-xs py-[18px] px-2.5">
                       PAYMENT STATUS
                     </th>
-                    <th className="text-center font-bold text-primary text-sm py-[18px] px-2.5">
+                    <th className="text-center font-semibold tracking-wide text-neutral-500 text-xs py-[18px] px-2.5">
                       DELIVERY BY
                     </th>
-                    <th className="text-center font-bold text-primary text-sm py-[18px] px-2.5">
+                    <th className="text-center font-semibold tracking-wide text-neutral-500 text-xs py-[18px] px-2.5">
                       TOTAL
                     </th>
-                    <th className="text-center font-bold text-primary text-sm py-[18px] px-2.5">
+                    <th className="text-center font-semibold tracking-wide text-neutral-500 text-xs py-[18px] px-2.5">
                       ORDER STATUS
                     </th>
-                    <th className="text-center font-bold text-primary text-sm py-[18px] px-2.5">
+                    <th className="text-center font-semibold tracking-wide text-neutral-500 text-xs py-[18px] px-2.5">
                       DETAILS
                     </th>
                   </tr>
@@ -366,7 +366,7 @@ export const OrderHistory: React.FC<OrderHistoryProps> = ({
                           <Link
                             href={`/pages/orders/${order.id}`}
                             data-testid={`order-history-desktop-view-link-${order.id}`}
-                            className="text-info-lighter hover:text-loading-blue underline underline-offset-4"
+                            className="text-[#1D1D1D] hover:text-black underline underline-offset-4"
                           >
                             View
                           </Link>
@@ -397,7 +397,7 @@ export const OrderHistory: React.FC<OrderHistoryProps> = ({
                   <div
                     key={order.id}
                     data-testid={`order-history-mobile-card-${order.id}`}
-                    className="border border-order-border rounded-2xl mb-5 bg-white overflow-hidden"
+                    className="ring-1 ring-black/[0.06] shadow-sm rounded-2xl mb-5 bg-white overflow-hidden"
                   >
                     <div className="px-4 pt-4">
                       {/* Order Header */}
@@ -509,7 +509,7 @@ export const OrderHistory: React.FC<OrderHistoryProps> = ({
                     <Link
                       href={`/pages/orders/${order.id}`}
                       data-testid={`order-history-mobile-view-link-${order.id}`}
-                      className="w-full flex justify-center items-center py-[11px] text-info-lighter rounded-md text-sm font-medium transition-colors bg-bg-gray leading-none"
+                      className="w-full flex justify-center items-center py-[11px] text-[#1D1D1D] rounded-md text-sm font-medium transition-colors bg-neutral-50 hover:bg-neutral-100 leading-none"
                     >
                       View
                     </Link>

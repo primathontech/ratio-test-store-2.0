@@ -4,7 +4,7 @@ import { useState } from "react";
 import { AdditionalInformationProps } from "../types";
 
 export function V2({ data, settings }: AdditionalInformationProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(settings?.defaultExpanded ?? false);
   const collectionData = data?.data as
     { data?: { collectionByHandle?: { description?: string } } } | undefined;
   const description =

@@ -72,6 +72,16 @@ export default async function RootLayout({
       </head>
 
       <body>
+        {/* Skip-to-content link — first focusable element, visually hidden
+            until focused. Targets the <main id="main-content"> landmark added
+            by the (shop) layout. */}
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[1000] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-black focus:shadow"
+        >
+          Skip to content
+        </a>
+
         {/* AppShell handles: providers, cart, auth, i18n, theme */}
         <AppShell
           config={{
@@ -118,18 +128,24 @@ export default async function RootLayout({
           />
         )}
 
-        {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership */}
-        <Script
-          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-          strategy="afterInteractive"
-        />
-        <Script id="gtag-init" strategy="afterInteractive">
-          {`
+        {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership.
+            Only rendered when a GA id is configured; otherwise Next would emit a
+            broken `gtag/js?id=undefined` request. */}
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="gtag-init" strategy="afterInteractive">
+              {`
             window.dataLayer = window.dataLayer || [];
             window.gtag = function(){ window.dataLayer.push(arguments); };
             window.gtag('js', new Date());
           `}
-        </Script>
+            </Script>
+          </>
+        )}
 
         {/* V2 Pixel SDKs — self-register with PixelRuntime */}
         <Script src="/scripts/meta-pixel-sdk.js" strategy="afterInteractive" />

@@ -19,10 +19,10 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
     <>
       {/* Modal Header */}
       <div className="text-center">
-        <h2 className="text-[22px] md:text-[28px] text-primary font-normal">
+        <h2 className="text-[22px] md:text-[28px] text-[#1D1D1D] font-semibold tracking-tight">
           ARE YOU SURE?
         </h2>
-        <p className="text-lg my-[15px] max-w-[335px] md:max-w-max text-primary">
+        <p className="text-lg my-[15px] max-w-[335px] md:max-w-max text-neutral-600">
           Your complete order will be cancelled.
         </p>
       </div>
@@ -32,13 +32,13 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
         <button
           onClick={onConfirm}
           disabled={isLoading}
-          className={`px-14 py-4 rounded-md text-sm border border-black text-black font-semibold transition-colors flex items-center justify-center ${
+          className={`px-12 py-3 rounded-full text-sm bg-black text-white font-semibold transition-colors flex items-center justify-center hover:bg-neutral-800 ${
             isLoading ? "opacity-75 cursor-not-allowed" : ""
           }`}
         >
           {isLoading ? (
             <div className="flex items-center gap-2">
-              <div className="w-4 h-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
               <span>YES</span>
             </div>
           ) : (
@@ -49,7 +49,7 @@ export const ConfirmationStep: React.FC<ConfirmationStepProps> = ({
         <button
           onClick={onClose}
           disabled={isLoading}
-          className={`px-14 py-4 rounded-md text-sm border border-black hover:border-[#0089dd] text-black hover:text-[#0089dd] font-semibold transition-colors flex items-center justify-center ${
+          className={`px-12 py-3 rounded-full text-sm bg-white ring-1 ring-black/10 text-[#1D1D1D] font-semibold transition-colors flex items-center justify-center hover:bg-neutral-50 ${
             isLoading ? "opacity-75 cursor-not-allowed" : ""
           }`}
         >

@@ -66,7 +66,7 @@ export function V1({}: CartDrawerProps) {
   };
 
   const navigateToCollection = () => {
-    router.push("/collections/all");
+    router.push("/collections");
     closeCart();
   };
 
@@ -132,7 +132,7 @@ export function V1({}: CartDrawerProps) {
       setCursorPosition({ x: e.clientX, y: e.clientY });
 
       const cartDrawer = document.querySelector(
-        '[data-testid="bblunt-cart-drawer"]'
+        '[data-testid="ratio-cart-drawer"]'
       );
       if (!cartDrawer) {
         return;
@@ -186,21 +186,21 @@ export function V1({}: CartDrawerProps) {
         }`}
         style={{ zIndex: 9998 }}
         onClick={closeCart}
-        data-testid="bblunt-cart-drawer-overlay"
+        data-testid="ratio-cart-drawer-overlay"
       />
       <Box
         className={`cart-drawer fixed top-0 right-0 w-full max-w-[90%] md:max-w-[477px] h-full overflow-hidden bg-white text-primary shadow-xl flex flex-col transition-transform duration-300 ease-in-out cursor-auto ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         style={{ zIndex: 9999 }}
-        data-testid="bblunt-cart-drawer"
+        data-testid="ratio-cart-drawer"
       >
         <Flex
           justify="between"
           align="center"
-          className="cart-drawer-header px-4 py-[17.5px] md:mx-4 border-b border-gray-200"
+          className="cart-drawer-header px-4 py-[17.5px] md:mx-4 border-b border-neutral-200"
         >
-          <h2 className="cart-drawer-title text-black text-xl font-medium font-body">
+          <h2 className="cart-drawer-title text-[#1D1D1D] text-xl font-semibold tracking-tight font-body">
             Your Cart
           </h2>
           <button
@@ -226,9 +226,9 @@ export function V1({}: CartDrawerProps) {
 
         <div
           className="flex-1 overflow-y-scroll"
-          data-testid="bblunt-cart-drawer-content"
+          data-testid="ratio-cart-drawer-content"
         >
-          <div data-testid="bblunt-cart-drawer-offers">
+          <div data-testid="ratio-cart-drawer-offers">
             <CouponOffersComponent />
           </div>
 
@@ -236,13 +236,13 @@ export function V1({}: CartDrawerProps) {
           {error && (
             <Box
               className="cart-error flex flex-col items-center justify-center py-12 text-center"
-              data-testid="bblunt-cart-drawer-error"
+              data-testid="ratio-cart-drawer-error"
             >
               <Text className="text-error mb-4 !font-body">Error: {error}</Text>
               <Button
-                className="bg-primary text-white border-none rounded-sm px-4 py-2 text-sm font-medium cursor-pointer transition-colors hover:opacity-90 !font-body"
+                className="bg-black text-white border-none rounded-full px-6 py-3 text-sm font-medium cursor-pointer transition-colors hover:bg-neutral-800 !font-body"
                 onClick={handleRetry}
-                data-testid="bblunt-cart-drawer-retry-button"
+                data-testid="ratio-cart-drawer-retry-button"
               >
                 Try Again
               </Button>
@@ -255,13 +255,13 @@ export function V1({}: CartDrawerProps) {
               {items.length === 0 ? (
                 <EmptyCartView onNavigateToCollection={navigateToCollection} />
               ) : (
-                <div data-testid="bblunt-cart-drawer-items-section">
-                  <p className="mx-[15px] mt-4 text-sm font-semibold text-black tracking-[-0.333px] font-body">
+                <div data-testid="ratio-cart-drawer-items-section">
+                  <p className="mx-[15px] mt-4 text-sm font-semibold text-[#1D1D1D] tracking-tight font-body">
                     Items in your cart
                   </p>
                   <Box
-                    className="cart-items mx-[15px] flex flex-col divide-y divide-gray-200"
-                    data-testid="bblunt-cart-drawer-items"
+                    className="cart-items mx-[15px] flex flex-col divide-y divide-neutral-200"
+                    data-testid="ratio-cart-drawer-items"
                   >
                     {items.map((item) => (
                       <CartItem
@@ -284,7 +284,7 @@ export function V1({}: CartDrawerProps) {
 
         {/* Cart Summary */}
         {!error && items?.length !== 0 && (
-          <div data-testid="bblunt-cart-drawer-summary">
+          <div data-testid="ratio-cart-drawer-summary">
             <CartSummary
               isLoading={isLoading}
               totalAmount={cartTotal}

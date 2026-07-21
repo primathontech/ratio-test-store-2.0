@@ -1,6 +1,6 @@
 export const THEMES = {
-  BBLUNT_2: {
-    id: "bblunt-2",
+  RATIO: {
+    id: "ratio",
     static_templates: {
       // Add static (non-page-builder) template IDs here as needed, e.g.:
       // PRIVACY_POLICY: "privacy-policy",

@@ -44,7 +44,7 @@ interface SearchInputV2Props {
   renderDropdown?: boolean;
 }
 
-const SEARCH_RESULTS_ROUTE = "/pages/searchtap-search";
+const SEARCH_RESULTS_ROUTE = "/search";
 
 export const SearchInputV2: React.FC<SearchInputV2Props> = ({
   searchPlaceholder = ["Search For Sunscreen"],

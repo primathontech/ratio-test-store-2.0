@@ -268,7 +268,7 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
   };
 
   return (
-    <div className="rounded-[10px]">
+    <div className="rounded-2xl">
       <div className="text-center space-y-2">
         <AddressCard
           address={address}
@@ -279,8 +279,8 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
         />
       </div>
 
-      <div className="pt-[15px] md:pt-2.5 pb-[15px] md:pb-5 px-[15px] md:px-10 mt-5 border border-gray-200 rounded-[2.5px]">
-        <h2 className="text-sm font-bold text-black my-5 text-center">
+      <div className="pt-[15px] md:pt-2.5 pb-[15px] md:pb-5 px-[15px] md:px-10 mt-5 border border-neutral-200 rounded-2xl shadow-sm">
+        <h2 className="text-sm font-semibold tracking-tight text-[#1D1D1D] my-5 text-center">
           {settings.edit_address_title ?? "Edit address"}
         </h2>
 
@@ -289,7 +289,7 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div className="relative">
               <label
-                className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none ${
+                className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none ${
                   focusedFields.has("firstName") || formData.firstName
                     ? "top-[5px] text-xs"
                     : "text-sm"
@@ -305,12 +305,12 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
                 onFocus={() => handleFocus("firstName")}
                 onBlur={() => handleBlur("firstName")}
                 disabled={isSubmitting}
-                className="w-full px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="w-full px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
               />
             </div>
             <div className="relative">
               <label
-                className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none ${
+                className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none ${
                   focusedFields.has("lastName") || formData.lastName
                     ? "top-[5px] text-xs"
                     : "text-sm"
@@ -326,14 +326,14 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
                 onFocus={() => handleFocus("lastName")}
                 onBlur={() => handleBlur("lastName")}
                 disabled={isSubmitting}
-                className="w-full  px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+                className="w-full  px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
               />
             </div>
           </div>
 
           <div className="mt-[15px] relative">
             <label
-              className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none ${
+              className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none ${
                 focusedFields.has("company") || formData.company
                   ? "top-[5px] text-xs"
                   : "text-sm"
@@ -349,13 +349,13 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
               onFocus={() => handleFocus("company")}
               onBlur={() => handleBlur("company")}
               disabled={isSubmitting}
-              className="w-full  px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] !text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+              className="w-full  px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl !text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
             />
           </div>
 
           <div className="mt-[15px] relative">
             <label
-              className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none ${
+              className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none ${
                 focusedFields.has("address1") || formData.address1
                   ? "top-[5px] text-xs"
                   : "!text-sm"
@@ -371,13 +371,13 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
               onFocus={() => handleFocus("address1")}
               onBlur={() => handleBlur("address1")}
               disabled={isSubmitting}
-              className="w-full px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+              className="w-full px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
             />
           </div>
 
           <div className="mt-[15px] relative">
             <label
-              className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none ${
+              className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none ${
                 focusedFields.has("address2") || formData.address2
                   ? "top-[5px] text-xs"
                   : "text-sm"
@@ -393,13 +393,13 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
               onFocus={() => handleFocus("address2")}
               onBlur={() => handleBlur("address2")}
               disabled={isSubmitting}
-              className="w-full px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+              className="w-full px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
             />
           </div>
 
           <div className="mt-[15px] relative">
             <label
-              className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none ${
+              className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none ${
                 focusedFields.has("city") || formData.city
                   ? "top-[5px] text-xs"
                   : "text-sm"
@@ -415,13 +415,13 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
               onFocus={() => handleFocus("city")}
               onBlur={() => handleBlur("city")}
               disabled={isSubmitting}
-              className="w-full px-[18px] pt-5 pb-1.5 border border-gray-200 rounded-[3px] text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed"
+              className="w-full px-[18px] pt-5 pb-1.5 border border-neutral-200 rounded-xl text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed"
             />
           </div>
 
           <div className="mt-[15px] relative">
             <label
-              className={`left-[18px] !text-sm text-gray-500 transition-all duration-200 pointer-events-none z-10 ${
+              className={`left-[18px] !text-sm text-neutral-500 transition-all duration-200 pointer-events-none z-10 ${
                 focusedFields.has("country") || formData.country
                   ? "top-[5px] text-xs"
                   : "text-sm"
@@ -436,12 +436,12 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
               onFocus={() => handleFocus("country")}
               onBlur={() => handleBlur("country")}
               disabled={isSubmitting}
-              className="w-full px-[18px] py-[13px] border border-gray-200 rounded-[3px] text-sm text-gray-500 focus:outline-none appearance-none bg-white pr-10 disabled:bg-gray-50 disabled:cursor-not-allowed"
+              className="w-full px-[18px] py-[13px] border border-neutral-200 rounded-xl text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 appearance-none bg-white pr-10 disabled:bg-neutral-50 disabled:cursor-not-allowed"
             >
               <option value="" className="text-primary">
                 {labels.select_placeholder}
               </option>
-              <option value="IN" className="text-gray-500">
+              <option value="IN" className="text-neutral-600">
                 {labels.india}
               </option>
             </select>
@@ -465,7 +465,9 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
           </div>
 
           <div className="mt-[15px]">
-            <p className="text-gray-500 text-sm font-body">{labels.province}</p>
+            <p className="text-neutral-500 text-sm font-body">
+              {labels.province}
+            </p>
             <div className="relative">
               <select
                 name="state"
@@ -474,13 +476,17 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
                 onFocus={() => handleFocus("state")}
                 onBlur={() => handleBlur("state")}
                 disabled={isSubmitting}
-                className="w-full px-[18px] py-[13px] border border-gray-200 rounded-[3px] text-sm text-gray-500 focus:outline-none appearance-none bg-white pr-10 disabled:bg-gray-50 disabled:cursor-not-allowed cursor-pointer focus:border-black"
+                className="w-full px-[18px] py-[13px] border border-neutral-200 rounded-xl text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 appearance-none bg-white pr-10 disabled:bg-neutral-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <option value="" className="text-primary">
                   {labels.select_placeholder}
                 </option>
                 {INDIAN_STATES.map((state) => (
-                  <option key={state} value={state} className="text-gray-500">
+                  <option
+                    key={state}
+                    value={state}
+                    className="text-neutral-600"
+                  >
                     {state}
                   </option>
                 ))}
@@ -507,7 +513,7 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
 
           <div className="mt-[15px] relative">
             <label
-              className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none ${
+              className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none ${
                 focusedFields.has("zip") || formData.zip
                   ? "top-[5px] text-xs"
                   : "text-sm"
@@ -523,7 +529,7 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
               onFocus={() => handleFocus("zip")}
               onBlur={() => handleBlur("zip")}
               disabled={isSubmitting}
-              className={`w-full px-[18px] pt-6 pb-[7px] border rounded-[3px] text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed`}
+              className={`w-full px-[18px] pt-6 pb-[7px] border border-neutral-200 rounded-xl text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed`}
             />
             {errors.zip && (
               <div className="text-red-500 text-xs mt-1 px-[18px]">
@@ -534,7 +540,7 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
 
           <div className="mt-[15px] relative">
             <label
-              className={`absolute left-[18px] text-gray-500 transition-all duration-200 pointer-events-none ${
+              className={`absolute left-[18px] text-neutral-500 transition-all duration-200 pointer-events-none ${
                 focusedFields.has("phone") || formData.phone
                   ? "top-[5px] text-xs"
                   : "text-sm"
@@ -550,8 +556,8 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
               onFocus={() => handleFocus("phone")}
               onBlur={() => handleBlur("phone")}
               disabled={isSubmitting}
-              className={`w-full px-[18px] pt-6 pb-[7px] border rounded-[3px] text-sm text-gray-500 focus:outline-none disabled:bg-gray-50 disabled:cursor-not-allowed ${
-                errors.phone ? "border-red-500" : "border-gray-200"
+              className={`w-full px-[18px] pt-6 pb-[7px] border rounded-xl text-sm text-neutral-700 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-neutral-400 disabled:bg-neutral-50 disabled:cursor-not-allowed ${
+                errors.phone ? "border-red-500" : "border-neutral-200"
               }`}
             />
             {errors.phone && (
@@ -569,9 +575,9 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
                 checked={formData.isDefault}
                 onChange={handleInputChange}
                 disabled={isSubmitting}
-                className="w-4 h-4 text-black border-gray-200 rounded focus:ring-black disabled:cursor-not-allowed"
+                className="w-4 h-4 text-black border-neutral-200 rounded focus:ring-black/20 disabled:cursor-not-allowed"
               />
-              <span className="text-sm text-gray-700">
+              <span className="text-sm text-neutral-700">
                 {labels.set_as_default}
               </span>
             </label>
@@ -582,7 +588,7 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
             <button
               type="submit"
               disabled={isSubmitting}
-              className="bg-black text-white md:ml-5 my-10 px-6 lg:px-[30px] py-[12.1px] rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed shine-link-button"
+              className="bg-black text-white md:ml-5 my-10 px-6 lg:px-[30px] py-3 rounded-full text-sm font-semibold hover:bg-neutral-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shine-link-button"
             >
               {isSubmitting
                 ? (settings.updating_address_button ?? "Updating...")
@@ -592,7 +598,7 @@ export const UpdateAddress: React.FC<UpdateAddressProps> = ({
               type="button"
               onClick={onCancel}
               disabled={isSubmitting}
-              className="bg-black text-white md:ml-5 my-10 px-6 lg:px-[30px] py-[12.1px] rounded-lg text-sm font-semibold transition-colors disabled:opacity-50 disabled:cursor-not-allowed  shine-link-button"
+              className="bg-white text-black ring-1 ring-black/10 md:ml-5 my-10 px-6 lg:px-[30px] py-3 rounded-full text-sm font-semibold hover:bg-neutral-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {labels.cancel}
             </button>

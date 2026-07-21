@@ -421,7 +421,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
         {(settingsTitle || collection?.title) && (
           <h1
             data-testid="collection-page-title"
-            className={`text-left xl2:text-center text-[20px] md:text-[32px] leading-[24px] md:leading-[38.4px] ${isPagesRoute ? "font-normal" : "md:border-b md:border-[#D9D9D9] pb-3.5 md:pb-[26px] lg:pb-8 font-bold"} pt-10 md:pt-[46px] lg:pt-14`}
+            className={`text-left xl2:text-center text-[20px] md:text-[32px] leading-[24px] md:leading-[38.4px] tracking-tight text-[#1D1D1D] ${isPagesRoute ? "font-normal" : "md:border-b md:border-neutral-200 pb-3.5 md:pb-[26px] lg:pb-8 font-semibold"} pt-10 md:pt-[46px] lg:pt-14`}
             style={sectionTextColor ? { color: sectionTextColor } : undefined}
           >
             {settingsTitle || collection?.title}
@@ -508,16 +508,16 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                       }
                     }}
                     className={`
-                    flex items-center justify-between gap-2.5 p-2 rounded transition-colors duration-200 border
+                    flex items-center justify-between gap-2.5 px-3 py-2 rounded-full transition-colors duration-200 border
                     ${
                       filter.isActive
-                        ? "border-[#AFB7FF] bg-[#EBEDFF]"
-                        : "bg-white border-[#D9D9D980]"
+                        ? "border-[#1D1D1D] bg-neutral-100"
+                        : "bg-white border-neutral-200"
                     }
                   `}
                   >
                     <span
-                      className={`whitespace-nowrap text-xs text-primary leading-none text-center ${filter.isActive ? "font-bold" : "font-medium"}`}
+                      className={`whitespace-nowrap text-xs text-[#1D1D1D] leading-none text-center ${filter.isActive ? "font-semibold" : "font-medium"}`}
                     >
                       {filter.label}
                     </span>
@@ -531,7 +531,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                       >
                         <path
                           d="M11.9522 2.04792C9.2217 -0.682504 4.77867 -0.682773 2.04795 2.04792C-0.682783 4.7786 -0.682514 9.22129 2.04795 11.952C4.7784 14.6827 9.22143 14.6827 11.9522 11.952C14.6826 9.22129 14.6826 4.77834 11.9522 2.04792ZM9.76175 9.76161C9.55139 9.97198 9.21038 9.97198 9.00002 9.76161L7.00005 7.76168L4.905 9.85669C4.69463 10.0671 4.35363 10.0671 4.14326 9.85669C3.9329 9.64633 3.9329 9.30533 4.14326 9.09497L6.23831 6.99995L4.23835 5.00001C4.02798 4.78965 4.02798 4.44838 4.23835 4.23828C4.44871 4.02792 4.78972 4.02792 5.00008 4.23828L7.00005 6.23822L8.90466 4.33363C9.11503 4.12327 9.45603 4.12327 9.6664 4.33363C9.87677 4.544 9.87677 4.885 9.6664 5.09536L7.76179 6.99995L9.76175 8.99989C9.97212 9.21025 9.97212 9.55125 9.76175 9.76161Z"
-                          fill="#9399D0"
+                          fill="#1D1D1D"
                         />
                       </svg>
                     )}
@@ -566,7 +566,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
             >
               <div
                 data-testid="collection-page-loading-spinner"
-                className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"
+                className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1D1D1D]"
               />
             </div>
           ) : (
@@ -581,7 +581,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                 {!isPagesRoute && (
                   <p
                     data-testid="collection-page-products-count"
-                    className="text-primary text-xs md:text-base leading-none"
+                    className="text-neutral-600 text-xs md:text-base leading-none"
                   >
                     {totalProducts > 0 ? totalProducts : "No"} products found
                     for you
@@ -638,7 +638,7 @@ const V1Content = ({ data, settings, actions, feedback, state }: IProps) => {
                           backgroundColor: productCardBackgroundColor,
                           color: sectionTextColor,
                         }}
-                        className="md:border md:!rounded-lg !border-white md:!border-[#EBEBEB] !pl-0"
+                        className="md:border md:!rounded-2xl !border-white md:!border-neutral-200 !pl-0"
                         logTag="CollectionPage"
                       />
                     </div>

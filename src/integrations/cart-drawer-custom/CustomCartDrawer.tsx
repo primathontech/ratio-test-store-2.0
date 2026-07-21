@@ -70,7 +70,7 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
   };
 
   const navigateToCollection = () => {
-    router.push("/collections/all");
+    router.push("/collections");
     closeCart();
   };
 
@@ -140,7 +140,7 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
       setCursorPosition({ x: e.clientX, y: e.clientY });
 
       const cartDrawer = document.querySelector(
-        '[data-testid="bblunt-cart-drawer"]'
+        '[data-testid="ratio-cart-drawer"]'
       );
       if (!cartDrawer) {
         return;
@@ -197,14 +197,14 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
         }`}
         style={{ zIndex: 9998 }}
         onClick={closeCart}
-        data-testid="bblunt-cart-drawer-overlay"
+        data-testid="ratio-cart-drawer-overlay"
       />
       <Box
         className={`cart-drawer fixed top-0 right-0 w-full max-w-[90%] md:max-w-[460px] h-full overflow-hidden bg-white text-text shadow-xl flex flex-col transition-transform duration-300 ease-in-out cursor-auto ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         style={{ zIndex: 9999 }}
-        data-testid="bblunt-cart-drawer"
+        data-testid="ratio-cart-drawer"
       >
         {/* Global loading overlay for cart operations */}
         <Flex
@@ -238,9 +238,9 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
 
         <div
           className="flex-1 overflow-y-scroll"
-          data-testid="bblunt-cart-drawer-content"
+          data-testid="ratio-cart-drawer-content"
         >
-          <div data-testid="bblunt-cart-drawer-offers">
+          <div data-testid="ratio-cart-drawer-offers">
             <CouponOffersComponent />
           </div>
 
@@ -248,7 +248,7 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
           {error && (
             <Box
               className="cart-error flex flex-col items-center justify-center py-[48px] text-center"
-              data-testid="bblunt-cart-drawer-error"
+              data-testid="ratio-cart-drawer-error"
             >
               <Text className="text-error mb-[16px] !font-body">
                 Error: {error}
@@ -256,7 +256,7 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
               <Button
                 className="bg-primary text-white border-none rounded-sm px-[16px] py-[8px] text-sm font-medium cursor-pointer transition-colors hover:opacity-90 !font-body"
                 onClick={handleRetry}
-                data-testid="bblunt-cart-drawer-retry-button"
+                data-testid="ratio-cart-drawer-retry-button"
               >
                 Try Again
               </Button>
@@ -269,13 +269,13 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
               {items.length === 0 ? (
                 <EmptyCartView onNavigateToCollection={navigateToCollection} />
               ) : (
-                <div data-testid="bblunt-cart-drawer-items-section">
+                <div data-testid="ratio-cart-drawer-items-section">
                   <p className="mx-[15px] mt-[16px] text-text-base font-semibold text-black tracking-[-0.333px] font-body">
                     Items in your cart
                   </p>
                   <Box
                     className="cart-items mx-[15px] flex flex-col divide-y divide-gray-200"
-                    data-testid="bblunt-cart-drawer-items"
+                    data-testid="ratio-cart-drawer-items"
                   >
                     {items.map((item) => (
                       <CartItem
@@ -298,7 +298,7 @@ export function CustomCartDrawer({}: CustomCartDrawerProps) {
 
         {/* Cart Summary */}
         {!error && items?.length !== 0 && (
-          <div data-testid="bblunt-cart-drawer-summary">
+          <div data-testid="ratio-cart-drawer-summary">
             <CustomCartSummary
               isLoading={isLoading}
               totalAmount={cartTotal}

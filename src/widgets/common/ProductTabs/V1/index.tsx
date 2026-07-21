@@ -108,7 +108,7 @@ const CardsContent = ({ cards }: { cards: NormalizedCard[] }) => (
           )}
           <div className="flex flex-col">
             {hasTitle && (
-              <span className="text-sm leading-[22px] font-bold text-loading-blue">
+              <span className="text-sm leading-[22px] font-bold text-[#1D1D1D]">
                 {card.title}
               </span>
             )}
@@ -138,20 +138,20 @@ const AccordionItem = ({
   onToggle: () => void;
 }) => {
   return (
-    <div className="bg-secondary rounded-[15px] mb-2 md:mb-4 overflow-hidden">
+    <div className="bg-secondary rounded-2xl ring-1 ring-black/[0.06] shadow-sm mb-2 md:mb-4 overflow-hidden">
       {/* Summary / Header row */}
       <button
         type="button"
         onClick={onToggle}
         aria-expanded={isOpen}
-        className="group w-full flex items-center justify-between cursor-pointer bg-secondary rounded-[15px] border-0 outline-none transition-colors duration-300"
+        className="group w-full flex items-center justify-between cursor-pointer bg-secondary rounded-2xl border-0 outline-none transition-colors duration-300"
       >
         <span
-          className={`text-base leading-[26px] md:text-2xl md:leading-[38px] font-normal md:font-bold py-6 px-4 md:pt-[38px] xl:px-6 transition-colors duration-300 ${isOpen ? "md:pb-4" : "md:pb-[38px]"} text-black group-hover:text-loading-blue`}
+          className={`text-base leading-[26px] md:text-2xl md:leading-[38px] font-semibold md:font-bold tracking-tight py-6 px-4 md:pt-[38px] xl:px-6 transition-colors duration-300 ${isOpen ? "md:pb-4" : "md:pb-[38px]"} text-[#1D1D1D] group-hover:text-neutral-500`}
         >
           {tab.title}
         </span>
-        <span className="flex items-center justify-center w-[10px] md:w-[54px] h-2 md:h-5 mr-6 xl:mr-6 text-[rgba(0,0,0,0.8)] group-hover:text-loading-blue transition-colors duration-300">
+        <span className="flex items-center justify-center w-[10px] md:w-[54px] h-2 md:h-5 mr-6 xl:mr-6 text-neutral-500 group-hover:text-[#1D1D1D] transition-colors duration-300">
           <ChevronIcon isOpen={isOpen} />
         </span>
       </button>
@@ -207,8 +207,8 @@ export const V1 = memo(function V1({ data, className }: ProductTabsProps) {
   }
 
   return (
-    <section className={`bg-[#f4f6f8] pt-2.5 pb-px ${className || ""}`}>
-      <div className="mx-auto max-w-[1400px]">
+    <section className={`bg-neutral-50 pt-2.5 pb-6 ${className || ""}`}>
+      <div className="mx-auto max-w-[1400px] px-4 md:px-8">
         <div>
           {validTabs.map((tab, index) => (
             <AccordionItem

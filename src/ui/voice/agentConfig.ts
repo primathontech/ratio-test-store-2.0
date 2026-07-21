@@ -81,7 +81,7 @@ export const MERCHANT_CONFIG: AgentPersona = {
   // merchant needs only its env — ZERO code change and NO merchant name in code.
   storeName:
     // SPOKEN store name — a voice-specific override wins first, so a store whose
-    // display/checkout name is versioned or stylized (e.g. "bblunt-2", "L'Oréal") can
+    // display/checkout name is versioned or stylized (e.g. "ratio", "L'Oréal") can
     // give the assistant a clean name to SAY without touching the shared merchant name.
     // Falls back to the platform's existing merchant/site name.
     process.env.NEXT_PUBLIC_VOICE_STORE_NAME?.trim() ||

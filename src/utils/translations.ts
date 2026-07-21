@@ -96,9 +96,9 @@ function getTemplateId(args: GetTemplateIdArgs): string {
  * Extract page name from template ID
  * Template ID format: "{theme}_{page}_{variant}" -> extracts "{page}"
  * Examples:
- *   - "bblunt-2_home_default" -> "home"
- *   - "bblunt-2_collection_default" -> "collections" (mapped)
- *   - "bblunt-2_products_default" -> "products"
+ *   - "ratio_home_default" -> "home"
+ *   - "ratio_collection_default" -> "collections" (mapped)
+ *   - "ratio_products_default" -> "products"
  */
 function extractPageName(templateId: string): string | undefined {
   if (!templateId || templateId === "common") {
@@ -252,7 +252,7 @@ export async function getTranslations(
     // If editor changes are disabled, use local locale JSONs
     if (!isEditorChangesEnabled()) {
       // Map templateId to page name for local message loading
-      // templateId format: "common" or "bblunt-2_home_default" -> page name: "home"
+      // templateId format: "common" or "ratio_home_default" -> page name: "home"
       const pageName =
         templateId === "common" ? undefined : extractPageName(templateId);
       return await loadMessages(

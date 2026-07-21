@@ -111,8 +111,8 @@ export const AccountV1: React.FC<AccountProps> = ({ data, settings = {} }) => {
         <div className="mx-auto">
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
-              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-              <p className="text-gray-600">Loading customer data...</p>
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-black mx-auto mb-4"></div>
+              <p className="text-neutral-500">Loading customer data...</p>
             </div>
           </div>
         </div>
@@ -128,7 +128,7 @@ export const AccountV1: React.FC<AccountProps> = ({ data, settings = {} }) => {
       <div data-testid="account-inner-container" className="mx-auto">
         <div
           data-testid="account-grid"
-          className="grid grid-cols-1 md:grid-cols-[1fr_3fr] gap-4 px-[15px] md:px-[30px] xl:px-[70px]"
+          className="grid grid-cols-1 md:grid-cols-[1fr_3fr] gap-6 px-[15px] md:px-[30px] xl:px-[70px] py-6 md:py-10"
         >
           {/* Left Sidebar */}
           <LeftSideBar
@@ -155,7 +155,7 @@ export const AccountV1: React.FC<AccountProps> = ({ data, settings = {} }) => {
                   <p className="text-red-600 mb-4">{error}</p>
                   <button
                     onClick={() => window.location.reload()}
-                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                    className="bg-black text-white px-6 py-3 rounded-full hover:bg-neutral-800 transition-colors"
                   >
                     Retry
                   </button>
@@ -172,7 +172,7 @@ export const AccountV1: React.FC<AccountProps> = ({ data, settings = {} }) => {
                         ({config.notYouText} <strong>{customerName}</strong>?{" "}
                         <button
                           onClick={handleLogout}
-                          className="transition-colors duration-300 text-primary hover:text-[#0089dd] font-normal underline decoration-primary/12 underline-offset-4"
+                          className="transition-colors duration-300 text-primary hover:text-neutral-500 font-normal underline decoration-primary/12 underline-offset-4"
                         >
                           {config.logoutText}
                         </button>
