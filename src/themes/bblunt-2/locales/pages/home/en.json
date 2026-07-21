@@ -61,9 +61,9 @@
       {
         "id": 1,
         "type": "IMAGE",
-        "href": "/collections/sale-page",
-        "alt": "Sale is Live - Get 2 Products at ₹599 - Code GET599",
-        "indicatorHeading": "2@₹599",
+        "href": "/pages/shine-squad-b2g2",
+        "alt": "Buy 2 @ 40% off - Code STEAL40",
+        "indicatorHeading": "2@40%off",
         "indicatorSubHeading": "Shop our",
         "desktopImage": "/BannerCarousel/images/slide1-desktop.webp",
         "mobileImage": "/BannerCarousel/images/slide1-mobile.webp"
@@ -77,6 +77,16 @@
         "indicatorSubHeading": "Shop our",
         "desktopImage": "/BannerCarousel/images/slide2-desktop.webp",
         "mobileImage": "/BannerCarousel/images/slide2-mobile.webp"
+      },
+      {
+        "id": 3,
+        "type": "IMAGE",
+        "href": "/collections/curly-hair",
+        "alt": "Shop our Curly Hair range",
+        "indicatorHeading": "Curl",
+        "indicatorSubHeading": "Shop our",
+        "desktopImage": "/BannerCarousel/images/slide3-desktop.webp",
+        "mobileImage": "/BannerCarousel/images/slide3-mobile.webp"
       }
     ],
     "shop_by_concerns": {

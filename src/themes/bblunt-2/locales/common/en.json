@@ -310,13 +310,13 @@
     "announcement_bar__rich": [
       {
         "id": 0,
-        "text": "Limited Period Offer | Get 2 Products at ₹599 | Code : <strong>GET599</strong>",
-        "href": "/collections/sale-page"
+        "text": "Buy 2 @ 40% off | Code : <strong>STEAL40</strong>",
+        "href": "/pages/shine-squad-b2g2"
       },
       {
-        "id": 2,
-        "text": "Limited Period Offer | Get 2 Products at ₹599 | Code : <strong>GET599</strong>",
-        "href": "/collections/sale-page"
+        "id": 1,
+        "text": "Buy 2 @ 40% off | Code : <strong>STEAL40</strong>",
+        "href": "/pages/shine-squad-b2g2"
       }
     ],
     "collection_page": {
