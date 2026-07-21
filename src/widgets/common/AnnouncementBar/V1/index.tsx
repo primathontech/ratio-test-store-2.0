@@ -35,6 +35,10 @@ export const V1 = memo(function V1({
   const speed = settings?.speed ?? 35;
   const pauseOnHover = settings?.pauseOnHover ?? true;
 
+  // With a single item the marquee has nothing to scroll against, so we render
+  // it centered and static (matches bblunt.com's single-announcement layout).
+  const isSingle = (items?.length ?? 0) === 1;
+
   const marqueeRef = useRef<HTMLDivElement>(null);
   const animationRef = useRef<number | null>(null);
   const positionRef = useRef(0);
@@ -65,7 +69,7 @@ export const V1 = memo(function V1({
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
-    if (prefersReducedMotion || !marqueeRef.current) {
+    if (prefersReducedMotion || isSingle || !marqueeRef.current) {
       return;
     }
 
@@ -82,7 +86,7 @@ export const V1 = memo(function V1({
         cancelAnimationFrame(animationRef.current);
       }
     };
-  }, [animate]);
+  }, [animate, isSingle]);
 
   const handlePointerEnter = useCallback(() => {
     if (pauseOnHover) {
@@ -98,6 +102,36 @@ export const V1 = memo(function V1({
 
   if (!items || items.length === 0) {
     return null;
+  }
+
+  // Single announcement → centered, static (no marquee), matching live.
+  if (isSingle) {
+    const item = items[0];
+    const tooltipText = item.href ? formatHrefForTooltip(item.href) : "";
+    return (
+      <div
+        className={`w-full overflow-hidden ${className ?? ""}`}
+        style={{ backgroundColor: bgColor, zIndex: 23 }}
+      >
+        <div className="w-full px-[3px]">
+          <div className="flex items-center justify-center h-[41px] text-center">
+            <p
+              className="mb-0 text-[12px] leading-[19.2px] md:text-[14px] md:leading-[22.4px] font-medium"
+              style={{ color: textColor }}
+            >
+              <Link
+                href={item.href}
+                title={tooltipText}
+                className="no-underline"
+                style={{ color: textColor }}
+                // eslint-disable-next-line no-restricted-syntax
+                dangerouslySetInnerHTML={{ __html: item.text }}
+              />
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   /**
