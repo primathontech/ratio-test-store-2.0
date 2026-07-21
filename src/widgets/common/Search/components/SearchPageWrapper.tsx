@@ -92,7 +92,6 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
   );
   const includeOutOfStockFromUrl = searchParams.get("inStock") === "false";
   const inStockForApi = !includeOutOfStockFromUrl;
-  const onSaleForApi = !includeOutOfStockFromUrl;
   const minPriceFromUrl = searchParams.get("minPrice");
   const maxPriceFromUrl = searchParams.get("maxPrice");
   const priceParamKey = useMemo(
@@ -198,7 +197,8 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
           sortBy: sortParams.sortBy,
           sortOrder: sortParams.sortOrder,
           inStock: inStockForApi,
-          onSale: onSaleForApi,
+          // `onSale` intentionally omitted — sending it (esp. `onSale=true`) filters
+          // search to discounted products only and hides exact-match/non-sale items.
           minPrice:
             minPriceFromUrl != null && minPriceFromUrl !== ""
               ? Number(minPriceFromUrl)
@@ -316,13 +316,11 @@ const SearchPageWrapper: React.FC<SearchPageWrapperProps> = ({ settings }) => {
         updateUrlSearchParams((params) => {
           params.delete(FILTER_URL_PARAM.PAGE);
           if (checked) {
-            // User selected "Include Out of Stock" → send inStock=false, onSale=false
+            // User selected "Include Out of Stock" → include out-of-stock products.
             params.set(FILTER_URL_PARAM.IN_STOCK, "false");
-            params.set(FILTER_URL_PARAM.ON_SALE, "false");
           } else {
-            // Revert to default: exclude out of stock
+            // Revert to default: exclude out of stock.
             params.set(FILTER_URL_PARAM.IN_STOCK, "true");
-            params.set(FILTER_URL_PARAM.ON_SALE, "true");
           }
         });
         lastFilterUrlUpdateByUsRef.current = Date.now();

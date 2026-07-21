@@ -203,26 +203,26 @@ export const template: PageConfig = {
   },
   sections: [
     // SEO Metadata Section
-    {
-      id: "seo-metadata-section",
-      name: "SEO Metadata",
-      type: SECTION_TYPES.CONTENT_SECTION,
-      settings: {
-        layout: SECTION_LAYOUT_OPTIONS.FULL,
-      },
-      widgets: [
-        {
-          id: "seo-metadata-widget",
-          name: "SEO Metadata",
-          type: WIDGET_TYPES.SEOMetadata,
-          settings: {
-            variant: "v1",
-            title: "t:bblunt-2_home_default.seo_metadata.title",
-            description: "t:bblunt-2_home_default.seo_metadata.description",
-          },
-        },
-      ],
-    },
+    // {
+    //   id: "seo-metadata-section",
+    //   name: "SEO Metadata",
+    //   type: SECTION_TYPES.CONTENT_SECTION,
+    //   settings: {
+    //     layout: SECTION_LAYOUT_OPTIONS.FULL,
+    //   },
+    //   widgets: [
+    //     {
+    //       id: "seo-metadata-widget",
+    //       name: "SEO Metadata",
+    //       type: WIDGET_TYPES.SEOMetadata,
+    //       settings: {
+    //         variant: "v1",
+    //         title: "t:bblunt-2_home_default.seo_metadata.title",
+    //         description: "t:bblunt-2_home_default.seo_metadata.description",
+    //       },
+    //     },
+    //   ],
+    // },
 
     // Banner Carousel Section
     {

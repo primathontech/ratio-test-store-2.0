@@ -121,7 +121,10 @@ export async function searchProducts(
     const sortBy = filters?.sortBy;
     const sortOrder = filters?.sortOrder;
     const inStock = filters?.inStock !== false;
-    const onSale = filters?.onSale !== false;
+    // `onSale` is opt-in: only sent when a caller explicitly sets it. Passing
+    // `onSale=true` by default restricts results to discounted products and hides
+    // non-sale items (incl. exact-match products), so we omit it unless requested.
+    const onSale = filters?.onSale;
     const minPrice = filters?.minPrice;
     const maxPrice = filters?.maxPrice;
     const minDiscount = filters?.minDiscount;
@@ -162,7 +165,10 @@ export async function searchProducts(
     if (sortOrder) {
       apiUrl += `&sortOrder=${encodeURIComponent(sortOrder)}`;
     }
-    apiUrl += `&inStock=${inStock}&onSale=${onSale}`;
+    apiUrl += `&inStock=${inStock}`;
+    if (onSale !== undefined) {
+      apiUrl += `&onSale=${onSale}`;
+    }
     if (minPrice != null && !Number.isNaN(Number(minPrice))) {
       apiUrl += `&minPrice=${Number(minPrice)}`;
     }

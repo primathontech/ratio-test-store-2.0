@@ -1,7 +1,7 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
 import { TEMPLATE_TYPES } from "@/themes/bblunt-2/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
-import { resolveCommercePageSEO } from "@shopkit/seo";
+import { getPageMetadata } from "@shopkit/seo";
 import { getMerchantName, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
@@ -15,7 +15,7 @@ export const revalidate = 3600;
 
 // Generate metadata for home page
 export async function generateMetadata(): Promise<Metadata> {
-  return resolveCommercePageSEO("home", null, "/");
+  return getPageMetadata({ pageType: "home", path: "/" });
 }
 
 export default async function HomePage({

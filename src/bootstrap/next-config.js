@@ -16,6 +16,9 @@ const {
 const {
   ALLOWED_EDITOR_ORIGINS,
 } = require("../editor-integration/editor-bridge-config");
+// Build-time env guard — the package owns WHICH keys are required, so a future required
+// key is enforced on the next @shopkit/seo bump with no edit here.
+const { assertSeoEnv } = require("@shopkit/seo/config");
 
 // =============================================================================
 // DEFAULT CONFIGURATIONS
@@ -142,12 +145,18 @@ function buildStaticHeaders(
 ) {
   const paths = [...DEFAULT_STATIC_PATHS, ...additionalPaths];
 
+  // In `next dev`, chunk URLs are NOT content-hashed — a 1-year immutable
+  // header makes browsers permanently serve stale code after every edit
+  // (invisible fixes, phantom crashes). Immutable is prod-only.
+  const cacheValue =
+    process.env.NODE_ENV === "production" ? IMMUTABLE_CACHE : NO_CACHE;
+
   const staticHeaders = paths.map((source) => ({
     source,
     headers: [
       {
         key: "Cache-Control",
-        value: IMMUTABLE_CACHE,
+        value: cacheValue,
       },
     ],
   }));
@@ -156,7 +165,7 @@ function buildStaticHeaders(
   const corsHeaders = additionalCorsStaticPaths.map((source) => ({
     source,
     headers: [
-      { key: "Cache-Control", value: IMMUTABLE_CACHE },
+      { key: "Cache-Control", value: cacheValue },
       { key: "Access-Control-Allow-Origin", value: "*" },
     ],
   }));
@@ -318,6 +327,14 @@ function buildServiceWorkerHeaders() {
  * });
  */
 function createNextConfig(options = {}) {
+  // Fail fast (build & dev) if required config env vars are missing — a forked storefront
+  // can't ship misconfigured. Set SKIP_ENV_VALIDATION=1 to bypass (lint-only CI, or a Docker
+  // build stage without runtime env). Runtime API failures still degrade gracefully; this
+  // only guards against a developer forgetting to set the keys.
+  if (!process.env.SKIP_ENV_VALIDATION) {
+    assertSeoEnv();
+  }
+
   const {
     i18nPath = "./src/bootstrap/i18n-request.ts",
     images = {},

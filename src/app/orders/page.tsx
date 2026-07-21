@@ -4,17 +4,16 @@ import { getStaticLocale } from "@/bootstrap/i18n";
 import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { Metadata } from "next";
-import { resolvePageSEO } from "@shopkit/seo";
-import { getSEOConfig } from "@/config";
+import { getPageMetadata } from "@shopkit/seo";
 
 export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const { siteUrl, siteName } = getSEOConfig();
-  return resolvePageSEO(
-    { title: "Order Confirmation", noIndex: true },
-    { siteUrl, siteName, path: "/orders" }
-  );
+  return getPageMetadata({
+    pageType: "page",
+    path: "/orders",
+    fallback: { title: "Order Confirmation", noIndex: true },
+  });
 }
 
 export default async function ThankYouPage() {
