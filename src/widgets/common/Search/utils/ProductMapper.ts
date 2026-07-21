@@ -62,17 +62,18 @@ export const mapSearchProductToProductResponse = (
         : []),
     ] as ProductResponse["images"],
     product_availability: product?.inStock ?? product?.isInStock ?? true,
-    availableForSale:
-      (product?.onSale && (product?.inStock ?? product?.isInStock)) ?? false,
+    availableForSale: product?.inStock ?? product?.isInStock ?? true,
     variant: {
       id: variantId,
       title: product.variant?.title ?? "Default Title",
       price: typeof pricePaise === "number" ? pricePaise : 0,
       compare_at_price:
         compareAtPaise != null && compareAtPaise > 0 ? compareAtPaise : 0,
-      availableForSale:
-        (product?.onSale && (product?.inStock ?? product?.isInStock)) ?? false,
-      availableQuantity: product.variant?.availableQuantity ?? 10,
+      availableForSale: product?.inStock ?? product?.isInStock ?? true,
+      // Search API exposes no per-variant quantity, so availability is driven
+      // solely by the product-level `inStock` flag (see availableForSale above).
+      // Default 0 (not a fake stock) so a false `inStock` correctly reads as sold out.
+      availableQuantity: product.variant?.availableQuantity ?? 0,
       sku: product.variant?.sku ?? (product as any).variants?.[0]?.sku,
     } as ProductVariant,
     average_rating: product.rating?.toString?.() ?? "0",
