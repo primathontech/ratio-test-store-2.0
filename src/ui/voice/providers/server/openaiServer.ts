@@ -74,10 +74,11 @@ const VOICE_SPEED = (() => {
 
 /** Build the turn_detection block. Barge-in stays SERVER-AUTHORITATIVE in every
  *  mode (interrupt_response). WHO triggers the response differs:
- *   - semantic_vad: the model decides turn-ends server-side (create_response:true).
+ *   - semantic_vad (DEFAULT): the model decides turn-ends server-side and the server
+ *     auto-creates the response (create_response:true); no client coalescing.
  *   - server_vad + coalesce OFF: the server auto-responds; a LONGER silence window
  *     does the multi-speaker coalescing itself (Option A).
- *   - server_vad + coalesce ON (default): the server does NOT auto-respond
+ *   - server_vad + coalesce ON (opt-in): the server does NOT auto-respond
  *     (create_response:false); the CLIENT waits for a stable silence after the last
  *     speaker and triggers ONE response (useVoiceSession). The server reports stops
  *     promptly (shorter silence) so the client's stabilize window is the real wait.
@@ -129,8 +130,8 @@ function toOpenAiTools(enabled?: string[]) {
 /** Provider-specific session config, baked into the client-secret mint request
  *  (the GA "constrained at mint time" pattern — everything session.update would
  *  otherwise set can be pre-seeded here). Persona + per-merchant enabled tools +
- *  turn_detection (see buildTurnDetection: server_vad by default for its
- *  echo-defense threshold, semantic_vad opt-in via env). */
+ *  turn_detection (see buildTurnDetection: semantic_vad by default; server_vad is the
+ *  env opt-in, whose threshold is the echo-defense knob). */
 function buildSessionConfig(persona: AgentPersona): Record<string, unknown> {
   return {
     type: "realtime",

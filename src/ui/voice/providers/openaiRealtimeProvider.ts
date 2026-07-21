@@ -16,10 +16,16 @@ import type {
   VoiceSession,
   VoiceSessionCallbacks,
 } from "./types";
+import { timeoutSignal } from "../voiceHttp";
 
 // Fallback only — the server always returns the model it actually minted the
 // token for; this is never provider-specific config leaking to the client.
 const DEFAULT_MODEL = "gpt-realtime-2.1";
+// Ceiling for the SDP handshake round-trip. Without it, a black-holed endpoint
+// leaves connect() pending forever → the UI stuck on "connecting" with no error and
+// no retry. Matches the token-mint timeout; generous enough not to false-trip on a
+// slow mobile network (the exchange normally resolves in well under a second).
+const SDP_TIMEOUT_MS = 15000;
 
 /** Create the hidden <audio> element that plays the remote track. `playsInline`
  *  + explicit .play() (see mountAudio) are REQUIRED for iOS Safari, which won't
@@ -357,32 +363,71 @@ export const openaiRealtimeProvider: VoiceProvider = {
       }
     });
 
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
+    // The offer → SDP-exchange → answer handshake. If ANY step fails (createOffer, the
+    // /calls request, an HTTP error such as a single-use-token 401, a timeout, or
+    // setRemoteDescription), tear down the half-open peer connection + mic track RIGHT
+    // HERE and rethrow. The session object (which carries close()) is returned only
+    // AFTER a successful handshake below, so on a throw establish()'s bail() has no
+    // handle to release these — the mic track would keep the OS mic indicator lit and
+    // each 401 retry would strand another RTCPeerConnection. Setting `closed` first
+    // makes the resulting dc/pc "close" events no-op in handleClose, so this cleanup
+    // never fires a spurious cb.onClose (establish stays the sole owner of the failure:
+    // its catch does the silent 401 retry / terminal message). The error is rethrown
+    // unchanged so establish's retry heuristic + telemetry are unaffected.
+    try {
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
 
-    // GA SDP exchange: raw SDP text body, application/sdp, ephemeral bearer —
-    // NOT the deprecated /v1/realtime/sessions (ws-only beta) path.
-    const sdpResponse = await fetch(
-      "https://api.openai.com/v1/realtime/calls",
-      {
-        method: "POST",
-        body: offer.sdp,
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/sdp",
-        },
-      }
-    );
-    if (!sdpResponse.ok) {
-      const detail = await sdpResponse.text().catch(() => "");
-      const err = new Error(
-        `OpenAI realtime SDP exchange failed: ${sdpResponse.status} ${detail}`
+      // GA SDP exchange: raw SDP text body, application/sdp, ephemeral bearer — NOT the
+      // deprecated /v1/realtime/sessions (ws-only beta) path. Time-boxed (SDP_TIMEOUT_MS)
+      // so a black-holed endpoint can't hang connect() forever (→ UI stuck "connecting").
+      const sdpResponse = await fetch(
+        "https://api.openai.com/v1/realtime/calls",
+        {
+          method: "POST",
+          body: offer.sdp,
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/sdp",
+          },
+          signal: timeoutSignal(SDP_TIMEOUT_MS),
+        }
       );
-      cb.onError(err);
-      throw err;
+      if (!sdpResponse.ok) {
+        const detail = await sdpResponse.text().catch(() => "");
+        // Do NOT surface this via cb.onError. The SDP handshake outcome is owned by the
+        // session orchestrator (establish), which try/catches this throw: it retries a
+        // single-use-token 401 SILENTLY with a fresh mint — the common reopen case, where
+        // the prewarmed ephemeral secret has aged/been consumed — and only shows a
+        // user-facing message ("Couldn't connect") if that retry ALSO fails. Firing
+        // onError here flashed a spurious "Voice error" toast (and a Sentry event) on
+        // every recoverable 401. The status + body stay in the thrown message so
+        // establish's retry heuristic and telemetry still see them.
+        throw new Error(
+          `OpenAI realtime SDP exchange failed: ${sdpResponse.status} ${detail}`
+        );
+      }
+      const answerSdp = await sdpResponse.text();
+      await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
+    } catch (e) {
+      closed = true; // suppress handleClose → no spurious cb.onClose from this teardown
+      try {
+        micStream?.getTracks().forEach((t) => t.stop());
+      } catch {
+        /* best-effort */
+      }
+      try {
+        dc.close();
+      } catch {
+        /* best-effort */
+      }
+      try {
+        pc.close();
+      } catch {
+        /* best-effort */
+      }
+      throw e;
     }
-    const answerSdp = await sdpResponse.text();
-    await pc.setRemoteDescription({ type: "answer", sdp: answerSdp });
 
     return {
       attach: (c: HTMLElement) => {

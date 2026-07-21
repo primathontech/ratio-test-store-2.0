@@ -59,6 +59,15 @@ const TURN = VOICE_CFG.turn; // turn-taking / multi-speaker coalescing config
 // signal never arrives (normally it's flushed the instant the greeting finishes). Sized
 // above a typical greeting so it never fires mid-greeting.
 const STARTUP_DEFER_MS = 8000;
+// STARTUP MIC GATE: how long the mic is held muted-to-the-server after a session
+// opens, until it's "ready-for-user". On a fresh start with a greeting, the gate is
+// opened the instant the greeting's turn completes (see onTurnComplete); these are
+// only the BACKSTOPS. `GREETING_MAX` frees the mic if the greeting's turn-complete
+// never arrives (sized above a typical greeting). `SETTLE` is the short wait on a
+// resume/reconnect (no greeting) so any greeting-echo tail passes before the mic
+// goes live — long enough to matter, short enough to feel instant.
+const MIC_GATE_GREETING_MAX_MS = STARTUP_DEFER_MS;
+const MIC_GATE_SETTLE_MS = 400;
 // PROACTIVE GREETING (config: VOICE_CFG.greeting): on a fresh session the agent
 // speaks a short opening line first — like ChatGPT Voice / Gemini Live — so the
 // shopper knows it's connected and listening. It's a ONE-SHOT response rendered in
@@ -153,7 +162,17 @@ export function useVoiceSession(): VoiceSessionApi {
   // greeting-fire until the flush.
   const startupDeferRef = useRef(false);
   const startupTasksRef = useRef<Array<() => void>>([]);
+  // The greeting's fallback-flush timer, stored so teardown / a new open can CANCEL
+  // it — an untracked setTimeout here would survive a close and fire into the NEXT
+  // session, prematurely flushing its startup queue.
+  const startupFlushTimerRef = useRef<ReturnType<typeof setTimeout> | null>(
+    null
+  );
   const flushStartupTasks = useCallback(() => {
+    if (startupFlushTimerRef.current) {
+      clearTimeout(startupFlushTimerRef.current);
+      startupFlushTimerRef.current = null;
+    }
     if (!startupDeferRef.current) return;
     startupDeferRef.current = false;
     const tasks = startupTasksRef.current;
@@ -301,6 +320,59 @@ export function useVoiceSession(): VoiceSessionApi {
     if (statusRef.current !== "idle") return;
     getToken().catch(() => {});
   }, [getToken]);
+
+  // ===== STARTUP MIC GATE =====
+  // The mic is held MUTED-TO-THE-SERVER from the moment a session opens until it's
+  // "ready-for-user": the opening greeting has finished (fresh start), or a short
+  // settle has elapsed (resume/reconnect, which have no greeting). Two problems this
+  // solves, both specific to the default semantic_vad mode (server auto-creates
+  // responses, no threshold knob) with an always-hot mic:
+  //   1. The greeting self-interrupting — the mic hearing the greeting's own audio
+  //      (echo past AEC) or ambient noise, which the server reads as a barge-in and
+  //      then auto-answers → the "Hi… <pause> …continues" fragmentation.
+  //   2. An UNSOLICITED turn at open — the hot mic triggering a server response
+  //      before the shopper has said anything, which then acts on injected page
+  //      context / preserved memory ("opens a random product", "continues the
+  //      previous conversation").
+  // The gate is INDEPENDENT of the shopper's own mute: syncMic folds both together,
+  // so opening the gate never un-mutes a shopper who chose mute, and muting/unmuting
+  // during the gated window can't open a closed gate.
+  const micGateOpenRef = useRef(false);
+  const micGateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  // Apply the EFFECTIVE mic state = muted if the gate is closed OR the shopper muted.
+  const syncMic = useCallback(() => {
+    sessionRef.current?.setMicMuted?.(
+      !micGateOpenRef.current || mutedRef.current
+    );
+  }, []);
+  const closeMicGate = useCallback(() => {
+    micGateOpenRef.current = false;
+    syncMic();
+  }, [syncMic]);
+  // Open the gate → the shopper is now heard (subject to their own mute). Idempotent;
+  // cancels the backstop timer.
+  const openMicGate = useCallback(() => {
+    if (micGateTimerRef.current) {
+      clearTimeout(micGateTimerRef.current);
+      micGateTimerRef.current = null;
+    }
+    // Only a LIVE session opens the gate. A stale backstop from a superseded or
+    // torn-down session (a drop mid-greeting → reconnect, or a terminal close) could
+    // otherwise fire here and un-mute a dead/not-yet-ready track — a brief OS mic
+    // blip and a leaked open-flag. statusRef is authoritative (idle/connecting/live).
+    if (statusRef.current !== "live") return;
+    if (micGateOpenRef.current) return;
+    micGateOpenRef.current = true;
+    syncMic();
+  }, [syncMic]);
+  // Arm the single gate-open timer (clears any prior one, so only the latest wins).
+  const scheduleMicGateOpen = useCallback(
+    (delayMs: number) => {
+      if (micGateTimerRef.current) clearTimeout(micGateTimerRef.current);
+      micGateTimerRef.current = setTimeout(openMicGate, delayMs);
+    },
+    [openMicGate]
+  );
 
   // Keep the status ref in sync for event-listener closures (lifecycle handlers).
   useEffect(() => {
@@ -900,6 +972,19 @@ export function useVoiceSession(): VoiceSessionApi {
         clearTimeout(utteranceWatchdogRef.current);
         utteranceWatchdogRef.current = null;
       }
+      // Startup mic gate + deferred-startup fallback — clear so neither fires into
+      // the NEXT session. The gate is reset to CLOSED so the next open re-gates.
+      if (micGateTimerRef.current) {
+        clearTimeout(micGateTimerRef.current);
+        micGateTimerRef.current = null;
+      }
+      micGateOpenRef.current = false;
+      if (startupFlushTimerRef.current) {
+        clearTimeout(startupFlushTimerRef.current);
+        startupFlushTimerRef.current = null;
+      }
+      startupDeferRef.current = false;
+      startupTasksRef.current = [];
       responseActiveRef.current = false;
       reconnectsRef.current = 0;
       // Drop any mic acquisition primed for a connect that isn't happening, so the
@@ -950,7 +1035,9 @@ export function useVoiceSession(): VoiceSessionApi {
     setMuted((prev) => {
       const next = !prev;
       mutedRef.current = next;
-      sessionRef.current?.setMicMuted?.(next);
+      // Effective mute folds in the startup gate: unmuting while the gate is still
+      // closed (e.g. during the greeting) must NOT open the mic early.
+      sessionRef.current?.setMicMuted?.(!micGateOpenRef.current || next);
       return next;
     });
   }, []);
@@ -1036,6 +1123,27 @@ export function useVoiceSession(): VoiceSessionApi {
           batchSeqRef.current = 0;
           clearTurnTimers();
           responseActiveRef.current = false;
+          turnEpochRef.current = 0;
+          // Capture the greeting latch BEFORE the block below consumes it.
+          const willGreet = greetPendingRef.current;
+          // Deterministic clean start on EVERY path (start / resume / reconnect): drop
+          // any deferred-startup state or fallback timer a previous session may have
+          // left, so nothing stale can flush into this one.
+          startupDeferRef.current = false;
+          startupTasksRef.current = [];
+          if (startupFlushTimerRef.current) {
+            clearTimeout(startupFlushTimerRef.current);
+            startupFlushTimerRef.current = null;
+          }
+          // Close the startup mic gate: the mic stays muted-to-the-server until this
+          // session is ready-for-user. It's opened on the greeting's turn-complete
+          // (fresh start); the backstop timer frees it either way — a short settle on
+          // resume/reconnect (no greeting), or a safety ceiling if a greeting's
+          // turn-complete never arrives.
+          closeMicGate();
+          scheduleMicGateOpen(
+            willGreet ? MIC_GATE_GREETING_MAX_MS : MIC_GATE_SETTLE_MS
+          );
           voiceTrack(wasReconnect ? "reconnected" : "session_started", {
             model: liveModel,
             path: pathname,
@@ -1055,8 +1163,10 @@ export function useVoiceSession(): VoiceSessionApi {
             // onTurnComplete/onInterrupted) so nothing contends with or interrupts the
             // greeting audio. Fallback flush in case the turn signal never arrives.
             startupDeferRef.current = true;
-            startupTasksRef.current = [];
-            setTimeout(() => {
+            // Stored (not a bare setTimeout) so teardown / a new open can cancel it and
+            // it can never fire into a later session. Cleared on greeting turn-complete.
+            startupFlushTimerRef.current = setTimeout(() => {
+              startupFlushTimerRef.current = null;
               if (statusRef.current === "live") flushStartupTasks();
             }, STARTUP_DEFER_MS);
             sessionRef.current?.requestResponse?.({
@@ -1121,6 +1231,12 @@ export function useVoiceSession(): VoiceSessionApi {
         onTurnComplete: () => {
           if (stale()) return;
           responseActiveRef.current = false; // this response finished
+          // Ready-for-user after the FIRST completed turn (the greeting). Open the gate
+          // after a short settle, NOT instantly: response.done can arrive while the
+          // greeting's audio TAIL is still playing out of the jitter buffer, and opening
+          // the mic into that tail is exactly the self-interrupt we're preventing. The
+          // guard makes it a no-op on every later turn (gate already open).
+          if (!micGateOpenRef.current) scheduleMicGateOpen(MIC_GATE_SETTLE_MS);
           // The opening greeting just finished → now safe to run the deferred startup
           // work (cart warm, page/cart context, collection fetch) without interrupting it.
           flushStartupTasks();
@@ -1216,6 +1332,18 @@ export function useVoiceSession(): VoiceSessionApi {
             clearTimeout(stableTimerRef.current);
             stableTimerRef.current = null;
           }
+          // Startup mic gate + deferred-startup fallback: cancel both so a timer from
+          // this (closing) session can't fire into the reconnected one or after a
+          // terminal close. Gate reset to CLOSED; a reconnect's onOpen re-arms it.
+          if (micGateTimerRef.current) {
+            clearTimeout(micGateTimerRef.current);
+            micGateTimerRef.current = null;
+          }
+          micGateOpenRef.current = false;
+          if (startupFlushTimerRef.current) {
+            clearTimeout(startupFlushTimerRef.current);
+            startupFlushTimerRef.current = null;
+          }
           // Auto-reconnect on an UNEXPECTED close (not a user stop / cost cap),
           // preserving the conversation's working memory (it is NOT reset here).
           const canRetry =
@@ -1253,6 +1381,8 @@ export function useVoiceSession(): VoiceSessionApi {
       clearTurnTimers,
       bumpIdle,
       flushStartupTasks,
+      scheduleMicGateOpen,
+      closeMicGate,
     ]
   );
 
@@ -1317,9 +1447,13 @@ export function useVoiceSession(): VoiceSessionApi {
         );
         if (stale()) return bail();
         sessionRef.current = session;
-        // Re-assert the shopper's mute choice on this fresh track — so a mid-call
-        // reconnect (mobile Wi-Fi↔LTE handoff) doesn't silently un-mute the mic.
-        if (mutedRef.current) session.setMicMuted?.(true);
+        // Start the fresh track GATED CLOSED: the mic is muted-to-the-server from the
+        // instant the track exists — closing the window between connect and onOpen so a
+        // hot mic can never self-interrupt the greeting or trigger an unsolicited turn.
+        // onOpen re-affirms the gate and schedules its open; this also subsumes the old
+        // "re-assert the shopper's mute on a reconnect" behaviour (syncMic folds it in).
+        micGateOpenRef.current = false;
+        session.setMicMuted?.(true);
         // Mount into the primed element's parent when present, else <body>.
         session.attach?.(
           providerAudioElRef.current?.parentElement ?? document.body

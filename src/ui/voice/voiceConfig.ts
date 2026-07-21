@@ -177,7 +177,7 @@ export function getVoiceConfig(): VoiceConfig {
       language: greetingLanguage,
       instruction:
         process.env.NEXT_PUBLIC_VOICE_GREETING?.trim() ||
-        `The voice session just connected and the shopper hasn't spoken yet. Greet them now warmly and naturally in ${greetingLanguage}: ONE short, welcoming sentence — welcome them to ${storeName}${storeSpecialty ? `, known for ${storeSpecialty}` : ""}, and invite them to shop (for example, ask what they're looking for today). Exactly one sentence — no lists, no reciting what you can do, no product names.`,
+        `The voice session just connected and the shopper hasn't spoken yet. Greet them now warmly and naturally in ${greetingLanguage}: ONE short, welcoming sentence — welcome them to ${storeName}${storeSpecialty ? `, known for ${storeSpecialty}` : ""}, and invite them to shop (for example, ask what they're looking for today). Exactly one sentence — no lists, no reciting what you can do, no product names. Do NOT use any tools, navigate, open pages, or take any action — only speak this one sentence.`,
     },
     // Currency: env-driven, default INR/₹. Same env vars the persona reads
     // (agentConfig), so the spoken currency and the payload currency always agree.

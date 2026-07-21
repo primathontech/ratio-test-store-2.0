@@ -258,7 +258,16 @@ speaks. What differs is WHO decides the turn is over and triggers the reply. Thr
 modes, chosen by env (single source of truth: `getTurnConfig()` in `voiceConfig.ts`,
 read by both client and server):
 
-- **`server_vad` + coalesce ON (DEFAULT)** — client-managed turn coalescing. The
+- **`semantic_vad` (DEFAULT)** — a model decides when the user is _semantically_
+  finished (Gemini-Live-style), fully server-managed: the server both endpoints the
+  turn **and** auto-creates the response (`create_response:true`, `interrupt_response:true`),
+  so there is **no client coalescing** in this mode. `OPENAI_VAD_EAGERNESS`
+  (`low`|`medium`|`high`|`auto`; `low` waits longest). No `threshold` knob — the
+  **startup mic gate** (mic held muted-to-the-server until the greeting finishes / a
+  short settle on resume) is what prevents self-interrupt on speakers and any
+  unsolicited turn before the shopper speaks. Switch to server_vad with
+  `NEXT_PUBLIC_VOICE_TURN_MODE=server_vad`.
+- **`server_vad` + coalesce ON (opt-in)** — client-managed turn coalescing. The
   server does **not** auto-respond (`create_response:false`); it just reports speech
   start/stop. The client waits for a **stable silence after the LAST speaker**
   (`NEXT_PUBLIC_VOICE_STABILIZE_MS`, default **350ms** — production-tuned for the
@@ -272,10 +281,6 @@ read by both client and server):
   (`OPENAI_VAD_SILENCE_MS`, default 800ms here) does coarser coalescing. Simplest,
   fully server-managed. `threshold` (`OPENAI_VAD_THRESHOLD`) is the echo/self-interrupt
   defense either way.
-- **`semantic_vad` (opt-in)** — `NEXT_PUBLIC_VOICE_TURN_MODE=semantic_vad`: a model
-  decides when the user is _semantically_ finished (Gemini-Live-style), server-managed
-  (no client coalescing). `OPENAI_VAD_EAGERNESS` (`low`|`medium`|`high`|`auto`; `low`
-  waits longest). No threshold knob — re-verify no self-interrupt on speakers.
 - **Latest-intent rule** — the persona answers only the **most recent complete
   request** and treats earlier half-said fragments as superseded, so even when several
   segments land in context the agent never replies to a stale one.
@@ -283,10 +288,14 @@ read by both client and server):
   from a superseded turn are dropped (closed with a `cancelled` marker, no
   `response.create`).
 
-Client state machine (coalesce ON) lives in `useVoiceSession` (`onInterrupted` /
-`onSpeechStopped` / `fireCoalesced` + `responseActiveRef` so responses never overlap).
-`create_response` is derived from the same coalesce flag server-side so the two never
-both trigger a response.
+The client turn state-machine (`onInterrupted` / `onSpeechStopped` / `fireCoalesced` +
+`responseActiveRef`, so responses never overlap) runs **only in `server_vad` + coalesce
+ON**; in the default `semantic_vad` the server owns response timing and this path is
+inert. `create_response` is derived from the coalesce flag server-side, so in coalesce
+mode the client and server never both trigger a response. In the default `semantic_vad`
+mode the server auto-creates responses, so the **startup mic gate** (see
+`useVoiceSession`: mic muted-to-the-server until ready-for-user) is what guarantees a
+deterministic, uninterrupted greeting and no unsolicited turn on (re)open.
 
 - **ICE/TURN:** OpenAI does server-side relay; the browser connects outbound to
   OpenAI's public candidates, so only STUN is needed by default. A UDP-blocked
