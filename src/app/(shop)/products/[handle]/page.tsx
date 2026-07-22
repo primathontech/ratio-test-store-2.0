@@ -10,9 +10,8 @@ import type { PageConfig } from "@shopkit/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
 import { KwikPassProductView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { cache } from "react";
-import { ApiProduct } from "@/widgets/common/ProductDetail/types";
 import { JsonLd, extractJsonLd, stripJsonLd } from "@/components/seo/JsonLd";
 import { createProductViaCollectionsStaticParams } from "@shopkit/data-layer";
 
@@ -25,15 +24,6 @@ export const dynamicParams = true;
 // only way to discover all handles (helper from @shopkit/data-layer).
 export const generateStaticParams =
   createProductViaCollectionsStaticParams(getCommerceClient);
-
-const HIDDEN_PRODUCT_TAG = "hide__products";
-
-function isProductHidden(product: ApiProduct | null | undefined): boolean {
-  const tags = product?.tags
-    ?.map((tag: any) => (typeof tag === "string" ? tag : tag?.name || ""))
-    .filter((tag: string) => tag.length > 0);
-  return Array.isArray(tags) && tags.includes(HIDDEN_PRODUCT_TAG);
-}
 
 // Custom backend has no products-list endpoint — collection traversal is the only way to discover all handles.
 // export const generateStaticParams =
@@ -71,10 +61,6 @@ export default async function ProductPage(props: {
 
   if (!product) {
     notFound();
-  }
-
-  if (isProductHidden(product as ApiProduct)) {
-    redirect("/");
   }
 
   try {

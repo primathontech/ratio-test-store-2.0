@@ -1,25 +1,6 @@
 import { getCommerceClient } from "@/config/commerce";
 import { TrendingSearch } from "../components/TrendingSearches";
 
-// Products tagged with this are hidden from the storefront; their PDPs redirect
-// to home (see src/app/(shop)/products/[handle]/page.tsx). They must not leak
-// into search results or product rails.
-const HIDDEN_PRODUCT_TAG = "hide__products";
-
-/**
- * Mirrors the PDP hidden-product predicate: tags may be plain strings or
- * `{ name }` objects. Case-insensitive match against `hide__products`.
- * NOTE: if the list API does not return a `tags` field on products, this is a
- * no-op (nothing to filter on) — the limitation is documented here.
- */
-function isHiddenProduct(product: any): boolean {
-  const tags = product?.tags
-    ?.map((tag: any) => (typeof tag === "string" ? tag : tag?.name || ""))
-    .filter((tag: string) => tag.length > 0)
-    .map((tag: string) => tag.toLowerCase());
-  return Array.isArray(tags) && tags.includes(HIDDEN_PRODUCT_TAG);
-}
-
 /**
  * "Popular Choices" chips — derived GENERICALLY from the merchant's own
  * collections (no hardcoded handles). Each collection becomes a chip linking to
@@ -160,10 +141,7 @@ export async function searchProducts(
     const resp = (await client.getProducts({ first: 100 } as never)) as {
       data?: unknown[];
     };
-    const rawAll: any[] = Array.isArray(resp?.data) ? (resp.data as any[]) : [];
-    // Drop hidden products so they never surface in search (their PDPs redirect
-    // to home, which would be a broken result).
-    const all = rawAll.filter((p) => !isHiddenProduct(p));
+    const all: any[] = Array.isArray(resp?.data) ? (resp.data as any[]) : [];
 
     const q = (query || "").trim().toLowerCase();
     const matches = q
@@ -368,9 +346,9 @@ export async function fetchMostLovedProducts(productLimit: number = 12) {
       throw new Error(response.message || "Failed to fetch products");
     }
 
-    const products: unknown[] = (
-      Array.isArray(response?.data) ? (response.data as unknown[]) : []
-    ).filter((p) => !isHiddenProduct(p));
+    const products: unknown[] = Array.isArray(response?.data)
+      ? (response.data as unknown[])
+      : [];
 
     return {
       products,
