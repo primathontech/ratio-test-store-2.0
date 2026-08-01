@@ -54,7 +54,9 @@ export const CustomCursor: React.FC<CustomCursorProps> = ({ isVisible }) => {
     };
   }, [isVisible, isMobile]);
 
-  if (!isVisible || isMobile || !isMouseInViewport) return null;
+  if (!isVisible || isMobile || !isMouseInViewport) {
+    return null;
+  }
 
   return (
     <div

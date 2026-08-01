@@ -23,7 +23,7 @@ export const EmptyCartView = ({
   return (
     <Box
       className={`cart-empty flex flex-col items-center justify-center text-center mx-6 md:mx-[15px] lg:mx-[54px] my-[50px] md:my-[50px] lg:my-[130px] font-body`}
-      data-testid="ratio-cart-drawer-empty"
+      data-testid="bblunt-cart-drawer-empty"
     >
       <p className="text-[28px] text-black !leading-none">Your cart is empty</p>
       <p className="text-text-base text-[#545454] mt-[24px] text-center">
@@ -32,7 +32,7 @@ export const EmptyCartView = ({
       <div
         onClick={onNavigateToCollection}
         className="bg-black cursor-pointer text-white text-text-base text-center font-semibold flex justify-center items-baseline rounded-xl mt-[24px] px-[22px] md:px-[30px] py-[8px] md:py-[13px] shine-link-button"
-        data-testid="ratio-cart-drawer-empty-cta"
+        data-testid="bblunt-cart-drawer-empty-cta"
       >
         <span>Return to shop</span>
         <ArrowIcon />

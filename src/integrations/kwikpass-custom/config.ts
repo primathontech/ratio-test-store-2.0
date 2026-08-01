@@ -42,7 +42,7 @@ export function getKwikPassConfig() {
   validateKwikPassEnv();
 
   return {
-    enabled: process.env.NEXT_PUBLIC_GOKWIK_ENABLED || true,
+    enabled: process.env.NEXT_PUBLIC_KP_EVENT_ALLOWED !== "no", // yes or no
     merchantName: process.env.NEXT_PUBLIC_GOKWIK_MID!,
     environment: process.env.NEXT_PUBLIC_GOKWIK_ENVIRONMENT,
     type: process.env.NEXT_PUBLIC_GOKWIK_TYPE!,

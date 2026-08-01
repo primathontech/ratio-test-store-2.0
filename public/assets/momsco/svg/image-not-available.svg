@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 720" width="720" height="720" role="img" aria-label="Image not available — The Moms Co.">
+  <defs>
+    <linearGradient id="momsco-bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="100%" stop-color="#eef4fb"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="720" height="720" fill="url(#momsco-bg)"/>
+
+  <g transform="translate(360 300)">
+    <circle cx="0" cy="0" r="130" fill="#ffffff" stroke="rgb(61, 124, 201)" stroke-width="2" stroke-opacity="0.25"/>
+
+    <g fill="none" stroke="rgb(61, 124, 201)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="-60" y="-46" width="120" height="92" rx="10"/>
+      <circle cx="-26" cy="-20" r="8" fill="rgb(61, 124, 201)" fill-opacity="0.18"/>
+      <path d="M-60 28 L-22 -8 L6 18 L26 4 L60 32"/>
+    </g>
+
+    <g transform="translate(58 -54)">
+      <circle r="22" fill="#ffffff" stroke="rgb(61, 124, 201)" stroke-width="3"/>
+      <text x="0" y="7" text-anchor="middle" font-family="Georgia, 'Times New Roman', serif" font-size="26" font-weight="700" fill="rgb(61, 124, 201)">!</text>
+    </g>
+  </g>
+
+  <g text-anchor="middle">
+    <text x="360" y="490" font-family="Georgia, 'Times New Roman', serif" font-size="32" font-weight="500" fill="#1a1a1a" letter-spacing="0.5">Image not available</text>
+    <text x="360" y="528" font-family="Arial, Helvetica, sans-serif" font-size="16" fill="#1a1a1a" fill-opacity="0.55">We&apos;re working on it</text>
+  </g>
+
+  <g transform="translate(360 600)" text-anchor="middle">
+    <text font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="700" fill="rgb(61, 124, 201)" letter-spacing="4">THE MOMS CO.</text>
+    <text y="44" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="600" fill="rgb(61, 124, 201)" fill-opacity="0.75" letter-spacing="6">NATURAL · SAFE · CARING</text>
+  </g>
+</svg>

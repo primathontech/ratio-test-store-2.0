@@ -1,6 +1,5 @@
 "use client";
 
-import { AccountDataProvider } from "@/widgets/common/Account/context/AccountDataContext";
 import { Suspense, useLayoutEffect, useState } from "react";
 
 interface ProtectedRouteProps {
@@ -29,9 +28,5 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     return null;
   }
 
-  return (
-    <AccountDataProvider>
-      <Suspense fallback={null}>{children}</Suspense>
-    </AccountDataProvider>
-  );
+  return <Suspense fallback={null}>{children}</Suspense>;
 }

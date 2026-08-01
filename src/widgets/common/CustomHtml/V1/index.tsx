@@ -24,6 +24,7 @@ export const V1 = memo(function V1({
   const containerRef = useRef<HTMLDivElement>(null);
   const rawHtml = settings?.html ?? "";
 
+  // Use a stable id for logging; templates can pass a better one via settings later if needed
   const widgetId = "custom-html";
 
   useEffect(() => {
@@ -33,12 +34,14 @@ export const V1 = memo(function V1({
     }
 
     try {
+      // Find and execute <script> tags (they don't auto-run from innerHTML)
       const scripts = Array.from(el.querySelectorAll("script"));
       scripts.forEach((oldScript) => {
         try {
           // eslint-disable-next-line no-restricted-syntax
           const newScript = document.createElement("script");
 
+          // Inline scripts: wrap original code in a try/catch to prevent errors from breaking the page
           if (oldScript.textContent) {
             const originalCode = oldScript.textContent;
 
@@ -52,6 +55,7 @@ export const V1 = memo(function V1({
             newScript.textContent = wrappedCode;
           }
 
+          // External scripts: just re-attach src and log load failures
           if (oldScript.src) {
             newScript.onerror = () => {
               console.error(
@@ -66,6 +70,7 @@ export const V1 = memo(function V1({
             newScript.type = oldScript.type;
           }
 
+          // Safely replace script - check parent exists
           const parent = oldScript.parentNode;
           if (parent) {
             parent.replaceChild(newScript, oldScript);
@@ -75,6 +80,7 @@ export const V1 = memo(function V1({
             `[CustomHtml Widget ${widgetId}] Error processing script tag:`,
             error
           );
+          // Continue processing other scripts even if one fails
         }
       });
     } catch (error) {
@@ -82,9 +88,11 @@ export const V1 = memo(function V1({
         `[CustomHtml Widget ${widgetId}] Error in script execution:`,
         error
       );
+      // Allow widget to render even if script processing fails
     }
   }, [rawHtml, widgetId]);
 
+  // Safe render - dangerouslySetInnerHTML is safe, but wrap in try/catch as extra safety
   try {
     return (
       <div
@@ -96,6 +104,7 @@ export const V1 = memo(function V1({
       />
     );
   } catch (error) {
+    // Fallback if rendering somehow throws (shouldn't happen, but safety first)
     console.error(`[CustomHtml Widget ${widgetId}] Rendering error:`, error);
     return <div className={className} data-custom-html-widget-id={widgetId} />;
   }

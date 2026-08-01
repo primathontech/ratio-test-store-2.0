@@ -1,0 +1,151 @@
+/* =====================================================
+   NINTARABABY — Announcement Bar
+   Source: nintarababy.in
+   Background: #c6d4f6 (light periwinkle blue)
+   Text: #092a33 (very dark teal)
+   Font: Figtree 14px, weights 400 (normal) and 600 (bold)
+   Height: ~34px (5px padding top/bottom + 23.8px line-height)
+   ===================================================== */
+
+:root {
+  --nintara-ab-bg: #c6d4f6;
+  --nintara-ab-text: #092a33;
+  --nintara-ab-font-family: var(--font-figtree, "Figtree"), sans-serif;
+  --nintara-ab-font-size: 14px;
+  --nintara-ab-font-weight: 400;
+  --nintara-ab-font-weight-bold: 600;
+  --nintara-ab-line-height: 23.8px;
+  --nintara-ab-padding-y: 5px;
+  --nintara-ab-padding-x: 10px;
+  --nintara-ab-container-padding-x: 15px;
+  --nintara-ab-message-gap: 4px;
+  --nintara-ab-min-height: 33.8px;
+  --nintara-ab-transition-duration: 600ms;
+  --nintara-ab-transition-easing: cubic-bezier(0.16, 1, 0.3, 1);
+  --nintara-ab-link-hover-opacity: 0.7;
+}
+
+/* Outer bar */
+.nintara-announcement-bar {
+  background-color: #c8f2d9;
+  font-size: var(--nintara-ab-font-size);
+  font-family: var(--nintara-ab-font-family);
+  font-weight: var(--nintara-ab-font-weight);
+  line-height: var(--nintara-ab-line-height);
+  color: var(--nintara-ab-text);
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+
+/* Inner container */
+.nintara-announcement-bar__container {
+  max-width: none;
+  padding-left: var(--nintara-ab-container-padding-x);
+  padding-right: var(--nintara-ab-container-padding-x);
+  width: 100%;
+}
+
+/* Carousel viewport */
+.nintara-announcement-bar__viewport {
+  padding: var(--nintara-ab-padding-y) var(--nintara-ab-padding-x);
+  height: var(--nintara-ab-min-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Individual slide */
+.nintara-announcement-bar__slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Active slide — visible in place */
+.nintara-announcement-bar__slide--active {
+  transform: translateX(0);
+}
+
+/* Exiting slide — slides out to the left */
+.nintara-announcement-bar__slide--exit-left {
+  animation: nintaraAbSlideOutLeft var(--nintara-ab-transition-duration)
+    var(--nintara-ab-transition-easing) forwards;
+}
+
+/* Entering slide — slides in from the right */
+.nintara-announcement-bar__slide--enter-left {
+  animation: nintaraAbSlideInLeft var(--nintara-ab-transition-duration)
+    var(--nintara-ab-transition-easing) forwards;
+}
+
+@keyframes nintaraAbSlideOutLeft {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+}
+
+@keyframes nintaraAbSlideInLeft {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Message text */
+.nintara-announcement-bar__message {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nintara-ab-message-gap);
+  font-family: var(--nintara-ab-font-family);
+  font-size: var(--nintara-ab-font-size);
+  font-weight: var(--nintara-ab-font-weight);
+  line-height: var(--nintara-ab-line-height);
+  color: var(--nintara-ab-text);
+}
+
+/* Bold segments */
+.nintara-announcement-bar__bold {
+  font-weight: var(--nintara-ab-font-weight-bold);
+  font-size: var(--nintara-ab-font-size);
+  color: var(--nintara-ab-text);
+}
+
+/* Link styling */
+.nintara-announcement-bar__link {
+  color: var(--nintara-ab-text);
+  text-decoration: none;
+  position: relative;
+  z-index: 5;
+}
+
+.nintara-announcement-bar__link:hover {
+  opacity: var(--nintara-ab-link-hover-opacity);
+}
+
+/* Reduced motion: disable slide animations */
+@media (prefers-reduced-motion: reduce) {
+  .nintara-announcement-bar__slide--exit-left,
+  .nintara-announcement-bar__slide--enter-left {
+    animation: none !important;
+  }
+}

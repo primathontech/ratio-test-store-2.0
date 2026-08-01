@@ -1,9 +1,6 @@
 "use client";
 
-import {
-  EditorHost,
-  type FetchDataSourceOptions,
-} from "@shopkit/editor-bridge/client";
+import { EditorHost } from "@shopkit/editor-bridge/client";
 import type {
   AvailableSectionRegistry,
   WidgetRegistry,
@@ -11,31 +8,6 @@ import type {
 import { ALLOWED_EDITOR_ORIGINS } from "./editor-bridge-config";
 import { availableSectionsRegistry } from "./registries";
 import { widgetRegistry } from "./widget-registry";
-
-/**
- * Resolves the editor's data-source dropdown lists. Runs in the iframe
- * (browser) and hits the same-origin route, which calls this storefront's
- * data-layer client server-side — so there's no CORS. Module-level so the
- * EditorHost prop stays referentially stable. Best-effort: `[]` on failure.
- */
-const fetchDataSourceOptions: FetchDataSourceOptions = async ({ source }) => {
-  try {
-    const res = await fetch("/api/data-source-options", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ source }),
-    });
-    if (!res.ok) {
-      return [];
-    }
-    const json = (await res.json()) as {
-      data?: Array<{ value: string; label: string }>;
-    };
-    return json?.data ?? [];
-  } catch {
-    return [];
-  }
-};
 
 /**
  * Mounts <EditorHost /> for every route in this storefront.
@@ -60,7 +32,6 @@ export function EditorHostMount(): JSX.Element {
       availableSections={
         availableSectionsRegistry.availableSections as AvailableSectionRegistry
       }
-      fetchDataSourceOptions={fetchDataSourceOptions}
       previewCodeSync={true}
     />
   );

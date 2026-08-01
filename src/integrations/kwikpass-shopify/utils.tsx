@@ -95,7 +95,9 @@ export const fireUserEngagementEvent = () => {
  */
 export const handleKwikpassLogin = (onClose?: () => void) => {
   try {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      return;
+    }
 
     // Shopify platform login
     if (window.__KP_LOGIN_SDK_INSTANCE__) {

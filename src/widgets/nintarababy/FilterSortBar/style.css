@@ -1,0 +1,574 @@
+/* =====================================================
+   NINTARABABY — Filter & Sort Bar
+   Source: nintarababy.in/collections/all-products
+   Selector: .t4s-collection-header / .t4s-btn-filter-wrapper
+
+   Toolbar with Filter button (left, funnel icon) and
+   Sort By dropdown (right, chevron icon).
+   Desktop: 1px solid #01464f borders, 4px radius, 140px min-width.
+   Mobile: no borders, full-width flex, sort = bottom sheet.
+   ===================================================== */
+
+:root {
+  /* Colors */
+  --nintara-fsb-primary: #3d7cc9;
+  --nintara-fsb-text: #092a33;
+  --nintara-fsb-bg: #ffffff;
+  --nintara-fsb-option-hover-bg: rgba(61, 124, 201, 0.08);
+  --nintara-fsb-dark-color: #222222;
+  --nintara-fsb-border-color: #3d7cc9;
+  --nintara-fsb-heading-color: #092a33;
+
+  /* Typography */
+  --nintara-fsb-font-family: var(--font-figtree, "Figtree"), sans-serif;
+  --nintara-fsb-font-size-dk: 16px;
+  --nintara-fsb-font-size-mb: 14px;
+  --nintara-fsb-font-weight-dk: 500;
+  --nintara-fsb-font-weight-mb: 600;
+  --nintara-fsb-line-height: 26px;
+
+  /* Spacing */
+  --nintara-fsb-margin: 20px 0 40px;
+  --nintara-fsb-gap: 16px;
+  --nintara-fsb-btn-min-width: 140px;
+  --nintara-fsb-btn-min-height: 40px;
+  --nintara-fsb-btn-radius: 4px;
+  --nintara-fsb-sort-padding: 6px 15px;
+  --nintara-fsb-icon-gap: 8px;
+  --nintara-fsb-icon-gap-mb: 4px;
+
+  /* Dropdown */
+  --nintara-fsb-dropdown-width: 250px;
+  --nintara-fsb-dropdown-max-height: 385px;
+  --nintara-fsb-dropdown-shadow: 0 0 20px rgb(0 0 0 / 20%);
+  --nintara-fsb-dropdown-z: 468;
+  --nintara-fsb-dropdown-content-padding: 15px 0;
+  --nintara-fsb-dropdown-option-padding: 10px 15px;
+
+  /* Mobile dropdown */
+  --nintara-fsb-dropdown-max-height-mb: 80vh;
+  --nintara-fsb-dropdown-header-height: 50px;
+
+  /* Transitions */
+  --nintara-fsb-dropdown-transition-dk:
+    opacity 0.2s ease-in-out, visibility 0.2s ease-in-out;
+  --nintara-fsb-dropdown-transition-mb: all 0.4s
+    cubic-bezier(0.645, 0.045, 0.355, 1);
+  --nintara-fsb-option-transition: all 0.3s ease-in-out;
+  --nintara-fsb-chevron-transition: transform 0.2s ease-in-out;
+}
+
+/* --- Toolbar container --- */
+.nintara-fsb {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--nintara-fsb-gap);
+  margin: 20px auto 40px;
+  max-width: 1200px;
+  padding: 0 15px;
+  position: relative;
+}
+
+/* --- Filter side (left) --- */
+.nintara-fsb__filter-side {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* --- Sort side (right) --- */
+.nintara-fsb__sort-side {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+/* --- Filter button --- */
+.nintara-fsb__filter-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: var(--nintara-fsb-btn-min-width);
+  min-height: var(--nintara-fsb-btn-min-height);
+  border: 1px solid var(--nintara-fsb-primary);
+  border-radius: var(--nintara-fsb-btn-radius);
+  background: none;
+  color: var(--nintara-fsb-primary);
+  font-family: var(--nintara-fsb-font-family);
+  font-size: var(--nintara-fsb-font-size-dk);
+  font-weight: var(--nintara-fsb-font-weight-dk);
+  line-height: var(--nintara-fsb-line-height);
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* --- Filter funnel icon --- */
+.nintara-fsb__filter-icon {
+  width: 14px;
+  height: 14px;
+  display: inline-block;
+  margin-right: var(--nintara-fsb-icon-gap);
+  flex-shrink: 0;
+}
+
+/* --- Sort dropdown wrapper --- */
+.nintara-fsb__sort-dropdown {
+  position: relative;
+  overflow: visible;
+}
+
+/* --- Sort trigger button --- */
+.nintara-fsb__sort-trigger {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--nintara-fsb-icon-gap);
+  min-width: var(--nintara-fsb-btn-min-width);
+  min-height: var(--nintara-fsb-btn-min-height);
+  border: 1px solid var(--nintara-fsb-primary);
+  border-radius: var(--nintara-fsb-btn-radius);
+  background: transparent;
+  color: var(--nintara-fsb-primary);
+  font-family: var(--nintara-fsb-font-family);
+  font-size: var(--nintara-fsb-font-size-dk);
+  font-weight: var(--nintara-fsb-font-weight-dk);
+  line-height: var(--nintara-fsb-line-height);
+  padding: var(--nintara-fsb-sort-padding);
+  position: relative;
+  z-index: 8;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+/* --- Sort label text --- */
+.nintara-fsb__sort-label {
+  font-size: var(--nintara-fsb-font-size-dk);
+  font-weight: var(--nintara-fsb-font-weight-dk);
+  line-height: var(--nintara-fsb-line-height);
+  color: var(--nintara-fsb-primary);
+  text-align: center;
+}
+
+/* --- Chevron icon --- */
+.nintara-fsb__chevron {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  transition: var(--nintara-fsb-chevron-transition);
+}
+
+/* Chevron rotated state */
+.nintara-fsb__chevron--rotated {
+  transform: rotateZ(180deg);
+}
+
+/* --- Dropdown panel (desktop default: absolute positioned) --- */
+.nintara-fsb__dropdown-panel {
+  display: none;
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: var(--nintara-fsb-dropdown-width);
+  max-height: var(--nintara-fsb-dropdown-max-height);
+  background-color: var(--nintara-fsb-bg);
+  box-shadow: var(--nintara-fsb-dropdown-shadow);
+  border-radius: var(--nintara-fsb-btn-radius);
+  opacity: 0;
+  visibility: hidden;
+  z-index: var(--nintara-fsb-dropdown-z);
+  overflow: auto;
+  transition: var(--nintara-fsb-dropdown-transition-dk);
+}
+
+/* Dropdown open state (desktop) */
+.nintara-fsb__dropdown-panel--open {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+/* --- Dropdown header (mobile only) --- */
+.nintara-fsb__dropdown-header {
+  display: none;
+}
+
+/* --- Dropdown content (sort options) --- */
+.nintara-fsb__dropdown-content {
+  padding: var(--nintara-fsb-dropdown-content-padding);
+}
+
+/* --- Individual sort option button --- */
+.nintara-fsb__sort-option {
+  display: block;
+  width: 100%;
+  padding: var(--nintara-fsb-dropdown-option-padding);
+  background-color: transparent;
+  color: var(--nintara-fsb-text);
+  font-family: var(--nintara-fsb-font-family);
+  font-size: var(--nintara-fsb-font-size-mb);
+  text-align: inherit;
+  border: none;
+  cursor: pointer;
+  transition: var(--nintara-fsb-option-transition);
+}
+
+/* Sort option hover and selected states */
+.nintara-fsb__sort-option:hover,
+.nintara-fsb__sort-option--selected {
+  background-color: var(--nintara-fsb-option-hover-bg);
+  color: var(--nintara-fsb-primary);
+}
+
+/* --- Overlay (mobile bottom sheet backdrop) --- */
+.nintara-fsb__overlay {
+  display: none;
+}
+
+/* --- Dropdown close button (mobile header) --- */
+.nintara-fsb__dropdown-close {
+  padding: 0;
+  background-color: transparent;
+  color: var(--nintara-fsb-dark-color);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: none;
+  cursor: pointer;
+}
+
+/* --- Dropdown title (mobile header) --- */
+.nintara-fsb__dropdown-title {
+  font-weight: 500;
+  text-transform: uppercase;
+  color: var(--nintara-fsb-heading-color);
+  font-family: var(--nintara-fsb-font-family);
+}
+
+/* =====================================================
+   MOBILE OVERRIDES (max-width: 767px)
+   ===================================================== */
+@media (max-width: 767px) {
+  /* Full-width row with top/bottom borders */
+  .nintara-fsb {
+    margin: 0 0 20px;
+    padding: 5px 0;
+    max-width: none;
+    width: 100%;
+    border-top: 0.5px solid #2a5a94;
+    border-bottom: 0.5px solid #2a5a94;
+    gap: 0;
+    justify-content: center;
+  }
+
+  /* Filter side: 50% with right border as divider */
+  .nintara-fsb__filter-side {
+    flex: 1;
+    justify-content: center;
+    border-right: 0.5px solid #2a5a94;
+  }
+
+  /* Sort side: 50% centered */
+  .nintara-fsb__sort-side {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Remove borders on buttons */
+  .nintara-fsb__filter-btn {
+    border: none;
+    font-size: var(--nintara-fsb-font-size-mb);
+    font-weight: var(--nintara-fsb-font-weight-mb);
+    padding: 5px 0;
+    min-width: auto;
+    min-height: 40px;
+    border-radius: 0;
+  }
+
+  .nintara-fsb__filter-icon {
+    margin-right: var(--nintara-fsb-icon-gap-mb);
+  }
+
+  .nintara-fsb__sort-trigger {
+    border: none;
+    min-width: auto;
+    min-height: 40px;
+    padding: 5px 0;
+    border-radius: 0;
+  }
+
+  .nintara-fsb__sort-label {
+    font-size: var(--nintara-fsb-font-size-mb);
+    font-weight: var(--nintara-fsb-font-weight-mb);
+    line-height: 16px;
+  }
+
+  /* Mobile dropdown: full-width bottom sheet */
+  .nintara-fsb__dropdown-panel {
+    display: block;
+    position: fixed;
+    top: auto;
+    bottom: 0;
+    left: 0;
+    right: auto;
+    width: 100%;
+    max-height: var(--nintara-fsb-dropdown-max-height-mb);
+    border-radius: 0;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transform: translateY(100%);
+    transition: var(--nintara-fsb-dropdown-transition-mb);
+    will-change: transform, opacity, visibility;
+    overflow: visible;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .nintara-fsb__dropdown-panel--open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  /* Show mobile header with close button */
+  .nintara-fsb__dropdown-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    min-height: var(--nintara-fsb-dropdown-header-height);
+    padding: 0 0 0 20px;
+    border-bottom: 1px solid var(--nintara-fsb-border-color);
+    color: var(--nintara-fsb-heading-color);
+  }
+
+  /* Mobile dropdown content scroll */
+  .nintara-fsb__dropdown-content {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    max-height: calc(80vh - 51px);
+  }
+
+  /* Show overlay on mobile */
+  .nintara-fsb__overlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.4);
+    z-index: calc(var(--nintara-fsb-dropdown-z) - 1);
+  }
+}
+
+/* --- Extra small screen overrides (<=390px) --- */
+@media (max-width: 390px) {
+  .nintara-fsb__filter-btn {
+    font-weight: var(--nintara-fsb-font-weight-dk);
+    line-height: var(--nintara-fsb-line-height);
+    color: var(--nintara-fsb-primary);
+    min-width: auto;
+    height: var(--nintara-fsb-btn-min-height);
+  }
+
+  .nintara-fsb__sort-trigger {
+    min-width: auto;
+  }
+}
+
+/* =====================================================
+   FILTER PANEL (slide-out drawer)
+   ===================================================== */
+
+.nintara-fsb__filter-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.3s ease,
+    visibility 0.3s ease;
+}
+
+.nintara-fsb__filter-overlay--open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.nintara-fsb__filter-panel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 320px;
+  max-width: 85vw;
+  height: 100dvh;
+  background: #ffffff;
+  z-index: 1000;
+  transform: translateX(-100%);
+  transition: transform 0.4s cubic-bezier(0.645, 0.045, 0.355, 1);
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-figtree), "Figtree", sans-serif;
+}
+
+.nintara-fsb__filter-panel--open {
+  transform: translateX(0);
+}
+
+.nintara-fsb__filter-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #e8ecf2;
+}
+
+.nintara-fsb__filter-panel-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #092a33;
+}
+
+.nintara-fsb__filter-panel-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #092a33;
+}
+
+.nintara-fsb__filter-panel-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+.nintara-fsb__filter-group {
+  border-bottom: 1px solid #e8ecf2;
+}
+
+.nintara-fsb__filter-group-header {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: #092a33;
+  font-family: inherit;
+}
+
+.nintara-fsb__filter-group-header:hover {
+  background: rgba(61, 124, 201, 0.04);
+}
+
+.nintara-fsb__filter-chevron {
+  transition: transform 0.2s ease-in-out;
+}
+
+.nintara-fsb__filter-chevron--open {
+  transform: rotate(180deg);
+}
+
+.nintara-fsb__filter-group-options {
+  padding: 0 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nintara-fsb__filter-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #092a33;
+  padding: 4px 0;
+}
+
+.nintara-fsb__filter-option:hover {
+  color: #3d7cc9;
+}
+
+.nintara-fsb__filter-checkbox {
+  width: 16px;
+  height: 16px;
+  accent-color: #3d7cc9;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.nintara-fsb__filter-option-label {
+  flex: 1;
+}
+
+.nintara-fsb__filter-option-count {
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.nintara-fsb__filter-panel-footer {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #e8ecf2;
+}
+
+.nintara-fsb__filter-clear {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #3d7cc9;
+  background: #ffffff;
+  color: #3d7cc9;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.nintara-fsb__filter-clear:hover {
+  background: rgba(61, 124, 201, 0.06);
+}
+
+.nintara-fsb__filter-apply {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid #3d7cc9;
+  background: #3d7cc9;
+  color: #ffffff;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: background 0.2s;
+}
+
+.nintara-fsb__filter-apply:hover {
+  background: #3468ad;
+}
+
+/* --- Filter panel mobile: full-width --- */
+@media (max-width: 767px) {
+  .nintara-fsb__filter-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+}

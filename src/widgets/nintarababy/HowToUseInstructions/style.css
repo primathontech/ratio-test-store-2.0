@@ -1,0 +1,220 @@
+/* =============================================================
+   HowToUseInstructions — Nintara Baby
+   Two-column "How to Use" instruction card with lifestyle image.
+   Desktop: CSS Grid 2-col (1fr 1fr). Mobile: single column.
+   ============================================================= */
+
+/* --- CSS Variables --- */
+:root {
+  --nintara-htu-section-bg: #ffffff;
+  --nintara-htu-card-bg: #e4edd3;
+  --nintara-htu-card-radius: 20px;
+  --nintara-htu-card-radius-mobile: 12px;
+  --nintara-htu-card-gap: 40px;
+  --nintara-htu-card-margin-top: 32px;
+  --nintara-htu-card-border-mobile: 0.5px solid #003551;
+  --nintara-htu-heading-color: #092a33;
+  --nintara-htu-heading-size: 28px;
+  --nintara-htu-heading-weight: 600;
+  --nintara-htu-heading-lh: 39.2px;
+  --nintara-htu-heading-mb: 24px;
+  --nintara-htu-heading-size-mobile: 24px;
+  --nintara-htu-heading-mb-mobile: 16px;
+  --nintara-htu-text-color: #092a33;
+  --nintara-htu-text-size: 20px;
+  --nintara-htu-text-weight: 300;
+  --nintara-htu-text-lh: 30px;
+  --nintara-htu-text-max-width: 440px;
+  --nintara-htu-text-mb: 16px;
+  --nintara-htu-text-size-mobile: 16px;
+  --nintara-htu-bullet-size: 24px;
+  --nintara-htu-bullet-margin-top: 35%;
+  --nintara-htu-step-gap: 14px;
+  --nintara-htu-step-gap-mobile: 12px;
+  --nintara-htu-text-padding: 5%;
+  --nintara-htu-container-max-width: 1440px;
+  --nintara-htu-container-padding: 0 80px;
+  --nintara-htu-container-padding-mobile: 0 16px;
+  --nintara-htu-instruction-mb: 3%;
+}
+
+/* --- Section wrapper --- */
+.nintara-htu__section {
+  background-color: var(--nintara-htu-section-bg);
+}
+
+/* --- Page-width container --- */
+.nintara-htu__container {
+  max-width: var(--nintara-htu-container-max-width);
+  margin: 0 auto;
+  padding: var(--nintara-htu-container-padding);
+}
+
+/* --- Instruction wrapper (margin-bottom: 3%) --- */
+.nintara-htu__instruction {
+  margin-bottom: var(--nintara-htu-instruction-mb);
+}
+
+/* --- Two-column card --- */
+.nintara-htu__card {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  max-width: 100%;
+  margin: var(--nintara-htu-card-margin-top) auto 0;
+  justify-content: flex-end;
+  background-color: var(--nintara-htu-card-bg);
+  align-items: center;
+  overflow: hidden;
+  border-radius: var(--nintara-htu-card-radius);
+  gap: var(--nintara-htu-card-gap);
+}
+
+/* --- Text column --- */
+.nintara-htu__text-col {
+  width: 100%;
+  padding: var(--nintara-htu-text-padding);
+}
+
+/* --- Heading --- */
+.nintara-htu__heading {
+  font-size: var(--nintara-htu-heading-size);
+  font-weight: var(--nintara-htu-heading-weight);
+  color: var(--nintara-htu-heading-color);
+  margin-bottom: var(--nintara-htu-heading-mb);
+  font-family: var(--font-figtree), Figtree, sans-serif;
+  line-height: var(--nintara-htu-heading-lh);
+}
+
+/* --- Step row: bullet + text --- */
+.nintara-htu__step {
+  display: flex;
+  gap: var(--nintara-htu-step-gap);
+}
+
+/* --- Bullet icon container --- */
+.nintara-htu__bullet {
+  display: block;
+  flex-shrink: 0;
+}
+
+/* --- Bullet icon image --- */
+.nintara-htu__bullet-img {
+  object-fit: contain;
+  max-width: var(--nintara-htu-bullet-size);
+  max-height: var(--nintara-htu-bullet-size);
+  width: var(--nintara-htu-bullet-size);
+  height: var(--nintara-htu-bullet-size);
+  margin-top: var(--nintara-htu-bullet-margin-top);
+}
+
+/* --- Step text paragraph --- */
+.nintara-htu__step-p {
+  font-size: var(--nintara-htu-text-size);
+  font-weight: var(--nintara-htu-text-weight);
+  line-height: var(--nintara-htu-text-lh);
+  color: var(--nintara-htu-text-color);
+  max-width: var(--nintara-htu-text-max-width);
+  margin-bottom: var(--nintara-htu-text-mb);
+  font-family: var(--font-figtree), Figtree, sans-serif;
+}
+
+/* --- Image column --- */
+.nintara-htu__img-col {
+  width: 100%;
+  height: 100%;
+}
+
+/* --- Desktop image wrapper (hidden on mobile) --- */
+.nintara-htu__img-desktop {
+  height: 100%;
+}
+
+/* --- Desktop image element --- */
+.nintara-htu__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  object-fit: cover;
+}
+
+/* --- Mobile image wrapper (hidden on desktop) --- */
+.nintara-htu__img-mobile {
+  display: none;
+}
+
+/* --- Mobile image element --- */
+.nintara-htu__img-mobile-el {
+  display: block;
+  width: 304px;
+  max-width: 100%;
+  margin: 16px auto;
+  height: auto;
+}
+
+/* =============================================================
+   HowToUseInstructions — MOBILE OVERRIDES (max-width: 767px)
+   ============================================================= */
+@media (max-width: 767px) {
+  .nintara-htu__container {
+    padding: var(--nintara-htu-container-padding-mobile);
+  }
+
+  .nintara-htu__card {
+    grid-template-columns: 1fr;
+    background-image: url(/nintarababy/HowToUseInstructions/images/safety-instructions-bg.png);
+    background-size: cover;
+    background-position: bottom;
+    border: var(--nintara-htu-card-border-mobile);
+    border-radius: var(--nintara-htu-card-radius-mobile);
+    gap: 0;
+    margin-top: var(--nintara-htu-card-margin-top);
+  }
+
+  .nintara-htu__text-col {
+    width: 100%;
+    max-width: 100%;
+    padding: var(--nintara-htu-text-padding);
+    order: 2;
+  }
+
+  .nintara-htu__heading {
+    font-size: var(--nintara-htu-heading-size-mobile);
+    text-align: center;
+    margin-bottom: var(--nintara-htu-heading-mb-mobile);
+  }
+
+  .nintara-htu__step {
+    gap: var(--nintara-htu-step-gap-mobile);
+    align-items: normal;
+    margin: 2% 0;
+  }
+
+  .nintara-htu__step-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nintara-htu__step-p {
+    font-size: var(--nintara-htu-text-size-mobile);
+    font-weight: var(--nintara-htu-text-weight);
+    line-height: var(--nintara-htu-text-lh);
+    max-width: none;
+  }
+
+  .nintara-htu__img-col {
+    width: 100%;
+    order: 1;
+  }
+
+  /* Hide desktop image, show mobile image */
+  .nintara-htu__img-desktop {
+    display: none;
+  }
+
+  .nintara-htu__img-mobile {
+    display: block;
+  }
+}

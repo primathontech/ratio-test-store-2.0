@@ -51,7 +51,6 @@ function findPageFiles(): string[] {
         if (
           entry === "api" ||
           entry === "editor" ||
-          entry === "editor-preview" ||
           entry === "_next" ||
           entry.startsWith(".")
         ) {
@@ -131,7 +130,9 @@ function isCatalogPage(filePath: string): boolean {
 // They still must be server components but don't need routeContext/TEMPLATE_TYPES.
 // Examples: search (uses searchParams), cart, checkout, account pages
 function isStandalonePage(filePath: string): boolean {
-  const rel = relative(process.cwd(), filePath).toLowerCase();
+  const rel = relative(process.cwd(), filePath)
+    .replace(/\\/g, "/")
+    .toLowerCase();
 
   const standalonePatterns = [
     "/pages/search/", // Search page — uses searchParams for dynamic queries
@@ -142,6 +143,7 @@ function isStandalonePage(filePath: string): boolean {
     "/checkout/page.",
     "/pages/account/", // Account pages
     "/account/page.",
+    "/(policies)/", // Policy pages — static templates, not page builder
   ];
 
   return standalonePatterns.some((pattern) => rel.includes(pattern));

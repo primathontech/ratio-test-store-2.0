@@ -96,9 +96,9 @@ function getTemplateId(args: GetTemplateIdArgs): string {
  * Extract page name from template ID
  * Template ID format: "{theme}_{page}_{variant}" -> extracts "{page}"
  * Examples:
- *   - "ratio_home_default" -> "home"
- *   - "ratio_collection_default" -> "collections" (mapped)
- *   - "ratio_products_default" -> "products"
+ *   - "dawn_home_default" -> "home"
+ *   - "dawn_collection_default" -> "collections" (mapped)
+ *   - "dawn_products_default" -> "products"
  */
 function extractPageName(templateId: string): string | undefined {
   if (!templateId || templateId === "common") {
@@ -107,8 +107,11 @@ function extractPageName(templateId: string): string | undefined {
 
   // Split by underscore: [theme, page, variant]
   const parts = templateId.split("_");
+
+  // Static template IDs have no underscores (e.g., "privacy-policy")
+  // Use the full templateId as the page name
   if (parts.length < 2) {
-    return undefined;
+    return templateId;
   }
 
   // The page name is the second part
@@ -252,7 +255,7 @@ export async function getTranslations(
     // If editor changes are disabled, use local locale JSONs
     if (!isEditorChangesEnabled()) {
       // Map templateId to page name for local message loading
-      // templateId format: "common" or "ratio_home_default" -> page name: "home"
+      // templateId format: "common" or "dawn_home_default" -> page name: "home"
       const pageName =
         templateId === "common" ? undefined : extractPageName(templateId);
       return await loadMessages(
@@ -358,7 +361,7 @@ export async function getRouteTranslations({
   language: string;
   staticTemplateId?: string;
 }): Promise<Record<string, any>> {
-  const { templateName } = routeContext || {};
+  const { templateName, templateSuffix } = routeContext || {};
   const apiData = (routeContext as any)?.apiData;
 
   // Always load common translations first
@@ -368,13 +371,15 @@ export async function getRouteTranslations({
     language,
   });
 
-  // If routeContext with a templateName exists, treat as dynamic and resolve variant
+  // If routeContext with a templateName exists, treat as dynamic and resolve variant.
+  // Precedence: the resource's assigned `templateSuffix` (Page Templates) wins,
+  // then the legacy apiData-driven variant, then "default". This makes each
+  // published template load its OWN translation JSON ({m}_{type}_{suffix}),
+  // mirroring how the template-resolver picks the pageConfig.
   if (templateName) {
-    const resolvedVariant = await determineVariant(
-      themeName,
-      templateName,
-      apiData
-    );
+    const resolvedVariant =
+      templateSuffix ||
+      (await determineVariant(themeName, templateName, apiData));
     const templateId = getTemplateId({
       themeName,
       templateName,

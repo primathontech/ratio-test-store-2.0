@@ -4,6 +4,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import {
   PREVIEW_ACTIVE_COOKIE,
   PREVIEW_ID_COOKIE,
+  PREVIEW_SUFFIX_COOKIE,
   PREVIEW_VERSION_COOKIE,
   publicOrigin,
 } from "@/editor-integration/preview-link/cookies";
@@ -29,6 +30,11 @@ export async function GET(request: NextRequest) {
   jar.delete(PREVIEW_ID_COOKIE);
   jar.delete(PREVIEW_VERSION_COOKIE);
   jar.delete(PREVIEW_ACTIVE_COOKIE);
+
+  // The suffix cookie is path-scoped to the previewed resource (set with
+  // `path: to` on enter), so a bare delete (which targets path "/") would miss
+  // it. Delete it at the same path — `to` is that resource path.
+  jar.delete({ name: PREVIEW_SUFFIX_COOKIE, path: to });
 
   return NextResponse.redirect(new URL(to, origin));
 }

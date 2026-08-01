@@ -81,3 +81,6 @@ src/themes/**/locales/.generated/
 # package-lock.json
 # yarn.lock
 **.generated
+
+# Editor app — optional submodule, mounted on demand (not required to build momsco)
+src/app/editor/

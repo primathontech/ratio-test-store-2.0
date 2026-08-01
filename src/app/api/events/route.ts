@@ -23,8 +23,12 @@ function getFacebookCAPIConfig(): {
 
   // Check for required environment variables
   const missingVars: string[] = [];
-  if (!pixelId) missingVars.push("NEXT_PUBLIC_PIXEL_ID");
-  if (!accessToken) missingVars.push("FACEBOOK_CAPI_ACCESS_TOKEN");
+  if (!pixelId) {
+    missingVars.push("NEXT_PUBLIC_PIXEL_ID");
+  }
+  if (!accessToken) {
+    missingVars.push("FACEBOOK_CAPI_ACCESS_TOKEN");
+  }
 
   if (missingVars.length > 0) {
     const errorMessage = `Missing required environment variables: ${missingVars.join(", ")}. Please add these to your .env file.`;

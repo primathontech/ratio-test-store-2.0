@@ -90,24 +90,12 @@ function DesktopColumn({ column }: { column: MegaMenuColumn }) {
         />
       )}
       {/* A column can itself be a link (flat panel): clickable title when it has a
-          href, else a plain heading for its leaves. A column can now also be an
-          external link (any resource type can be a child). */}
+          href, else a plain heading for its leaves. */}
       {column.title &&
         (column.href ? (
-          column.isExternal ? (
-            <a
-              href={column.href}
-              className="sf-mega__col-title"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {column.title}
-            </a>
-          ) : (
-            <Link href={column.href} className="sf-mega__col-title">
-              {column.title}
-            </Link>
-          )
+          <Link href={column.href} className="sf-mega__col-title">
+            {column.title}
+          </Link>
         ) : (
           <span className="sf-mega__col-title">{column.title}</span>
         ))}
@@ -134,25 +122,6 @@ function DesktopItem({
 }) {
   const hasPanel = entry.kind === "mega" || entry.kind === "dropdown";
 
-  // Label + optional leading icon. `entry.image` is the item's own image (icon or
-  // featured), surfaced by the platform on EVERY entry kind. Data-driven: renders
-  // only when the merchant attached one in admin — no image, no markup change.
-  const label = (
-    <>
-      {entry.image?.src && (
-        <Image
-          src={entry.image.src}
-          alt={entry.image.alt_text || entry.label}
-          className="sf-nav__icon"
-          width={20}
-          height={20}
-          unoptimized
-        />
-      )}
-      {entry.label}
-    </>
-  );
-
   return (
     <li
       className={`sf-nav__item ${open ? "is-open" : ""}`}
@@ -167,42 +136,25 @@ function DesktopItem({
           rel="noopener noreferrer"
           aria-label={entry.ariaLabel}
         >
-          {label}
+          {entry.label}
         </a>
       ) : entry.kind === "link" ? (
         <Link href={entry.href} className="sf-nav__link">
-          {label}
+          {entry.label}
         </Link>
       ) : entry.href ? (
-        // mega / dropdown that is ALSO a link → label navigates, hover opens panel.
-        // The link itself may be external (any resource type can be a trigger).
-        entry.isExternal ? (
-          <a
-            href={entry.href}
-            className="sf-nav__link"
-            target="_blank"
-            rel="noopener noreferrer"
-            aria-haspopup="true"
-            aria-expanded={open}
-          >
-            {label}
-            <span className="sf-nav__chevron" aria-hidden="true">
-              ▾
-            </span>
-          </a>
-        ) : (
-          <Link
-            href={entry.href}
-            className="sf-nav__link"
-            aria-haspopup="true"
-            aria-expanded={open}
-          >
-            {label}
-            <span className="sf-nav__chevron" aria-hidden="true">
-              ▾
-            </span>
-          </Link>
-        )
+        // mega / dropdown that is ALSO a link → label navigates, hover opens panel
+        <Link
+          href={entry.href}
+          className="sf-nav__link"
+          aria-haspopup="true"
+          aria-expanded={open}
+        >
+          {entry.label}
+          <span className="sf-nav__chevron" aria-hidden="true">
+            ▾
+          </span>
+        </Link>
       ) : (
         // mega / dropdown that is NOT a link → non-navigable label
         <span
@@ -210,7 +162,7 @@ function DesktopItem({
           aria-haspopup="true"
           aria-expanded={open}
         >
-          {label}
+          {entry.label}
           <span className="sf-nav__chevron" aria-hidden="true">
             ▾
           </span>
@@ -242,27 +194,11 @@ function DesktopItem({
       {/* Simple dropdown */}
       {entry.kind === "dropdown" && open && (
         <div className="sf-dropdown">
-          {entry.items.map((leaf) =>
-            leaf.isExternal ? (
-              <a
-                key={leaf.id}
-                href={leaf.href}
-                className="sf-dropdown__link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {leaf.title}
-              </a>
-            ) : (
-              <Link
-                key={leaf.id}
-                href={leaf.href}
-                className="sf-dropdown__link"
-              >
-                {leaf.title}
-              </Link>
-            )
-          )}
+          {entry.items.map((leaf) => (
+            <Link key={leaf.id} href={leaf.href} className="sf-dropdown__link">
+              {leaf.title}
+            </Link>
+          ))}
         </div>
       )}
     </li>
@@ -274,23 +210,6 @@ function MobileItem({ entry }: { entry: NavEntry }) {
   const [expanded, setExpanded] = useState(false);
   const hasChildren = entry.kind === "mega" || entry.kind === "dropdown";
 
-  // Label + optional leading icon (see DesktopItem). Data-driven from entry.image.
-  const label = (
-    <>
-      {entry.image?.src && (
-        <Image
-          src={entry.image.src}
-          alt={entry.image.alt_text || entry.label}
-          className="sf-drawer__icon"
-          width={20}
-          height={20}
-          unoptimized
-        />
-      )}
-      {entry.label}
-    </>
-  );
-
   if (!hasChildren) {
     return entry.kind === "external" ? (
       <a
@@ -299,11 +218,11 @@ function MobileItem({ entry }: { entry: NavEntry }) {
         target="_blank"
         rel="noopener noreferrer"
       >
-        {label}
+        {entry.label}
       </a>
     ) : (
       <Link href={entry.href} className="sf-drawer__link">
-        {label}
+        {entry.label}
       </Link>
     );
   }
@@ -321,7 +240,7 @@ function MobileItem({ entry }: { entry: NavEntry }) {
                   title: c.title,
                   href: c.href ?? "/",
                   image: c.image,
-                  isExternal: c.isExternal,
+                  isExternal: false,
                 },
               ]
         )
@@ -331,22 +250,10 @@ function MobileItem({ entry }: { entry: NavEntry }) {
     <div className="sf-drawer__group">
       {entry.href ? (
         // Trigger is itself a link: the label navigates, a separate caret expands.
-        // The link may be external.
         <div className="sf-drawer__row">
-          {entry.isExternal ? (
-            <a
-              href={entry.href}
-              className="sf-drawer__link"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              {label}
-            </a>
-          ) : (
-            <Link href={entry.href} className="sf-drawer__link">
-              {label}
-            </Link>
-          )}
+          <Link href={entry.href} className="sf-drawer__link">
+            {entry.label}
+          </Link>
           <button
             className="sf-drawer__expand"
             aria-label={`${expanded ? "Collapse" : "Expand"} ${entry.label}`}
@@ -362,33 +269,21 @@ function MobileItem({ entry }: { entry: NavEntry }) {
           aria-expanded={expanded}
           onClick={() => setExpanded((v) => !v)}
         >
-          {label}
+          {entry.label}
           <span aria-hidden="true">{expanded ? "−" : "+"}</span>
         </button>
       )}
       {expanded && (
         <div className="sf-drawer__sub">
-          {children.map((child) =>
-            child.isExternal ? (
-              <a
-                key={child.id}
-                href={child.href}
-                className="sf-drawer__sublink"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {child.title}
-              </a>
-            ) : (
-              <Link
-                key={child.id}
-                href={child.href}
-                className="sf-drawer__sublink"
-              >
-                {child.title}
-              </Link>
-            )
-          )}
+          {children.map((child) => (
+            <Link
+              key={child.id}
+              href={child.href}
+              className="sf-drawer__sublink"
+            >
+              {child.title}
+            </Link>
+          ))}
         </div>
       )}
     </div>

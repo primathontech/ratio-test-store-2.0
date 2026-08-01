@@ -1,0 +1,23 @@
+/* SearchResults widget */
+
+/* 80vh minus header (mobile searchbar adds ~60px on /search) */
+.search-results {
+  min-height: calc(80vh - var(--nintara-header-row1-h-mobile) - 60px);
+}
+
+@media (min-width: 1025px) {
+  .search-results {
+    min-height: calc(80vh - var(--nintara-header-total-h));
+  }
+}
+
+.search-card {
+  transition:
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+
+.search-card:hover {
+  box-shadow: 0 4px 16px rgba(9, 42, 51, 0.1);
+  transform: translateY(-1px);
+}

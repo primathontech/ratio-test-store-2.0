@@ -55,18 +55,14 @@ import {
 } from "@shopkit/builder";
 
 // App-specific imports - these are WHY this file must be separate from the package
-import { WIDGET_MANIFEST as PROD_WIDGET_MANIFEST } from "@/widgets/.generated/manifest";
+import { WIDGET_MANIFEST } from "@/widgets/.generated/manifest";
 // Editor manifest — every widget routed through a "use client" shim, picked when isEditor is true.
 import { WIDGET_MANIFEST as EDITOR_WIDGET_MANIFEST } from "@/widgets/.generated/manifest.editor";
 import { getCommerceClient } from "@/config/commerce";
 import { SectionWrapper } from "@/ui/layout/SectionWrapper";
 
-// Editor integration — only wired in when NEXT_PUBLIC_ENABLE_EDITOR_CHANGES is "true".
+// Editor integration — only wired in when NEXT_PUBLIC_ENABLE_EDITOR_CHANGES is set
 import { editorTemplateLoader } from "@/editor-integration/template-load-pipeline";
-
-const isEditorChangesEnabled =
-  String(process.env.NEXT_PUBLIC_ENABLE_EDITOR_CHANGES).toLowerCase() ===
-  "true";
 
 // =============================================================================
 // COMMERCE CLIENT
@@ -226,18 +222,20 @@ const sectionRenderer = createSectionRendererFromComponent(SectionWrapper);
  * @internal
  */
 const pageBuilderOptions: FileSystemPresetOptions = {
-  widgets: PROD_WIDGET_MANIFEST,
+  widgets: WIDGET_MANIFEST,
   commerceClient: getBuilderCommerceClient(),
   themeLoader,
-  templateLoader: isEditorChangesEnabled
+  templateLoader: process.env.NEXT_PUBLIC_ENABLE_EDITOR_CHANGES
     ? editorTemplateLoader
     : templateLoader,
   sectionRenderer,
   defaultLocale: "en",
 };
 
-/** Singleton instances — separate cache per manifest variant. */
+/** Singleton instance - created on first access */
 let pageBuilderInstance: PageBuilder | null = null;
+
+/** Separate singleton built with the editor (client-shim) widget manifest. */
 let editorPageBuilderInstance: PageBuilder | null = null;
 
 /**

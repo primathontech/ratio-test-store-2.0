@@ -15,26 +15,94 @@
 
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getTheme } from "@/bootstrap/theme";
-import { getMerchantName, getThemeName } from "@/utils";
+import { getMerchantName, getThemeName, getRouteTranslations } from "@/utils";
 import { getMessages } from "next-intl/server";
+import dynamic from "next/dynamic";
 import Script from "next/script";
+import { Inter, Open_Sans } from "next/font/google";
 
 import { AppShell, AppHead } from "@shopkit/app-shell";
-import { AppCartInitializer } from "@/bootstrap/cart";
-import { ClientDynamics } from "./ClientDynamics";
+import { getPageBuilder } from "@/bootstrap/builder";
+import { getNavMenus } from "@shopkit/navigation";
+import { NavigationProvider, NavBoundary } from "@shopkit/navigation/client";
 import { AffiliateTracker } from "@shopkit/events/affiliate";
+import { AppCartInitializer } from "@/bootstrap/cart";
 import { EditorHostMount } from "@/editor-integration/EditorHostMount";
-// Client-only "Exit preview" bar. Direct import (not next/dynamic ssr:false,
-// which Next 15 disallows in a Server Component): the component is "use client"
-// and renders null on the server / first paint, so it never participates in SSR
-// or affects the editor's live preview. Same behavior as momsco's layout.
-import { PreviewExitBar } from "@/editor-integration/preview-link/PreviewExitBar";
 
+import { figtree, gotham, avenir } from "./fonts";
 import "./globals.css";
 import { pixelConfig, productIdentifier } from "@/config/pixelConfig";
-import { fontVariables } from "./fonts";
-import LimeChatScript from "./LimeChatScript";
-import { CartRecoveryLink } from "@/integrations/cart-recovery-custom";
+
+// =============================================================================
+// FONT CONFIGURATION
+// =============================================================================
+
+const inter = Inter({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const openSans = Open_Sans({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-opensans",
+});
+
+// =============================================================================
+// DYNAMIC IMPORTS
+// =============================================================================
+
+const KwikPassCustom = dynamic(
+  () =>
+    import("@/integrations/kwikpass-custom").then((mod) => ({
+      default: mod.KwikPassCustom,
+    })),
+  { ssr: false }
+);
+
+const CustomCartDrawer = dynamic(
+  () =>
+    import("@/integrations/cart-drawer-custom").then((mod) => ({
+      default: mod.CustomCartDrawer,
+    })),
+  { ssr: false }
+);
+
+const FloatingActions = dynamic(
+  () =>
+    import("@/widgets/nintarababy/FloatingActions").then((mod) => ({
+      default: mod.FloatingActions,
+    })),
+  { ssr: false }
+);
+
+const MobileBottomBar = dynamic(
+  () =>
+    import("@/widgets/nintarababy/MobileBottomBar").then((mod) => ({
+      default: mod.MobileBottomBar,
+    })),
+  { ssr: false }
+);
+
+const KwikCartRemounter = dynamic(
+  () =>
+    import("@/integrations/kwikcart-custom").then((mod) => ({
+      default: mod.KwikCartRemounter,
+    })),
+  { ssr: false }
+);
+
+// Client-only "Exit preview" bar. Loaded ssr:false (same pattern as the other
+// client-only chrome above) so it never participates in SSR/hydration of the
+// layout — it can't affect the editor's live preview or any existing behavior.
+const PreviewExitBar = dynamic(
+  () =>
+    import("@/editor-integration/preview-link/PreviewExitBar").then((mod) => ({
+      default: mod.PreviewExitBar,
+    })),
+  { ssr: false }
+);
 
 // =============================================================================
 // ROOT LAYOUT
@@ -55,33 +123,50 @@ export default async function RootLayout({
   const hasKwikcartDisabled =
     process.env.NEXT_PUBLIC_KWIKCART_DISABLE === "true";
 
-  // Chrome (header/footer) is NOT rendered here — it's app-side composition policy
-  // (ADR-0004) so individual pages can opt out (e.g. the thank-you page). Pages that
-  // want chrome live under the `app/(shop)` route group, whose layout wraps them in
-  // <Chrome>. This root layout holds only request-invariant providers (AppShell,
-  // theme, i18n, fonts) + trackers, which apply to EVERY page — chrome'd or not.
+  // Shared layout chrome (announcement+header / footer+bottom-bar) rendered once
+  // for every page. Page templates contain body sections only; chrome lives in
+  // themes/{theme}/templates/header and /footer (Shopify section-group model).
+  //
+  // renderChrome reports the nav-menu handles its widgets reference (derive-from-
+  // JSON); we then fetch exactly those, so an editor-assigned handle is fetched
+  // automatically (getNavMenus also always includes the defaults main-menu + footer).
+  // Chrome resolves its t:common.* refs against these messages. Mirror the page
+  // templates (which always call getRouteTranslations): it's DB-backed when
+  // editor changes are enabled and falls back to filesystem otherwise, so
+  // editor-saved header/footer text reflects on the storefront. AppShell keeps
+  // getMessages() above for full client-side i18n.
+  const chromeMessages = await getRouteTranslations({
+    themeName,
+    language: locale,
+  });
+  const chromeBuilder = getPageBuilder({ isEditor: true });
+  // Resolve chrome FRESH each request. renderChrome shares a cache across
+  // requests, and in preview mode the loader can resolve a DRAFT (when Next.js
+  // Draft Mode is enabled via the editorPreview cookie). Without clearing, that
+  // draft chrome could be served to the next (live) visitor. Mirrors page.tsx
+  // clearing the body cache per request — the storefront fetches templates no-store.
+  chromeBuilder.clearCache();
+  const { header, footer, menuHandles } = await chromeBuilder.renderChrome({
+    merchantName: themeName,
+    locale,
+    messages: chromeMessages,
+  });
+  const menus = await getNavMenus(menuHandles);
 
   return (
-    <html lang={locale} className={fontVariables}>
+    <html
+      lang={locale}
+      className={`${inter.variable} ${openSans.variable} ${figtree.variable} ${gotham.variable} ${avenir.variable}`}
+    >
       <head>
         {/* AppHead handles: A/B testing, favicon, DNS prefetch, Clarity */}
         <AppHead />
 
         {/* Favicon */}
-        <link rel="icon" href="/favicon.png" type="image/png" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
 
       <body>
-        {/* Skip-to-content link — first focusable element, visually hidden
-            until focused. Targets the <main id="main-content"> landmark added
-            by the (shop) layout. */}
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[1000] focus:rounded focus:bg-white focus:px-4 focus:py-2 focus:text-black focus:shadow"
-        >
-          Skip to content
-        </a>
-
         {/* AppShell handles: providers, cart, auth, i18n, theme */}
         <AppShell
           config={{
@@ -90,6 +175,7 @@ export default async function RootLayout({
             messages,
             theme,
             eventConfig: {
+              enableDevTools: true,
               pixelConfig: {
                 pixels: pixelConfig,
               },
@@ -98,54 +184,44 @@ export default async function RootLayout({
           }}
         >
           <AffiliateTracker autoCapture />
+          <KwikPassCustom />
           <AppCartInitializer merchantName={merchantName} />
-          <CartRecoveryLink />
           <EditorHostMount />
+          {/* Client-only "Exit preview" bar. Renders null on the server and
+              first paint, then reads the editorPreviewActive cookie on mount —
+              so it survives static generation (no server gate) and shows in
+              both dev and production preview sessions. */}
           <PreviewExitBar />
-          {/* Chrome (header/footer) is added per-page by the (shop) route group's
-              layout via <Chrome>, so bare pages (e.g. thank-you) can omit it. */}
-          {children}
-          <ClientDynamics
-            locale={locale}
-            hasKwikcartDisabled={hasKwikcartDisabled}
-          />
+          {/* endpoint enables the read-through store: a handle not preloaded at
+              SSR (e.g. the visual editor switching menuHandle at runtime) is
+              fetched on demand via the same-origin /api/nav-menu route. Inert for
+              normal storefront traffic, where every handle is already in `menus`. */}
+          <NavigationProvider menus={menus} endpoint="/api/nav-menu">
+            <NavBoundary>{header}</NavBoundary>
+            {children}
+            <NavBoundary>{footer}</NavBoundary>
+          </NavigationProvider>
+          <FloatingActions />
+          <MobileBottomBar />
+          {hasKwikcartDisabled ? (
+            <CustomCartDrawer locale={locale as "en"} />
+          ) : (
+            <KwikCartRemounter />
+          )}
         </AppShell>
 
-        {/* Merchant AB scripts – required early */}
-        {process.env.NEXT_PUBLIC_PRT_CONFIG_URL && (
-          <Script
-            src={process.env.NEXT_PUBLIC_PRT_CONFIG_URL}
-            strategy="beforeInteractive"
-            id="merchant-prt-config"
-          />
-        )}
-
-        {process.env.NEXT_PUBLIC_PRT_AB_URL && (
-          <Script
-            src={process.env.NEXT_PUBLIC_PRT_AB_URL}
-            strategy="beforeInteractive"
-            id="merchant-prt-ab"
-          />
-        )}
-
-        {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership.
-            Only rendered when a GA id is configured; otherwise Next would emit a
-            broken `gtag/js?id=undefined` request. */}
-        {process.env.NEXT_PUBLIC_GA_ID && (
-          <>
-            <Script
-              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
-              strategy="afterInteractive"
-            />
-            <Script id="gtag-init" strategy="afterInteractive">
-              {`
+        {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-init" strategy="afterInteractive">
+          {`
             window.dataLayer = window.dataLayer || [];
             window.gtag = function(){ window.dataLayer.push(arguments); };
             window.gtag('js', new Date());
           `}
-            </Script>
-          </>
-        )}
+        </Script>
 
         {/* V2 Pixel SDKs — self-register with PixelRuntime */}
         <Script src="/scripts/meta-pixel-sdk.js" strategy="afterInteractive" />
@@ -155,13 +231,6 @@ export default async function RootLayout({
           strategy="afterInteractive"
         />
         <Script src="/scripts/gtm-pixel-sdk.js" strategy="afterInteractive" />
-        {process.env.NEXT_PUBLIC_GOOGLE_RATIO_GMC_SDK_URL && (
-          <Script
-            src={process.env.NEXT_PUBLIC_GOOGLE_RATIO_GMC_SDK_URL}
-            strategy="afterInteractive"
-          />
-        )}
-        <LimeChatScript />
       </body>
     </html>
   );

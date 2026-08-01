@@ -27,11 +27,11 @@ export const CustomCartSummary: React.FC<CustomCartSummaryProps> = ({
   return (
     <Box
       className="cart-summary bg-white flex flex-col gap-[10px] px-[15px] md:px-[16px] pt-[10px] pb-[15px] md:py-[10px] border-t border-[#ebebeb] font-body"
-      data-testid="ratio-cart-summary"
+      data-testid="bblunt-cart-summary"
     >
       <div
         className="flex items-center gap-[8px]"
-        data-testid="ratio-cart-summary-prepaid-offer"
+        data-testid="bblunt-cart-summary-prepaid-offer"
       >
         <Image
           src="https://cdn.shopify.com/s/files/1/0646/0057/2090/files/cart_prepaid.gif?v=1707984487"
@@ -39,11 +39,11 @@ export const CustomCartSummary: React.FC<CustomCartSummaryProps> = ({
           width={20}
           height={20}
           loading="lazy"
-          data-testid="ratio-cart-summary-prepaid-icon"
+          data-testid="bblunt-cart-summary-prepaid-icon"
         />
         <p
           className="drawer_text text-text-sm text-success !leading-none"
-          data-testid="ratio-cart-summary-prepaid-text"
+          data-testid="bblunt-cart-summary-prepaid-text"
         >
           Pay online and get extra 5% off
         </p>
@@ -54,17 +54,17 @@ export const CustomCartSummary: React.FC<CustomCartSummaryProps> = ({
         justify="between"
         align="center"
         className="total-section"
-        data-testid="ratio-cart-summary-total-section"
+        data-testid="bblunt-cart-summary-total-section"
       >
         <p
           className="text-[20px] leading-tight font-normal text-black"
-          data-testid="ratio-cart-summary-subtotal-label"
+          data-testid="bblunt-cart-summary-subtotal-label"
         >
           Subtotal
         </p>
         <p
           className="text-[20px] leading-balanced text-black font-semibold"
-          data-testid="ratio-cart-summary-subtotal-amount"
+          data-testid="bblunt-cart-summary-subtotal-amount"
         >
           {formatPaiseToINR(Number(totalAmount))}
         </p>

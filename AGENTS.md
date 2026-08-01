@@ -363,51 +363,6 @@ const updatedCart = await client.addToCart({ id: cartId, items: lines });
 const orders = await client.getOrderHistory({ customerAccessToken });
 ```
 
-**Static Generation (build-time route pre-generation):**
-
-All 8 dynamic route pages use factory functions from `@shopkit/data-layer` to pre-build every collection and product page at CI time. Do not add `generateStaticParams` manually — use the factories:
-
-```typescript
-import {
-  createCollectionStaticParams,
-  createProductViaCollectionsStaticParams,
-  createCollectionProductStaticParams,
-} from "@shopkit/data-layer";
-import { getCommerceClient } from "@/config/commerce";
-
-// For /collections/[collectionname] and /collections-b/[collectionname]
-export const generateStaticParams =
-  createCollectionStaticParams(getCommerceClient);
-
-// For /products/[handle] and /products-b/[handle]
-// (custom backend has no products-list endpoint — collection traversal is the only option)
-export const generateStaticParams =
-  createProductViaCollectionsStaticParams(getCommerceClient);
-
-// NOTE — choosing the right product factory:
-// • Always use createProductViaCollectionsStaticParams for the custom REST backend (this
-//   project). The backend exposes no products-list endpoint — the only way to discover all
-//   product handles is to traverse collections. It fetches all collections then all products
-//   per collection, deduplicating by handle so each /products/[handle] route is pre-built once.
-// • createProductStaticParams is for backends that expose a direct product-listing endpoint
-//   (e.g. Shopify Storefront API). Do NOT use it with the custom backend.
-
-// For all nested /collections/.../products/... routes
-export const generateStaticParams =
-  createCollectionProductStaticParams(getCommerceClient);
-```
-
-Always pair with `export const revalidate = 3600` and `export const dynamicParams = true` as literal values (Next.js static analysis does not support computed values here).
-
-All factories accept an `options` object. The traversal-based factories (`createProductViaCollectionsStaticParams`, `createCollectionProductStaticParams`) also accept `concurrency` (default: `10`) to cap simultaneous `getCollection` API calls — lower it if your backend is rate-limited, raise it if your backend is fast:
-
-```typescript
-export const generateStaticParams = createProductViaCollectionsStaticParams(
-  getCommerceClient,
-  { collectionsLimit: 250, productsPerCollection: 100, concurrency: 5 }
-);
-```
-
 **Response Pattern:**
 
 ```typescript
@@ -613,84 +568,92 @@ function CouponForm() {
 
 ---
 
-### 6. @shopkit/events (V2 Pixel Runtime)
+### 6. @shopkit/analytics
 
-**Purpose:** Event bus + self-registering pixel SDK runtime for analytics tracking.
+**Purpose:** Unified analytics tracking across multiple platforms.
 
-**Architecture:** EventBus emits PascalCase events (PageView, ViewContent, AddToCart, etc.). The PixelRuntime subscribes to all events and forwards them to registered SDK scripts. SDK scripts live in `public/scripts/` and self-register via `window.__OPEN_STORE_PIXEL_RUNTIME__`.
+**Supported Platforms:**
 
-**Supported Platforms (via SDK scripts):**
-
-- Meta Pixel with Conversions API (CAPI) — `meta-pixel-sdk.js`
-- GA4 + Google Ads (unified) — `ga4-pixel-sdk.js`
-- Google Ads standalone (Purchase-only fallback) — `google-ads-pixel-sdk.js`
+- Google Analytics 4
+- Facebook Pixel (single & multi-pixel)
+- MoEngage
+- PostHog
+- Shopify Analytics
+- KwikPass / KwikCheckout
 
 **Main Exports:**
 
 ```typescript
-import { eventBus } from "@shopkit/events";
-import type { PixelConfigMap } from "@shopkit/events/pixel-runtime";
 import {
+  ShopkitAnalytics,
+  publishEvent,
+  EventType,
   AffiliateTracker,
-  getAffiliateParams,
-} from "@shopkit/events/affiliate";
+} from "@shopkit/analytics";
 ```
 
-**Affiliate / UTM capture (`@shopkit/events/affiliate`):**
-
-Mount `<AffiliateTracker autoCapture />` once at the layout root (alongside `AppCartInitializer`). It captures UTM params + platform click IDs from the landing URL into `sessionStorage` under the `"affiliate_data"` key — the same key the events `userEnricherMiddleware` reads from, so every pixel event downstream gets attribution attached for free. To forward captured params to a downstream API (e.g. checkout), call `getAffiliateParams()` and pass into the payload — `CustomCheckoutService` already does this for GoKwik.
-
-**Setup (pixelConfig.ts):**
+**Setup:**
 
 ```typescript
-import type { PixelConfigMap } from "@shopkit/events/pixel-runtime";
-
-export const pixelConfig: PixelConfigMap = {
-  "meta-pixel": process.env.NEXT_PUBLIC_MULTI_PIXEL_IDS
-    ? { pixelId: process.env.NEXT_PUBLIC_MULTI_PIXEL_IDS }
-    : null,
-
-  ga4: process.env.NEXT_PUBLIC_GA_ID
-    ? {
-        measurementId: process.env.NEXT_PUBLIC_GA_ID,
-        isolated: false, // false = events fan out to all gtag destinations (GA4 + Ads)
-        ads: process.env.NEXT_PUBLIC_GOOGLE_ADS_ID
-          ? {
-              conversionId: process.env.NEXT_PUBLIC_GOOGLE_ADS_ID,
-              conversionLabel:
-                process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL || "",
-            }
-          : undefined,
-      }
-    : null,
-};
+// In app/layout.tsx
+<ShopkitAnalytics
+  config={{
+    googleAnalytics: { measurementId: "G-XXXXXX" },
+    facebookPixel: { pixelId: "123456789" },
+    posthog: {
+      apiKey: "phc_xxx",
+      apiHost: "https://app.posthog.com",
+    },
+    moengage: { appId: "xxx", dataCenter: "DC_1" },
+    shopify: { domain: "store.myshopify.com" },
+    affiliate: { enabled: true },
+    logger: { enabled: true, level: "info" },
+  }}
+  onInitialized={() => console.log("Analytics ready")}
+  onError={(err) => console.error("Analytics error:", err)}
+/>
 ```
 
-**GA4 + Google Ads Unified SDK:**
-
-The GA4 SDK (`ga4-pixel-sdk.js`) handles both GA4 and Google Ads via shared `gtag.js`:
-
-- Both destinations registered via `gtag("config")` — GA4 with `send_page_view: true`, Google Ads with `send_page_view: false`
-- Events fire without `send_to` — gtag.js broadcasts to all configured destinations
-- Purchase additionally fires `"conversion"` with `send_to: conversionId/label` for Google Ads counted conversions
-- `isolated: true` adds `send_to: measurementId` to scope events to GA4 only
-
-**13 Standard Events:**
-
-PageView, ViewContent, AddToCart, InitiateCheckout, AddShippingInfo,
-AddPaymentInfo, Purchase, Search, AddToWishlist, Lead, CompleteRegistration,
-Contact, Subscribe
-
-**Layout Setup:**
+**Publishing Events:**
 
 ```typescript
-// layout.tsx — SDK scripts load AFTER gtag.js
-<Script src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`} strategy="afterInteractive" />
-<Script id="gtag-init" strategy="afterInteractive">
-  {`window.dataLayer=window.dataLayer||[];window.gtag=function(){window.dataLayer.push(arguments)};window.gtag('js',new Date());`}
-</Script>
-<Script src="/scripts/meta-pixel-sdk.js" strategy="afterInteractive" />
-<Script src="/scripts/ga4-pixel-sdk.js" strategy="afterInteractive" />
+import { publishEvent, EventType } from "@shopkit/analytics";
+
+// Page view
+publishEvent({
+  type: EventType.PAGE_VIEW,
+  path: "/products/my-product",
+  title: "Product Page",
+});
+
+// Add to cart
+publishEvent({
+  type: EventType.ADD_TO_CART,
+  productId: "prod_123",
+  productName: "Product Name",
+  price: 29.99,
+  currency: "USD",
+  quantity: 1,
+});
+
+// Purchase
+publishEvent({
+  type: EventType.PURCHASE,
+  orderId: "order_123",
+  cartValue: 99.99,
+  currency: "USD",
+  items: [
+    { productId: "prod_1", productName: "Item 1", price: 49.99, quantity: 2 },
+  ],
+});
+
+// Search
+publishEvent({
+  type: EventType.SEARCH,
+  searchTerm: "blue shirt",
+  content_ids: ["prod_1", "prod_2"],
+  resultsCount: 15,
+});
 ```
 
 ---
@@ -1016,19 +979,18 @@ console.log("Assets migrated:", result.assets);
 ```
 
 **Available Tools:**
-
-| Tool                    | Purpose                              |
-| ----------------------- | ------------------------------------ |
-| `scrapeStore`           | Scrape website structure and content |
-| `analyzeDesign`         | Extract colors, fonts, spacing       |
-| `migrateAssets`         | Download and optimize images/fonts   |
-| `createMerchant`        | Create new merchant in system        |
-| `addSection`            | Add section to page template         |
-| `addWidget`             | Add widget to section                |
-| `updateWidget`          | Modify widget settings               |
-| `updateThemeColors`     | Update theme color palette           |
-| `updateThemeTypography` | Update fonts and sizes               |
-| `triggerClaudeCode`     | Generate code via Claude Code        |
+| Tool | Purpose |
+|------|---------|
+| `scrapeStore` | Scrape website structure and content |
+| `analyzeDesign` | Extract colors, fonts, spacing |
+| `migrateAssets` | Download and optimize images/fonts |
+| `createMerchant` | Create new merchant in system |
+| `addSection` | Add section to page template |
+| `addWidget` | Add widget to section |
+| `updateWidget` | Modify widget settings |
+| `updateThemeColors` | Update theme color palette |
+| `updateThemeTypography` | Update fonts and sizes |
+| `triggerClaudeCode` | Generate code via Claude Code |
 
 ---
 
@@ -1342,28 +1304,45 @@ The `AppShell` component abstracts away provider nesting complexity. **AI agents
 
 ---
 
-### Pixel SDKs — V2 Self-Registration Model
+### AppAnalytics - Body Analytics Wrapper
 
-SDK scripts in `public/scripts/` self-register with the PixelRuntime. The runtime handles dedup, event replay, and per-SDK circuit breakers.
+Handles all analytics scripts at the end of `<body>`. Reads from environment variables.
 
-**Key design: GA4 + Google Ads are unified in `ga4-pixel-sdk.js`.** They share the same `gtag.js` instance. Events fire without `send_to` — gtag.js broadcasts to all `gtag("config")` destinations. Purchase additionally fires a `"conversion"` event with `send_to` for Google Ads counted conversions.
+**What AppAnalytics handles internally (DO NOT modify):**
+
+- URL parameter extraction (UTM, experiment, affiliate)
+- Google Analytics 4 (gtag.js)
+- PostHog analytics
+- Facebook Pixel with Conversions API (CAPI)
 
 **Environment Variables:**
 
 ```env
 NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_GA_ISOLATED=false
-NEXT_PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXXX
-NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL=xxxxxxx
-NEXT_PUBLIC_MULTI_PIXEL_IDS=123456789
-NEXT_PUBLIC_CAPI_HMAC_SECRET=xxx
+NEXT_PUBLIC_GA_ADS_ID=AW-XXXXXXXXXX
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+NEXT_PUBLIC_POSTHOG_HOST=https://app.posthog.com
+NEXT_PUBLIC_PIXEL_ID=123456789
+NEXT_PUBLIC_PIXEL_CAPI_URL=https://api.example.com/pixel
 ```
 
-**DO NOT:**
+**Usage:**
 
-- Create a separate Google Ads SDK — use the unified `ga4-pixel-sdk.js`
-- Call `window.gtag()` directly in checkout or button components
-- Lazy-load SDK scripts — always load in `layout.tsx`
+```typescript
+// Basic - uses env vars for all configuration
+<AppAnalytics />
+
+// With optional config overrides
+<AppAnalytics
+  config={{
+    googleAnalytics: { measurementId: "...", googleAdsId: "..." },
+    posthog: { apiKey: "...", apiHost: "..." },
+    facebookPixel: { pixelId: "...", eventsApiEndpoint: "..." },
+  }}
+/>
+```
+
+**Note:** Tracking context (experiment/affiliate data) is auto-generated internally using `@shopkit/analytics`.
 
 ---
 
@@ -1684,13 +1663,11 @@ SHOPIFY_STORE_DOMAIN=your-store.myshopify.com
 SHOPIFY_STOREFRONT_ACCESS_TOKEN=xxx
 SHOPIFY_ADMIN_ACCESS_TOKEN=xxx
 
-# Analytics (V2 Pixel Runtime)
-NEXT_PUBLIC_GA_ID=G-XXXXXXXXXX
-NEXT_PUBLIC_GA_ISOLATED=false
-NEXT_PUBLIC_GOOGLE_ADS_ID=AW-XXXXXXXXXX
-NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL=xxxxxxx
+# Analytics
+NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXX
 NEXT_PUBLIC_MULTI_PIXEL_IDS=123456789
-NEXT_PUBLIC_CAPI_HMAC_SECRET=xxx
+NEXT_PUBLIC_POSTHOG_KEY=phc_xxx
+NEXT_PUBLIC_MOENGAGE_APP_ID=xxx
 
 # AI
 ANTHROPIC_API_KEY=sk-ant-xxx

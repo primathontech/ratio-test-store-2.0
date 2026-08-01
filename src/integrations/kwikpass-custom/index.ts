@@ -35,6 +35,4 @@ export {
   fireUserEngagementEvent,
   handleKwikpassLogin,
   getCartToken,
-  clearKwikpassAuthStorage,
-  KWIKPASS_TOKEN_KEYS,
 } from "./utils";
