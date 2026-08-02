@@ -128,11 +128,9 @@ export class TemplateResolver {
     templateId: string
   ): Promise<PageConfig> {
     try {
-      const isAvailable = await templateApiClient.isAvailable();
-      if (!isAvailable) {
-        throw new Error("Template API is not available");
-      }
-
+      // No isAvailable()/health preflight — it's an extra uncacheable fetch that
+      // throws DynamicServerError during static generation and silently drops to
+      // the filesystem. fetchTemplate has its own timeout + error handling.
       const response = await templateApiClient.fetchTemplate(
         merchantName,
         templateId

@@ -3,8 +3,6 @@ import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
-import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
-import type { PageConfig } from "@shopkit/builder";
 import { Metadata } from "next";
 import { getPageMetadata } from "@shopkit/seo";
 
@@ -21,14 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
   });
 }
 
-export default async function AboutUsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ editor?: string; previewKey?: string }>;
-}) {
-  const { isEditor, pageConfig: previewPageConfig } =
-    await readEditorPreviewState<PageConfig>(searchParams);
-
+export default async function AboutUsPage() {
   const themeName = getThemeName();
   const locale = getStaticLocale();
 
@@ -46,14 +37,13 @@ export default async function AboutUsPage({
     language: locale,
   });
 
-  const pageBuilder = getPageBuilder({ isEditor });
+  const pageBuilder = getPageBuilder();
 
   const pageContent = await pageBuilder.renderPage({
     merchantName: themeName,
     routeContext,
     locale,
     messages,
-    pageConfig: previewPageConfig,
   });
 
   return <>{pageContent}</>;

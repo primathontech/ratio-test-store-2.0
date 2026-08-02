@@ -113,6 +113,7 @@ export default async function RootLayout({
 
         {/* Merchant AB scripts – required early */}
         {process.env.NEXT_PUBLIC_PRT_CONFIG_URL && (
+          // eslint-disable-next-line @next/next/no-before-interactive-script-outside-document
           <Script
             src={process.env.NEXT_PUBLIC_PRT_CONFIG_URL}
             strategy="beforeInteractive"
@@ -120,7 +121,20 @@ export default async function RootLayout({
           />
         )}
 
+        {/* NOTE: upstream storefront-starter reuses id="merchant-prt-config"
+            here; next/script dedupes by id, so the second tag would never
+            load. Distinct id on purpose. */}
+        {process.env.NEXT_PUBLIC_PRT_URL && (
+          // eslint-disable-next-line @next/next/no-before-interactive-script-outside-document
+          <Script
+            src={process.env.NEXT_PUBLIC_PRT_URL}
+            strategy="beforeInteractive"
+            id="merchant-prt"
+          />
+        )}
+
         {process.env.NEXT_PUBLIC_PRT_AB_URL && (
+          // eslint-disable-next-line @next/next/no-before-interactive-script-outside-document
           <Script
             src={process.env.NEXT_PUBLIC_PRT_AB_URL}
             strategy="beforeInteractive"
@@ -148,10 +162,20 @@ export default async function RootLayout({
         )}
 
         {/* V2 Pixel SDKs — self-register with PixelRuntime */}
-        <Script src="/scripts/meta-pixel-sdk.js" strategy="afterInteractive" />
-        <Script src="/scripts/ga4-pixel-sdk.js" strategy="afterInteractive" />
+        {/* The ?v= query is a cache key, not a no-op: sw.js serves .js from
+            /public with stale-while-revalidate, so a returning visitor runs the
+            previously cached SDK for one more page load. Bump ?v= whenever a
+            file below changes, or old clients keep firing retired events. */}
         <Script
-          src="/scripts/google-ads-pixel-sdk.js"
+          src="/scripts/meta-pixel-sdk.js?v=2"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/scripts/ga4-pixel-sdk.js?v=2"
+          strategy="afterInteractive"
+        />
+        <Script
+          src="/scripts/google-ads-pixel-sdk.js?v=2"
           strategy="afterInteractive"
         />
         <Script src="/scripts/gtm-pixel-sdk.js" strategy="afterInteractive" />

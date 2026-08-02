@@ -6,8 +6,6 @@
  * @module bootstrap/middleware
  */
 
-import type { NextRequest } from "next/server";
-
 /**
  * A/B testing cookie values
  */

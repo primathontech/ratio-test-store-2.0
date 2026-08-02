@@ -1,12 +1,10 @@
 // Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
 import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
-import { getStaticLocale, loadMessages } from "@/bootstrap/i18n";
+import { getStaticLocale } from "@/bootstrap/i18n";
 import { getPageMetadata } from "@shopkit/seo";
-import { getThemeName } from "@/utils";
+import { getRouteTranslations, getThemeName } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
-import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
-import type { PageConfig } from "@shopkit/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
@@ -42,21 +40,15 @@ export async function generateMetadata(props: {
 // Main page component
 export default async function CollectionProductPage(props: {
   params: Promise<{ collectionname: string; handle: string }>;
-  searchParams: Promise<{ editor?: string; previewKey?: string }>;
 }) {
   const params = await props.params;
-  const { isEditor, pageConfig: previewPageConfig } =
-    await readEditorPreviewState<PageConfig>(props.searchParams);
   try {
     const collectionname = params.collectionname;
     const productHandle = params.handle;
 
     const themeName = getThemeName();
     const locale = getStaticLocale();
-    const [messages, product] = await Promise.all([
-      loadMessages(locale as "en", "products"),
-      fetchProduct(productHandle),
-    ]);
+    const product = await fetchProduct(productHandle);
 
     if (!product) {
       notFound();
@@ -69,8 +61,14 @@ export default async function CollectionProductPage(props: {
       query: {},
     };
 
+    const messages = await getRouteTranslations({
+      themeName,
+      routeContext,
+      language: locale,
+    });
+
     // Get the page builder with widget manifest
-    const pageBuilder = getPageBuilder({ isEditor });
+    const pageBuilder = getPageBuilder();
 
     // Note: The builder uses "merchantName" internally for loading themes/templates
     // from @/themes/{name}/templates/, so we pass themeName here
@@ -79,7 +77,6 @@ export default async function CollectionProductPage(props: {
       routeContext,
       locale,
       messages,
-      pageConfig: previewPageConfig,
     });
 
     return (

@@ -4,14 +4,12 @@ import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getPageMetadata } from "@shopkit/seo";
 import { getRouteTranslations, getThemeName } from "@/utils";
+import { getResourceTemplateSuffix } from "@/utils/template-suffix";
 import { getPageBuilder } from "@/bootstrap/builder";
-import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
-import type { PageConfig } from "@shopkit/builder";
 import { KwikPassCollectionView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import { JsonLd, extractJsonLd, stripJsonLd } from "@/components/seo/JsonLd";
 import { createCollectionStaticParams } from "@shopkit/data-layer";
 
 // ISR: prerender every collection at build time, revalidate hourly, and still
@@ -22,24 +20,26 @@ export const dynamicParams = true;
 export const generateStaticParams =
   createCollectionStaticParams(getCommerceClient);
 
+// Full ISR: `searchParams` is deliberately NOT read here. Reading it in
+// generateMetadata opts the whole route out of static rendering just as surely
+// as reading it in the page component would — this route was the only prerendered
+// one in the app with no Revalidate window because of it.
+//
+// The cost: @shopkit/seo used that value to set `noIndex` on filtered views
+// (its matcher is /^(sort_by|filter\.|page$)/), so those URLs no longer get a
+// noindex from here. Serve it from middleware as an `X-Robots-Tag` header
+// instead — the query string is visible there without touching staticness.
 export async function generateMetadata(props: {
   params: Promise<{ collectionname: string }>;
-  searchParams?: Promise<Record<string, string>>;
 }): Promise<Metadata> {
   try {
-    const searchParams = await props.searchParams;
     const params = await props.params;
     const collection = await fetchCollection(params.collectionname);
-    // JSON-LD is rendered as a real <script> in the page body (see below), so
-    // strip it from `other` to avoid the broken <meta> duplicate.
-    return stripJsonLd(
-      await getPageMetadata({
-        pageType: "collection",
-        path: `/collections/${params.collectionname}`,
-        data: collection,
-        searchParams,
-      })
-    );
+    return getPageMetadata({
+      pageType: "collection",
+      path: `/collections/${params.collectionname}`,
+      data: collection,
+    });
   } catch {
     return {};
   }
@@ -47,37 +47,38 @@ export async function generateMetadata(props: {
 
 export default async function CollectionPage(props: {
   params: Promise<{ collectionname: string }>;
-  searchParams: Promise<{ editor?: string; previewKey?: string }>;
 }) {
   const params = await props.params;
-  const { isEditor, pageConfig: previewPageConfig } =
-    await readEditorPreviewState<PageConfig>(props.searchParams);
   try {
     const themeName = getThemeName();
     const locale = getStaticLocale();
+    const collection = await fetchCollection(params.collectionname);
+
+    if (!collection) {
+      notFound();
+    }
 
     const routeContext = {
       templateName: TEMPLATE_TYPES.collection,
       path: `/collections/${params.collectionname}`,
       params: { handle: params.collectionname },
       query: {},
+      // Page Templates: render the collection's assigned template; falls back to
+      // default when unassigned or the template is missing.
+      templateSuffix: getResourceTemplateSuffix(collection),
     };
 
-    const [messages, collection] = await Promise.all([
-      getRouteTranslations({
-        themeName,
-        routeContext,
-        language: locale,
-      }),
-      fetchCollection(params.collectionname),
-    ]);
-
-    if (!collection) {
-      notFound();
-    }
+    // Route translations: common + the resolved template's messages (consistent
+    // with the home/product pages). Depends on routeContext, so it runs after the
+    // collection is fetched.
+    const messages = await getRouteTranslations({
+      themeName,
+      routeContext,
+      language: locale,
+    });
 
     // Get the page builder with widget manifest
-    const pageBuilder = getPageBuilder({ isEditor });
+    const pageBuilder = getPageBuilder();
 
     // Note: The builder uses "merchantName" internally for loading themes/templates
     // from @/themes/{name}/templates/, so we pass themeName here
@@ -86,19 +87,7 @@ export default async function CollectionPage(props: {
       routeContext,
       locale,
       messages,
-      pageConfig: previewPageConfig,
     });
-
-    // Real JSON-LD <script> from the same schema the SEO layer computes for the
-    // metadata (collection already fetched above — pure CPU, no extra call).
-    // Returns null for filtered/noindex collection views, matching the metadata.
-    const jsonLd = extractJsonLd(
-      await getPageMetadata({
-        pageType: "collection",
-        path: `/collections/${params.collectionname}`,
-        data: collection,
-      })
-    );
 
     return (
       // Reserve viewport height while the collection content streams in. The
@@ -110,7 +99,6 @@ export default async function CollectionPage(props: {
       // resolves, so the final rendered UI is unchanged.
       <Suspense fallback={<div className="min-h-screen" aria-hidden />}>
         {pageContent}
-        <JsonLd data={jsonLd} />
         <KwikPassCollectionView collection={collection} />
       </Suspense>
     );

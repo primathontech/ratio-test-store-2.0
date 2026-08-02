@@ -76,18 +76,158 @@ const inMemory = (mode, detail) => {
 };
 
 /**
+ * Race a lock op against a short timeout so a slow-but-connected Redis can never
+ * block a page render. On timeout the caller degrades to normal behavior; the
+ * orphaned command is harmless (it only sets/clears a short-lived lock key).
+ */
+function withTimeout(promise, ms) {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("lock op timeout")), ms);
+    promise.then(
+      (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(timer);
+        reject(e);
+      }
+    );
+  });
+}
+
+/**
  * Redis-authoritative handler with a local mirror used only when Redis is down.
  * Implements the Next.js cache Handler interface (get/set/revalidateTag/delete).
+ *
+ * SINGLE-FLIGHT REGENERATION (opt-in via SF_SINGLE_FLIGHT=1)
+ * ---------------------------------------------------------
+ * When an ISR entry goes stale, EVERY pod that serves a request would otherwise
+ * kick off its own background regeneration → N pods = N identical renders hitting
+ * the origin at once (the "stale-page wave" that drives pod autoscaling). To
+ * collapse that to ONE regeneration cluster-wide, a stale read takes a short Redis
+ * lock (SET NX PX):
+ *   - winner → serve the stale entry AS-IS; Next regenerates on THIS pod; the lock
+ *              is released when the fresh value lands in set().
+ *   - loser  → serve the SAME stale bytes but with `lastModified` bumped to now, so
+ *              Next core treats the entry as fresh and does NOT start a duplicate
+ *              background regeneration on that pod.
+ * The bump is per-response only (never written back to Redis), so the moment the
+ * winner writes the fresh entry, every pod naturally serves fresh again.
+ *
+ * The staleness signal is @fortedigital's own `entry.lifespan.staleAt` (Unix
+ * seconds), which round-trips through get()/set() automatically — no extra state.
+ * `lifespan.expireAt` eviction (in the library's wrapper) still uses the untouched
+ * `lifespan`, so bumping `lastModified` cannot leak an entry past its hard expiry.
+ * See the cache-tag RFC §9.13.
+ *
+ * SAFETY (non-negotiable):
+ * - OFF by default (SF_SINGLE_FLIGHT !== "1").
+ * - Any lock error/timeout, a not-ready client, or a mirror-served read falls
+ *   straight through to today's behavior — a render is never blocked or failed.
+ * - Short lock TTL (PX) so a crashed/slow regenerator self-releases.
+ *
+ * @param redis      the @fortedigital redis handler (source of truth)
+ * @param mirror     local LRU, read only when Redis is unavailable
+ * @param rawClient  the raw node-redis client, for SET NX / DEL (optional)
+ * @param options    single-flight config (see defaults below)
  */
-function createResilientHandler(redis, mirror) {
+function createResilientHandler(redis, mirror, rawClient, options = {}) {
+  const {
+    singleFlight = process.env.SF_SINGLE_FLIGHT === "1",
+    lockKeyPrefix = "",
+    lockTtlMs = Number(process.env.SF_SINGLE_FLIGHT_LOCK_TTL_MS) || 10000,
+    lockOpTimeoutMs = Number(process.env.SF_SINGLE_FLIGHT_LOCK_OP_TIMEOUT_MS) ||
+      250,
+    now = Date.now,
+  } = options;
+
+  // Flag-gated, log-only diagnostics: lets us confirm the real get()/set() ctx and
+  // entry shapes (lastModified, lifespan.staleAt/expireAt) on live traffic without
+  // touching behavior. Enable with SF_DEBUG_CACHE=1.
+  const debug = (method, key, ctx, entry) => {
+    if (!process.env.SF_DEBUG_CACHE) {
+      return;
+    }
+    try {
+      const ls = entry && entry.lifespan;
+      const staleAt =
+        ls && typeof ls.staleAt === "number" ? ls.staleAt : undefined;
+      console.info(
+        "[sf-cache]",
+        method,
+        JSON.stringify({
+          key,
+          ctxKeys: ctx ? Object.keys(ctx) : null,
+          hasEntry: !!entry,
+          lastModified: entry?.lastModified,
+          lifespanNull: entry ? ls === null : undefined,
+          staleAt,
+          expireAt: ls?.expireAt,
+          revalidate: ls?.revalidate,
+          nowSec: Math.floor(now() / 1000),
+          stale:
+            typeof staleAt === "number" ? now() / 1000 >= staleAt : undefined,
+        })
+      );
+    } catch {
+      // diagnostics must never throw
+    }
+  };
+
+  // Eligible for single-flight only once past the stale window. A null lifespan
+  // (e.g. fallback:false pages) is treated as never-stale.
+  const isStale = (entry) => {
+    const staleAt = entry && entry.lifespan && entry.lifespan.staleAt;
+    return typeof staleAt === "number" && now() / 1000 >= staleAt;
+  };
+
+  // Self-contained and non-throwing: a lock problem can never fall through to the
+  // mirror path or fail a render. Returns the value to hand back to Next.
+  const applySingleFlight = async (key, entry) => {
+    if (!singleFlight || !entry || !rawClient?.isReady || !isStale(entry)) {
+      return entry;
+    }
+    try {
+      const acquired = await withTimeout(
+        rawClient.set(lockKeyPrefix + key, "1", {
+          condition: "NX",
+          expiration: { type: "PX", value: lockTtlMs },
+        }),
+        lockOpTimeoutMs
+      );
+      const won = acquired === "OK"; // node-redis returns "OK" on set, null on NX-miss
+      if (process.env.SF_DEBUG_CACHE) {
+        console.info(
+          "[sf-cache] single-flight",
+          won ? "WINNER" : "LOSER",
+          key,
+          `reply=${JSON.stringify(acquired)}`
+        );
+      }
+      if (!won) {
+        // Another pod already owns the regeneration → suppress ours by presenting
+        // the (identical) stale content as fresh for this one response.
+        return { ...entry, lastModified: now() };
+      }
+      // We own the regeneration; hand back the stale entry unchanged so Next
+      // regenerates on this pod. set() releases the lock when the render lands.
+      return entry;
+    } catch {
+      // Lock unavailable/slow → behave exactly as if single-flight were off.
+      return entry;
+    }
+  };
+
   return {
     name: "resilient-redis-lru",
     async get(key, ctx) {
+      let entry;
       try {
         // Redis is the source of truth. Its get() already checks shared tag
         // timestamps, so a null here means genuine miss OR cross-pod invalidation
         // — either way we must NOT consult the mirror (that would serve stale).
-        return await redis.get(key, ctx);
+        entry = await redis.get(key, ctx);
       } catch (e) {
         // Redis unavailable/slow (throws or times out) → serve last-known from
         // the local mirror so the pod stays up and does not stampede origin.
@@ -103,14 +243,31 @@ function createResilientHandler(redis, mirror) {
           return null; // last resort: cache miss (Next renders from origin)
         }
       }
+      debug("get", key, ctx, entry);
+      // Single-flight applies only on the healthy-Redis path, never the mirror.
+      return applySingleFlight(key, entry);
     },
     async set(key, data, ctx) {
+      debug("set", key, ctx, data);
       // Write to both so the mirror is warm for an outage. Never throw: a cache
       // write failure must not break the response.
       await Promise.allSettled([
         redis.set(key, data, ctx),
         mirror.set(key, data, ctx),
       ]);
+      // Fresh value is in place → release the single-flight lock so the NEXT stale
+      // cycle can elect a new regenerator (best-effort; the lock's PX TTL clears it
+      // anyway if this DEL is lost).
+      if (singleFlight && rawClient?.isReady) {
+        try {
+          await withTimeout(
+            rawClient.del(lockKeyPrefix + key),
+            lockOpTimeoutMs
+          );
+        } catch {
+          // ignore: the short lock TTL guarantees the lock clears on its own
+        }
+      }
     },
     async revalidateTag(tag) {
       // Invalidate both. Redis is what other pods read; the mirror keeps this
@@ -281,7 +438,16 @@ CacheHandler.onCreation(() => {
     setHealth({ mode: "redis", redisReady: true, detail: "" });
     global.__sfCacheHandlerPromise = null;
     global.__sfCacheHandlerConfig = {
-      handlers: [createResilientHandler(redisHandler, mirror)],
+      handlers: [
+        // Pass the RAW redis client too (the @fortedigital wrapper doesn't expose
+        // SET NX / DEL, which single-flight needs). Lock keys are namespaced under
+        // the same per-merchant prefix so they never collide across tenants and are
+        // easy to tell apart from cache/tag keys. Single-flight itself stays OFF
+        // until SF_SINGLE_FLIGHT=1 is set in the runtime env.
+        createResilientHandler(redisHandler, mirror, redisClient, {
+          lockKeyPrefix: `${NS}sf-lock:`,
+        }),
+      ],
     };
     return global.__sfCacheHandlerConfig;
   })();

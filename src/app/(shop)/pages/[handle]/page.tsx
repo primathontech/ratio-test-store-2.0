@@ -12,8 +12,6 @@ import {
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
-import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
-import type { PageConfig } from "@shopkit/builder";
 import type { Metadata } from "next";
 import { getPageMetadata } from "@shopkit/seo";
 
@@ -72,19 +70,14 @@ export async function generateMetadata({
 
 export default async function ContentPage({
   params,
-  searchParams,
 }: {
   params: Promise<{ handle: string }>;
-  searchParams: Promise<{ editor?: string; previewKey?: string }>;
 }) {
   const { handle } = await params;
 
   if (!CONTENT_PAGES[handle] || !isValidTemplateType(handle)) {
     notFound();
   }
-
-  const { isEditor, pageConfig: previewPageConfig } =
-    await readEditorPreviewState<PageConfig>(searchParams);
 
   const themeName = getThemeName();
   const locale = getStaticLocale();
@@ -103,14 +96,13 @@ export default async function ContentPage({
     language: locale,
   });
 
-  const pageBuilder = getPageBuilder({ isEditor });
+  const pageBuilder = getPageBuilder();
 
   const pageContent = await pageBuilder.renderPage({
     merchantName: themeName,
     routeContext,
     locale,
     messages,
-    pageConfig: previewPageConfig,
   });
 
   return <>{pageContent}</>;

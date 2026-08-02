@@ -49,14 +49,15 @@ export class TemplateApiClient {
 
       const response = await fetch(url, {
         method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "Cache-Control": "no-cache, no-store, must-revalidate",
-          Pragma: "no-cache",
-          Expires: "0",
-        },
+        headers: { "Content-Type": "application/json" },
         signal: controller.signal,
-        cache: "no-store",
+        // Full ISR: tagged + time-revalidated so the template is cacheable and
+        // always sourced from the backend (no filesystem fallback). Tag must
+        // match the revalidate webhook (single-merchant → no theme prefix).
+        next: {
+          tags: [`editor-template:${templateId}`],
+          revalidate: 3600,
+        },
       });
 
       clearTimeout(timeoutId);

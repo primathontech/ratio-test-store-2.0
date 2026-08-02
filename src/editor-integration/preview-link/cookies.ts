@@ -13,6 +13,15 @@ export const PREVIEW_ID_COOKIE = "editorPreviewId";
 export const PREVIEW_VERSION_COOKIE = "editorPreviewVersion";
 /** Non-httpOnly mirror flag the client "Exit preview" bar reads ("1"). */
 export const PREVIEW_ACTIVE_COOKIE = "editorPreviewActive";
+/**
+ * httpOnly — forces a specific template variant/suffix while previewing. Value
+ * is `"{type}:{suffix}"` (e.g. `"products:promo"`). Its cookie `path` is scoped
+ * to the previewed resource's URL, so the browser only sends it for that exact
+ * product/collection page — every other resource renders its default template.
+ * The loader applies it only when `type` matches the route (so chrome isn't
+ * forced). Absent for default-template previews.
+ */
+export const PREVIEW_SUFFIX_COOKIE = "editorPreviewSuffix";
 
 /**
  * Public-facing origin (scheme + host) for building redirect targets.

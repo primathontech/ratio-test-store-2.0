@@ -369,7 +369,28 @@
    * @param {object} [properties] - Override properties (default: event.properties)
    */
   function trackEvent(eventName, event, properties) {
-    var props = properties !== undefined ? properties : event.properties;
+    var source = properties !== undefined ? properties : event.properties;
+
+    // Hand Facebook its OWN deep, independent copy of the properties. The same
+    // event.properties object is shared with the other pixel SDKs (GA4, GTM,
+    // Google Ads, Snapchat) and the CAPI path, so passing it by reference — or
+    // via a shallow copy, which still shares nested fields like `contents` /
+    // `content_ids` — lets another consumer (or fbevents.js itself) mutate or
+    // key on an object we don't own. structuredClone deep-clones without JSON's
+    // footguns (dropping `undefined`, turning NaN/Infinity into null, or
+    // throwing on circular refs); fall back to a shallow copy on engines
+    // without it, and guard the whole thing so tracking never throws.
+    var props;
+    try {
+      props =
+        typeof structuredClone === "function"
+          ? structuredClone(source)
+          : Object.assign({}, source || {});
+    } catch (e) {
+      log("Track", "structuredClone failed; using shallow copy —", e);
+      props = Object.assign({}, source || {});
+    }
+
     fbq("track", eventName, props, getEventOptions(event));
     queueForCAPI(eventName, event);
   }
@@ -400,8 +421,24 @@
       fbq.allowDuplicatePageViews = true;
 
       // Initialize Meta Pixel with merchant's pixel ID
-      fbq("init", config.pixelId);
-      log("Init", "fbq('init', '" + config.pixelId + "') — pixel initialized");
+      // Initialize Meta Pixel with merchant's pixel ID(s).
+      // NEXT_PUBLIC_MULTI_PIXEL_IDS is documented as a comma-separated list
+      // (see ENV_GUIDE.md), so split it and init each pixel separately. A
+      // single ID yields exactly one init (unchanged behavior). Passing the
+      // raw "id1,id2" string to fbq('init') registers an invalid pixel ID that
+      // silently fails — no events reach Meta or show in Pixel Helper.
+      // Once every pixel is initialized, fbq('track', ...) broadcasts to all.
+      var pixelIds = String(config.pixelId || "")
+        .split(",")
+        .map(function (id) {
+          return id.trim();
+        })
+        .filter(Boolean);
+
+      pixelIds.forEach(function (pixelId) {
+        fbq("init", pixelId);
+        log("Init", "fbq('init', '" + pixelId + "') — pixel initialized");
+      });
 
       // Initialize CAPI if endpoint configured
       if (config.capiEndpoint) {
@@ -443,25 +480,27 @@
         trackEvent("AddToCart", event);
       });
 
-      analytics.subscribe("InitiateCheckout", function (event) {
-        logEvent("InitiateCheckout", event);
-        trackEvent("InitiateCheckout", event);
-      });
+      if (!config.gokwikEnabled) {
+        analytics.subscribe("InitiateCheckout", function (event) {
+          logEvent("InitiateCheckout", event);
+          trackEvent("InitiateCheckout", event);
+        });
 
-      analytics.subscribe("AddShippingInfo", function (event) {
-        logEvent("AddShippingInfo", event);
-        trackEvent("AddShippingInfo", event);
-      });
+        analytics.subscribe("AddShippingInfo", function (event) {
+          logEvent("AddShippingInfo", event);
+          trackEvent("AddShippingInfo", event);
+        });
 
-      analytics.subscribe("AddPaymentInfo", function (event) {
-        logEvent("AddPaymentInfo", event);
-        trackEvent("AddPaymentInfo", event);
-      });
+        analytics.subscribe("AddPaymentInfo", function (event) {
+          logEvent("AddPaymentInfo", event);
+          trackEvent("AddPaymentInfo", event);
+        });
 
-      analytics.subscribe("Purchase", function (event) {
-        logEvent("Purchase", event);
-        trackEvent("Purchase", event);
-      });
+        analytics.subscribe("Purchase", function (event) {
+          logEvent("Purchase", event);
+          trackEvent("Purchase", event);
+        });
+      }
 
       analytics.subscribe("Search", function (event) {
         logEvent("Search", event);

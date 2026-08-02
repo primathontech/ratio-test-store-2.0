@@ -1,6 +1,11 @@
 import type { MetadataRoute } from "next";
 import { getCommerceClient } from "@/config/commerce";
 
+// Regenerate hourly so newly created/removed products & collections appear
+// without a redeploy. Search engines re-crawl on their own cadence, so a
+// time-based refresh is sufficient (no per-change webhook needed).
+export const revalidate = 3600;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = (
     process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"
