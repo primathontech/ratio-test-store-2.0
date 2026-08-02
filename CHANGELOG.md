@@ -1,5 +1,26 @@
 # storefront-starter-app
 
+## 0.1.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @shopkit/data-layer@1.4.2
+  - @shopkit/webhooks@0.2.2
+
+  Product cache invalidation now works across every product URL. Product reads
+  emit a `product:<handle>` tag, so the `product.updated` webhook reaches the A/B
+  variant and the nested `/collections/[collectionname]/products/[handle]` routes
+  as well as the canonical PDP — previously only the canonical path was purged.
+
+  Cache-invalidation webhooks are also no longer silent: signature mismatches,
+  successful purges, deliveries that purged nothing, and page-warming failures all
+  log now, and the response body reports what was invalidated.
+
+  This app was two releases behind on both packages, so it also picks up
+  @shopkit/data-layer@1.4.1 and @shopkit/webhooks@0.2.1 (resolvable `@shopkit/core`
+  range instead of the literal `workspace:*` protocol).
+
 ## 0.1.30
 
 ### Patch Changes
