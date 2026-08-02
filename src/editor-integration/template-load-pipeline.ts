@@ -6,6 +6,7 @@ import { TemplateResolver } from "./loaders/template-resolver";
 import { getResolvedPreview } from "./preview-link/fetch-preview";
 import {
   PREVIEW_ID_COOKIE,
+  PREVIEW_SUFFIX_COOKIE,
   PREVIEW_VERSION_COOKIE,
 } from "./preview-link/cookies";
 import { getTemplateId } from "./template-id";
@@ -83,11 +84,28 @@ export const editorTemplateLoader: ITemplateLoader = {
     // disabled at build / on normal traffic without opting the route into
     // dynamic rendering, so cookies() below is only ever reached on an actual
     // preview request (which draft mode has already made dynamic).
+    // Effective variant: normally the passed one ("default" for a plain page).
+    // In preview, a resource-scoped `PREVIEW_SUFFIX_COOKIE` ("{type}:{suffix}")
+    // forces a specific template — but only when its type matches THIS route
+    // (so chrome/header/footer rendered on the same page keep their own).
+    let effectiveVariant = variant;
+
     const { isEnabled } = await draftMode();
     if (isEnabled) {
       const jar = await cookies();
       const previewId = jar.get(PREVIEW_ID_COOKIE)?.value;
       const previewVersion = jar.get(PREVIEW_VERSION_COOKIE)?.value ?? null;
+
+      const suffixCookie = jar.get(PREVIEW_SUFFIX_COOKIE)?.value;
+      if (suffixCookie) {
+        const sep = suffixCookie.indexOf(":");
+        const forcedType = sep >= 0 ? suffixCookie.slice(0, sep) : "";
+        const forcedSuffix = sep >= 0 ? suffixCookie.slice(sep + 1) : "";
+        if (forcedType === templateName && forcedSuffix) {
+          effectiveVariant = forcedSuffix;
+        }
+      }
+
       if (previewId) {
         // In preview mode we always ask the backend to resolve this route. The
         // backend owns the matching/mapping: it returns the draft for the page
@@ -97,7 +115,7 @@ export const editorTemplateLoader: ITemplateLoader = {
         const templateId = getTemplateId({
           merchantName,
           templateName,
-          variant: variant || "default",
+          variant: effectiveVariant || "default",
         });
         const resolved = await getResolvedPreview(
           previewId,
@@ -129,7 +147,7 @@ export const editorTemplateLoader: ITemplateLoader = {
         query: {},
         fetchAPITemplate: true,
       },
-      variant,
+      variant: effectiveVariant,
     });
   },
   loadVariantRegistry: (merchantName) =>

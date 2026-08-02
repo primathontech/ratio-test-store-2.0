@@ -212,7 +212,7 @@ ANTI-HALLUCINATION RULES (critical): describe ONLY what the categories/product n
 
 Return ONLY a JSON object (no markdown, no prose) with exactly:
 - "agentName": a warm, human first name that fits the brand.
-- "domain": a short 2-4 word phrase for what this store SPECIALIZES in (e.g. "baby and mother care", "women's fashion", "health & wellness supplements", "consumer electronics"), grounded ONLY in the data. This is the lens for interpreting ambiguous requests — so a baby store reads "shampoo" as baby shampoo, a fashion store reads "boots" as fashion footwear.
+- "domain": a short 2-4 word phrase for what this store SPECIALIZES in (e.g. "baby and mother care", "women's fashion", "health & wellness supplements", "consumer electronics"), grounded ONLY in the data — infer it from the FULL catalog, not one stray product. This is the lens for interpreting ambiguous requests — so a fashion store reads "boots" as fashion footwear, an electronics store reads "case" as a device case.
 - "tone": the single best-fit personality, EXACTLY one of: "warm", "professional", "playful", "luxury", "minimal" (e.g. baby-care → warm, electronics → professional, boutique fashion → luxury).
 - "brandInstructions": 2-3 short sentences on what the store sells and how an expert associate there would help shoppers, grounded ONLY in the data.`
         )

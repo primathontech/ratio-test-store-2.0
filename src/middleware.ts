@@ -77,6 +77,16 @@ function resolvePreviewRedirect(request: NextRequest): NextResponse | null {
       enter.searchParams.set("version", version);
     }
     enter.searchParams.set("to", cleanPath(request.nextUrl));
+    // Forced-template preview: carry the suffix (`view`) + page type (`type`)
+    // so the enter handler can set a resource-scoped suffix cookie.
+    const view = searchParams.get("view");
+    if (view) {
+      enter.searchParams.set("view", view);
+    }
+    const type = searchParams.get("type");
+    if (type) {
+      enter.searchParams.set("type", type);
+    }
     return NextResponse.redirect(enter);
   }
 
@@ -93,6 +103,8 @@ function cleanPath(url: URL): string {
   clean.searchParams.delete("editorPreview");
   clean.searchParams.delete("previewId");
   clean.searchParams.delete("version");
+  clean.searchParams.delete("view");
+  clean.searchParams.delete("type");
   return `${clean.pathname}${clean.search}`;
 }
 

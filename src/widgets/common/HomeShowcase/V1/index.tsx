@@ -144,13 +144,10 @@ export const V1: React.FC<HomeShowcaseProps> = ({ settings }) => {
           : [];
         setCollections(cols);
 
-        // Featured products come from the FIRST collection — NOT the raw
-        // products list. The products list includes hidden/unpublished items
-        // (tagged `hide__products`) whose PDP redirects to home; a collection
-        // only contains storefront-visible products, so every card opens a
-        // valid product page.
-        // A single collection may be small, so aggregate visible products
-        // across the first few collections (deduped) until the rail is full.
+        // Featured products come from collections — NOT the raw products list —
+        // so the rail shows curated, storefront-relevant items. A single
+        // collection may be small, so aggregate products across the first few
+        // collections (deduped) until the rail is full.
         const seen = new Set<string>();
         const featured: RawProduct[] = [];
         for (const c of cols.slice(0, 6)) {

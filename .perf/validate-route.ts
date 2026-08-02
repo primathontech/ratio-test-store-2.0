@@ -142,6 +142,8 @@ function isStandalonePage(filePath: string): boolean {
     "/checkout/page.",
     "/pages/account/", // Account pages
     "/account/page.",
+    "/internal-preview/page.",
+    "/editor-preview/page.",
   ];
 
   return standalonePatterns.some((pattern) => rel.includes(pattern));

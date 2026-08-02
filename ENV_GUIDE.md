@@ -32,15 +32,19 @@ NEXT_PUBLIC_THEME_NAME=dawn
 
 ## Visual Editor Configuration
 
-| Variable                     | Required | Description                                    |
-| ---------------------------- | -------- | ---------------------------------------------- |
-| `NEXT_PUBLIC_EDITOR_API_URL` | Optional | Visual editor backend URL                      |
-| `ENABLE_EDITOR_CHANGES`      | Optional | Enable/disable editor changes (`true`/`false`) |
+| Variable                            | Required | Description                                                                                                      |
+| ----------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
+| `NEXT_PUBLIC_EDITOR_API_URL`        | Optional | Visual editor backend URL. Only used when the flag below is `true`.                                              |
+| `NEXT_PUBLIC_ENABLE_EDITOR_CHANGES` | Optional | The only switch for editor-saved templates. Compared strictly against `"true"`; anything else = filesystem-only. |
 
 ```env
 NEXT_PUBLIC_EDITOR_API_URL=https://visual-editor-be.primathontech.co.in
-ENABLE_EDITOR_CHANGES=false
+NEXT_PUBLIC_ENABLE_EDITOR_CHANGES=false
 ```
+
+> The flag is read in exactly one place — `src/bootstrap/builder.ts` — where it
+> selects the template loader for the whole app. There is no per-page override:
+> `fetchAPITemplate` in a page's `routeContext` is not read on the render path.
 
 ---
 
@@ -332,7 +336,7 @@ NEXT_PUBLIC_THEME_NAME=dawn
 # VISUAL EDITOR CONFIGURATION
 # =============================================================================
 NEXT_PUBLIC_EDITOR_API_URL=https://visual-editor-be.primathontech.co.in
-ENABLE_EDITOR_CHANGES=false
+NEXT_PUBLIC_ENABLE_EDITOR_CHANGES=false
 
 # =============================================================================
 # SHOPIFY CONFIGURATION (Data Source)

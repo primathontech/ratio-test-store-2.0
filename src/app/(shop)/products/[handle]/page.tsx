@@ -4,16 +4,13 @@ import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getPageMetadata } from "@shopkit/seo";
 import { getRouteTranslations, getThemeName } from "@/utils";
+import { getResourceTemplateSuffix } from "@/utils/template-suffix";
 import { getPageBuilder } from "@/bootstrap/builder";
-import { readEditorPreviewState } from "@shopkit/editor-bridge/server";
-import type { PageConfig } from "@shopkit/builder";
 import { AppProductTracker } from "@shopkit/app-shell";
 import { KwikPassProductView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import { cache } from "react";
-import { ApiProduct } from "@/widgets/common/ProductDetail/types";
-import { JsonLd, extractJsonLd, stripJsonLd } from "@/components/seo/JsonLd";
 import { createProductViaCollectionsStaticParams } from "@shopkit/data-layer";
 
 // ISR: prerender every product at build time, revalidate hourly, and still
@@ -26,34 +23,17 @@ export const dynamicParams = true;
 export const generateStaticParams =
   createProductViaCollectionsStaticParams(getCommerceClient);
 
-const HIDDEN_PRODUCT_TAG = "hide__products";
-
-function isProductHidden(product: ApiProduct | null | undefined): boolean {
-  const tags = product?.tags
-    ?.map((tag: any) => (typeof tag === "string" ? tag : tag?.name || ""))
-    .filter((tag: string) => tag.length > 0);
-  return Array.isArray(tags) && tags.includes(HIDDEN_PRODUCT_TAG);
-}
-
-// Custom backend has no products-list endpoint — collection traversal is the only way to discover all handles.
-// export const generateStaticParams =
-//   createProductViaCollectionsStaticParams(getCommerceClient);
-
 export async function generateMetadata(props: {
   params: Promise<{ handle: string }>;
 }): Promise<Metadata> {
   try {
     const params = await props.params;
     const product = await fetchProduct(params.handle);
-    // JSON-LD is rendered as a real <script> in the page body (see below), so
-    // strip it from `other` to avoid the broken <meta> duplicate.
-    return stripJsonLd(
-      await getPageMetadata({
-        pageType: "product",
-        path: `/products/${params.handle}`,
-        data: product,
-      })
-    );
+    return getPageMetadata({
+      pageType: "product",
+      path: `/products/${params.handle}`,
+      data: product,
+    });
   } catch {
     return {};
   }
@@ -61,20 +41,13 @@ export async function generateMetadata(props: {
 
 export default async function ProductPage(props: {
   params: Promise<{ handle: string }>;
-  searchParams: Promise<{ editor?: string; previewKey?: string }>;
 }) {
   const params = await props.params;
-  const { isEditor, pageConfig: previewPageConfig } =
-    await readEditorPreviewState<PageConfig>(props.searchParams);
 
   const product = await fetchProduct(params.handle);
 
   if (!product) {
     notFound();
-  }
-
-  if (isProductHidden(product as ApiProduct)) {
-    redirect("/");
   }
 
   try {
@@ -86,7 +59,9 @@ export default async function ProductPage(props: {
       path: `/products/${params.handle}`,
       params,
       query: {},
-      fetchAPITemplate: true,
+      // Page Templates: render the product's assigned template; falls back to
+      // default when unassigned or the template is missing.
+      templateSuffix: getResourceTemplateSuffix(product),
     };
 
     const messages = await getRouteTranslations({
@@ -95,7 +70,7 @@ export default async function ProductPage(props: {
       language: locale,
     });
 
-    const pageBuilder = getPageBuilder({ isEditor });
+    const pageBuilder = getPageBuilder();
 
     // Note: The builder uses "merchantName" internally for loading themes/templates
     // from @/themes/{name}/templates/, so we pass themeName here
@@ -104,25 +79,12 @@ export default async function ProductPage(props: {
       routeContext,
       locale,
       messages,
-      pageConfig: previewPageConfig,
     });
-
-    // Real JSON-LD <script> from the same schema the SEO layer computes for the
-    // metadata (product already fetched above, so this is pure CPU — no extra
-    // network call).
-    const jsonLd = extractJsonLd(
-      await getPageMetadata({
-        pageType: "product",
-        path: `/products/${params.handle}`,
-        data: product,
-      })
-    );
 
     return (
       <>
         <AppProductTracker product={product} />
         {pageContent}
-        <JsonLd data={jsonLd} />
         <KwikPassProductView product={product} />
       </>
     );

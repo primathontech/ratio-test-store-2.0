@@ -1,5 +1,50 @@
 # storefront-starter-app
 
+## 0.2.15
+
+### Patch Changes
+
+- Synced with `storefront-starter` @ 0.2.15. Editor preview moved off the shopper
+  routes onto the dedicated `/internal-preview` lane, so `/`, `/collections/*`,
+  `/products/*` and `/pages/*` render as full ISR again instead of dynamic.
+- Added `generate:routes` (`@shopkit/cli@0.6.1`), which emits
+  `src/editor-integration/.generated/revalidation-routes.ts` for the new
+  `/api/editor-preview/revalidate` publish webhook.
+- Page Templates: `templateSuffix` is resolved from a product/collection's
+  `template_suffix` and now also selects that template's own translation JSON.
+- Editor template + i18n fetches are tagged and time-revalidated instead of
+  `no-store`, and the template resolver's `isAvailable()` preflight is gone (it
+  threw `DynamicServerError` during static generation and silently dropped to
+  the filesystem).
+- Cache handler gained opt-in single-flight ISR regeneration (`SF_SINGLE_FLIGHT=1`,
+  off by default) plus a `cache-handler.test.js` suite.
+- GoKwik-owned checkout events are de-duplicated in the pixel SDKs and dropped
+  server-side in `/api/events/capi`.
+- Removed the Ratio-only `src/components/seo/JsonLd.tsx` helper and its
+  `stripJsonLd`/`extractJsonLd`/`<JsonLd>` usage on the home, collection and
+  product pages, so `generateMetadata` matches `storefront-starter`. It was not
+  achieving its goal: the `<script type="application/ld+json">` it rendered ended
+  up only in the RSC flight payload, never in the served HTML. NOTE: structured
+  data is still not crawlable — `@shopkit/seo` puts it in `metadata.other`, which
+  Next emits as `<meta name="script:type=application/ld+json">`. The fix belongs
+  upstream in `@shopkit/seo`.
+- Fixed: when the editor backend has no record for a template, i18n now falls
+  back to that page's local locale JSON — matching what `TemplateResolver`
+  already did for the template itself. Previously it fell back to next-intl's
+  request-scoped `getMessages()`, leaving `t:` tokens unresolved and breaking
+  every `/pages/[handle]` content route.
+- Updated dependencies
+  - @shopkit/cli@0.6.1
+  - @shopkit/editor-bridge@0.10.0
+  - @shopkit/core@0.1.7
+  - @shopkit/data-layer@1.4.1
+  - @shopkit/webhooks@0.2.1
+  - @shopkit/builder@0.1.6
+  - @shopkit/events@0.10.1
+  - @shopkit/ai-store-builder@0.1.1 (new)
+  - @shopkit/analytics@1.2.1 (new)
+  - @shopkit/sandbox@0.1.0 (new)
+
 ## 0.2.12
 
 ### Patch Changes
