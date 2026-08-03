@@ -22,6 +22,7 @@ import Script from "next/script";
 import { Inter, Open_Sans } from "next/font/google";
 
 import { AppShell, AppHead } from "@shopkit/app-shell";
+import { APPS_PLATFORM_ENABLED } from "@/config/apps-platform";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { getNavMenus } from "@shopkit/navigation";
 import { NavigationProvider, NavBoundary } from "@shopkit/navigation/client";
@@ -120,6 +121,22 @@ export default async function RootLayout({
   const messages = await getMessages();
   const theme = await getTheme(themeName);
 
+  const merchantInfo = {
+    mid: process.env.NEXT_PUBLIC_MERCHANT_ID ?? "",
+    domain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN ?? "",
+    currency: process.env.NEXT_PUBLIC_CURRENCY ?? "INR",
+    locale,
+    country: "IN",
+    theme: themeName,
+    name: merchantName,
+  };
+
+  // Sandbox shell + bundles load from the App Ecosystem origin (Ratio CDN in
+  // prod, local apps-platform-example in dev) — momsco doesn't serve its own.
+  const appsShellUrl =
+    process.env.RATIO_APPS_SHELL_URL ??
+    "http://localhost:4347/apps-platform/sandbox.html";
+
   const hasKwikcartDisabled =
     process.env.NEXT_PUBLIC_KWIKCART_DISABLE === "true";
 
@@ -174,6 +191,12 @@ export default async function RootLayout({
             locale,
             messages,
             theme,
+            apps: APPS_PLATFORM_ENABLED
+              ? {
+                  merchantInfo,
+                  shellUrl: appsShellUrl,
+                }
+              : undefined,
             eventConfig: {
               enableDevTools: true,
               pixelConfig: {

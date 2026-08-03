@@ -58,6 +58,21 @@ import {
 import { WIDGET_MANIFEST } from "@/widgets/.generated/manifest";
 // Editor manifest — every widget routed through a "use client" shim, picked when isEditor is true.
 import { WIDGET_MANIFEST as EDITOR_WIDGET_MANIFEST } from "@/widgets/.generated/manifest.editor";
+import {
+  AppBlockZone,
+  AppBlock,
+  AppAccount,
+} from "@shopkit/apps-platform-react";
+import { APPS_PLATFORM_WIDGET_TYPES } from "@shopkit/apps-platform-react/constants";
+import { APPS_PLATFORM_ENABLED } from "@/config/apps-platform";
+
+// Page-scoped Apps Platform builder widgets (Block + Account). Embed is absent —
+// it's site-wide, mounted by AppsRuntimeProvider in the root layout.
+const APPS_PLATFORM_WIDGETS = [
+  { type: APPS_PLATFORM_WIDGET_TYPES.AppBlockZone, component: AppBlockZone },
+  { type: APPS_PLATFORM_WIDGET_TYPES.AppBlock, component: AppBlock },
+  { type: APPS_PLATFORM_WIDGET_TYPES.AppAccount, component: AppAccount },
+];
 import { getCommerceClient } from "@/config/commerce";
 import { SectionWrapper } from "@/ui/layout/SectionWrapper";
 
@@ -222,7 +237,12 @@ const sectionRenderer = createSectionRendererFromComponent(SectionWrapper);
  * @internal
  */
 const pageBuilderOptions: FileSystemPresetOptions = {
-  widgets: WIDGET_MANIFEST,
+  // Platform-provided surfaces, merged ahead of the app's own widgets so any
+  // template can place them without a local widget file.
+  widgets: [
+    ...(APPS_PLATFORM_ENABLED ? APPS_PLATFORM_WIDGETS : []),
+    ...WIDGET_MANIFEST,
+  ],
   commerceClient: getBuilderCommerceClient(),
   themeLoader,
   templateLoader: process.env.NEXT_PUBLIC_ENABLE_EDITOR_CHANGES

@@ -55,6 +55,8 @@
     "@shopify/storefront-api-client": "^1.0.8",
     "@shopkit/events": "^0.10.0",
     "@shopkit/app-shell": "^2.0.0",
+    "@shopkit/apps-platform": "^0.1.1",
+    "@shopkit/apps-platform-react": "^0.1.0",
     "@shopkit/asset-cache": "^1.0.1",
     "@shopkit/builder": "^0.1.5",
     "@shopkit/cart": "^0.1.4",

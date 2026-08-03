@@ -1,5 +1,7 @@
 import type { PageConfig } from "@shopkit/builder";
 import { WIDGET_TYPES } from "@/widgets/.generated/types";
+import { appBlockZone } from "@shopkit/apps-platform-react/constants";
+import { APPS_PLATFORM_ENABLED } from "@/config/apps-platform";
 import {
   SECTION_TYPES,
   SECTION_LAYOUT_OPTIONS,
@@ -219,6 +221,31 @@ export const template: PageConfig = {
     //   ],
     // },
 
+    {
+      id: "frequently-bought-together-section",
+      name: "Frequently Bought Together",
+      type: SECTION_TYPES.CONTENT_SECTION,
+      settings: {
+        layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          tablet: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+          desktop: { padding: { top: 0, right: 0, bottom: 0, left: 0 } },
+        },
+      },
+      widgets: [
+        {
+          id: "dawn-frequently-bought-together",
+          name: "Frequently Bought Together",
+          type: WIDGET_TYPES.FBT,
+          dataSourceKey: "product",
+          settings: {
+            variant: "v1",
+          },
+        },
+      ],
+    },
+
     // LovedByParentsCarousel Section
     {
       id: "loved-by-parents-carousel-section",
@@ -245,6 +272,17 @@ export const template: PageConfig = {
         },
       ],
     },
+
+    // Same feature as the native FBT widget above, as a sandboxed Apps Platform
+    // block — only when the Apps Platform feature flag is on.
+    ...(APPS_PLATFORM_ENABLED
+      ? [
+          appBlockZone({
+            pageType: "product",
+            appId: "ratio-frequently-bought-together",
+          }),
+        ]
+      : []),
 
     // WhatsAppCommunity Section
     // {
