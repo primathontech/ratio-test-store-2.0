@@ -185,6 +185,13 @@ export default async function RootLayout({
             strategy="afterInteractive"
           />
         )}
+        {process.env.NEXT_PUBLIC_RATIO_FORMS_SDK_URL && (
+          <Script
+            src={process.env.NEXT_PUBLIC_RATIO_FORMS_SDK_URL}
+            strategy="afterInteractive"
+            id="ratio-forms-sdk"
+          />
+        )}
         <LimeChatScript />
       </body>
     </html>

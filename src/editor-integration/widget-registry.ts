@@ -58,6 +58,24 @@ const commonWidgetSchemas = {
 // =============================================================================
 
 const merchantWidgetSchemas = {
+  [WIDGET_TYPES.RatioForm]: {
+    type: WIDGET_TYPES.RatioForm,
+    name: "Ratio Form",
+    description:
+      "Mounts a Ratio Forms form by id (the SDK is loaded in the layout)",
+    settingsSchema: {
+      variant: {
+        type: "text" as const,
+        label: "Variant",
+        default: "v1",
+      },
+      formId: {
+        type: "text" as const,
+        label: "Form Id",
+        default: "",
+      },
+    },
+  },
   // ── ratio chrome (forked from common Header/Footer) ──
   // Navigation is admin-managed via useNav, so the editable settings are the
   // menu handle(s) + branding/search/app fields. The old per-item nav label/
