@@ -39,5 +39,30 @@ export const template: PageConfig = {
         },
       ],
     },
+
+    {
+      id: "ratio-form-section",
+      name: "Ratio Form",
+      type: SECTION_TYPES.CONTENT_SECTION,
+      settings: {
+        layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 56, right: 16, bottom: 56, left: 16 } },
+          tablet: { padding: { top: 56, right: 16, bottom: 56, left: 16 } },
+          desktop: { padding: { top: 56, right: 16, bottom: 56, left: 16 } },
+        },
+      },
+      widgets: [
+        {
+          id: "ratio-form",
+          name: "Ratio Form",
+          type: WIDGET_TYPES.RatioForm,
+          settings: {
+            variant: "v1",
+            formId: "form_yZ25ONWPeLuYSDw3",
+          },
+        },
+      ],
+    },
   ],
 };
