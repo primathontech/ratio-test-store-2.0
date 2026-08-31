@@ -22,17 +22,17 @@
         "@shopkit/asset-cache": "^1.0.1",
         "@shopkit/builder": "^0.1.6",
         "@shopkit/cart": "^0.1.4",
-        "@shopkit/cli": "^0.6.1",
+        "@shopkit/cli": "^0.6.2",
         "@shopkit/core": "^0.1.7",
-        "@shopkit/data-layer": "^1.4.2",
+        "@shopkit/data-layer": "^1.4.4",
         "@shopkit/discounts": "^0.1.3",
-        "@shopkit/editor-bridge": "^0.10.0",
-        "@shopkit/events": "^0.10.1",
+        "@shopkit/editor-bridge": "^0.11.0",
+        "@shopkit/events": "^0.12.0",
         "@shopkit/i18n": "^0.1.4",
         "@shopkit/navigation": "^1.5.1",
         "@shopkit/sandbox": "^0.1.0",
         "@shopkit/seo": "^1.2.1",
-        "@shopkit/webhooks": "^0.2.2",
+        "@shopkit/webhooks": "^0.5.1",
         "embla-carousel": "^8.6.0",
         "embla-carousel-react": "^8.6.0",
         "jose": "^6.0.11",
@@ -534,17 +534,17 @@
 
     "@shopkit/cart": ["@shopkit/cart@0.1.4", "", { "peerDependencies": { "react": "^18.0.0", "zustand": "^4.4.0 || ^5.0.0" } }, "sha512-VhJHqIkcgWct930DgkTjOh1nnWr9oPQ1jULbVw9KqmJfpwdYKkaA8VO7Uj808Fmcpj8a9oj7x/Rj3wOCxro2cQ=="],
 
-    "@shopkit/cli": ["@shopkit/cli@0.6.1", "", { "dependencies": { "picocolors": "^1.0.0" }, "bin": { "shopkit": "bin/shopkit.js" } }, "sha512-eRr+3J9L8RG+tooYzb6FBOIxVN3XveOOJWi4EVuGvCeUxJUA227gILMv90ux1jhWLAXinhfzOmGJyUmFJ965yQ=="],
+    "@shopkit/cli": ["@shopkit/cli@0.6.2", "", { "dependencies": { "picocolors": "^1.0.0" }, "bin": { "shopkit": "bin/shopkit.js" } }, "sha512-8kseGsyXbuuPEmQbyFOau8BaMaX0Jqy4abeI25PPyMB8KIoWkH1IXmj322BecsBcHoqo2XdDfANwLSwR3N4d+w=="],
 
     "@shopkit/core": ["@shopkit/core@0.1.7", "", { "peerDependencies": { "next": ">=15.5.18", "react": "^18.0.0", "react-dom": "^18.0.0" } }, "sha512-4fR0Gt2YgV8qyyiwN8J2ofMCUk+CZql6t3Vs3TF9lJ56TNa+xnQb6TFppLdvWzWPhimJ4CGO/ZjRwawO9RsB8A=="],
 
-    "@shopkit/data-layer": ["@shopkit/data-layer@1.4.2", "", { "dependencies": { "@shopify/hydrogen-react": "^2025.5.0", "@shopify/storefront-api-client": "^1.0.8", "@shopkit/core": "^0.1.7" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" }, "optionalPeers": ["react", "react-dom"] }, "sha512-Xbv98aCWaEhZUhRUJSgySA/J76qSIhxWa7GCa79mji1sNzZFoW+HK7pyn5hdQGt959Df2uQ5yDSm27Sjf+pySA=="],
+    "@shopkit/data-layer": ["@shopkit/data-layer@1.4.4", "", { "dependencies": { "@shopify/hydrogen-react": "^2025.5.0", "@shopify/storefront-api-client": "^1.0.8", "@shopkit/core": "^0.1.7" }, "peerDependencies": { "react": ">=16.8.0", "react-dom": ">=16.8.0" }, "optionalPeers": ["react", "react-dom"] }, "sha512-KsnKQniiyy1iNGzpuG4Ms9q3dJfHPmih4QRrn5ovtS+SANPk2of1ddxjmrTIEa3I5GgJNWL3osbuEllRsZsdJQ=="],
 
     "@shopkit/discounts": ["@shopkit/discounts@0.1.3", "", { "peerDependencies": { "@shopkit/cart": "^0.1.1", "react": "^18.0.0" } }, "sha512-Qi9nevtUzpOPC8co3Z3WZZEtp3W3fqazH1uooCuebNJzRz1caskb8Y5q94Ho49igrwzxu4JUgdnRnYhZTZDntA=="],
 
-    "@shopkit/editor-bridge": ["@shopkit/editor-bridge@0.10.0", "", { "dependencies": { "zustand": "^5.0.6" }, "peerDependencies": { "@shopkit/builder": "*", "@shopkit/i18n": "*", "next": ">=14.0.0", "react": "^18.0.0", "react-dom": "^18.0.0" }, "optionalPeers": ["@shopkit/i18n"], "bin": { "shopkit-editor-bridge-migrate": "dist/bin/migrate-theme.js" } }, "sha512-7qf/CABUHCXkGVE22ukHgIbl3A4HuMMEYQpg+pIssFSVTYk1mZWRKELmiIEed4kERv7ZK5OeukPgwNrWTecXCQ=="],
+    "@shopkit/editor-bridge": ["@shopkit/editor-bridge@0.11.0", "", { "dependencies": { "zustand": "^5.0.6" }, "peerDependencies": { "@shopkit/builder": "*", "@shopkit/i18n": "*", "@shopkit/seo": "*", "next": ">=14.0.0", "react": "^18.0.0", "react-dom": "^18.0.0" }, "optionalPeers": ["@shopkit/i18n", "@shopkit/seo"], "bin": { "shopkit-editor-bridge-migrate": "dist/bin/migrate-theme.js" } }, "sha512-yRMzJ6axpHTQQ9X+PoXA5g3sSu3UcYa0baA0diOIQBUB+i2hlmgch5HxEyPZ5cmmtUvAhVEg8Mfy+gfrA3zm5A=="],
 
-    "@shopkit/events": ["@shopkit/events@0.10.1", "", { "dependencies": { "capi-param-builder-nodejs": "^1.2.1", "uuid": "^9.0.0" }, "peerDependencies": { "next": ">=15.5.18", "react": "^18.0.0", "zod": "^3.22.0", "zustand": "^4.4.0 || ^5.0.0" }, "optionalPeers": ["next", "zustand"] }, "sha512-iCbDngFETSaNTOjZCcbp5s053Vwy23oxzn7MZsPRpInRmdF3pRVGXRTEW1aLVZsoUBxPqxFRFHmvFoOev6t+RQ=="],
+    "@shopkit/events": ["@shopkit/events@0.12.1", "", { "dependencies": { "capi-param-builder-nodejs": "^1.2.1", "uuid": "^9.0.0" }, "peerDependencies": { "next": ">=15.5.18", "react": "^18.0.0", "zod": "^3.22.0", "zustand": "^4.4.0 || ^5.0.0" }, "optionalPeers": ["next", "zustand"] }, "sha512-njIU5Q3YXTsoV+acaXT01hsGFYCg9fkX5PqkZfUwFq8b/Cim5BsYiHKswpGHeEmRrIoD2aYe4ASuEXUnTlB0FQ=="],
 
     "@shopkit/i18n": ["@shopkit/i18n@0.1.4", "", { "peerDependencies": { "next": ">=15.5.18", "next-intl": "^4.0.0", "react": "^18.0.0" } }, "sha512-z5DUs8ItQj6oeLc1E4pmcJSUXkICHb0gHh7vpfO2V99Oa5LWW2zZGgyRBZtw8R3m6MQpk2/gC6t1Soka01zXNA=="],
 
@@ -554,7 +554,7 @@
 
     "@shopkit/seo": ["@shopkit/seo@1.2.1", "", { "dependencies": { "zod": "^3.0.0" }, "peerDependencies": { "next": ">=14" }, "optionalPeers": ["next"] }, "sha512-eTrOnleCuQDxDv+8vneo9/We12ic4mWdww+gSK32FSrb+DrGlMwvVSrU99Uofmsz9POceo6apxjjcqixR6SDQg=="],
 
-    "@shopkit/webhooks": ["@shopkit/webhooks@0.2.2", "", { "dependencies": { "@shopkit/core": "^0.1.7" }, "peerDependencies": { "next": ">=15.5.18" } }, "sha512-USlq8OgDUa10DCmC3PVEokX/y7QQCtQGG5Lhbr0PTWrJwk3Dj43+Hat3DeXzWUn8Lj+/jwbNvTTggBRIRhw/xg=="],
+    "@shopkit/webhooks": ["@shopkit/webhooks@0.5.1", "", { "dependencies": { "@shopkit/core": "^0.1.7" }, "peerDependencies": { "next": ">=15.5.18" } }, "sha512-GKzjlSqSnmzfhTj0Qh+mvhWdVhg4WKXO00447zD1PXFldk9b/QGbS9me0FIJ0okqlQQqtynV952qsipZeuoqzw=="],
 
     "@socket.io/component-emitter": ["@socket.io/component-emitter@3.1.2", "", {}, "sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA=="],
 

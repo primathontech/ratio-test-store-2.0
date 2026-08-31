@@ -1178,12 +1178,14 @@ export default async function RootLayout({ children }) {
 
 ```typescript
 import {
-  // Main handler
+  // Handlers — the only exports that revalidate, and both verify the signature first
   handleShopifyWebhook,
+  handleCacheInvalidation,
 
   // Utils
   logger,
   verifyShopifyWebhook,
+  verifyCacheInvalidationSignature,
   createSuccessResponse,
   createErrorResponse,
   handleWebhookError,
@@ -1191,11 +1193,13 @@ import {
   // Data processing
   parseWebhookBody,
   logWebhookReceived,
-  createWebhookData,
 
   // Cache & revalidation
-  logCacheInvalidations,
-  revalidateChangedPage,
+  // NOTE: `revalidateChangedPage` and `warmPaths` are intentionally NOT exported.
+  // Both cause cache side effects without verifying a signature, so exporting them
+  // would offer unauthenticated revalidation — a cheaper bypass than defeating the
+  // HMAC. Use `handleCacheInvalidation(request, config)`, which verifies first.
+  pathsToWarm,
 
   // Types & constants
   ENTITY_TYPE,

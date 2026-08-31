@@ -45,17 +45,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  // Static content + policy routes. Kept in sync with the handles served by
-  // the /pages/[handle] route (merchant-agnostic).
-  const contentPaths = [
-    "/pages/about-us",
-    "/pages/contact",
-    "/pages/faq",
-    "/pages/privacy-policy",
-    "/pages/refund-policy",
-    "/pages/terms-of-service",
-    "/pages/shipping-policy",
-  ];
+  // Static content routes that have their own file-based route.
+  //
+  // The former contact / faq / privacy-policy / refund-policy /
+  // terms-of-service / shipping-policy entries were removed: /pages/[handle] is
+  // now @shopkit/editor-bridge's createPagesRoute, which serves only pages
+  // authored in the editor backend. Listing handles it cannot resolve puts URLs
+  // in the sitemap that do not render. Re-add a handle here only once the
+  // backend actually publishes it.
+  const contentPaths = ["/pages/about-us"];
 
   const staticEntries: MetadataRoute.Sitemap = [
     { url: siteUrl, changeFrequency: "daily", priority: 1.0 },

@@ -1,21 +1,28 @@
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-empty-function -- CommonJS test (Node's built-in `node --test` runner) exercising a CommonJS module; require() and empty mock methods are intentional. */
 /**
- * Unit tests for the resilient cache handler's SINGLE-FLIGHT regeneration.
+ * Unit tests for the resilient cache handler.
  *
- * Runs on Node's built-in test runner (no extra deps): `node --test cache-handler.test.js`
+ * Runs on Node's built-in test runner (no extra deps):
+ *   node --test cache-handler.test.js
  * (also wired as `bun run test` / `npm test` in package.json).
  *
- * We exercise the pure factory `__createResilientHandler(redis, mirror, rawClient, opts)`
- * exported from cache-handler.js, injecting fake redis/mirror/raw-client and a fixed
- * clock so the lock logic is fully deterministic — no real Redis, no Next runtime.
+ * Two things are under test:
  *
- * The design under test (see the cache-tag RFC §9.13):
- * - A STALE entry (now >= entry.lifespan.staleAt) triggers a cross-pod lock.
- * - Lock winner returns the entry AS-IS (this pod regenerates; set() releases the lock).
- * - Lock loser returns { ...entry, lastModified: now } so Next sees it as FRESH and does
- *   NOT kick off a duplicate background regeneration on that pod (it still serves stale).
- * - Cold miss / fresh entry / flag off / null lifespan / not-ready / any Redis error
- *   all fall through to today's behavior (never block a render).
+ * 1. BUILD-ID SCOPING (the 3 Aug outage). Rendered HTML embeds the chunk
+ *    filenames of the build that produced it. Redis survives deployments; pods
+ *    do not. With an unscoped key a pod from build C could read build A's HTML
+ *    and serve it, so the browser then asked build C for build A's filenames and
+ *    got 404s — a blank page. Page keys are therefore namespaced per build.
+ *
+ *    Fetch/API entries are deliberately NOT namespaced: that data is
+ *    build-independent and expensive to refill, so it must survive a deploy.
+ *
+ * 2. RESILIENCE. Redis is authoritative while healthy; a Redis error (never a
+ *    healthy miss, which would serve stale) falls back to the local mirror. No
+ *    path may throw — a cache problem must not break a render.
+ *
+ * The pure factory `__createResilientHandler(redis, mirror, opts)` is exported
+ * from cache-handler.js, so no real Redis and no Next runtime are involved.
  */
 
 const test = require("node:test");
@@ -23,330 +30,394 @@ const assert = require("node:assert/strict");
 
 const { __createResilientHandler } = require("./cache-handler.js");
 
-// Fixed clock: 10_000_000 ms == 10_000 s. Entries with staleAt < 10_000 are stale.
-const NOW_MS = 10_000_000;
-const now = () => NOW_MS;
+// Page keys always start with "/" (Next normalises them). Fetch keys are bare
+// sha256 hex. That shape difference is the only discriminator the handler needs.
+const PAGE_KEY = "/collections/summer";
+const FETCH_KEY =
+  "a3f1c9e07b5d2148aa90ce31bf6470d2e8c5419a7b03fd6e2c8b1a4d5f6079e3";
 
-const LOCK_PREFIX = "sf-lock:";
-const KEY = "/collections/summer";
-const LOCK_KEY = LOCK_PREFIX + KEY;
-
-/** A CacheHandlerValue as @fortedigital stores/returns it. */
-function makeEntry({
-  staleAt = 9_000,
-  lastModified = 8_000_000,
-  lifespanNull = false,
-} = {}) {
-  const value = { kind: "APP_PAGE", html: "<html>stale</html>", rscData: null };
+/** A CacheHandlerValue in the shape @fortedigital stores and returns. */
+function makeEntry(html = "<html>build-a</html>") {
   return {
-    lastModified, // ms
-    lifespan: lifespanNull
-      ? null
-      : {
-          lastModifiedAt: Math.floor(lastModified / 1000),
-          staleAt, // Unix seconds
-          expireAt: staleAt + 15,
-          staleAge: 30,
-          expireAge: 45,
-          revalidate: 30,
-        },
+    lastModified: 8_000_000,
+    lifespan: {
+      lastModifiedAt: 8_000,
+      staleAt: 11_600,
+      expireAt: 13_400,
+      staleAge: 3600,
+      expireAge: 5400,
+      revalidate: 3600,
+    },
     tags: [],
-    value,
+    value: { kind: "APP_PAGE", html, rscData: null },
   };
 }
 
-function makeRedis({ entry = null, getThrows = false } = {}) {
-  const calls = { get: 0, set: [], revalidateTag: [], delete: [] };
+/**
+ * A single Redis, shared by every pod — exactly as in production. Keyed by the
+ * literal key string it is handed, so a scoping bug shows up as a real collision
+ * rather than being hidden by a per-instance mock.
+ */
+function makeSharedRedis({ getThrows = false } = {}) {
+  const store = new Map();
+  const calls = { get: [], set: [], revalidateTag: [], delete: [] };
   return {
+    store,
     calls,
-    async get() {
-      calls.get++;
+    async get(key) {
+      calls.get.push(key);
       if (getThrows) {
         throw new Error("redis down");
       }
-      return entry;
+      return store.has(key) ? store.get(key) : null;
     },
-    async set(k, d, c) {
-      calls.set.push({ k, d, c });
+    async set(key, data) {
+      calls.set.push(key);
+      store.set(key, data);
     },
-    async revalidateTag(t) {
-      calls.revalidateTag.push(t);
+    async revalidateTag(tag) {
+      calls.revalidateTag.push(tag);
     },
-    async delete(k) {
-      calls.delete.push(k);
+    async delete(key) {
+      calls.delete.push(key);
+      store.delete(key);
     },
   };
 }
 
 function makeMirror({ entry = null } = {}) {
-  const calls = { get: 0, set: [] };
+  const calls = { get: [], set: [], revalidateTag: [], delete: [] };
   return {
     calls,
-    async get() {
-      calls.get++;
+    async get(key) {
+      calls.get.push(key);
       return entry;
     },
-    async set(k, d, c) {
-      calls.set.push({ k, d, c });
+    async set(key, data) {
+      calls.set.push({ key, data });
     },
-    async revalidateTag() {},
-    async delete() {},
+    async revalidateTag(tag) {
+      calls.revalidateTag.push(tag);
+    },
+    async delete(key) {
+      calls.delete.push(key);
+    },
   };
 }
 
-/**
- * Fake node-redis v5 client. `set(key, val, { condition: "NX", expiration })`
- * returns "OK" when the key was absent, null when it already exists (real NX
- * semantics). `del` removes it. Optionally throw or hang to test degradation.
- */
-function makeRawClient({
-  ready = true,
-  throwOn = null,
-  hangOn = null,
-  seedLock = false,
-} = {}) {
-  const store = new Map();
-  if (seedLock) {
-    store.set(LOCK_KEY, "1");
-  }
-  const calls = { set: [], del: [] };
+/** The health snapshot the handler publishes, read by GET /api/cache-status. */
+const health = () => globalThis.__sfCacheHealth ?? {};
+
+/** A pod running `buildId`, wired to the shared Redis. */
+function podFor(buildId, redis, mirror = makeMirror()) {
   return {
-    isReady: ready,
-    calls,
-    _has: (k) => store.has(k),
-    async set(key, value, opts) {
-      calls.set.push({ key, value, opts });
-      if (throwOn === "set") {
-        throw new Error("redis set failed");
-      }
-      if (hangOn === "set") {
-        return new Promise(() => {});
-      } // never settles
-      const nx = opts?.condition === "NX" || opts?.NX === true;
-      if (nx && store.has(key)) {
-        return null;
-      }
-      store.set(key, value);
-      return "OK";
-    },
-    async del(key) {
-      calls.del.push(key);
-      if (throwOn === "del") {
-        throw new Error("redis del failed");
-      }
-      const existed = store.has(key);
-      store.delete(key);
-      return existed ? 1 : 0;
-    },
+    handler: __createResilientHandler(redis, mirror, { buildId }),
+    mirror,
   };
 }
 
-const baseOpts = () => ({
-  singleFlight: true,
-  lockKeyPrefix: LOCK_PREFIX,
-  lockTtlMs: 10_000,
-  lockOpTimeoutMs: 250,
-  now,
-});
+// ---------------------------------------------------------------------------
+// 1. Build-ID scoping — the outage
+// ---------------------------------------------------------------------------
 
-test("winner: stale entry with a free lock is returned as-is and the lock is acquired", async () => {
-  const entry = makeEntry({ staleAt: 9_000 });
-  const raw = makeRawClient();
-  const h = __createResilientHandler(
-    makeRedis({ entry }),
-    makeMirror(),
-    raw,
-    baseOpts()
-  );
+test("a pod CANNOT read a page entry written by a DIFFERENT build", async () => {
+  const redis = makeSharedRedis();
+  const podA = podFor("buildA", redis);
+  const podC = podFor("buildC", redis);
 
-  const result = await h.get(KEY, { implicitTags: [] });
+  const buildAPage = makeEntry("<html>build-a chunks</html>");
+  await podA.handler.set(PAGE_KEY, buildAPage, {});
 
-  assert.equal(result, entry, "winner gets the exact stale entry (unbumped)");
-  assert.equal(result.lastModified, entry.lastModified);
-  assert.equal(raw._has(LOCK_KEY), true, "lock acquired");
-  assert.equal(raw.calls.set.length, 1);
-  assert.equal(raw.calls.set[0].opts.condition, "NX");
-  assert.deepEqual(raw.calls.set[0].opts.expiration, {
-    type: "PX",
-    value: 10_000,
-  });
-});
-
-test("loser: stale entry with a held lock is returned with bumped lastModified (regen suppressed)", async () => {
-  const entry = makeEntry({ staleAt: 9_000, lastModified: 8_000_000 });
-  const raw = makeRawClient({ seedLock: true });
-  const h = __createResilientHandler(
-    makeRedis({ entry }),
-    makeMirror(),
-    raw,
-    baseOpts()
-  );
-
-  const result = await h.get(KEY, { implicitTags: [] });
-
-  assert.notEqual(result, entry, "loser gets a copy, not the original");
-  assert.equal(
-    result.lastModified,
-    NOW_MS,
-    "lastModified bumped to now → Next sees it fresh"
-  );
-  assert.equal(result.value, entry.value, "same stale content is still served");
-  assert.equal(raw.calls.set.length, 1, "lock was attempted");
-});
-
-test("set() releases the single-flight lock", async () => {
-  const entry = makeEntry({ staleAt: 9_000 });
-  const raw = makeRawClient();
-  const redis = makeRedis({ entry });
-  const mirror = makeMirror();
-  const h = __createResilientHandler(redis, mirror, raw, baseOpts());
-
-  await h.get(KEY, { implicitTags: [] }); // winner acquires lock
-  assert.equal(raw._has(LOCK_KEY), true);
-
-  await h.set(KEY, entry, { revalidate: 30 });
-
-  assert.equal(raw._has(LOCK_KEY), false, "lock deleted on set");
-  assert.ok(raw.calls.del.includes(LOCK_KEY));
-  assert.equal(redis.calls.set.length, 1, "still writes through to redis");
-  assert.equal(mirror.calls.set.length, 1, "still writes through to mirror");
-});
-
-test("degrades safely when the lock write throws (returns entry as-is, never throws)", async () => {
-  const entry = makeEntry({ staleAt: 9_000 });
-  const raw = makeRawClient({ throwOn: "set" });
-  const h = __createResilientHandler(
-    makeRedis({ entry }),
-    makeMirror(),
-    raw,
-    baseOpts()
-  );
-
-  const result = await h.get(KEY, { implicitTags: [] });
+  const seenByC = await podC.handler.get(PAGE_KEY, { implicitTags: [] });
 
   assert.equal(
-    result,
-    entry,
-    "on lock error, behave exactly as without single-flight"
+    seenByC,
+    null,
+    "build C must MISS and render its own page rather than serve build A's HTML"
   );
-  assert.equal(result.lastModified, entry.lastModified, "not bumped");
-});
-
-test("degrades safely when the lock write hangs (timeout → entry as-is)", async () => {
-  const entry = makeEntry({ staleAt: 9_000 });
-  const raw = makeRawClient({ hangOn: "set" });
-  const h = __createResilientHandler(makeRedis({ entry }), makeMirror(), raw, {
-    ...baseOpts(),
-    lockOpTimeoutMs: 50,
-  });
-
-  const started = now();
-  const result = await h.get(KEY, { implicitTags: [] });
-
-  assert.equal(result, entry, "a slow lock must never block the render");
-  assert.equal(result.lastModified, entry.lastModified);
-  // (started is a fixed clock; real wall-clock timeout is asserted by the test not hanging)
-  void started;
-});
-
-test("fresh entry: no lock is attempted", async () => {
-  const entry = makeEntry({ staleAt: 20_000 }); // staleAt in the future
-  const raw = makeRawClient();
-  const h = __createResilientHandler(
-    makeRedis({ entry }),
-    makeMirror(),
-    raw,
-    baseOpts()
+  assert.equal(
+    redis.store.get(`buildA:${PAGE_KEY}`),
+    buildAPage,
+    "build A's entry is untouched — unreachable, not deleted"
   );
-
-  const result = await h.get(KEY, { implicitTags: [] });
-
-  assert.equal(result, entry);
-  assert.equal(raw.calls.set.length, 0, "no single-flight for a fresh entry");
 });
 
-test("cold miss (null entry): no lock is attempted", async () => {
-  const raw = makeRawClient();
-  const h = __createResilientHandler(
-    makeRedis({ entry: null }),
-    makeMirror(),
-    raw,
-    baseOpts()
+test("page writes are namespaced by buildId", async () => {
+  const redis = makeSharedRedis();
+  const { handler } = podFor("7L902T7DDMf5bSHq5wTZs", redis);
+
+  await handler.set(PAGE_KEY, makeEntry(), {});
+
+  assert.deepEqual(redis.calls.set, [`7L902T7DDMf5bSHq5wTZs:${PAGE_KEY}`]);
+});
+
+test("pods of the SAME build still share page entries", async () => {
+  const redis = makeSharedRedis();
+  const pod1 = podFor("buildA", redis);
+  const pod2 = podFor("buildA", redis);
+
+  const page = makeEntry();
+  await pod1.handler.set(PAGE_KEY, page, {});
+
+  assert.equal(
+    await pod2.handler.get(PAGE_KEY, { implicitTags: [] }),
+    page,
+    "same build = same namespace, so one render still serves the whole cluster"
   );
-
-  const result = await h.get(KEY, { implicitTags: [] });
-
-  assert.equal(result, null);
-  assert.equal(raw.calls.set.length, 0);
 });
 
-test("flag OFF: stale entry is untouched and no lock is attempted", async () => {
-  const entry = makeEntry({ staleAt: 9_000 });
-  const raw = makeRawClient();
-  const h = __createResilientHandler(makeRedis({ entry }), makeMirror(), raw, {
-    ...baseOpts(),
-    singleFlight: false,
-  });
+test("fetch writes are NOT namespaced — API data must survive a deploy", async () => {
+  const redis = makeSharedRedis();
+  const { handler } = podFor("buildA", redis);
 
-  const result = await h.get(KEY, { implicitTags: [] });
+  await handler.set(FETCH_KEY, { kind: "FETCH", data: {} }, {});
 
-  assert.equal(result, entry);
-  assert.equal(result.lastModified, entry.lastModified);
-  assert.equal(raw.calls.set.length, 0);
-});
-
-test("null lifespan (fallback:false page): never stale → no lock", async () => {
-  const entry = makeEntry({ lifespanNull: true });
-  const raw = makeRawClient();
-  const h = __createResilientHandler(
-    makeRedis({ entry }),
-    makeMirror(),
-    raw,
-    baseOpts()
+  assert.deepEqual(
+    redis.calls.set,
+    [FETCH_KEY],
+    "a bare sha256 key is left unscoped"
   );
-
-  const result = await h.get(KEY, { implicitTags: [] });
-
-  assert.equal(result, entry);
-  assert.equal(raw.calls.set.length, 0);
 });
 
-test("raw client not ready: no lock is attempted", async () => {
-  const entry = makeEntry({ staleAt: 9_000 });
-  const raw = makeRawClient({ ready: false });
-  const h = __createResilientHandler(
-    makeRedis({ entry }),
-    makeMirror(),
-    raw,
-    baseOpts()
+test("pods of DIFFERENT builds still share fetch entries", async () => {
+  const redis = makeSharedRedis();
+  const podA = podFor("buildA", redis);
+  const podC = podFor("buildC", redis);
+
+  const apiJson = { kind: "FETCH", data: { price: 499 } };
+  await podA.handler.set(FETCH_KEY, apiJson, {});
+
+  assert.equal(
+    await podC.handler.get(FETCH_KEY, { implicitTags: [] }),
+    apiJson,
+    "the new build reuses cached API data instead of refetching from origin"
   );
-
-  const result = await h.get(KEY, { implicitTags: [] });
-
-  assert.equal(result, entry);
-  assert.equal(raw.calls.set.length, 0);
 });
 
-test("redis read error falls back to the local mirror (no single-flight on the fallback)", async () => {
-  const mirrorEntry = makeEntry({ staleAt: 9_000 });
-  const raw = makeRawClient();
-  const h = __createResilientHandler(
-    makeRedis({ getThrows: true }),
-    makeMirror({ entry: mirrorEntry }),
-    raw,
-    baseOpts()
-  );
+test("deletes target the build-scoped page key", async () => {
+  const redis = makeSharedRedis();
+  const { handler } = podFor("buildA", redis);
 
-  const result = await h.get(KEY, { implicitTags: [] });
+  await handler.set(PAGE_KEY, makeEntry(), {});
+  await handler.delete(PAGE_KEY);
+
+  assert.deepEqual(redis.calls.delete, [`buildA:${PAGE_KEY}`]);
+  assert.equal(redis.store.has(`buildA:${PAGE_KEY}`), false);
+});
+
+test("without a buildId, keys are left unscoped (safe fallback, no crash)", async () => {
+  const redis = makeSharedRedis();
+  const { handler } = podFor(undefined, redis);
+
+  await handler.set(PAGE_KEY, makeEntry(), {});
+
+  assert.deepEqual(
+    redis.calls.set,
+    [PAGE_KEY],
+    "a missing buildId must degrade to today's behaviour, never throw"
+  );
+});
+
+test("a non-string key is passed through untouched", async () => {
+  const redis = makeSharedRedis();
+  const { handler } = podFor("buildA", redis);
+
+  await assert.doesNotReject(() =>
+    handler.get(undefined, { implicitTags: [] })
+  );
+});
+
+// ---------------------------------------------------------------------------
+// 2. Resilience
+// ---------------------------------------------------------------------------
+
+test("a Redis read error falls back to the local mirror", async () => {
+  const mirrorEntry = makeEntry("<html>last known</html>");
+  const redis = makeSharedRedis({ getThrows: true });
+  const mirror = makeMirror({ entry: mirrorEntry });
+  const { handler } = podFor("buildA", redis, mirror);
+
+  const result = await handler.get(PAGE_KEY, { implicitTags: [] });
 
   assert.equal(
     result,
     mirrorEntry,
-    "serves last-known from the mirror during a Redis outage"
+    "during a Redis outage the pod keeps serving rather than stampeding origin"
+  );
+});
+
+test("a healthy Redis MISS does NOT consult the mirror (that would serve stale)", async () => {
+  const redis = makeSharedRedis();
+  const mirror = makeMirror({ entry: makeEntry("<html>stale</html>") });
+  const { handler } = podFor("buildA", redis, mirror);
+
+  const result = await handler.get(PAGE_KEY, { implicitTags: [] });
+
+  assert.equal(result, null, "a miss must be a miss");
+  assert.deepEqual(
+    mirror.calls.get,
+    [],
+    "the mirror is not read on a healthy miss"
+  );
+});
+
+test("writes go to BOTH stores so the mirror is warm for an outage", async () => {
+  const redis = makeSharedRedis();
+  const mirror = makeMirror();
+  const { handler } = podFor("buildA", redis, mirror);
+
+  await handler.set(PAGE_KEY, makeEntry(), {});
+
+  assert.deepEqual(redis.calls.set, [`buildA:${PAGE_KEY}`]);
+  assert.equal(mirror.calls.set.length, 1);
+  assert.equal(
+    mirror.calls.set[0].key,
+    `buildA:${PAGE_KEY}`,
+    "the mirror uses the same scoped key so a fallback read hits"
+  );
+});
+
+test("a failing Redis write never throws", async () => {
+  const redis = makeSharedRedis();
+  redis.set = async () => {
+    throw new Error("redis write failed");
+  };
+  const { handler } = podFor("buildA", redis);
+
+  await assert.doesNotReject(() => handler.set(PAGE_KEY, makeEntry(), {}));
+});
+
+test("a failing Redis write is COUNTED and logged, not discarded", async (t) => {
+  const logged = [];
+  t.mock.method(console, "error", (...args) => logged.push(args.join(" ")));
+  const before = health().writeFailures ?? 0;
+
+  const redis = makeSharedRedis();
+  redis.set = async () => {
+    throw new Error("connection timeout");
+  };
+  const { handler } = podFor("buildA", redis);
+
+  await handler.set(PAGE_KEY, makeEntry(), {});
+
+  assert.equal(
+    health().writeFailures,
+    before + 1,
+    "a discarded write is how thousands of failures went unnoticed — it must be counted"
+  );
+  assert.match(health().lastWriteError, /connection timeout/);
+});
+
+test("an OOM rejection is counted SEPARATELY — the node is full, not slow", async (t) => {
+  t.mock.method(console, "error", () => {});
+  const before = health().oomFailures ?? 0;
+
+  const redis = makeSharedRedis();
+  redis.set = async () => {
+    throw new Error("OOM command not allowed when used memory > 'maxmemory'.");
+  };
+  const { handler } = podFor("buildA", redis);
+
+  await handler.set(PAGE_KEY, makeEntry(), {});
+
+  assert.equal(
+    health().oomFailures,
+    before + 1,
+    "OOM means Redis is FULL — that needs capacity work, not a retry, so it is tracked apart"
+  );
+});
+
+test("a successful write records no failure", async (t) => {
+  t.mock.method(console, "error", () => {});
+  const before = health().writeFailures ?? 0;
+
+  const { handler } = podFor("buildA", makeSharedRedis());
+  await handler.set(PAGE_KEY, makeEntry(), {});
+
+  assert.equal(health().writeFailures ?? 0, before);
+});
+
+test("a mirror-only failure does NOT count as a Redis write failure", async (t) => {
+  t.mock.method(console, "error", () => {});
+  const before = health().writeFailures ?? 0;
+
+  const mirror = makeMirror();
+  mirror.set = async () => {
+    throw new Error("lru exploded");
+  };
+  const { handler } = podFor("buildA", makeSharedRedis(), mirror);
+
+  await assert.doesNotReject(() => handler.set(PAGE_KEY, makeEntry(), {}));
+  assert.equal(
+    health().writeFailures ?? 0,
+    before,
+    "the mirror is a local convenience; only the shared store's failure matters"
+  );
+});
+
+test("revalidateTag invalidates both Redis and the mirror", async () => {
+  const redis = makeSharedRedis();
+  const mirror = makeMirror();
+  const { handler } = podFor("buildA", redis, mirror);
+
+  await handler.revalidateTag("collection:summer");
+
+  assert.deepEqual(redis.calls.revalidateTag, ["collection:summer"]);
+  assert.deepEqual(mirror.calls.revalidateTag, ["collection:summer"]);
+});
+
+test("a failing revalidateTag never throws", async () => {
+  const redis = makeSharedRedis();
+  redis.revalidateTag = async () => {
+    throw new Error("hscan timed out");
+  };
+  const { handler } = podFor("buildA", redis);
+
+  await assert.doesNotReject(() => handler.revalidateTag("seo"));
+});
+
+// ---------------------------------------------------------------------------
+// 3. prepare() must be forwarded, or the library's boot-time sweep is a no-op
+// ---------------------------------------------------------------------------
+
+test("prepare() is forwarded to the underlying handlers", async () => {
+  const redis = makeSharedRedis();
+  let redisPrepared = false;
+  redis.prepare = async () => {
+    redisPrepared = true;
+  };
+  const mirror = makeMirror();
+  const { handler } = podFor("buildA", redis, mirror);
+
+  assert.equal(
+    typeof handler.prepare,
+    "function",
+    "the library calls handler.prepare?.() — without it the sweep silently never runs"
+  );
+  await handler.prepare();
+  assert.equal(redisPrepared, true);
+});
+
+test("a failing prepare() is logged, not thrown", async (t) => {
+  // prepare() deliberately console.warn()s the failure. Capture it rather than
+  // letting it print: a warning in a passing test run trains you to ignore
+  // warnings, which is how a real one gets missed. t.mock auto-restores.
+  const warnings = [];
+  t.mock.method(console, "warn", (...args) => warnings.push(args.join(" ")));
+
+  const redis = makeSharedRedis();
+  redis.prepare = async () => {
+    throw new Error("hscan failed");
+  };
+  const { handler } = podFor("buildA", redis);
+
+  await assert.doesNotReject(
+    () => handler.prepare(),
+    "a boot-time sweep failure must not stop the pod from starting"
   );
   assert.equal(
-    raw.calls.set.length,
-    0,
-    "does not try to lock against a down Redis"
+    warnings.some((w) => w.includes("hscan failed")),
+    true,
+    "the failure must still be surfaced — swallowing it silently is how the missing prepare() went unnoticed"
   );
 });

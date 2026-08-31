@@ -1,4 +1,4 @@
-// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
+import { createProductViaCollectionsStaticParams } from "@shopkit/data-layer";
 import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
 import { getCommerceClient } from "@/config/commerce";
 import { getStaticLocale } from "@/bootstrap/i18n";
@@ -11,15 +11,11 @@ import { KwikPassProductView } from "@/integrations/kwikpass-custom";
 import { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { cache } from "react";
-import { createProductViaCollectionsStaticParams } from "@shopkit/data-layer";
 
-// ISR: prerender every product at build time, revalidate hourly, and still
-// render (then cache) any handle not in the build set via on-demand ISR.
 export const revalidate = 3600;
 export const dynamicParams = true;
 
-// Custom backend has no products-list endpoint — collection traversal is the
-// only way to discover all handles (helper from @shopkit/data-layer).
+// Custom backend has no products-list endpoint — collection traversal is the only way to discover all handles.
 export const generateStaticParams =
   createProductViaCollectionsStaticParams(getCommerceClient);
 
@@ -43,55 +39,54 @@ export default async function ProductPage(props: {
   params: Promise<{ handle: string }>;
 }) {
   const params = await props.params;
+  const themeName = getThemeName();
 
+  // Get locale, then fetch the product (needed to resolve the template variant).
+  const locale = getStaticLocale();
   const product = await fetchProduct(params.handle);
 
   if (!product) {
     notFound();
   }
 
-  try {
-    const themeName = getThemeName();
-    const locale = getStaticLocale();
+  const routeContext = {
+    templateName: TEMPLATE_TYPES.products,
+    path: `/products/${params.handle}`,
+    params,
+    query: {},
+    // Page Templates: render the product's assigned template; falls back to
+    // default when unassigned or the template is missing.
+    templateSuffix: getResourceTemplateSuffix(product),
+  };
 
-    const routeContext = {
-      templateName: TEMPLATE_TYPES.products,
-      path: `/products/${params.handle}`,
-      params,
-      query: {},
-      // Page Templates: render the product's assigned template; falls back to
-      // default when unassigned or the template is missing.
-      templateSuffix: getResourceTemplateSuffix(product),
-    };
+  // Route translations: common + the resolved template's messages (consistent
+  // with the home/collection pages). Depends on routeContext, so it runs after
+  // the product is fetched.
+  const messages = await getRouteTranslations({
+    themeName,
+    routeContext,
+    language: locale,
+  });
 
-    const messages = await getRouteTranslations({
-      themeName,
-      routeContext,
-      language: locale,
-    });
+  // Get the page builder with widget manifest
+  const pageBuilder = getPageBuilder();
 
-    const pageBuilder = getPageBuilder();
+  // Note: The builder uses "merchantName" internally for loading themes/templates
+  // from @/themes/{name}/templates/, so we pass themeName here
+  const pageContent = await pageBuilder.renderPage({
+    merchantName: themeName,
+    routeContext,
+    locale,
+    messages,
+  });
 
-    // Note: The builder uses "merchantName" internally for loading themes/templates
-    // from @/themes/{name}/templates/, so we pass themeName here
-    const pageContent = await pageBuilder.renderPage({
-      merchantName: themeName,
-      routeContext,
-      locale,
-      messages,
-    });
-
-    return (
-      <>
-        <AppProductTracker product={product} />
-        {pageContent}
-        <KwikPassProductView product={product} />
-      </>
-    );
-  } catch (error) {
-    console.error("Error rendering product page:", error);
-    notFound();
-  }
+  return (
+    <>
+      <AppProductTracker product={product} />
+      {pageContent}
+      <KwikPassProductView product={product} />
+    </>
+  );
 }
 
 /**
@@ -99,16 +94,19 @@ export default async function ProductPage(props: {
  * Cached to prevent duplicate API calls within the same request
  */
 const fetchProduct = cache(async (handle: string): Promise<any | null> => {
-  try {
-    const commerceClient = getCommerceClient();
+  const commerceClient = getCommerceClient();
 
-    const response = await commerceClient.getProduct({
-      handle,
-    });
+  const response = await commerceClient.getProduct({
+    handle,
+  });
 
-    return response.data;
-  } catch (error) {
-    console.error(`Error fetching product ${handle}:`, error);
-    return null;
+  // Throw rather than 404: Next.js then keeps serving the last successfully
+  // generated page and retries, instead of caching a 404 over it.
+  if (!response.success) {
+    throw new Error(
+      `Failed to fetch product "${handle}": ${response.error?.message ?? response.message}`
+    );
   }
+
+  return response.data;
 });

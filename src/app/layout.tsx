@@ -3,7 +3,7 @@
  *
  * This is the main layout file for the application.
  * It uses wrapper components to abstract away complexity:
- * - AppHead: Head scripts, prefetch, A/B testing
+ * - AppHead: Head resource hints (A/B scripts are in <head> below)
  * - AppShell: Provider nesting (theme, auth, cart, i18n)
  * - Pixel SDKs: Meta, GA4, Google Ads (self-register with PixelRuntime)
  *
@@ -64,7 +64,24 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={fontVariables}>
       <head>
-        {/* AppHead handles: A/B testing, favicon, DNS prefetch, Clarity */}
+        {/* Merchant A/B (PRT) scripts. Plain parser-blocking <script> tags, so
+            they run before <body> is parsed — next/script `beforeInteractive`
+            emits no real tag in the App Router and only loads after the
+            framework bundle runs. Do not add async/defer, and keep them first. */}
+        {process.env.NEXT_PUBLIC_PRT_CONFIG_URL && (
+          // eslint-disable-next-line @next/next/no-sync-scripts
+          <script src={process.env.NEXT_PUBLIC_PRT_CONFIG_URL} />
+        )}
+        {process.env.NEXT_PUBLIC_PRT_URL && (
+          // eslint-disable-next-line @next/next/no-sync-scripts
+          <script src={process.env.NEXT_PUBLIC_PRT_URL} />
+        )}
+        {process.env.NEXT_PUBLIC_PRT_AB_URL && (
+          // eslint-disable-next-line @next/next/no-sync-scripts
+          <script src={process.env.NEXT_PUBLIC_PRT_AB_URL} />
+        )}
+
+        {/* AppHead handles: DNS prefetch, preloads, Clarity */}
         <AppHead />
 
         {/* Favicon */}
@@ -110,37 +127,6 @@ export default async function RootLayout({
             hasKwikcartDisabled={hasKwikcartDisabled}
           />
         </AppShell>
-
-        {/* Merchant AB scripts – required early */}
-        {process.env.NEXT_PUBLIC_PRT_CONFIG_URL && (
-          // eslint-disable-next-line @next/next/no-before-interactive-script-outside-document
-          <Script
-            src={process.env.NEXT_PUBLIC_PRT_CONFIG_URL}
-            strategy="beforeInteractive"
-            id="merchant-prt-config"
-          />
-        )}
-
-        {/* NOTE: upstream storefront-starter reuses id="merchant-prt-config"
-            here; next/script dedupes by id, so the second tag would never
-            load. Distinct id on purpose. */}
-        {process.env.NEXT_PUBLIC_PRT_URL && (
-          // eslint-disable-next-line @next/next/no-before-interactive-script-outside-document
-          <Script
-            src={process.env.NEXT_PUBLIC_PRT_URL}
-            strategy="beforeInteractive"
-            id="merchant-prt"
-          />
-        )}
-
-        {process.env.NEXT_PUBLIC_PRT_AB_URL && (
-          // eslint-disable-next-line @next/next/no-before-interactive-script-outside-document
-          <Script
-            src={process.env.NEXT_PUBLIC_PRT_AB_URL}
-            strategy="beforeInteractive"
-            id="merchant-prt-ab"
-          />
-        )}
 
         {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership.
             Only rendered when a GA id is configured; otherwise Next would emit a
