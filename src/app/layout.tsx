@@ -165,6 +165,14 @@ export default async function RootLayout({
           strategy="afterInteractive"
         />
         <Script src="/scripts/gtm-pixel-sdk.js" strategy="afterInteractive" />
+        {/* Ratio Meta app SDK (GoKwik-hosted). Merchant-specific URL — the
+            token in the path identifies this store. Self-registers with
+            PixelRuntime as "meta-ratio". */}
+        <Script
+          src="https://ratio-apps-meta-api.gokwik.co/meta/sdk/196jdfqy1aot.js"
+          strategy="afterInteractive"
+          id="meta-ratio-sdk"
+        />
         {process.env.NEXT_PUBLIC_GOOGLE_RATIO_GMC_SDK_URL && (
           <Script
             src={process.env.NEXT_PUBLIC_GOOGLE_RATIO_GMC_SDK_URL}
