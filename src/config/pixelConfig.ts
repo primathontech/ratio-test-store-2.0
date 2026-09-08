@@ -62,6 +62,11 @@ export const pixelConfig: PixelConfigMap = {
         debug: process.env.NEXT_PUBLIC_GTM_DEBUG === "true" || undefined,
       }
     : null,
+
+  // Ratio Meta app (GoKwik-hosted). The SDK is merchant-specific — the token
+  // in its script URL identifies the store — and it pulls its own settings
+  // from the app, so no config keys are needed here. `{}` just enables it.
+  "meta-ratio": {},
 };
 
 /**
