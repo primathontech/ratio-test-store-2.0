@@ -1,10 +1,25 @@
 # storefront-starter-app
 
+## 0.1.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @shopkit/events@0.12.0
+
+## 0.1.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @shopkit/events@0.11.0
+
 ## 0.1.31
 
 ### Patch Changes
 
 - Updated dependencies
+
   - @shopkit/data-layer@1.4.2
   - @shopkit/webhooks@0.2.2
 
@@ -26,6 +41,7 @@
 ### Patch Changes
 
 - Updated dependencies
+
   - @shopkit/navigation@1.5.1
   - @shopkit/seo@1.2.1
 

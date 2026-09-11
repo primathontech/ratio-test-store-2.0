@@ -1,6 +1,6 @@
 {
   "name": "momsco",
-  "version": "0.1.31",
+  "version": "0.1.33",
   "private": true,
   "scripts": {
     "dev": "next dev -p 4344",
@@ -53,7 +53,7 @@
     "@radix-ui/themes": "^3.2.1",
     "@shopify/hydrogen-react": "^2025.5.0",
     "@shopify/storefront-api-client": "^1.0.8",
-    "@shopkit/events": "^0.10.0",
+    "@shopkit/events": "^0.12.0",
     "@shopkit/app-shell": "^2.0.0",
     "@shopkit/apps-platform": "^0.1.1",
     "@shopkit/apps-platform-react": "^0.1.0",
