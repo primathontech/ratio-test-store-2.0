@@ -104,6 +104,12 @@ const loadSDK = (url?: string) => {
     const script = document.createElement("script");
     script.src = url;
     script.async = true;
+    // The Ratio SDK ships the widget as an ES module (served under /video/sdk/),
+    // so it must load as type="module"; the legacy UMD SDK loads as a classic
+    // script. Both set window.VideoWidget synchronously on execution.
+    if (url && /\/video\/sdk\/|video-widget\.js/.test(url)) {
+      script.type = "module";
+    }
     script.setAttribute(SDK_SCRIPT_ATTR, "true");
     script.onload = () => resolve();
     script.onerror = () =>
@@ -200,7 +206,14 @@ export const V1: React.FC<VideoAppProps> = ({ data, settings }) => {
           };
           if (apiBaseUrl) {
             config.baseUrl = apiBaseUrl;
+            // Ratio SDK reads `apiBaseUrl`; legacy reads `baseUrl`. Set both.
+            (config as { apiBaseUrl?: string }).apiBaseUrl = apiBaseUrl;
           }
+          // The Ratio SDK treats any truthy productId as product mode, but our
+          // homepage sentinel is the string "homepage"; pass an explicit mode so
+          // it fetches homepage widgets there (legacy SDK ignores `mode`).
+          (config as { mode?: string }).mode =
+            productId === "homepage" ? "homepage" : "product";
           if (descriptionKey) {
             config.descriptionKey = descriptionKey;
           }
