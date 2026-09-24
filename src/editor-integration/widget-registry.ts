@@ -1433,6 +1433,75 @@ const merchantWidgetSchemas = {
       },
     },
   },
+  [WIDGET_TYPES.RatioVideo]: {
+    type: WIDGET_TYPES.RatioVideo,
+    name: "Ratio Video",
+    description:
+      "Shoppable video rail rendered by the Ratio video SDK (loaded as an ES module; apiBaseUrl + mode). Settings are forwarded to the SDK config.",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Section Heading",
+        default: "",
+      },
+      layout: {
+        type: "select" as const,
+        label: "Layout",
+        options: [
+          { value: "grid", label: "Grid" },
+          { value: "carousel", label: "Carousel" },
+          { value: "slider", label: "Slider" },
+          { value: "stories", label: "Stories" },
+        ],
+        default: "carousel",
+      },
+      itemsPerRow: {
+        type: "number" as const,
+        label: "Items Per Row (grid layout)",
+        default: 4,
+      },
+      autoplay: {
+        type: "boolean" as const,
+        label: "Autoplay Videos",
+        default: false,
+      },
+      muteByDefault: {
+        type: "boolean" as const,
+        label: "Mute By Default",
+        default: true,
+      },
+      showVideoControls: {
+        type: "boolean" as const,
+        label: "Show Video Controls",
+        default: false,
+      },
+      enableCtaButton: {
+        type: "boolean" as const,
+        label: "Show CTA Button",
+        default: false,
+      },
+      buttonText: {
+        type: "text" as const,
+        label: "CTA Button Text",
+        default: "",
+      },
+      ctaButtonTextColor: {
+        type: "text" as const,
+        label: "CTA Button Text Color (hex)",
+        default: "",
+      },
+      ctaButtonBackgroundColor: {
+        type: "text" as const,
+        label: "CTA Button Background Color (hex)",
+        default: "",
+      },
+      destinationUrl: {
+        type: "text" as const,
+        label: "CTA Destination URL",
+        default: "/products",
+      },
+    },
+  },
   [WIDGET_TYPES.VideoApp]: {
     type: WIDGET_TYPES.VideoApp,
     name: "Video App",
