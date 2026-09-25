@@ -173,6 +173,11 @@ export default async function RootLayout({
           strategy="afterInteractive"
           id="meta-ratio-sdk"
         />
+        <Script
+          src="https://ratio-apps.gokwik.co/google/sdk/196jdfqy1aot.js"
+          strategy="afterInteractive"
+          id="google-ratio-sdk"
+        />
         {process.env.NEXT_PUBLIC_GOOGLE_RATIO_GMC_SDK_URL && (
           <Script
             src={process.env.NEXT_PUBLIC_GOOGLE_RATIO_GMC_SDK_URL}

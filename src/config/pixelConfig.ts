@@ -67,6 +67,7 @@ export const pixelConfig: PixelConfigMap = {
   // in its script URL identifies the store — and it pulls its own settings
   // from the app, so no config keys are needed here. `{}` just enables it.
   "meta-ratio": {},
+  "google-ratio": {},
 };
 
 /**
