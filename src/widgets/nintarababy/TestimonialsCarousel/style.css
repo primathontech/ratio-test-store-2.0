@@ -1,0 +1,310 @@
+/* ============================================================
+   NINTARABABY — TestimonialsCarousel
+   Cloned from: nintarababy.in product page
+   Section: #shopify-section-template--24784210329906__testimonial_pdp_kiMn3D
+   CSS grid scroll-snap carousel, 4/3/2/1-col responsive, gold arrows
+   ============================================================ */
+
+/* --- Design Tokens --- */
+:root {
+  --nintara-tc-bg: #f4cfb5;
+  --nintara-tc-heading-color: #092a33;
+  --nintara-tc-heading-size: 40px;
+  --nintara-tc-heading-weight: 700;
+  --nintara-tc-heading-lh: 52px;
+  --nintara-tc-heading-mb: 8px;
+  --nintara-tc-subheading-size: 20px;
+  --nintara-tc-subheading-weight: 300;
+  --nintara-tc-subheading-lh: 26px;
+  --nintara-tc-subheading-mb: 32px;
+  --nintara-tc-font-family: var(--font-figtree, "Figtree"), sans-serif;
+  --nintara-tc-section-padding: 20px 0;
+  --nintara-tc-container-max-width: 1440px;
+  --nintara-tc-container-padding: 0 80px;
+  --nintara-tc-card-bg: #ffffff;
+  --nintara-tc-card-radius: 8px;
+  --nintara-tc-card-shadow: 0 4.08px 12.25px rgba(0, 0, 0, 0.07);
+  --nintara-tc-card-padding: 12px 12px 20px;
+  --nintara-tc-card-gap: 20px;
+  --nintara-tc-track-pb: 50px;
+  --nintara-tc-star-size: 17px;
+  --nintara-tc-star-gap: 5px;
+  --nintara-tc-star-mt: 8px;
+  --nintara-tc-review-color: #092a33;
+  --nintara-tc-review-size: 14px;
+  --nintara-tc-review-lh: 21px;
+  --nintara-tc-review-padding: 10px 0 15px;
+  --nintara-tc-review-height: 149px;
+  --nintara-tc-author-size: 14px;
+  --nintara-tc-author-weight: 500;
+  --nintara-tc-author-lh: 18.2px;
+  --nintara-tc-arrow-bg: #c49330;
+  --nintara-tc-arrow-color: #ffffff;
+  --nintara-tc-arrow-size: 40px;
+  --nintara-tc-arrow-radius: 50%;
+  --nintara-tc-arrow-offset: -35px;
+  --nintara-tc-arrow-disabled-opacity: 0.5;
+  --nintara-tc-dot-size: 10px;
+  --nintara-tc-dot-radius: 50%;
+  --nintara-tc-dot-inactive: #cccccc;
+  --nintara-tc-dot-active: #000000;
+  --nintara-tc-dot-margin: 0 5px;
+  --nintara-tc-dot-mt: 20px;
+  --nintara-tc-decoration-bottom: -31px;
+  --nintara-tc-decoration-bottom-mobile: -25px;
+}
+
+/* --- Section wrapper --- */
+.nintara-tc {
+  background-color: var(--nintara-tc-bg);
+  padding: var(--nintara-tc-section-padding);
+  position: relative;
+  font-family: var(--nintara-tc-font-family);
+}
+
+/* --- Container --- */
+.nintara-tc__container {
+  max-width: var(--nintara-tc-container-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding: var(--nintara-tc-container-padding);
+}
+
+/* --- Headings --- */
+.nintara-tc__title-block {
+  text-align: center;
+}
+
+.nintara-tc__heading {
+  font-size: var(--nintara-tc-heading-size);
+  font-weight: var(--nintara-tc-heading-weight);
+  line-height: var(--nintara-tc-heading-lh);
+  color: var(--nintara-tc-heading-color);
+  margin-bottom: var(--nintara-tc-heading-mb);
+  font-family: var(--nintara-tc-font-family);
+}
+
+.nintara-tc__subheading {
+  font-size: var(--nintara-tc-subheading-size);
+  font-weight: var(--nintara-tc-subheading-weight);
+  line-height: var(--nintara-tc-subheading-lh);
+  color: var(--nintara-tc-heading-color);
+  margin-bottom: var(--nintara-tc-subheading-mb);
+  font-family: var(--nintara-tc-font-family);
+}
+
+/* --- Carousel relative wrapper (for arrow positioning) --- */
+.nintara-tc__carousel {
+  position: relative;
+}
+
+/* --- Scrollable track --- */
+.nintara-tc__track {
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  cursor: grab;
+  scrollbar-width: none;
+}
+
+.nintara-tc__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- CSS Grid inner wrapper --- */
+.nintara-tc__grid {
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--nintara-tc-card-gap);
+  padding-bottom: var(--nintara-tc-track-pb);
+  user-select: none;
+}
+
+/* Desktop 4 columns */
+@media (min-width: 1201px) {
+  .nintara-tc__grid {
+    grid-auto-columns: calc(25% - 15px);
+  }
+}
+
+/* Tablet 3 columns */
+@media (max-width: 1200px) and (min-width: 901px) {
+  .nintara-tc__grid {
+    grid-auto-columns: calc(33.3333% - 15px);
+  }
+}
+
+/* Small tablet 2 columns */
+@media (max-width: 900px) and (min-width: 481px) {
+  .nintara-tc__grid {
+    grid-auto-columns: calc(50% - 15px);
+  }
+}
+
+/* Mobile peek (80% width, left padding) */
+@media (max-width: 480px) {
+  .nintara-tc__grid {
+    grid-auto-columns: 80%;
+    padding-left: 10px;
+  }
+}
+
+/* --- Cards --- */
+.nintara-tc__card {
+  background: var(--nintara-tc-card-bg);
+  border-radius: var(--nintara-tc-card-radius);
+  box-shadow: var(--nintara-tc-card-shadow);
+  padding: var(--nintara-tc-card-padding);
+  position: relative;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* --- Star rating --- */
+.nintara-tc__stars {
+  display: flex;
+  gap: var(--nintara-tc-star-gap);
+  margin-top: var(--nintara-tc-star-mt);
+}
+
+.nintara-tc__star-img {
+  width: var(--nintara-tc-star-size);
+  height: var(--nintara-tc-star-size);
+  display: block;
+}
+
+/* --- Review text --- */
+.nintara-tc__review-text p {
+  font-size: var(--nintara-tc-review-size);
+  font-family: var(--nintara-tc-font-family);
+  line-height: var(--nintara-tc-review-lh);
+  color: var(--nintara-tc-review-color);
+  padding: var(--nintara-tc-review-padding);
+  margin: 0;
+  height: var(--nintara-tc-review-height);
+}
+
+/* --- Author name --- */
+.nintara-tc__author {
+  font-family: var(--nintara-tc-font-family);
+  font-size: var(--nintara-tc-author-size);
+  font-weight: var(--nintara-tc-author-weight);
+  line-height: var(--nintara-tc-author-lh);
+  text-align: right;
+  color: var(--nintara-tc-heading-color);
+  margin: 0;
+}
+
+/* --- Bottom decoration image --- */
+.nintara-tc__decoration {
+  position: absolute;
+  bottom: var(--nintara-tc-decoration-bottom);
+  left: 0;
+}
+
+/* --- Navigation arrows --- */
+.nintara-tc__arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--nintara-tc-arrow-bg);
+  color: var(--nintara-tc-arrow-color);
+  border: none;
+  width: var(--nintara-tc-arrow-size);
+  height: var(--nintara-tc-arrow-size);
+  border-radius: var(--nintara-tc-arrow-radius);
+  cursor: pointer;
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: opacity 0.3s ease;
+  padding: 0;
+}
+
+/* Prevent theme hover overrides — arrow stays gold */
+.nintara-tc__arrow:hover {
+  background: var(--nintara-tc-arrow-bg);
+  color: var(--nintara-tc-arrow-color);
+}
+
+.nintara-tc__arrow-svg {
+  width: 60%;
+  height: 60%;
+}
+
+.nintara-tc__arrow--prev {
+  left: var(--nintara-tc-arrow-offset);
+}
+
+.nintara-tc__arrow--next {
+  right: var(--nintara-tc-arrow-offset);
+}
+
+.nintara-tc__arrow--disabled {
+  opacity: var(--nintara-tc-arrow-disabled-opacity);
+  pointer-events: none;
+}
+
+/* Hide arrows on mobile (<=767px) */
+@media (max-width: 767px) {
+  .nintara-tc__arrow {
+    display: none !important;
+  }
+}
+
+/* --- Dots (mobile only) --- */
+.nintara-tc__dots {
+  display: none;
+  justify-content: center;
+  margin-top: var(--nintara-tc-dot-mt);
+}
+
+.nintara-tc__dot {
+  width: var(--nintara-tc-dot-size);
+  height: var(--nintara-tc-dot-size);
+  border-radius: var(--nintara-tc-dot-radius);
+  border: none;
+  background: var(--nintara-tc-dot-inactive);
+  margin: var(--nintara-tc-dot-margin);
+  padding: 0;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.nintara-tc__dot--active {
+  background: var(--nintara-tc-dot-active);
+}
+
+/* Show dots on mobile only (<=480px) */
+@media (max-width: 480px) {
+  .nintara-tc__dots {
+    display: flex;
+  }
+}
+
+/* --- Mobile typography overrides --- */
+@media (max-width: 767px) {
+  .nintara-tc__heading {
+    font-size: 28px;
+    line-height: 36.4px;
+  }
+
+  .nintara-tc__subheading {
+    font-size: 16px;
+    line-height: 20.8px;
+  }
+
+  .nintara-tc__decoration {
+    bottom: var(--nintara-tc-decoration-bottom-mobile);
+  }
+}
+
+/* --- Mobile container padding --- */
+@media (max-width: 767px) {
+  .nintara-tc__container {
+    padding: 0 20px;
+  }
+}

@@ -1,0 +1,219 @@
+/* =====================================================================
+   WhatsAppCommunity — nintarababy.in product page
+   Section order: 10 | topOffset: ~4338px | height: ~315px
+   Layout: horizontal flex row (icon left, text+CTA right) desktop,
+           column (icon top, text below) mobile (<=768px)
+   ===================================================================== */
+
+/* --- CSS Variables --- */
+.nintara-wac {
+  --nintara-wac-bg: #e4edd3;
+  --nintara-wac-text: #092a33;
+  --nintara-wac-font: var(--font-figtree, "Figtree"), sans-serif;
+  --nintara-wac-headline-size: 26px;
+  --nintara-wac-headline-weight: 600;
+  --nintara-wac-headline-lh: 1.3;
+  --nintara-wac-body-size: 16px;
+  --nintara-wac-body-weight: 400;
+  --nintara-wac-body-lh: 1.6;
+  --nintara-wac-bold-weight: 700;
+  --nintara-wac-cta-bg: #01464f;
+  --nintara-wac-cta-bg-hover: #013a42;
+  --nintara-wac-cta-color: #ffffff;
+  --nintara-wac-cta-size: 16px;
+  --nintara-wac-cta-weight: 600;
+  --nintara-wac-cta-radius: 60px;
+  --nintara-wac-cta-padding: 16px 60px;
+  --nintara-wac-cta-gap: 8px;
+  --nintara-wac-cta-mt: 12px;
+  --nintara-wac-padding: 40px 80px;
+  --nintara-wac-max-width: 1420px;
+  --nintara-wac-min-height: 315px;
+  --nintara-wac-gap: 40px;
+  --nintara-wac-content-gap: 12px;
+  --nintara-wac-content-max-width: 780px;
+  --nintara-wac-icon-size: 64px;
+  --nintara-wac-reveal-duration: 0.6s;
+  --nintara-wac-reveal-easing: cubic-bezier(0, 0, 0.3, 1);
+}
+
+/* --- Section wrapper --- */
+.nintara-wac {
+  background-color: var(--nintara-wac-bg);
+  width: 100%;
+}
+
+/* --- Inner flex container --- */
+.nintara-wac__inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--nintara-wac-gap);
+  padding: var(--nintara-wac-padding);
+  max-width: var(--nintara-wac-max-width);
+  margin: 0 auto;
+  min-height: var(--nintara-wac-min-height);
+}
+
+/* --- Icon column --- */
+.nintara-wac__icon {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nintara-wac__icon-img {
+  width: var(--nintara-wac-icon-size);
+  height: var(--nintara-wac-icon-size);
+  object-fit: contain;
+  display: block;
+}
+
+/* --- Content column --- */
+.nintara-wac__content {
+  flex: 1 1 0%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--nintara-wac-content-gap);
+  max-width: var(--nintara-wac-content-max-width);
+}
+
+/* --- Headline text --- */
+.nintara-wac__headline {
+  font-family: var(--nintara-wac-font);
+  font-size: var(--nintara-wac-headline-size);
+  font-weight: var(--nintara-wac-headline-weight);
+  line-height: var(--nintara-wac-headline-lh);
+  color: var(--nintara-wac-text);
+  margin: 0;
+}
+
+/* --- Description inline span --- */
+.nintara-wac__desc {
+  font-weight: var(--nintara-wac-body-weight);
+}
+
+/* --- "FREE GIFT" bold emphasis --- */
+.nintara-wac__desc strong {
+  font-weight: var(--nintara-wac-bold-weight);
+  color: var(--nintara-wac-text);
+}
+
+/* --- CTA button/link --- */
+.nintara-wac__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--nintara-wac-cta-gap);
+  background-color: var(--nintara-wac-cta-bg);
+  color: var(--nintara-wac-cta-color);
+  font-family: var(--nintara-wac-font);
+  font-size: var(--nintara-wac-cta-size);
+  font-weight: var(--nintara-wac-cta-weight);
+  line-height: 1;
+  text-decoration: none;
+  border: none;
+  border-radius: var(--nintara-wac-cta-radius);
+  padding: var(--nintara-wac-cta-padding);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  align-self: center;
+  margin-top: var(--nintara-wac-cta-mt);
+}
+
+.nintara-wac__cta:hover {
+  background-color: var(--nintara-wac-cta-bg-hover);
+  color: var(--nintara-wac-cta-color);
+  text-decoration: none;
+}
+
+.nintara-wac__cta:focus-visible {
+  outline: 2px solid var(--nintara-wac-cta-bg);
+  outline-offset: 2px;
+}
+
+/* --- CTA inline SVG icon (hidden to match reference) --- */
+.nintara-wac__cta-icon {
+  display: none;
+}
+
+/* --- Scroll-reveal animation --- */
+@keyframes nintaraWacRevealSlideIn {
+  from {
+    transform: translateY(2rem);
+    opacity: 0.01;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.nintara-wac-offscreen {
+  opacity: 0.01;
+  transform: translateY(2rem);
+}
+
+.nintara-wac-reveal {
+  animation: nintaraWacRevealSlideIn var(--nintara-wac-reveal-duration)
+    var(--nintara-wac-reveal-easing) forwards;
+}
+
+/* prefers-reduced-motion: skip animation */
+@media (prefers-reduced-motion: reduce) {
+  .nintara-wac-offscreen {
+    opacity: 1;
+    transform: none;
+  }
+
+  .nintara-wac-reveal {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* --- Responsive: Tablet/Mobile (<=768px) --- */
+@media (max-width: 768px) {
+  .nintara-wac__inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 30px 20px;
+    gap: 24px;
+    min-height: auto;
+  }
+
+  .nintara-wac__icon-img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .nintara-wac__content {
+    align-items: center;
+    max-width: 100%;
+  }
+
+  .nintara-wac__headline {
+    font-size: 20px;
+  }
+
+  .nintara-wac__cta {
+    align-self: center;
+    font-size: 15px;
+    padding: 12px 28px;
+  }
+}
+
+/* --- Responsive: Small mobile (<=480px) --- */
+@media (max-width: 480px) {
+  .nintara-wac__inner {
+    padding: 24px 16px;
+  }
+
+  .nintara-wac__headline {
+    font-size: 18px;
+  }
+}

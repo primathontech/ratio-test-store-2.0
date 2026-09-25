@@ -1,0 +1,175 @@
+/* =====================================================
+   NINTARABABY — Hero Slideshow
+   Source: nintarababy.in
+   Full-width auto-playing image slideshow
+   CSS scroll-snap with clone-first-last infinite loop
+   Desktop: 1440x480 (3:1) | Mobile: ~375x506 (portrait)
+   Breakpoint: 550px for image swap
+   ===================================================== */
+
+:root {
+  /* Hero slideshow dot colors */
+  --nintara-hero-dot-bg: #ffffff;
+  --nintara-hero-dot-inactive-opacity: 0.6;
+  --nintara-hero-dot-active-opacity: 1;
+  --nintara-hero-dot-hover-opacity: 0.8;
+  /* Hero slideshow dot dimensions */
+  --nintara-hero-dot-w: 60px;
+  --nintara-hero-dot-h: 5px;
+  --nintara-hero-dot-radius: 10px;
+  --nintara-hero-dot-gap: 8px;
+  --nintara-hero-dot-padding-y: 24px;
+  /* Hero slideshow hit area expansion */
+  --nintara-hero-dot-hitarea: 24px;
+}
+
+/* Outer container */
+.nintara-hero {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Scroll track */
+.nintara-hero__track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.nintara-hero__track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Individual slides */
+.nintara-hero__slide {
+  /* width + min-width together prevent flex item from expanding past container */
+  width: 100%;
+  min-width: 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  position: relative;
+  user-select: none;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.nintara-hero__slide-link {
+  display: block;
+  width: 100%;
+  pointer-events: auto;
+}
+
+.nintara-hero__slide-img {
+  width: 100%;
+  /* Fixed desktop height matches source (1440x480) */
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  pointer-events: none;
+}
+
+/* Mobile: source hero is 375x506, +72px */
+@media (max-width: 550px) {
+  .nintara-hero__slide-img {
+    height: auto;
+    min-height: 485px;
+  }
+}
+
+/* Dot indicators container */
+.nintara-hero__dots {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: var(--nintara-hero-dot-gap);
+  z-index: 10;
+  pointer-events: auto;
+  padding: var(--nintara-hero-dot-padding-y) 0;
+}
+
+/* Individual dots */
+.nintara-hero__dot {
+  width: var(--nintara-hero-dot-w);
+  height: var(--nintara-hero-dot-h);
+  border-radius: var(--nintara-hero-dot-radius);
+  background: var(--nintara-hero-dot-bg);
+  opacity: var(--nintara-hero-dot-inactive-opacity);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  transition: none;
+  touch-action: manipulation;
+}
+
+/* Expanded hit area via ::after pseudo-element */
+.nintara-hero__dot::after {
+  content: "";
+  position: absolute;
+  top: calc(-1 * var(--nintara-hero-dot-hitarea));
+  bottom: calc(-1 * var(--nintara-hero-dot-hitarea));
+  left: calc(-1 * var(--nintara-hero-dot-hitarea));
+  right: calc(-1 * var(--nintara-hero-dot-hitarea));
+}
+
+.nintara-hero__dot:hover {
+  opacity: var(--nintara-hero-dot-hover-opacity);
+}
+
+.nintara-hero__dot:hover,
+.nintara-hero__dot:focus,
+.nintara-hero__dot:active,
+.nintara-hero__dot:focus-visible {
+  outline: none;
+  opacity: var(--nintara-hero-dot-active-opacity);
+  background: var(--nintara-hero-dot-bg);
+}
+
+/* Active dot */
+.nintara-hero__dot[data-active="true"] {
+  opacity: var(--nintara-hero-dot-active-opacity);
+  background: var(--nintara-hero-dot-bg);
+}
+
+/* Progress fill animation (child span replaces ::before for React key remount) */
+.nintara-hero__dot-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 0;
+  background: var(--nintara-hero-dot-bg);
+  border-radius: inherit;
+  animation: nintaraHeroProgress var(--autoplay-duration, 7000ms) linear
+    forwards;
+}
+
+@keyframes nintaraHeroProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .nintara-hero__dot-progress {
+    animation: none !important;
+  }
+  .nintara-hero__track {
+    scroll-behavior: auto !important;
+  }
+}

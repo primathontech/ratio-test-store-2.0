@@ -1,0 +1,256 @@
+/* =====================================================
+   LoadMorePagination — nintarababy.in
+   Centered "Load More" pill button with outline style.
+   Border via ::after pseudo (2px solid #01464f, absolute inset 0, z-index -2).
+   Sweep-to-right hover via ::before (scaleX 0->1, 0.5s ease-out).
+   SVG spinner with rotator + dash animations on loading state.
+   ===================================================== */
+
+:root {
+  /* Colors */
+  --nintara-lm-primary: #3d7cc9;
+  --nintara-lm-text: #3d7cc9;
+  --nintara-lm-text-hover: #ffffff;
+  --nintara-lm-bg: transparent;
+  --nintara-lm-bg-hover: #3d7cc9;
+  --nintara-lm-border: #3d7cc9;
+
+  /* Typography */
+  --nintara-lm-font-family: var(--font-figtree, "Figtree"), sans-serif;
+  --nintara-lm-font-size-dk: 14px;
+  --nintara-lm-font-size-mb: 13px;
+  --nintara-lm-font-weight: 600;
+  --nintara-lm-line-height: 1;
+
+  /* Sizing */
+  --nintara-lm-btn-height-dk: 50px;
+  --nintara-lm-btn-height-mb: 44px;
+  --nintara-lm-btn-padding-dk: 0 45px;
+  --nintara-lm-btn-padding-mb: 0 25px;
+  --nintara-lm-btn-radius: 60px;
+  --nintara-lm-border-width: 2px;
+
+  /* Spacing */
+  --nintara-lm-wrapper-padding-top: 16px;
+
+  /* Transitions */
+  --nintara-lm-sweep-duration: 0.5s;
+  --nintara-lm-sweep-easing: ease-out;
+  --nintara-lm-text-transition: 0.3s ease-in-out;
+  --nintara-lm-reveal-duration: 0.6s;
+  --nintara-lm-reveal-easing: cubic-bezier(0, 0, 0.3, 1);
+
+  /* Spinner */
+  --nintara-lm-spinner-size: 1.8rem;
+  --nintara-lm-spinner-rotator-duration: 1.4s;
+  --nintara-lm-spinner-dash-duration: 1.4s;
+}
+
+/* Wrapper: scroll-reveal start state (invisible, shifted down) */
+.nintara-lm {
+  padding-top: var(--nintara-lm-wrapper-padding-top);
+  width: 100%;
+  text-align: center;
+  opacity: 0.01;
+  transform: translateY(2rem);
+}
+
+/* Scroll-reveal animation */
+.nintara-lm--revealed {
+  animation: nintaraLmReveal var(--nintara-lm-reveal-duration)
+    var(--nintara-lm-reveal-easing) forwards;
+}
+
+@keyframes nintaraLmReveal {
+  from {
+    opacity: 0.01;
+    transform: translateY(2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Button base */
+.nintara-lm__btn {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 2;
+  background-color: var(--nintara-lm-bg);
+  color: var(--nintara-lm-text);
+  border: none;
+  border-radius: var(--nintara-lm-btn-radius);
+  height: var(--nintara-lm-btn-height-dk);
+  padding: var(--nintara-lm-btn-padding-dk);
+  font-family: var(--nintara-lm-font-family);
+  font-size: var(--nintara-lm-font-size-dk);
+  font-weight: var(--nintara-lm-font-weight);
+  line-height: var(--nintara-lm-line-height);
+  cursor: pointer;
+  transition: color var(--nintara-lm-text-transition);
+}
+
+/* Border via ::after (outline style, absolute inset 0, z-index -2) */
+.nintara-lm__btn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: var(--nintara-lm-border-width) solid var(--nintara-lm-border);
+  border-radius: var(--nintara-lm-btn-radius);
+  z-index: -2;
+  background-color: transparent;
+  transition:
+    opacity 0.3s,
+    border 0.3s;
+  pointer-events: none;
+}
+
+/* Sweep-to-right fill via ::before (absolute inset 0, z-index -1) */
+.nintara-lm__btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-color: var(--nintara-lm-bg-hover);
+  transform: scaleX(0);
+  transform-origin: 0 0;
+  transition: transform var(--nintara-lm-sweep-duration)
+    var(--nintara-lm-sweep-easing);
+}
+
+/* Hover: sweep fill + text color change (only when hover is supported) */
+@media (hover: hover) {
+  .nintara-lm__btn:hover {
+    color: var(--nintara-lm-text-hover);
+  }
+
+  .nintara-lm__btn:hover::before {
+    transform: scaleX(1);
+  }
+
+  .nintara-lm__btn:hover::after {
+    border-color: var(--nintara-lm-bg-hover);
+  }
+}
+
+/* Focus visible */
+.nintara-lm__btn:focus-visible {
+  outline: 2px solid var(--nintara-lm-primary);
+  outline-offset: 2px;
+}
+
+/* Button text */
+.nintara-lm__btn-text {
+  display: flex;
+  align-items: center;
+  height: inherit;
+  transition:
+    opacity 0.5s ease 0s,
+    visibility 0.5s ease 0s;
+}
+
+/* Spinner container (hidden by default) */
+.nintara-lm__spinner {
+  display: none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--nintara-lm-spinner-size);
+  height: var(--nintara-lm-spinner-size);
+  transform: translate(-50%, -50%);
+}
+
+/* SVG rotator animation */
+.nintara-lm__spinner-svg {
+  animation: nintaraLmRotator var(--nintara-lm-spinner-rotator-duration) linear
+    infinite;
+  width: 100%;
+  height: 100%;
+}
+
+/* Circle stroke-dash animation */
+.nintara-lm__spinner-path {
+  stroke: var(--nintara-lm-primary);
+  stroke-dasharray: 280;
+  stroke-dashoffset: 0;
+  transform-origin: center;
+  animation: nintaraLmDash var(--nintara-lm-spinner-dash-duration) ease-in-out
+    infinite;
+}
+
+/* Rotator: rotate 0 -> 270deg */
+@keyframes nintaraLmRotator {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(270deg);
+  }
+}
+
+/* Dash: stroke-dashoffset 280->75->280 with rotation */
+@keyframes nintaraLmDash {
+  0% {
+    stroke-dashoffset: 280;
+  }
+  50% {
+    stroke-dashoffset: 75;
+    transform: rotate(135deg);
+  }
+  100% {
+    stroke-dashoffset: 280;
+    transform: rotate(450deg);
+  }
+}
+
+/* Loading state */
+.nintara-lm__btn--loading {
+  pointer-events: none;
+  transition: 0.5s ease 0s;
+}
+
+.nintara-lm__btn--loading .nintara-lm__btn-text {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.nintara-lm__btn--loading .nintara-lm__spinner {
+  display: flex;
+}
+
+/* Mobile (<768px) */
+@media (max-width: 767px) {
+  .nintara-lm__btn {
+    height: var(--nintara-lm-btn-height-mb);
+    padding: var(--nintara-lm-btn-padding-mb);
+    font-size: var(--nintara-lm-font-size-mb);
+  }
+}
+
+/* Reduced motion: skip reveal animation */
+@media (prefers-reduced-motion: reduce) {
+  .nintara-lm {
+    opacity: 1;
+    transform: none;
+  }
+
+  .nintara-lm--revealed {
+    animation: none;
+  }
+
+  .nintara-lm__spinner-svg {
+    animation-duration: 2.8s;
+  }
+
+  .nintara-lm__spinner-path {
+    animation-duration: 2.8s;
+  }
+}

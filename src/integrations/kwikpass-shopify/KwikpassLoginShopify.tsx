@@ -102,7 +102,7 @@ export default function KwikpassLoginShopify() {
         <button
           id="user-account"
           ref={buttonRef}
-          className="h-full flex items-center gap-2 cursor-pointer w-[85.24px] text-gray-800"
+          className="h-full flex items-center gap-2 cursor-pointer w-[100px] text-gray-800"
           aria-label={open ? "Close user menu" : "Open user menu"}
           onClick={open ? () => setOpen(false) : () => setOpen(true)}
           data-testid="toggle-user-dropdown"

@@ -1,0 +1,58 @@
+/* =====================================================
+   NINTARABABY — Bottom Bar (Copyright)
+   Source: nintarababy.in
+   Background: #f5ead3 (warm cream, same as footer)
+   Text: #092a33 (dark teal)
+   Font: Figtree 14px, weight 400, centered
+   Height: ~70px desktop (5px top + 19.6px text + 40px bottom)
+   ===================================================== */
+
+:root {
+  --nintara-bb-bg: #c8f2d9;
+  --nintara-bb-text: #092a33;
+  --nintara-bb-font-family: var(--font-figtree, "Figtree"), sans-serif;
+  --nintara-bb-font-size: 14px;
+  --nintara-bb-font-weight: 400;
+  --nintara-bb-line-height: 19.6px;
+  --nintara-bb-padding-top: 5px;
+  --nintara-bb-padding-bottom: 40px;
+  --nintara-bb-padding-top-mobile: 28px;
+  --nintara-bb-padding-bottom-mobile: 5px;
+  --nintara-bb-margin-bottom-mobile: 0px;
+  --nintara-bb-container-max-width: 1200px;
+  --nintara-bb-container-padding-x: 15px;
+}
+
+.nintara-bottom-bar {
+  background-color: var(--nintara-bb-bg);
+  padding-top: var(--nintara-bb-padding-top);
+  padding-bottom: var(--nintara-bb-padding-bottom);
+  width: 100%;
+}
+
+.nintara-bottom-bar__container {
+  max-width: var(--nintara-bb-container-max-width);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--nintara-bb-container-padding-x);
+  padding-right: var(--nintara-bb-container-padding-x);
+}
+
+.nintara-bottom-bar__copyright {
+  font-family: var(--nintara-bb-font-family);
+  font-size: var(--nintara-bb-font-size);
+  font-weight: var(--nintara-bb-font-weight);
+  line-height: var(--nintara-bb-line-height);
+  color: var(--nintara-bb-text);
+  text-align: center;
+  letter-spacing: normal;
+  margin: 0;
+}
+
+/* ---- Mobile/Tablet overrides (max-width: 1024px) ---- */
+@media (max-width: 1024px) {
+  .nintara-bottom-bar {
+    padding-bottom: 70px;
+    margin-bottom: var(--nintara-bb-margin-bottom-mobile);
+  }
+}

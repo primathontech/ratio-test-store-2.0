@@ -1,0 +1,132 @@
+{
+  "common": {
+    "logo": "/images/dawn/logo.svg",
+    "site_name": "dawn",
+    "add_to_cart": "Add to Cart",
+    "go_to_cart": "Go to Cart",
+    "announcement_bar": {
+      "messages": [
+        {
+          "id": "b_announcement_qrkVxH",
+          "text": "Get 10% off on your first order!"
+        }
+      ]
+    },
+    "header": {
+      "logoPath": "/assets/momsco/svg/momsco-logo-new.svg",
+      "isSticky": true,
+      "hideOnScrollDown": true,
+      "searchPlaceholder": "Search for Products",
+      "whatsappHref": "https://wa.me/8422873121",
+      "cartHref": "/cart",
+      "navLinks": [
+        { "text": "Shop All", "href": "/collections/shop-all" },
+        { "text": "Bestsellers", "href": "/collections/bestsellers" },
+        { "text": "Baby Care", "href": "/collections/baby-care" },
+        { "text": "Mom Care", "href": "/collections/mom-care" },
+        { "text": "Essentials", "href": "/collections/essentials" }
+      ],
+      "dropdownItems": [
+        {
+          "category": "Baby Care",
+          "text": "Baby Wash",
+          "href": "/collections/baby-wash"
+        },
+        {
+          "category": "Baby Care",
+          "text": "Baby Shampoo",
+          "href": "/collections/baby-shampoo"
+        },
+        {
+          "category": "Baby Care",
+          "text": "Baby Face Cream",
+          "href": "/collections/baby-face-cream"
+        },
+        {
+          "category": "Baby Care",
+          "text": "Baby Lotion",
+          "href": "/collections/baby-lotion"
+        },
+        {
+          "category": "Mom Care",
+          "text": "Under Eye Cream",
+          "href": "/collections/under-eye-cream"
+        },
+        {
+          "category": "Essentials",
+          "text": "Diaper Rash Cream",
+          "href": "/collections/diaper-rash-cream"
+        },
+        {
+          "category": "Essentials",
+          "text": "Natural Water Wipes",
+          "href": "/collections/natural-water-wipes"
+        },
+        {
+          "category": "Essentials",
+          "text": "All Day Baby Wipes",
+          "href": "/collections/all-day-baby-wipes"
+        }
+      ]
+    },
+    "footer": {
+      "seoHeading": "All your baby and mom care products",
+      "contactAddress": "Visage Lines Personal Care Pvt Ltd. 5th Floor, Vipul Plaza, Golf Course Road, Sector 54, Suncity, Gurgaon, Haryana. Pin Code: 122011",
+      "contactWhatsapp": "+91-114117 0103",
+      "contactEmail": "hello@themomsco.com",
+      "contactUsHeading": "Contact Us",
+      "registeredOfficeLabel": "Registered Office Address",
+      "whatsappUsLabel": "Call Us",
+      "emailUsLabel": "Email Us",
+      "categoriesHeading": "Our Range",
+      "helpHeading": "Help",
+      "otherLinksHeading": "Other Links",
+      "newsletterHeading": "Subscribe To Our Newsletter",
+      "facebookUrl": "https://www.facebook.com/TheMomsCo/",
+      "instagramUrl": "https://www.instagram.com/themomsco",
+      "helpLinks": [
+        {
+          "text": "Shipping & Delivery",
+          "href": "/shipping-policy"
+        },
+        {
+          "text": "Cancellation Policy",
+          "href": "/cancellation-policy"
+        }
+      ],
+      "otherLinks": [
+        { "text": "About Us", "href": "/about-us" },
+        { "text": "Privacy Policy", "href": "/privacy-policy" },
+        { "text": "Terms of Use", "href": "/terms-of-use" }
+      ],
+      "categoryLinks": [
+        { "text": "Baby Wash", "href": "/collections/baby-wash" },
+        { "text": "Baby Shampoo", "href": "/collections/baby-shampoo" },
+        { "text": "Baby Face Cream", "href": "/collections/baby-face-cream" },
+        { "text": "Baby Lotion", "href": "/collections/baby-lotion" },
+        { "text": "Under Eye Cream", "href": "/collections/under-eye" },
+        {
+          "text": "Diaper Rash Cream",
+          "href": "/collections/diaper-rash-cream"
+        },
+        {
+          "text": "Natural Water Wipes",
+          "href": "/collections/natural-water-wipes"
+        },
+        {
+          "text": "All Day Baby Wipes",
+          "href": "/collections/all-day-baby-wipes"
+        }
+      ]
+    },
+    "bottom_bar": {
+      "copyrightText": "\u00A9 2026 The Momsco. All rights reserved."
+    },
+    "our_promise": {
+      "centerImageWidth": 414,
+      "centerImageMobileWidth": 380,
+      "iconSize": 64,
+      "iconSizeMobile": 40
+    }
+  }
+}

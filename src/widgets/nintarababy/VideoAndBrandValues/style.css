@@ -1,0 +1,265 @@
+/* =============================================================
+   VideoAndBrandValues — Nintara Baby
+   ============================================================= */
+
+:root {
+  /* Section */
+  --nintara-vbv-section-bg: #e4edd3;
+  --nintara-vbv-section-padding: 50px 0px;
+  --nintara-vbv-section-margin-top: 40px;
+  --nintara-vbv-section-gap: 20px;
+
+  /* White card */
+  --nintara-vbv-card-bg: #ffffff;
+  --nintara-vbv-card-radius: 16px;
+  --nintara-vbv-card-width: 90%;
+  --nintara-vbv-card-max-width: 1440px;
+
+  /* Video column */
+  --nintara-vbv-video-width: 253px;
+  --nintara-vbv-video-bg: #ffffff;
+
+  /* Play button */
+  --nintara-vbv-play-size: 55px;
+
+  /* Text wrap column */
+  --nintara-vbv-text-bg: #fefeff;
+  --nintara-vbv-text-radius: 0px 16px 16px 0px;
+  --nintara-vbv-text-padding: 45px 0px;
+
+  /* Heading */
+  --nintara-vbv-heading-size: 32px;
+  --nintara-vbv-heading-weight: 600;
+  --nintara-vbv-heading-lh: 42px;
+  --nintara-vbv-heading-color: #092a33;
+  --nintara-vbv-heading-pb: 15px;
+
+  /* Description */
+  --nintara-vbv-desc-size: 16px;
+  --nintara-vbv-desc-weight: 300;
+  --nintara-vbv-desc-lh: 24px;
+  --nintara-vbv-desc-color: #092a33;
+  --nintara-vbv-desc-max-width: 64%;
+
+  /* Feature list */
+  --nintara-vbv-list-gap: 35px;
+  --nintara-vbv-list-max-width: 70%;
+  --nintara-vbv-list-margin-top: 40px;
+
+  /* Feature item */
+  --nintara-vbv-item-min-width: 28%;
+  --nintara-vbv-item-max-width: 20%;
+  --nintara-vbv-item-size: 14px;
+  --nintara-vbv-item-weight: 400;
+  --nintara-vbv-item-lh: 23.8px;
+  --nintara-vbv-item-color: #092a33;
+
+  /* Bullet icon */
+  --nintara-vbv-bullet-size: 25px;
+
+  /* Mobile heading */
+  --nintara-vbv-mobile-heading-size: 24px;
+  --nintara-vbv-mobile-heading-weight: 700;
+  --nintara-vbv-mobile-heading-lh: 31.2px;
+  --nintara-vbv-mobile-heading-color: #092a33;
+
+  /* Mobile video */
+  --nintara-vbv-video-mobile-height: 555px;
+}
+
+/* ---- Section wrapper ---- */
+.nintara-vbv__section {
+  padding: var(--nintara-vbv-section-padding);
+  background: var(--nintara-vbv-section-bg);
+  margin: var(--nintara-vbv-section-margin-top) 0px 0px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--nintara-vbv-section-gap);
+}
+
+/* ---- Mobile heading (hidden on desktop) ---- */
+.nintara-vbv__mobile-head {
+  display: none;
+}
+
+/* ---- White card container ---- */
+.nintara-vbv__card {
+  background: var(--nintara-vbv-card-bg);
+  border-radius: var(--nintara-vbv-card-radius);
+  overflow: hidden;
+  width: var(--nintara-vbv-card-width);
+  margin: auto;
+  max-width: var(--nintara-vbv-card-max-width);
+}
+
+/* ---- 2-column flex row ---- */
+.nintara-vbv__inner {
+  display: flex;
+  align-items: stretch;
+}
+
+/* ---- Left col: Video ---- */
+.nintara-vbv__video-box {
+  position: relative;
+  display: flex;
+}
+
+.nintara-vbv__video {
+  width: var(--nintara-vbv-video-width);
+  height: 100%;
+  object-fit: cover;
+  background: var(--nintara-vbv-video-bg);
+  border-radius: 0px;
+  display: block;
+}
+
+/* Hide native controls by default */
+.nintara-vbv__video::-webkit-media-controls {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+/* Show native controls on hover */
+.nintara-vbv__video-box:hover .nintara-vbv__video::-webkit-media-controls {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ---- Play button overlay ---- */
+.nintara-vbv__play-btn {
+  position: absolute;
+  inset: 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.nintara-vbv__play-img {
+  width: var(--nintara-vbv-play-size);
+  height: var(--nintara-vbv-play-size);
+}
+
+/* ---- Right col: Brand Values text ---- */
+.nintara-vbv__text-wrap {
+  background: var(--nintara-vbv-text-bg);
+  border-radius: var(--nintara-vbv-text-radius);
+  text-align: center;
+  padding: var(--nintara-vbv-text-padding);
+  flex: 1 1 0%;
+}
+
+/* ---- Heading ---- */
+.nintara-vbv__heading {
+  font-family: var(--font-figtree), Figtree, sans-serif;
+  font-size: var(--nintara-vbv-heading-size);
+  font-weight: var(--nintara-vbv-heading-weight);
+  line-height: var(--nintara-vbv-heading-lh);
+  text-align: center;
+  color: var(--nintara-vbv-heading-color);
+  padding-bottom: var(--nintara-vbv-heading-pb);
+}
+
+/* ---- Description paragraph ---- */
+.nintara-vbv__description {
+  font-family: var(--font-figtree), Figtree, sans-serif;
+  font-size: var(--nintara-vbv-desc-size);
+  font-weight: var(--nintara-vbv-desc-weight);
+  line-height: var(--nintara-vbv-desc-lh);
+  text-align: center;
+  color: var(--nintara-vbv-desc-color);
+  max-width: var(--nintara-vbv-desc-max-width);
+  margin: 0px auto;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+/* ---- Feature list ---- */
+.nintara-vbv__feature-list {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--nintara-vbv-list-gap);
+  max-width: var(--nintara-vbv-list-max-width);
+  margin: var(--nintara-vbv-list-margin-top) auto 0px;
+  padding: 0px;
+  list-style: none;
+}
+
+/* ---- Feature item ---- */
+.nintara-vbv__feature-item {
+  width: 100%;
+  min-width: var(--nintara-vbv-item-min-width);
+  max-width: var(--nintara-vbv-item-max-width);
+  text-align: center;
+  font-family: var(--font-figtree), Figtree, sans-serif;
+  font-size: var(--nintara-vbv-item-size);
+  font-weight: var(--nintara-vbv-item-weight);
+  line-height: var(--nintara-vbv-item-lh);
+  color: var(--nintara-vbv-item-color);
+}
+
+/* ---- Bullet icon ---- */
+.nintara-vbv__bullet-icon {
+  width: var(--nintara-vbv-bullet-size);
+  height: var(--nintara-vbv-bullet-size);
+  display: block;
+  margin: 0 auto;
+}
+
+/* ---- Feature label ---- */
+.nintara-vbv__feature-label {
+  font-family: var(--font-figtree), Figtree, sans-serif;
+  font-size: var(--nintara-vbv-item-size);
+  font-weight: var(--nintara-vbv-item-weight);
+  line-height: var(--nintara-vbv-item-lh);
+  color: var(--nintara-vbv-item-color);
+}
+
+/* ---- Responsive: <= 850px (mobile) ---- */
+@media (max-width: 850px) {
+  .nintara-vbv__inner {
+    flex-direction: column;
+  }
+
+  .nintara-vbv__text-wrap {
+    display: none;
+  }
+
+  .nintara-vbv__video {
+    width: 100%;
+    height: var(--nintara-vbv-video-mobile-height);
+  }
+
+  .nintara-vbv__mobile-head {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .nintara-vbv__mobile-head-h2 {
+    font-family: var(--font-figtree), Figtree, sans-serif;
+    font-size: var(--nintara-vbv-mobile-heading-size);
+    font-weight: var(--nintara-vbv-mobile-heading-weight);
+    line-height: var(--nintara-vbv-mobile-heading-lh);
+    text-align: center;
+    color: var(--nintara-vbv-mobile-heading-color);
+  }
+}
+
+/* ---- Responsive: >= 851px — hide mobile heading ---- */
+@media (min-width: 851px) {
+  .nintara-vbv__mobile-head {
+    display: none;
+  }
+}
+
+/* ---- Responsive: >= 1441px — reduce text wrap padding ---- */
+@media (min-width: 1441px) {
+  .nintara-vbv__text-wrap {
+    padding: 38px 0px;
+  }
+}

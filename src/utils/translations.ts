@@ -96,9 +96,9 @@ function getTemplateId(args: GetTemplateIdArgs): string {
  * Extract page name from template ID
  * Template ID format: "{theme}_{page}_{variant}" -> extracts "{page}"
  * Examples:
- *   - "ratio_home_default" -> "home"
- *   - "ratio_collection_default" -> "collections" (mapped)
- *   - "ratio_products_default" -> "products"
+ *   - "dawn_home_default" -> "home"
+ *   - "dawn_collection_default" -> "collections" (mapped)
+ *   - "dawn_products_default" -> "products"
  */
 function extractPageName(templateId: string): string | undefined {
   if (!templateId || templateId === "common") {
@@ -107,8 +107,11 @@ function extractPageName(templateId: string): string | undefined {
 
   // Split by underscore: [theme, page, variant]
   const parts = templateId.split("_");
+
+  // Static template IDs have no underscores (e.g., "privacy-policy")
+  // Use the full templateId as the page name
   if (parts.length < 2) {
-    return undefined;
+    return templateId;
   }
 
   // The page name is the second part
@@ -246,42 +249,19 @@ const isEditorChangesEnabled = () => {
 export async function getTranslations(
   params: GetTranslationsParams
 ): Promise<Record<string, any>> {
-  const { themeId, templateId, language } = params;
+  try {
+    const { themeId, templateId, language } = params;
 
-  // Local locale JSONs for this template — src/themes/{theme}/locales/pages/.
-  //
-  // This mirrors TemplateResolver, which falls back to the FILESYSTEM template
-  // (loadMerchantTemplate) whenever the editor backend has no record for a
-  // templateId. The two layers have to agree: a template served from disk
-  // references its copy as "t:{templateId}.{key}", so its messages must come
-  // from disk too. next-intl's getMessages() is request-scoped and never
-  // contains an arbitrary page namespace, so using it here would leave those
-  // tokens unresolved and hand widgets a raw string.
-  //
-  // Not hypothetical: the editor backend hosts home/collection/products/
-  // collection-list/about-us but 404s contact, faq, privacy-policy,
-  // terms-of-service, refund-policy and shipping-policy, so every
-  // /pages/[handle] route takes this path on each render.
-  const localMessages = async (): Promise<Record<string, any>> => {
-    // templateId format: "common" or "ratio_home_default" -> page name: "home"
-    const pageName =
-      templateId === "common" ? undefined : extractPageName(templateId);
-    try {
+    // If editor changes are disabled, use local locale JSONs
+    if (!isEditorChangesEnabled()) {
+      // Map templateId to page name for local message loading
+      // templateId format: "common" or "dawn_home_default" -> page name: "home"
+      const pageName =
+        templateId === "common" ? undefined : extractPageName(templateId);
       return await loadMessages(
         language as Locale,
         pageName as PageName | undefined
       );
-    } catch {
-      // No locale folder for this page — degrade to request-scoped messages
-      // rather than failing the render.
-      return await getMessages();
-    }
-  };
-
-  try {
-    // If editor changes are disabled, use local locale JSONs
-    if (!isEditorChangesEnabled()) {
-      return await localMessages();
     }
 
     const apiUrl = process.env.NEXT_PUBLIC_EDITOR_API_URL;
@@ -299,16 +279,11 @@ export async function getTranslations(
       response = await fetch(
         `${apiUrl}/api/v1/themes/${themeId}/translations/${templateId}/${language}`,
         {
+          cache: "no-store",
           headers: {
             "Content-Type": "application/json",
           },
           signal: controller.signal,
-          // Full ISR: tagged + time-revalidated (not no-store). Tag must match
-          // the revalidate webhook (single-merchant → no theme prefix).
-          next: {
-            tags: [`editor-i18n:${templateId}:${language}`],
-            revalidate: 3600,
-          },
         }
       );
     } finally {
@@ -319,7 +294,7 @@ export async function getTranslations(
       console.warn(
         `[i18n] Translation API responded with status ${response.status}. Falling back to local messages.`
       );
-      return await localMessages();
+      return await getMessages();
     }
 
     // Parse JSON safely; fall back if parsing fails
@@ -331,7 +306,7 @@ export async function getTranslations(
         "[i18n] Failed to parse translation API response. Falling back to local messages.",
         parseError
       );
-      return await localMessages();
+      return await getMessages();
     }
 
     const translations = data?.data?.translations;
@@ -342,7 +317,7 @@ export async function getTranslations(
     console.warn(
       "[i18n] Translation API returned invalid shape. Falling back to local messages."
     );
-    return await localMessages();
+    return await getMessages();
   } catch (error) {
     console.error(
       `Error fetching translations for ${params.themeId}/${params.templateId}/${params.language}:`,
@@ -350,10 +325,10 @@ export async function getTranslations(
     );
     // Final fallback to local messages to keep the app functional
     try {
-      return await localMessages();
+      return await getMessages();
     } catch (localFallbackError) {
       console.error(
-        "[i18n] Failed to load local messages as a fallback:",
+        "[i18n] Failed to load local messages via getMessages() as a fallback:",
         localFallbackError
       );
       // Preserve the original error context but avoid crashing silently

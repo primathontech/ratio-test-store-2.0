@@ -27,20 +27,14 @@ const createShopifyClient = () => {
   });
 };
 
-let _storefrontClient: ReturnType<typeof createShopifyClient> | null = null;
-const getStorefrontClient = () => {
-  if (!_storefrontClient) {
-    _storefrontClient = createShopifyClient();
-  }
-  return _storefrontClient;
-};
+const storefrontClient = createShopifyClient();
 
 export const customerAccessTokenCreate = async (
   email: string,
   password: string
 ) => {
   try {
-    const response = await getStorefrontClient().request(
+    const response = await storefrontClient.request(
       `
       mutation customerAccessTokenCreate($input: CustomerAccessTokenCreateInput!) {
        customerAccessTokenCreate(input: $input) {
@@ -74,7 +68,7 @@ export const customerAccessTokenCreateWithMultipass = async (
   multipassToken: string
 ) => {
   try {
-    const response = await getStorefrontClient().request(
+    const response = await storefrontClient.request(
       `
        mutation customerAccessTokenCreateWithMultipass($multipassToken: String!) {
         customerAccessTokenCreateWithMultipass(multipassToken: $multipassToken) {

@@ -100,20 +100,6 @@ function verifyCapiSignature(
   return null;
 }
 
-// ─── GoKwik ─────────────────────────────────────────────
-
-// GoKwik's hosted checkout reports these to Meta itself. The pixel SDK already
-// skips them when gokwik is on (see public/scripts/meta-pixel-sdk.js); this is
-// the server-side backstop for stale cached SDKs and replayed batches.
-const GOKWIK_ENABLED = process.env.NEXT_PUBLIC_GOKWIK_ENABLED === "true";
-
-const GOKWIK_OWNED_EVENTS = new Set([
-  "InitiateCheckout",
-  "AddShippingInfo",
-  "AddPaymentInfo",
-  "Purchase",
-]);
-
 // ─── Config ─────────────────────────────────────────────
 
 /**
@@ -301,38 +287,6 @@ export async function POST(request: Request) {
       return Response.json({ error: "No events in payload" }, { status: 400 });
     }
 
-    // Step 1b: Drop events GoKwik reports itself
-    let events = body.events;
-    if (GOKWIK_ENABLED) {
-      const kept = events.filter((e) => !GOKWIK_OWNED_EVENTS.has(e.event_name));
-      if (kept.length !== events.length) {
-        const droppedNames = Array.from(
-          new Set(
-            events
-              .filter((e) => GOKWIK_OWNED_EVENTS.has(e.event_name))
-              .map((e) => e.event_name)
-          )
-        ).join(",");
-        log(
-          requestId,
-          "warn",
-          "Step 1b:GOKWIK",
-          `dropped=${events.length - kept.length} gokwik owns these events`,
-          { events: droppedNames }
-        );
-        events = kept;
-      }
-
-      if (events.length === 0) {
-        return Response.json({
-          success: true,
-          received: eventCount,
-          skipped: eventCount,
-          reason: "gokwik_owned_events",
-        });
-      }
-    }
-
     // Step 2: Validate multi-pixel config
     const { pixels, error: configError } = getMultiPixelCAPIConfig(requestId);
     if (pixels.length === 0) {
@@ -356,7 +310,7 @@ export async function POST(request: Request) {
 
     // Step 3: Validate events and log EMQ warnings (dev only)
     if (process.env.NODE_ENV === "development") {
-      for (const event of events) {
+      for (const event of body.events) {
         const result = validateRawCAPIEvent(event);
         if (!result.valid) {
           log(
@@ -383,7 +337,7 @@ export async function POST(request: Request) {
     const clientIP = getClientIP(request);
     const userAgent = request.headers.get("user-agent") ?? undefined;
 
-    const enrichedEvents = MetaParamsBuilder.buildBatch(events, {
+    const enrichedEvents = MetaParamsBuilder.buildBatch(body.events, {
       clientIp: clientIP,
       userAgent,
     });
@@ -452,7 +406,7 @@ export async function POST(request: Request) {
       requestId,
       failCount > 0 ? "warn" : "info",
       "Step 6:RESULT",
-      `OK events_sent=${events.length} events_received=${totalReceived} pixels_ok=${successCount}/${pixels.length}${failCount > 0 ? ` pixels_failed=${failCount}` : ""}`,
+      `OK events_sent=${eventCount} events_received=${totalReceived} pixels_ok=${successCount}/${pixels.length}${failCount > 0 ? ` pixels_failed=${failCount}` : ""}`,
       { events: ev }
     );
 

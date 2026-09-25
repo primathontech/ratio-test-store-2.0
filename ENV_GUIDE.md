@@ -32,19 +32,36 @@ NEXT_PUBLIC_THEME_NAME=dawn
 
 ## Visual Editor Configuration
 
-| Variable                            | Required | Description                                                                                                      |
-| ----------------------------------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_EDITOR_API_URL`        | Optional | Visual editor backend URL. Only used when the flag below is `true`.                                              |
-| `NEXT_PUBLIC_ENABLE_EDITOR_CHANGES` | Optional | The only switch for editor-saved templates. Compared strictly against `"true"`; anything else = filesystem-only. |
+| Variable                     | Required | Description                                    |
+| ---------------------------- | -------- | ---------------------------------------------- |
+| `NEXT_PUBLIC_EDITOR_API_URL` | Optional | Visual editor backend URL                      |
+| `ENABLE_EDITOR_CHANGES`      | Optional | Enable/disable editor changes (`true`/`false`) |
 
 ```env
 NEXT_PUBLIC_EDITOR_API_URL=https://visual-editor-be.primathontech.co.in
-NEXT_PUBLIC_ENABLE_EDITOR_CHANGES=false
+ENABLE_EDITOR_CHANGES=false
 ```
 
-> The flag is read in exactly one place — `src/bootstrap/builder.ts` — where it
-> selects the template loader for the whole app. There is no per-page override:
-> `fetchAPITemplate` in a page's `routeContext` is not read on the render path.
+---
+
+## Collection & Product Configuration
+
+| Variable                                      | Required | Description                                          |
+| --------------------------------------------- | -------- | ---------------------------------------------------- |
+| `FEATURED_COLLECTIONS`                        | Optional | Comma-separated collection handles for navigation    |
+| `HOMEPAGE_FEATURED_COLLECTIONS`               | Optional | Comma-separated collection handles for homepage      |
+| `HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT` | Optional | Max products per homepage collection (default: `12`) |
+
+```env
+# Featured collections for navigation/sidebar
+FEATURED_COLLECTIONS="all,new-launches,bestseller,combos,hair-care"
+
+# Collections displayed on homepage
+HOMEPAGE_FEATURED_COLLECTIONS="most-loved,bestsellers,new-arrivals"
+
+# Limit products shown per collection on homepage
+HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT=12
+```
 
 ---
 
@@ -106,12 +123,12 @@ NEXT_PUBLIC_SHOPIFY_API_VERSION="2025-04"
 
 ### Configuration
 
-| Variable                         | Required | Description                                                                   |
-| -------------------------------- | -------- | ----------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_GOKWIK_ENVIRONMENT` | Yes      | `sandbox`, `qa`, or `production`                                              |
-| `NEXT_PUBLIC_GOKWIK_TYPE`        | Optional | Integration type (e.g., `merchantInfo`)                                       |
-| `NEXT_PUBLIC_GOKWIK_SCRIPT_URL`  | Yes      | GoKwik SDK URL                                                                |
-| `NEXT_PUBLIC_KP_EVENT_ALLOWED`   | Optional | Enable KwikPass `page_view_kp` retargeting events (`yes`/`no`, default `yes`) |
+| Variable                         | Required | Description                             |
+| -------------------------------- | -------- | --------------------------------------- |
+| `NEXT_PUBLIC_GOKWIK_ENVIRONMENT` | Yes      | `sandbox`, `qa`, or `production`        |
+| `NEXT_PUBLIC_GOKWIK_TYPE`        | Optional | Integration type (e.g., `merchantInfo`) |
+| `NEXT_PUBLIC_GOKWIK_SCRIPT_URL`  | Yes      | GoKwik SDK URL                          |
+| `NEXT_PUBLIC_GOKWIK_ENABLED`     | Optional | Enable/disable GoKwik (`true`/`false`)  |
 
 ```env
 # Merchant IDs
@@ -123,7 +140,7 @@ NEXT_PUBLIC_MERCHANT_ID="your-merchant-id"
 NEXT_PUBLIC_GOKWIK_ENVIRONMENT="qa"          # qa, sandbox, production
 NEXT_PUBLIC_GOKWIK_TYPE="merchantInfo"
 NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://qa.pdp.gokwik.co"
-NEXT_PUBLIC_KP_EVENT_ALLOWED="yes"           # yes (default) | no — opt-out of page_view_kp retargeting events
+NEXT_PUBLIC_GOKWIK_ENABLED=true
 ```
 
 ### Environment URLs
@@ -236,35 +253,17 @@ NEXT_PUBLIC_VIDEO_APP_SDK_URL="https://cdn.example.com/video-sdk.js"
 
 ### Analytics & Tracking
 
-| Variable                                  | Required | Description                                                                                                                                                                                                                                   |
-| ----------------------------------------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `NEXT_PUBLIC_GA_MEASUREMENT_ID`           | Optional | Google Analytics 4 ID                                                                                                                                                                                                                         |
-| `NEXT_PUBLIC_GA_ISOLATED`                 | Optional | When `"yes"`, scopes GA4 events to GA4 only via `send_to`; prevents fan-out to Google Ads on a shared `gtag`                                                                                                                                  |
-| `NEXT_PUBLIC_GTM_ID`                      | Optional | Google Tag Manager container ID (e.g. `GTM-XXXXXXX`). When set, `gtm-pixel-sdk.js` loads the container, applies Consent Mode v2 defaults (granted), and mirrors PixelRuntime events to `window.dataLayer` using GA4 Enhanced Ecommerce schema |
-| `NEXT_PUBLIC_GTM_AUTH`                    | Optional | GTM Server-Side environment auth token (only for non-production GTM SS environments)                                                                                                                                                          |
-| `NEXT_PUBLIC_GTM_PREVIEW`                 | Optional | GTM Server-Side environment preview name, e.g. `env-3` (only for non-production GTM SS environments)                                                                                                                                          |
-| `NEXT_PUBLIC_CURRENCY`                    | Optional | ISO 4217 currency code (e.g. `USD`, `INR`) — fallback currency on every GTM ecommerce event when the upstream event omits one. Default `"INR"`                                                                                                |
-| `NEXT_PUBLIC_GTM_DEBUG`                   | Optional | Set to `"true"` to force `[GTMSDK]` debug logs in production. Errors are always logged. Without this, debug logs are auto-enabled only on `localhost` / `window.__shopkit_debug = true`                                                       |
-| `NEXT_PUBLIC_GOOGLE_ADS_ID`               | Optional | Google Ads account ID, e.g. `AW-123456789`                                                                                                                                                                                                    |
-| `NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL` | Optional | Legacy single-label config — applied to Purchase when `NEXT_PUBLIC_GOOGLE_ADS_EVENTS` has no `Purchase` entry                                                                                                                                 |
-| `NEXT_PUBLIC_GOOGLE_ADS_EVENTS`           | Optional | JSON map of per-event conversion labels: `{"Purchase":"abc","AddToCart":"xyz"}` — each event = a conversion action                                                                                                                            |
-| `NEXT_PUBLIC_MULTI_PIXEL_IDS`             | Optional | Comma-separated Facebook Pixel IDs                                                                                                                                                                                                            |
-| `NEXT_PUBLIC_EVENT_DEBUG`                 | Optional | Enable event debug logging in production (`true`/`false`)                                                                                                                                                                                     |
+| Variable                        | Required | Description                                               |
+| ------------------------------- | -------- | --------------------------------------------------------- |
+| `NEXT_PUBLIC_GA_MEASUREMENT_ID` | Optional | Google Analytics 4 ID                                     |
+| `NEXT_PUBLIC_GTM_ID`            | Optional | Google Tag Manager ID                                     |
+| `NEXT_PUBLIC_MULTI_PIXEL_IDS`   | Optional | Comma-separated Facebook Pixel IDs                        |
+| `NEXT_PUBLIC_EVENT_DEBUG`       | Optional | Enable event debug logging in production (`true`/`false`) |
 
 ```env
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 NEXT_PUBLIC_GTM_ID=GTM-XXXXXXX
 NEXT_PUBLIC_MULTI_PIXEL_IDS=1582841486258190,856034283724150
-
-# Google Ads — per-event conversion labels (one conversion action per event)
-NEXT_PUBLIC_GOOGLE_ADS_ID=AW-123456789
-NEXT_PUBLIC_GOOGLE_ADS_EVENTS={"Purchase":"abc","AddToCart":"xyz","BeginCheckout":"def"}
-
-# Set to "yes" to scope GA4 events to GA4 only (prevents leaking to Ads as
-# remarketing signals). Useful when the Google Ads SDK handles its own
-# conversions and you want to avoid double-counting via GA4 → Ads import.
-# NEXT_PUBLIC_GA_ISOLATED=yes
-
 # Event debug logging (also available via browser console: window.__shopkit_debug = true)
 # NEXT_PUBLIC_EVENT_DEBUG=true
 ```
@@ -336,7 +335,14 @@ NEXT_PUBLIC_THEME_NAME=dawn
 # VISUAL EDITOR CONFIGURATION
 # =============================================================================
 NEXT_PUBLIC_EDITOR_API_URL=https://visual-editor-be.primathontech.co.in
-NEXT_PUBLIC_ENABLE_EDITOR_CHANGES=false
+ENABLE_EDITOR_CHANGES=false
+
+# =============================================================================
+# COLLECTION & PRODUCT CONFIGURATION
+# =============================================================================
+FEATURED_COLLECTIONS="all,new-launches,bestseller,combos,hair-care"
+HOMEPAGE_FEATURED_COLLECTIONS="most-loved,for-hair-fall,for-dry-hair"
+HOMEPAGE_FEATURED_COLLECTIONS_PRODUCT_LIMIT=12
 
 # =============================================================================
 # SHOPIFY CONFIGURATION (Data Source)
@@ -359,7 +365,7 @@ NEXT_PUBLIC_MERCHANT_ID="your-merchant-id"
 NEXT_PUBLIC_GOKWIK_ENVIRONMENT="qa"
 NEXT_PUBLIC_GOKWIK_TYPE="merchantInfo"
 NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://qa.pdp.gokwik.co"
-NEXT_PUBLIC_KP_EVENT_ALLOWED="yes"
+NEXT_PUBLIC_GOKWIK_ENABLED=true
 
 # =============================================================================
 # CUSTOM BACKEND API ENDPOINTS
@@ -403,7 +409,7 @@ NEXT_PUBLIC_MERCHANT_ID="prod-merchant-id"
 NEXT_PUBLIC_GOKWIK_ENVIRONMENT="production"
 NEXT_PUBLIC_GOKWIK_TYPE="merchantInfo"
 NEXT_PUBLIC_GOKWIK_SCRIPT_URL="https://pdp.gokwik.co"
-NEXT_PUBLIC_KP_EVENT_ALLOWED="yes"
+NEXT_PUBLIC_GOKWIK_ENABLED=true
 
 # =============================================================================
 # ANALYTICS
@@ -433,7 +439,7 @@ NEXT_PUBLIC_MULTI_PIXEL_IDS=1582841486258190,856034283724150
 1. Verify `NEXT_PUBLIC_GOKWIK_MID` is correct
 2. Check `NEXT_PUBLIC_GOKWIK_ENVIRONMENT` matches your GoKwik dashboard
 3. Ensure `NEXT_PUBLIC_GOKWIK_SCRIPT_URL` is correct for your environment
-4. Check `NEXT_PUBLIC_KP_EVENT_ALLOWED` is unset or `"yes"` — set to `"no"` to opt out of `page_view_kp` retargeting events
+4. Check `NEXT_PUBLIC_GOKWIK_ENABLED=true`
 
 ### "Custom API calls failing"
 

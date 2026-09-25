@@ -1,53 +1,347 @@
-import { handleCacheInvalidation } from "@shopkit/webhooks";
+import { revalidatePath, revalidateTag } from "next/cache";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
- * Cache-invalidation webhook.
- *
- * Signature verification, payload validation, and the cache-tag cascade all live in
- * the shared @shopkit/webhooks `handleCacheInvalidation` handler, so every merchant
- * runs one implementation and the tag strings stay in lockstep with the producer
- * (@shopkit/data-layer). See the cache-tag invalidation RFC.
- *
- * Contract — ONE endpoint, ONE shared secret, TWO signing schemes, because two
- * producers post here and they sign differently. The verifier dispatches on which
- * headers are present.
- *
- *   GoKwik delivery worker (commerce events) — preferred:
- *     x-gokwik-signature: <hex HMAC-SHA256("<timestamp>.<rawBody>", WEBHOOK_SECRET)>
- *     x-gokwik-timestamp: <unix seconds or ms>   signed, so replays expire (±5 min)
- *     x-gokwik-event-id:  <delivery id>          used as the correlation id
- *
- *   Admin / dashboard (mega menu, SEO config) — DEPRECATED, no replay protection:
- *     x-webhook-signature: sha256=<hex HMAC-SHA256(rawBody, WEBHOOK_SECRET)>
- *
- *   POST /api/webhooks/cache-invalidation
- *   body: { "type": "product.updated", "data": { "handle": "..." } }
- *      or the native { "event_type": "products/update", "product": { ... } }
- *
- * Responses: 200 with `purged: { tags, paths }`, 400 malformed, 401 bad signature,
- * 413 too large, 500 internal. Every response carries a `requestId` — quote it when
- * reporting a failed delivery.
- *
- * Required env: WEBHOOK_SECRET. Without it the handler refuses every delivery
- * (fail-closed) unless WEBHOOK_ALLOW_UNSIGNED=1 is set, which is for local
- * development only.
+ * Webhook endpoint for cache invalidation
+ * Handles incoming webhooks from commerce platforms, CMSs, or other systems
+ * to invalidate specific cache entries when data changes
  */
 export async function POST(request: NextRequest) {
-  return handleCacheInvalidation(request, {
-    // Pre-render created/updated pages so the first real visitor gets a cache HIT
-    // instead of paying for a cold render. Omitted when unset — the handler logs that
-    // warming is disabled rather than skipping silently.
-    warmBaseUrl: process.env.NEXT_PUBLIC_BASE_URL,
-  });
+  const startTime = Date.now();
+
+  try {
+    // Read the RAW body once — the HMAC must be computed over the exact bytes
+    // the sender signed (re-serializing a parsed object would change them).
+    const rawBody = await request.text();
+
+    // When WEBHOOK_SECRET is configured, a valid signature is REQUIRED
+    // (a missing header must NOT bypass verification).
+    const signature = request.headers.get("x-webhook-signature");
+    if (process.env.WEBHOOK_SECRET) {
+      if (!signature || !(await verifyWebhookSignature(rawBody, signature))) {
+        return NextResponse.json(
+          { error: "Invalid signature" },
+          { status: 401 }
+        );
+      }
+    }
+
+    const body = JSON.parse(rawBody);
+
+    // Validate webhook data
+    const validationResult = validateWebhookData(body);
+    if (!validationResult.isValid) {
+      return NextResponse.json(
+        { error: "Invalid webhook data", details: validationResult.errors },
+        { status: 400 }
+      );
+    }
+
+    // Process the invalidation using Next.js cache APIs
+    handleCacheInvalidation(body);
+
+    const duration = Date.now() - startTime;
+
+    return NextResponse.json({
+      success: true,
+      type: body.type,
+      duration,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (error) {
+    const duration = Date.now() - startTime;
+
+    return NextResponse.json(
+      {
+        error: "Internal server error",
+        duration,
+        timestamp: new Date().toISOString(),
+      },
+      { status: 500 }
+    );
+  }
 }
 
 /**
- * Health check for uptime probes. Deliberately reveals nothing about configuration.
+ * Health check endpoint
  */
 export async function GET() {
   return NextResponse.json({
     status: "healthy",
     timestamp: new Date().toISOString(),
   });
+}
+
+/**
+ * Handle cache invalidation based on webhook type
+ */
+function handleCacheInvalidation(data: any): void {
+  const { type, data: webhookData } = data;
+
+  switch (type) {
+    case "product.updated":
+    case "product.created":
+    case "product.deleted":
+      revalidateTag(`product-${webhookData.productId}`);
+      revalidateTag("products");
+      if (webhookData.handle) {
+        revalidatePath(`/products/${webhookData.handle}`);
+      }
+      break;
+
+    case "products.bulk_updated":
+      webhookData.productIds.forEach((id: string) => {
+        revalidateTag(`product-${id}`);
+      });
+      revalidateTag("products");
+      break;
+
+    case "collection.updated":
+    case "collection.created":
+    case "collection.deleted":
+      revalidateTag(`collection-${webhookData.collectionId}`);
+      revalidateTag("collections");
+      if (webhookData.handle) {
+        revalidatePath(`/collections/${webhookData.handle}`);
+      }
+      break;
+
+    case "collections.bulk_updated":
+      webhookData.collectionIds.forEach((id: string) => {
+        revalidateTag(`collection-${id}`);
+      });
+      revalidateTag("collections");
+      break;
+
+    case "inventory.updated":
+    case "pricing.updated":
+      webhookData.productIds.forEach((id: string) => {
+        revalidateTag(`product-${id}`);
+      });
+      revalidateTag("inventory");
+      break;
+
+    case "navigation.updated":
+      revalidateTag("nav-menu");
+      break;
+
+    case "search.reindex":
+      revalidateTag("search");
+      break;
+
+    case "seo.updated":
+      if (webhookData.path) {
+        revalidatePath(webhookData.path);
+      }
+      revalidateTag("seo");
+      break;
+
+    case "cache.clear_all":
+      revalidatePath("/", "layout");
+      break;
+  }
+}
+
+/**
+ * Verify webhook signature using HMAC
+ */
+async function verifyWebhookSignature(
+  rawBody: string,
+  signature: string
+): Promise<boolean> {
+  if (!process.env.WEBHOOK_SECRET) {
+    return true;
+  }
+
+  try {
+    const crypto = await import("crypto");
+    const expectedSignature = crypto
+      .createHmac("sha256", process.env.WEBHOOK_SECRET)
+      .update(rawBody)
+      .digest("hex");
+
+    const providedSignature = signature.replace("sha256=", "");
+
+    return crypto.timingSafeEqual(
+      Buffer.from(expectedSignature, "hex"),
+      Buffer.from(providedSignature, "hex")
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Validate webhook data structure
+ */
+function validateWebhookData(data: any): {
+  isValid: boolean;
+  errors: string[];
+} {
+  const errors: string[] = [];
+
+  if (!data.type || typeof data.type !== "string") {
+    errors.push('Missing or invalid "type" field');
+  }
+
+  if (!data.data || typeof data.data !== "object") {
+    errors.push('Missing or invalid "data" field');
+  }
+
+  if (data.type && data.data) {
+    switch (data.type) {
+      case "product.updated":
+      case "product.created":
+      case "product.deleted":
+        if (!data.data.productId) {
+          errors.push("Missing productId for product webhook");
+        }
+        break;
+
+      case "products.bulk_updated":
+        if (
+          !Array.isArray(data.data.productIds) ||
+          data.data.productIds.length === 0
+        ) {
+          errors.push(
+            "Missing or empty productIds array for bulk product webhook"
+          );
+        }
+        break;
+
+      case "collection.updated":
+      case "collection.created":
+      case "collection.deleted":
+        if (!data.data.collectionId) {
+          errors.push("Missing collectionId for collection webhook");
+        }
+        break;
+
+      case "collections.bulk_updated":
+        if (
+          !Array.isArray(data.data.collectionIds) ||
+          data.data.collectionIds.length === 0
+        ) {
+          errors.push(
+            "Missing or empty collectionIds array for bulk collection webhook"
+          );
+        }
+        break;
+
+      case "inventory.updated":
+      case "pricing.updated":
+        if (
+          !Array.isArray(data.data.productIds) ||
+          data.data.productIds.length === 0
+        ) {
+          errors.push(
+            "Missing or empty productIds array for inventory/pricing webhook"
+          );
+        }
+        break;
+
+      case "user.updated":
+        if (!data.data.userId) {
+          errors.push("Missing userId for user webhook");
+        }
+        break;
+
+      case "cart.updated":
+        if (!data.data.cartId) {
+          errors.push("Missing cartId for cart webhook");
+        }
+        break;
+
+      case "seo.updated":
+        if (!data.data.path) {
+          errors.push("Missing path for SEO webhook");
+        }
+        break;
+
+      case "navigation.updated":
+      case "search.reindex":
+      case "cache.clear_all":
+        break;
+
+      default:
+        errors.push(`Unknown webhook type: ${data.type}`);
+    }
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors,
+  };
+}
+
+/**
+ * Manual cache invalidation endpoint (for testing/debugging)
+ */
+export async function DELETE(request: NextRequest) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const type = searchParams.get("type");
+    const id = searchParams.get("id");
+
+    if (!type) {
+      return NextResponse.json(
+        { error: "Missing type parameter" },
+        { status: 400 }
+      );
+    }
+
+    switch (type) {
+      case "product":
+        if (!id) {
+          return NextResponse.json(
+            { error: "Missing id parameter for product invalidation" },
+            { status: 400 }
+          );
+        }
+        revalidateTag(`product-${id}`);
+        revalidateTag("products");
+        break;
+
+      case "collection":
+        if (!id) {
+          return NextResponse.json(
+            { error: "Missing id parameter for collection invalidation" },
+            { status: 400 }
+          );
+        }
+        revalidateTag(`collection-${id}`);
+        revalidateTag("collections");
+        break;
+
+      case "search":
+        revalidateTag("search");
+        break;
+
+      case "navigation":
+        revalidateTag("nav-menu");
+        break;
+
+      case "all":
+        revalidatePath("/", "layout");
+        break;
+
+      default:
+        return NextResponse.json(
+          { error: `Unknown invalidation type: ${type}` },
+          { status: 400 }
+        );
+    }
+
+    return NextResponse.json({
+      success: true,
+      type,
+      id,
+      timestamp: new Date().toISOString(),
+    });
+  } catch {
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
+  }
 }

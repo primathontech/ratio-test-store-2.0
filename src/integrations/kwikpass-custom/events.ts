@@ -34,8 +34,6 @@ export interface KwikPassCollectionEventData {
 
 export interface KwikPassPageEventData {
   cart_id?: string;
-  path?: string;
-  title?: string;
 }
 
 type KwikEngagePageViewType = "product" | "collection" | "other";
@@ -49,33 +47,30 @@ const KWIK_ENGAGE_TYPE_MAP: Record<KwikPassEventType, KwikEngagePageViewType> =
     [KwikPassEventType.PAGE_VIEW]: "other",
   };
 
-class KwikPassEventDispatcher {
-  private config = getKwikPassConfig();
+export function dispatch(type: KwikPassEventType, data: any): void {
+  const config = getKwikPassConfig();
 
-  dispatch(type: KwikPassEventType, data: any): void {
-    if (typeof window === "undefined" || !this.config.enabled) {
-      return;
-    }
-    window.dispatchEvent(
-      new CustomEvent(KWIK_ENGAGE_EVENT_NAME, {
-        detail: { type: KWIK_ENGAGE_TYPE_MAP[type], data },
-      })
-    );
+  if (typeof window === "undefined" || !config.enabled) {
+    return;
   }
+
+  window.dispatchEvent(
+    new CustomEvent(KWIK_ENGAGE_EVENT_NAME, {
+      detail: { type: KWIK_ENGAGE_TYPE_MAP[type], data },
+    })
+  );
 }
 
-const dispatcher = new KwikPassEventDispatcher();
-
 export function dispatchProductViewEvent(data: KwikPassProductEventData): void {
-  dispatcher.dispatch(KwikPassEventType.PRODUCT_VIEW, data);
+  dispatch(KwikPassEventType.PRODUCT_VIEW, data);
 }
 
 export function dispatchCollectionViewEvent(
   data: KwikPassCollectionEventData
 ): void {
-  dispatcher.dispatch(KwikPassEventType.COLLECTION_VIEW, data);
+  dispatch(KwikPassEventType.COLLECTION_VIEW, data);
 }
 
 export function dispatchPageViewEvent(data: KwikPassPageEventData = {}): void {
-  dispatcher.dispatch(KwikPassEventType.PAGE_VIEW, data);
+  dispatch(KwikPassEventType.PAGE_VIEW, data);
 }

@@ -1,0 +1,432 @@
+/* =====================================================
+   NINTARABABY — Blog / "We're Here For You"
+   Source: nintarababy.in
+   Desktop: 2-col grid (1 large left + 2 small right)
+   Tablet 768-1199: single col, side card images hidden
+   Mobile <768: CSS scroll-snap slider + dot pagination
+   Background: decorative blob pattern (desktop + mobile)
+   ===================================================== */
+
+:root {
+  /* Blog colors */
+  --nintara-blog-primary: #092a33;
+  --nintara-blog-accent: #e5c645;
+  --nintara-blog-dot-inactive: #cccccc;
+  --nintara-blog-dot-active: #01464f;
+
+  /* Blog typography */
+  --nintara-blog-font: var(--font-figtree, "Figtree"), sans-serif;
+  --nintara-blog-heading-size: 40px;
+  --nintara-blog-heading-size-mobile: 28px;
+  --nintara-blog-heading-weight: 700;
+  --nintara-blog-heading-lh: 52px;
+  --nintara-blog-heading-lh-mobile: 36.4px;
+  --nintara-blog-see-all-size: 20px;
+  --nintara-blog-see-all-weight: 600;
+  --nintara-blog-title-size: 20px;
+  --nintara-blog-title-weight: 500;
+  --nintara-blog-title-lh: 26px;
+  --nintara-blog-desc-size: 16px;
+  --nintara-blog-desc-lh: 24px;
+  --nintara-blog-badge-size: 14px;
+  --nintara-blog-badge-weight: 500;
+  --nintara-blog-date-size: 14px;
+  --nintara-blog-date-size-small: 12px;
+  --nintara-blog-readmore-size: 16px;
+  --nintara-blog-readmore-weight: 500;
+  --nintara-blog-readmore-lh: 20.8px;
+
+  /* Blog spacing — source uses padding:4% on the inner wrapper only, no extra margin */
+  --nintara-blog-section-py: 0;
+  --nintara-blog-wrapper-py: 4%;
+  --nintara-blog-wrapper-margin: 0;
+  --nintara-blog-wrapper-margin-mobile: 0;
+  --nintara-blog-heading-mb: 32px;
+  --nintara-blog-grid-gap: 32px;
+  --nintara-blog-grid-gap-mobile: 16px;
+  --nintara-blog-text-gap: 12px;
+  --nintara-blog-badge-gap: 16px;
+  --nintara-blog-badge-gap-mobile: 12px;
+  --nintara-blog-duration-gap: 20px;
+  --nintara-blog-max-w: 1280px;
+
+  /* Blog borders */
+  --nintara-blog-img-radius: 16px;
+  --nintara-blog-badge-radius: 4px;
+
+  /* Blog dots */
+  --nintara-blog-dot-size: 8px;
+}
+
+/* ---- Section wrapper ---- */
+.nintara-blog {
+  padding: 0;
+  font-family: var(--nintara-blog-font);
+  width: 100%;
+}
+
+/* ---- Inner wrapper with background image ---- */
+.nintara-blog__wrapper {
+  margin: var(--nintara-blog-wrapper-margin);
+  padding: var(--nintara-blog-wrapper-py) 80px;
+  background-image: url(/assets/nintarababy/blog/bg-desktop.webp);
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+/* ---- Heading row — constrained to content width so "See All" aligns with grid ---- */
+.nintara-blog__heading-row {
+  position: relative;
+  margin-bottom: var(--nintara-blog-heading-mb);
+  max-width: var(--nintara-blog-max-w);
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.nintara-blog__heading {
+  font-size: var(--nintara-blog-heading-size);
+  line-height: var(--nintara-blog-heading-lh);
+  font-weight: var(--nintara-blog-heading-weight);
+  color: var(--nintara-blog-primary);
+  margin: 0;
+  text-align: center;
+  font-family: var(--nintara-blog-font);
+}
+
+/* "See All" link */
+.nintara-blog__see-all {
+  position: absolute;
+  top: 12px;
+  right: 0;
+  font-size: var(--nintara-blog-see-all-size);
+  font-weight: var(--nintara-blog-see-all-weight);
+  line-height: 24px;
+  color: var(--nintara-blog-primary);
+  text-decoration: none;
+  font-family: var(--nintara-blog-font);
+}
+
+/* ---- Desktop grid ---- */
+.nintara-blog__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--nintara-blog-grid-gap);
+  max-width: var(--nintara-blog-max-w);
+  margin: 0 auto;
+}
+
+/* ---- Primary (large) card ---- */
+.nintara-blog__card--primary {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ---- Side stack (right column) ---- */
+.nintara-blog__side-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nintara-blog-grid-gap);
+}
+
+/* ---- Secondary card (image + text side by side) ---- */
+.nintara-blog__card--secondary {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: var(--nintara-blog-grid-gap);
+  align-items: start;
+}
+
+/* ---- Image wrapper ---- */
+.nintara-blog__image-wrapper {
+  overflow: hidden;
+  border-radius: var(--nintara-blog-img-radius);
+  line-height: 0;
+  display: block;
+  will-change: transform;
+}
+
+.nintara-blog__img {
+  width: 100%;
+  display: block;
+  object-fit: cover;
+  border-radius: var(--nintara-blog-img-radius);
+  transition: transform 0.25s ease;
+}
+
+@media screen and (min-width: 768px) {
+  .nintara-blog__img {
+    height: auto;
+  }
+}
+
+/* Primary card image: max 325px tall */
+.nintara-blog__card--primary .nintara-blog__img {
+  max-height: 325px;
+}
+
+/* Secondary card image: 300px wide, 300:250 aspect */
+.nintara-blog__img--side {
+  max-width: 300px;
+  aspect-ratio: 300 / 250;
+}
+
+/* Image zoom on hover */
+.nintara-blog__image-wrapper:hover .nintara-blog__img {
+  transform: scale(1.05);
+}
+
+/* ---- Text content ---- */
+.nintara-blog__text-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--nintara-blog-text-gap);
+}
+
+/* Badge row */
+.nintara-blog__badge-wrapper {
+  display: flex;
+  gap: var(--nintara-blog-badge-gap);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+/* Category badge */
+.nintara-blog__cat-badge {
+  background: var(--nintara-blog-accent);
+  font-size: var(--nintara-blog-badge-size);
+  font-weight: var(--nintara-blog-badge-weight);
+  color: var(--nintara-blog-primary);
+  padding: 4px 16px;
+  border-radius: var(--nintara-blog-badge-radius);
+  white-space: nowrap;
+  font-family: var(--nintara-blog-font);
+}
+
+/* Date and read time */
+.nintara-blog__date p,
+.nintara-blog__read-time p {
+  font-size: var(--nintara-blog-date-size);
+  font-weight: 400;
+  line-height: 18.2px;
+  margin: 0;
+  color: var(--nintara-blog-primary);
+  font-family: var(--nintara-blog-font);
+}
+
+/* Duration row (date + read time side by side) */
+.nintara-blog__duration {
+  display: flex;
+  gap: var(--nintara-blog-duration-gap);
+  align-items: center;
+}
+
+/* Blog post title */
+.nintara-blog__title h4 {
+  font-size: var(--nintara-blog-title-size);
+  font-weight: var(--nintara-blog-title-weight);
+  color: var(--nintara-blog-primary);
+  line-height: var(--nintara-blog-title-lh);
+  margin: 0;
+  font-family: var(--nintara-blog-font);
+}
+
+.nintara-blog__title a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.nintara-blog__title a:hover {
+  text-decoration: underline;
+}
+
+/* Blog excerpt -- 3 lines for primary, 2 for secondary */
+.nintara-blog__description p {
+  font-size: var(--nintara-blog-desc-size);
+  font-weight: 400;
+  color: var(--nintara-blog-primary);
+  line-height: var(--nintara-blog-desc-lh);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  font-family: var(--nintara-blog-font);
+}
+
+.nintara-blog__description--primary p {
+  -webkit-line-clamp: 3;
+}
+
+.nintara-blog__description--secondary p {
+  -webkit-line-clamp: 2;
+}
+
+/* "Read more" link */
+.nintara-blog__read-btn a {
+  text-decoration: underline;
+  font-size: var(--nintara-blog-readmore-size);
+  line-height: var(--nintara-blog-readmore-lh);
+  font-weight: var(--nintara-blog-readmore-weight);
+  color: var(--nintara-blog-primary);
+  text-transform: uppercase;
+  font-family: var(--nintara-blog-font);
+}
+
+/* ---- Mobile slider (hidden on desktop) ---- */
+.nintara-blog__mobile-wrapper {
+  display: none;
+}
+
+.nintara-blog__slider-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  gap: var(--nintara-blog-grid-gap-mobile);
+}
+
+.nintara-blog__slider-track::-webkit-scrollbar {
+  display: none;
+}
+
+.nintara-blog__slide {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  will-change: transform;
+}
+
+.nintara-blog__slide-inner {
+  padding: 0 5px;
+  box-sizing: border-box;
+}
+
+/* Pagination dots */
+.nintara-blog__pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.nintara-blog__dot {
+  width: var(--nintara-blog-dot-size);
+  height: var(--nintara-blog-dot-size);
+  border-radius: 50%;
+  border: none;
+  background: var(--nintara-blog-dot-inactive);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s ease;
+}
+
+.nintara-blog__dot--active {
+  background: var(--nintara-blog-dot-active);
+}
+
+/* =====================================================
+   BLOG — Tablet: 768px to 1199px
+   Single column, side card images hidden
+   ===================================================== */
+
+@media screen and (max-width: 1199px) and (min-width: 768px) {
+  .nintara-blog__card--primary {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .nintara-blog__card--primary .nintara-blog__img {
+    max-width: 100%;
+    max-height: 400px;
+  }
+
+  .nintara-blog__side-stack {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .nintara-blog__card--secondary {
+    display: block;
+    grid-template-columns: unset;
+    width: 100%;
+  }
+
+  /* Hide images for secondary cards */
+  .nintara-blog__card--secondary .nintara-blog__image-wrapper {
+    display: none;
+  }
+
+  .nintara-blog__card--secondary .nintara-blog__text-wrapper {
+    padding: 0;
+    width: 100%;
+  }
+}
+
+/* =====================================================
+   BLOG — Mobile: Below 768px
+   ===================================================== */
+
+@media (max-width: 768px) {
+  .nintara-blog__wrapper {
+    margin: var(--nintara-blog-wrapper-margin-mobile);
+    padding-left: 16px;
+    padding-right: 16px;
+    background-image: url(/assets/nintarababy/blog/bg-mobile.webp);
+  }
+
+  .nintara-blog__heading {
+    font-size: var(--nintara-blog-heading-size-mobile);
+    line-height: var(--nintara-blog-heading-lh-mobile);
+  }
+
+  /* Hide "See All" on mobile */
+  .nintara-blog__see-all {
+    display: none;
+  }
+
+  /* Hide desktop grid */
+  .nintara-blog__grid {
+    display: none;
+  }
+
+  /* Show mobile slider */
+  .nintara-blog__mobile-wrapper {
+    display: block;
+  }
+
+  .nintara-blog__slide-inner {
+    padding: 0;
+  }
+
+  .nintara-blog__badge-wrapper {
+    gap: var(--nintara-blog-badge-gap-mobile);
+    margin-top: 4%;
+  }
+
+  .nintara-blog__description p {
+    margin-bottom: 8px;
+  }
+}
+
+/* Extra small: sub-430px -- smaller date text */
+@media (max-width: 430px) {
+  .nintara-blog__date p,
+  .nintara-blog__read-time p {
+    font-size: var(--nintara-blog-date-size-small);
+  }
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .nintara-blog__img {
+    transition: none !important;
+  }
+  .nintara-blog__slider-track {
+    scroll-behavior: auto !important;
+  }
+}

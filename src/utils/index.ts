@@ -74,7 +74,7 @@ export { getRouteTranslations } from "./translations";
  * Get the theme name from environment variables
  */
 export function getThemeName(): string {
-  return process.env.NEXT_PUBLIC_THEME_NAME || "ratio";
+  return process.env.NEXT_PUBLIC_THEME_NAME || "dawn";
 }
 
 /**

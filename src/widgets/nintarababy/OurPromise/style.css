@@ -1,0 +1,195 @@
+/* ═══════════════════════════════════════════════════════════════════════
+   OurPromise — Trust badges / brand promise section
+   BEM: nintara-op__*
+   ═══════════════════════════════════════════════════════════════════════ */
+
+.nintara-op {
+  background-color: #ffffff;
+  padding: 60px 5%;
+  font-family: Figtree, sans-serif;
+}
+
+/* ── Desktop Layout ───────────────────────────────────────────────────── */
+
+.nintara-op__desktop {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 48px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nintara-op__col {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 48px;
+  flex: 1;
+  max-width: 320px;
+}
+
+.nintara-op__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.nintara-op__icon-wrap {
+  margin-bottom: 12px;
+}
+
+.nintara-op__icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+}
+
+.nintara-op__title {
+  color: #4d7a57;
+  font-size: clamp(16px, 1.8vw, 22px);
+  font-weight: 700;
+  margin: 0 0 8px;
+  line-height: 1.3;
+}
+
+.nintara-op__desc {
+  color: #000000/90;
+  font-size: clamp(13px, 1.2vw, 16px);
+  font-weight: 600;
+  line-height: 1.3;
+  margin: 0;
+  max-width: 260px;
+}
+
+/* ── Center Image ─────────────────────────────────────────────────────── */
+
+.nintara-op__center {
+  flex-shrink: 0;
+}
+
+.nintara-op__center-img {
+  width: 100%;
+  max-width: 400px;
+  height: auto;
+  border-radius: 24px;
+  object-fit: cover;
+}
+
+/* ── Mobile Layout (hidden by default) ────────────────────────────────── */
+
+.nintara-op__mobile {
+  display: none;
+}
+
+.nintara-op__mobile-img-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 32px;
+}
+
+.nintara-op__mobile-img {
+  width: 100%;
+  max-width: 380px;
+  height: auto;
+  border-radius: 20px;
+  object-fit: cover;
+}
+
+.nintara-op__mobile-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.nintara-op__mobile-list--grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px 16px;
+  justify-items: center;
+}
+
+.nintara-op__mobile-list--grid .nintara-op__mobile-item {
+  justify-content: center;
+}
+
+.nintara-op__mobile-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.nintara-op__mobile-icon-wrap {
+  flex-shrink: 0;
+}
+
+.nintara-op__mobile-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.nintara-op__mobile-text {
+  flex: 1;
+}
+
+.nintara-op__mobile-title {
+  color: #4d7a57;
+  font-size: 18px;
+  font-weight: 700;
+  margin: 0 0 4px;
+  line-height: 1.3;
+}
+
+.nintara-op__mobile-desc {
+  color: #000000;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── Responsive ───────────────────────────────────────────────────────── */
+
+@media (max-width: 768px) {
+  .nintara-op {
+    padding: 40px 5%;
+  }
+
+  .nintara-op__desktop {
+    display: none;
+  }
+
+  .nintara-op__mobile {
+    display: block;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .nintara-op__desktop {
+    gap: 32px;
+  }
+
+  .nintara-op__col {
+    gap: 36px;
+    max-width: 260px;
+  }
+
+  .nintara-op__center-img {
+    max-width: 300px;
+  }
+
+  .nintara-op__icon {
+    width: 52px;
+    height: 52px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .nintara-op__center-img {
+    max-width: 420px;
+  }
+}

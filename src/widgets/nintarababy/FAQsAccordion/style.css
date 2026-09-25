@@ -1,0 +1,147 @@
+/* ============================================================
+   FAQsAccordion — Nintara Baby
+   Source: nintarababy.in product page FAQ accordion section
+   ============================================================ */
+
+/* --- Base section --- */
+.nintara-faq {
+  --nintara-faq-bg: #ffffff;
+  --nintara-faq-border: #ebe6e6;
+  --nintara-faq-question-color: #092a33;
+  --nintara-faq-answer-color: #092a33;
+  --nintara-faq-icon-color: #092a33;
+  --nintara-faq-icon-size: 32px;
+  --nintara-faq-question-size: 16px;
+  --nintara-faq-question-weight: 500;
+  --nintara-faq-question-lh: 23.4px;
+  --nintara-faq-answer-size: 14px;
+  --nintara-faq-answer-weight: 400;
+  --nintara-faq-heading-size: 32px;
+  --nintara-faq-heading-weight: 600;
+  --nintara-faq-heading-mb: 30px;
+  --nintara-faq-question-padding: 16px 0;
+  --nintara-faq-panel-transition: max-height 0.2s ease-out;
+  --nintara-faq-section-pt: 40px;
+  --nintara-faq-section-pb: 60px;
+  --nintara-faq-container-mw: 1420px;
+  --nintara-faq-font: var(--font-figtree, "Figtree"), sans-serif;
+
+  background-color: var(--nintara-faq-bg);
+  padding-top: var(--nintara-faq-section-pt);
+  padding-bottom: var(--nintara-faq-section-pb);
+  font-family: var(--nintara-faq-font);
+  width: 100%;
+}
+
+/* --- Inner container --- */
+.nintara-faq__container {
+  max-width: var(--nintara-faq-container-mw);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+/* --- Section heading --- */
+.nintara-faq__heading {
+  text-align: center;
+  font-size: var(--nintara-faq-heading-size);
+  font-weight: var(--nintara-faq-heading-weight);
+  margin-bottom: var(--nintara-faq-heading-mb);
+  color: var(--nintara-faq-question-color);
+  line-height: 1.4;
+  margin-top: 0;
+}
+
+/* --- Accordion item wrapper --- */
+.nintara-faq__item {
+  border-bottom: 1px solid var(--nintara-faq-border);
+}
+
+/* --- Question row (clickable h5) --- */
+.nintara-faq__question {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  background-color: transparent;
+  color: var(--nintara-faq-question-color);
+  cursor: pointer;
+  padding: var(--nintara-faq-question-padding);
+  font-weight: var(--nintara-faq-question-weight);
+  line-height: var(--nintara-faq-question-lh);
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: var(--nintara-faq-question-size);
+  transition: 0.4s;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-family: var(--nintara-faq-font);
+  user-select: none;
+}
+
+.nintara-faq__question:focus-visible {
+  outline: 2px solid var(--nintara-faq-question-color);
+  outline-offset: -2px;
+}
+
+/* --- Question text (flex: 1 to fill available space) --- */
+.nintara-faq__question-text {
+  flex: 1;
+  padding-right: 10px;
+}
+
+/* --- Toggle icon (+/-) --- */
+.nintara-faq__icon {
+  font-size: var(--nintara-faq-icon-size);
+  color: var(--nintara-faq-icon-color);
+  line-height: var(--nintara-faq-question-lh);
+  flex-shrink: 0;
+  margin-left: 5px;
+  width: 20px;
+  text-align: center;
+}
+
+/* --- Answer panel --- */
+.nintara-faq__panel {
+  max-height: 0;
+  overflow: hidden;
+  transition: var(--nintara-faq-panel-transition);
+  background-color: transparent;
+  color: var(--nintara-faq-answer-color);
+}
+
+/* --- Answer text --- */
+.nintara-faq__answer {
+  font-size: var(--nintara-faq-answer-size);
+  font-weight: var(--nintara-faq-answer-weight);
+  color: var(--nintara-faq-answer-color);
+  margin-bottom: 15px;
+  margin-top: 0;
+  line-height: 1.7;
+  font-family: var(--nintara-faq-font);
+}
+
+/* --- Responsive: Tablet (768px-1024px) --- */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .nintara-faq {
+    --nintara-faq-section-pt: 0px;
+    --nintara-faq-section-pb: 0px;
+  }
+}
+
+/* --- Responsive: Mobile (<=767px) --- */
+@media (max-width: 767px) {
+  .nintara-faq {
+    --nintara-faq-section-pt: 30px;
+    --nintara-faq-section-pb: 40px;
+    --nintara-faq-heading-size: 24px;
+    --nintara-faq-heading-mb: 15px;
+    --nintara-faq-question-padding: 16px 10px 16px 0;
+  }
+
+  .nintara-faq__answer {
+    font-size: 16px;
+  }
+}

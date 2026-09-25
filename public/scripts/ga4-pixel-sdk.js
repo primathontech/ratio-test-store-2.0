@@ -158,83 +158,79 @@
         })
       );
 
-      // GoKwik's hosted checkout reports these four itself. Subscribing here
-      // as well double-counts them in GA4.
-      if (!config.gokwikEnabled) {
-        analytics.subscribe(
-          "InitiateCheckout",
-          safeHandler("InitiateCheckout", function (event) {
-            var p = event.properties;
-            logEvent("InitiateCheckout", "begin_checkout", event);
-            gtag(
-              "event",
-              "begin_checkout",
-              applyIsolation({
-                items: mapItems(p.contents),
-                currency: p.currency || "INR",
-                value: p.value,
-                coupon: p.coupon || undefined,
-              })
-            );
-          })
-        );
+      analytics.subscribe(
+        "InitiateCheckout",
+        safeHandler("InitiateCheckout", function (event) {
+          var p = event.properties;
+          logEvent("InitiateCheckout", "begin_checkout", event);
+          gtag(
+            "event",
+            "begin_checkout",
+            applyIsolation({
+              items: mapItems(p.contents),
+              currency: p.currency || "INR",
+              value: p.value,
+              coupon: p.coupon || undefined,
+            })
+          );
+        })
+      );
 
-        analytics.subscribe(
-          "AddShippingInfo",
-          safeHandler("AddShippingInfo", function (event) {
-            var p = event.properties;
-            logEvent("AddShippingInfo", "add_shipping_info", event);
-            gtag(
-              "event",
-              "add_shipping_info",
-              applyIsolation({
-                shipping_tier: p.shipping_method,
-                currency: p.currency || "INR",
-                value: p.value,
-                coupon: p.coupon || undefined,
-              })
-            );
-          })
-        );
+      analytics.subscribe(
+        "AddShippingInfo",
+        safeHandler("AddShippingInfo", function (event) {
+          var p = event.properties;
+          logEvent("AddShippingInfo", "add_shipping_info", event);
+          gtag(
+            "event",
+            "add_shipping_info",
+            applyIsolation({
+              shipping_tier: p.shipping_method,
+              currency: p.currency || "INR",
+              value: p.value,
+              coupon: p.coupon || undefined,
+            })
+          );
+        })
+      );
 
-        analytics.subscribe(
-          "AddPaymentInfo",
-          safeHandler("AddPaymentInfo", function (event) {
-            var p = event.properties;
-            logEvent("AddPaymentInfo", "add_payment_info", event);
-            gtag(
-              "event",
-              "add_payment_info",
-              applyIsolation({
-                payment_type: p.payment_method,
-                currency: p.currency || "INR",
-                value: p.value,
-              })
-            );
-          })
-        );
+      analytics.subscribe(
+        "AddPaymentInfo",
+        safeHandler("AddPaymentInfo", function (event) {
+          var p = event.properties;
+          logEvent("AddPaymentInfo", "add_payment_info", event);
+          gtag(
+            "event",
+            "add_payment_info",
+            applyIsolation({
+              payment_type: p.payment_method,
+              currency: p.currency || "INR",
+              value: p.value,
+            })
+          );
+        })
+      );
 
-        analytics.subscribe(
-          "Purchase",
-          safeHandler("Purchase", function (event) {
-            var p = event.properties;
-            logEvent("Purchase", "purchase", event);
-            gtag(
-              "event",
-              "purchase",
-              applyIsolation({
-                transaction_id: p.order_id,
-                value: p.value,
-                currency: p.currency || "INR",
-                tax: p.tax,
-                shipping: p.shipping,
-                coupon: p.coupon || undefined,
-                items: mapItems(p.contents),
-              })
-            );
-          })
-        );
-      }
+      analytics.subscribe(
+        "Purchase",
+        safeHandler("Purchase", function (event) {
+          var p = event.properties;
+          logEvent("Purchase", "purchase", event);
+          gtag(
+            "event",
+            "purchase",
+            applyIsolation({
+              transaction_id: p.order_id,
+              value: p.value,
+              currency: p.currency || "INR",
+              tax: p.tax,
+              shipping: p.shipping,
+              coupon: p.coupon || undefined,
+              items: mapItems(p.contents),
+            })
+          );
+        })
+      );
 
       analytics.subscribe(
         "Search",
@@ -320,12 +316,7 @@
         })
       );
 
-      log(
-        "Init",
-        config.gokwikEnabled
-          ? "Event subscriptions registered (4 checkout events left to GoKwik)"
-          : "All event subscriptions registered"
-      );
+      log("Init", "All 13 event subscriptions registered");
     },
   };
 

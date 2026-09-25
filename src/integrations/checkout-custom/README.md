@@ -320,15 +320,10 @@ The integration dispatches these events:
 | `PURCHASE`            | Order completed           | orderId, cartValue, items  |
 | `ORDER_COMPLETED`     | Order success             | orderId, amount, currency  |
 
-## Affiliate / UTM forwarding
-
-`initializeCheckout` reads `getAffiliateParams()` from `@shopkit/events/affiliate` and forwards the snapshot to the GoKwik checkout API as `attributes` on the `commerceClient.createCheckout` payload. No per-call wiring needed — as long as `<AffiliateTracker autoCapture />` is mounted at the layout root, capture happens on landing and the data is available here automatically.
-
 ## Related Files
 
 - `@shopkit/cart` - Cart state management
 - `@shopkit/events` - Event tracking (auto-emitters handle checkout events)
-- `@shopkit/events/affiliate` - Affiliate / UTM capture and `getAffiliateParams()` reader
 - `CustomCartSummary.tsx` - Uses this integration in cart drawer
 - `/orders` page - Order confirmation page (redirected after checkout)
 - `ThankYou` widget - Displays order details on confirmation page

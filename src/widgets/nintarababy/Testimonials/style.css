@@ -1,0 +1,372 @@
+/* =====================================================
+   NINTARABABY — Testimonials
+   Source: nintarababy.in
+   Background: #f4cfb5 (warm peach)
+   CSS grid scroll-snap carousel with nav arrows
+   Desktop: 4 cards | Tablet: 2 | Mobile: 1
+   Arrow buttons: gold (#c49330), no hover change
+   ===================================================== */
+
+:root {
+  /* Testimonials colors */
+  --nintara-tm-bg: #f4cfb5;
+  --nintara-tm-card-bg: #ffffff;
+  --nintara-tm-product-bg: #f5ead3;
+  --nintara-tm-product-border: rgba(0, 0, 0, 0.05);
+  --nintara-tm-heading-color: #092a33;
+  --nintara-tm-subtitle-color: #1d2b2f;
+  --nintara-tm-card-text: #102a33;
+  --nintara-tm-author-color: #092a33;
+  --nintara-tm-product-title-color: #092a33;
+  --nintara-tm-nav-bg: #c49330;
+  --nintara-tm-nav-color: #ffffff;
+  --nintara-tm-arrow-stroke: #092a33;
+
+  /* Testimonials typography */
+  --nintara-tm-font: var(--font-figtree, "Figtree"), sans-serif;
+  --nintara-tm-heading-size: 36px;
+  --nintara-tm-heading-size-mobile: 28px;
+  --nintara-tm-heading-weight: 700;
+  --nintara-tm-subtitle-size: 18px;
+  --nintara-tm-subtitle-weight: 400;
+  --nintara-tm-review-size: 16px;
+  --nintara-tm-review-lh: 1.4;
+  --nintara-tm-review-min-h: 120px;
+  --nintara-tm-author-size: 14px;
+  --nintara-tm-author-weight: 700;
+  --nintara-tm-author-lh: 17px;
+  --nintara-tm-product-title-size: 14px;
+  --nintara-tm-product-title-weight: 600;
+
+  /* Testimonials spacing */
+  --nintara-tm-section-py: 60px;
+  --nintara-tm-title-mb: 40px;
+  --nintara-tm-card-gap: 16px;
+  --nintara-tm-card-padding: 12px 12px 0;
+  --nintara-tm-product-padding: 0 12px;
+  --nintara-tm-product-h: 78px;
+  --nintara-tm-scroll-pb: 20px;
+  --nintara-tm-author-pt: 13px;
+  --nintara-tm-author-mb: 6px;
+  --nintara-tm-star-gap: 4px;
+  --nintara-tm-star-mb: 4%;
+  --nintara-tm-product-link-gap: 14px;
+
+  /* Testimonials dimensions */
+  --nintara-tm-card-image-h: 240px;
+  --nintara-tm-card-radius: 8px;
+  --nintara-tm-card-image-radius: 5px;
+  --nintara-tm-product-img-size: 55px;
+  --nintara-tm-product-img-radius: 4px;
+  --nintara-tm-nav-size: 40px;
+  --nintara-tm-nav-radius: 50%;
+
+  /* Testimonials page width */
+  --nintara-tm-page-max-w: 1440px;
+  --nintara-tm-page-px: 80px;
+  --nintara-tm-page-px-mobile: 16px;
+}
+
+/* ---- Section wrapper ---- */
+.nintara-tm {
+  background-color: var(--nintara-tm-bg);
+  padding: var(--nintara-tm-section-py) 0;
+  font-family: var(--nintara-tm-font);
+  width: 100%;
+}
+
+/* ---- Title block ---- */
+.nintara-tm__title-block {
+  text-align: center;
+  margin-bottom: var(--nintara-tm-title-mb);
+}
+
+.nintara-tm__heading {
+  font-size: var(--nintara-tm-heading-size);
+  font-weight: var(--nintara-tm-heading-weight);
+  color: var(--nintara-tm-heading-color);
+  font-family: var(--nintara-tm-font);
+  margin: 0 0 8px;
+  line-height: 1.2;
+}
+
+.nintara-tm__subtitle {
+  font-size: var(--nintara-tm-subtitle-size);
+  font-weight: var(--nintara-tm-subtitle-weight);
+  color: var(--nintara-tm-subtitle-color);
+  font-family: var(--nintara-tm-font);
+  margin: 0;
+  line-height: 1.4;
+}
+
+/* ---- Page width container ---- */
+.nintara-tm__page-width {
+  max-width: var(--nintara-tm-page-max-w);
+  padding-left: var(--nintara-tm-page-px);
+  padding-right: var(--nintara-tm-page-px);
+  margin: 0 auto;
+}
+
+@media (max-width: 767px) {
+  .nintara-tm__page-width {
+    padding-left: var(--nintara-tm-page-px-mobile);
+    padding-right: var(--nintara-tm-page-px-mobile);
+  }
+}
+
+/* ---- Carousel container ---- */
+.nintara-tm__carousel {
+  position: relative;
+  overflow: hidden;
+}
+
+/* ---- Scroll track (CSS grid) ---- */
+.nintara-tm__scroll {
+  display: grid;
+  grid-auto-flow: column;
+  gap: var(--nintara-tm-card-gap);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  padding-bottom: var(--nintara-tm-scroll-pb);
+}
+
+.nintara-tm__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* Desktop: 4 cards visible */
+@media (min-width: 1024px) {
+  .nintara-tm__scroll {
+    grid-auto-columns: calc(25% - 15px);
+  }
+}
+
+/* Tablet: 2 cards visible */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .nintara-tm__scroll {
+    grid-auto-columns: calc(50% - 12px);
+  }
+}
+
+/* Mobile: ~1 card visible, 226px wide per design spec */
+@media (max-width: 767px) {
+  .nintara-tm__scroll {
+    grid-auto-columns: 226.39px;
+  }
+
+  .nintara-tm__heading {
+    font-size: var(--nintara-tm-heading-size-mobile);
+  }
+}
+
+/* Mobile small: snap center */
+@media (max-width: 480px) {
+  .nintara-tm__card {
+    scroll-snap-align: center;
+  }
+}
+
+/* ---- Card ---- */
+.nintara-tm__card {
+  background: var(--nintara-tm-card-bg);
+  border-radius: var(--nintara-tm-card-radius);
+  position: relative;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Card top image ---- */
+.nintara-tm__card-image {
+  overflow: hidden;
+  border-radius: var(--nintara-tm-card-image-radius);
+}
+
+.nintara-tm__card-img {
+  width: 100%;
+  height: var(--nintara-tm-card-image-h);
+  object-fit: cover;
+  border-radius: var(--nintara-tm-card-image-radius);
+  display: block;
+}
+
+/* ---- Card content ---- */
+.nintara-tm__card-content {
+  background: var(--nintara-tm-card-bg);
+  border-radius: var(--nintara-tm-card-radius) var(--nintara-tm-card-radius) 0 0;
+  padding: var(--nintara-tm-card-padding);
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- Review text ---- */
+.nintara-tm__review-text {
+  font-size: var(--nintara-tm-review-size);
+  line-height: var(--nintara-tm-review-lh);
+  margin-top: 5px;
+  margin-bottom: 12px;
+  color: var(--nintara-tm-card-text);
+  min-height: var(--nintara-tm-review-min-h);
+  font-family: var(--nintara-tm-font);
+  font-weight: 400;
+}
+
+/* ---- Author name ---- */
+.nintara-tm__author-name {
+  font-family: var(--nintara-tm-font);
+  font-size: var(--nintara-tm-author-size);
+  font-weight: var(--nintara-tm-author-weight);
+  line-height: var(--nintara-tm-author-lh);
+  text-align: left;
+  color: var(--nintara-tm-author-color);
+  padding-top: var(--nintara-tm-author-pt);
+  margin: 0 0 var(--nintara-tm-author-mb);
+}
+
+/* ---- Star rating ---- */
+.nintara-tm__stars {
+  display: flex;
+  gap: var(--nintara-tm-star-gap);
+  margin-bottom: var(--nintara-tm-star-mb);
+}
+
+/* ---- Product strip ---- */
+.nintara-tm__product-strip {
+  background: var(--nintara-tm-product-bg);
+  border-radius: 0 0 var(--nintara-tm-card-radius) var(--nintara-tm-card-radius);
+  padding: var(--nintara-tm-product-padding);
+  height: var(--nintara-tm-product-h);
+  align-content: center;
+  border-top: 1px solid var(--nintara-tm-product-border);
+}
+
+/* ---- Product link grid ---- */
+.nintara-tm__product-link {
+  display: grid;
+  grid-template-columns: var(--nintara-tm-product-img-size) 1fr 15px;
+  align-items: center;
+  gap: var(--nintara-tm-product-link-gap);
+  width: 100%;
+  text-decoration: none;
+}
+
+.nintara-tm__product-img {
+  width: var(--nintara-tm-product-img-size);
+  height: var(--nintara-tm-product-img-size);
+  object-fit: cover;
+  border-radius: var(--nintara-tm-product-img-radius);
+  display: block;
+}
+
+.nintara-tm__product-info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.nintara-tm__product-name {
+  font-size: var(--nintara-tm-product-title-size);
+  font-weight: var(--nintara-tm-product-title-weight);
+  color: var(--nintara-tm-product-title-color);
+  margin: 0;
+  font-family: var(--nintara-tm-font);
+  line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.nintara-tm__product-arrow {
+  margin-left: auto;
+}
+
+/* ---- Nav buttons ---- */
+.nintara-tm__nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--nintara-tm-nav-bg);
+  color: var(--nintara-tm-nav-color);
+  border: none;
+  width: var(--nintara-tm-nav-size);
+  height: var(--nintara-tm-nav-size);
+  border-radius: var(--nintara-tm-nav-radius);
+  cursor: pointer;
+  z-index: 5;
+  font-size: 35px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 11px 15px;
+  line-height: 1;
+}
+
+.nintara-tm__nav-btn--prev {
+  left: -24px;
+}
+
+.nintara-tm__nav-btn--next {
+  right: -24px;
+}
+
+/* Disabled state */
+.nintara-tm__nav-btn--disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* Lock all button states — no hover effect (intentional per source) */
+.nintara-tm__nav-btn,
+.nintara-tm__nav-btn:hover,
+.nintara-tm__nav-btn:focus,
+.nintara-tm__nav-btn:active,
+.nintara-tm__nav-btn:focus-visible {
+  background: var(--nintara-tm-nav-bg) !important;
+  color: var(--nintara-tm-nav-color) !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Hide nav arrows on mobile */
+@media (max-width: 767px) {
+  .nintara-tm__nav-btn {
+    display: none;
+  }
+}
+
+/* --- Dot indicators --- */
+.nintara-tm__dots {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 24px;
+}
+
+.nintara-tm__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: none;
+  background: #c4c4c4;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.nintara-tm__dot--active {
+  background: #888888;
+}
+
+/* ---- Reduced motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  .nintara-tm__scroll {
+    scroll-behavior: auto !important;
+  }
+}

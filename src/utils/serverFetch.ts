@@ -4,8 +4,8 @@
  * A bare `fetch` in a server route handler has no timeout: if the upstream
  * hangs, the awaiting request — and every closure it captures (request body,
  * headers, render scope) — stays pinned in heap forever. Under load these
- * accumulate and exhaust memory. @shopkit/data-layer bounds its own requests
- * the same way (see resolveRequestSignal in its custom adapter).
+ * accumulate and exhaust memory. This is the same leak class patched in
+ * @shopkit/data-layer (see patches/@shopkit%2Fdata-layer@1.2.0.patch).
  *
  * `AbortSignal.timeout` is preferred over a manual AbortController + setTimeout
  * because the timer is owned by the signal and cannot itself leak.

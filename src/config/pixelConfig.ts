@@ -17,7 +17,6 @@ export const pixelConfig: PixelConfigMap = {
         pixelId: process.env.NEXT_PUBLIC_MULTI_PIXEL_IDS,
         capiEndpoint: "/api/events/capi",
         capiSecret: process.env.NEXT_PUBLIC_CAPI_HMAC_SECRET || undefined,
-        gokwikEnabled: process.env.NEXT_PUBLIC_GOKWIK_ENABLED === "true",
       }
     : null,
 
@@ -25,7 +24,6 @@ export const pixelConfig: PixelConfigMap = {
     ? {
         measurementId: process.env.NEXT_PUBLIC_GA_ID,
         isolated: process.env.NEXT_PUBLIC_GA_ISOLATED === "yes",
-        gokwikEnabled: process.env.NEXT_PUBLIC_GA_ID_GOKWIK_ENABLED === "true",
       }
     : null,
 
@@ -36,7 +34,6 @@ export const pixelConfig: PixelConfigMap = {
           process.env.NEXT_PUBLIC_GOOGLE_ADS_CONVERSION_LABEL || "",
         isolated: process.env.NEXT_PUBLIC_GA_ISOLATED === "yes",
         events: JSON.parse(process.env.NEXT_PUBLIC_GOOGLE_ADS_EVENTS || "{}"),
-        gokwikEnabled: process.env.NEXT_PUBLIC_GA_ADS_GOKWIK_ENABLED === "true",
       }
     : null,
 
@@ -62,11 +59,6 @@ export const pixelConfig: PixelConfigMap = {
         debug: process.env.NEXT_PUBLIC_GTM_DEBUG === "true" || undefined,
       }
     : null,
-
-  // Ratio Meta app (GoKwik-hosted). The SDK is merchant-specific — the token
-  // in its script URL identifies the store — and it pulls its own settings
-  // from the app, so no config keys are needed here. `{}` just enables it.
-  "meta-ratio": {},
 };
 
 /**

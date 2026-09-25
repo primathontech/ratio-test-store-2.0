@@ -5,7 +5,16 @@ import * as React from "react";
 export interface TextProps extends React.HTMLAttributes<HTMLElement> {
   as?: "p" | "span" | "div" | "label";
   size?:
-    "xs" | "sm" | "base" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl";
+    | "xs"
+    | "sm"
+    | "base"
+    | "md"
+    | "lg"
+    | "xl"
+    | "2xl"
+    | "3xl"
+    | "4xl"
+    | "5xl";
   weight?: "light" | "normal" | "medium" | "semibold" | "bold";
   align?: "left" | "center" | "right" | "justify";
   color?:

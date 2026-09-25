@@ -744,6 +744,7 @@ export default async function AboutPage() {
     path: "/about",
     params: {},
     query: {},
+    fetchAPITemplate: true,
   };
 
   const messages = await getRouteTranslations({

@@ -14,7 +14,27 @@ import {
 } from "./events";
 import { getCommerceClient } from "@/config";
 import { getCheckoutConfig } from "./config";
-import { GuestUserStorage } from "@/widgets/common/ThankYou/V1/utils/guestUserStorage";
+import {
+  addSentryBreadcrumb,
+  captureSentryException,
+  captureSentryMessage,
+} from "@/lib/sentry/utils";
+import { GuestUserStorage } from "./guest-user-storage";
+import { sendOrderConfirmationEmail } from "@/utils/orderConfirmationEmail";
+
+function readKwikTokenFromCookie(): string {
+  if (typeof document === "undefined") {
+    return "";
+  }
+  const match = document.cookie
+    .split("; ")
+    .find((c) => /KWIKUSERTOKEN=/i.test(c));
+  if (!match) {
+    return "";
+  }
+  const value = match.split("=")[1];
+  return value ? decodeURIComponent(value) : "";
+}
 
 // Global window interface for GoKwik
 declare global {
@@ -387,7 +407,7 @@ export class CustomCheckoutService {
         keepalive: true,
       });
     } catch (error) {
-      console.error(error, {
+      captureSentryException(error, {
         tags: { flow: "checkout", operation: "sendOrderToKwikchat" },
       });
     }
@@ -404,6 +424,13 @@ export class CustomCheckoutService {
       currencyCode,
       eventHandlers = {},
     } = config;
+
+    addSentryBreadcrumb("checkout", "Checkout initializing", {
+      cartToken,
+      total,
+      currencyCode,
+      itemCount: items.length,
+    });
 
     try {
       const commerceClient = getCommerceClient();
@@ -422,6 +449,10 @@ export class CustomCheckoutService {
         );
       }
 
+      addSentryBreadcrumb("checkout", "Checkout API response received", {
+        checkoutId: checkoutResponse?.data?.id,
+      });
+
       // Store event handlers and cart data for use in event listeners
       this.currentEventHandlers = eventHandlers;
       this.currentCartItems = items;
@@ -439,6 +470,10 @@ export class CustomCheckoutService {
         this.attachEventListeners();
 
         const config = getCheckoutConfig();
+
+        addSentryBreadcrumb("checkout", "GoKwik SDK checkout starting", {
+          mid: config.mid,
+        });
 
         const gokwikPayload = {
           environment: config.environment,
@@ -461,9 +496,21 @@ export class CustomCheckoutService {
           console.error("Error initializing GoKwik checkout:", error);
         }
       } else {
+        captureSentryMessage("GoKwik checkout not available or no cart ID", {
+          level: "error",
+          tags: { flow: "checkout", errorType: "sdkUnavailable" },
+        });
         throw new Error("GoKwik checkout not available or no cart ID");
       }
     } catch (error) {
+      captureSentryException(error, {
+        tags: {
+          flow: "checkout",
+          operation: "initializeCheckout",
+          errorType: "checkout",
+        },
+        contexts: { checkout: { cartToken, total, itemCount: items.length } },
+      });
       console.error("GoKwik checkout initialization error:", error);
       eventHandlers.onError?.(
         error instanceof Error ? error : new Error("Unknown checkout error")
@@ -529,13 +576,16 @@ export class CustomCheckoutService {
         total_price: number;
         payment_method: string;
         discounts: any[];
-        shipping_address?: { pincode?: string };
       }) => {
         const orderId = order?.merchant_order_id || `temp-${Date.now()}`;
+        addSentryBreadcrumb("checkout", "Order complete", {
+          orderId,
+          paymentMethod: order?.payment_method,
+        });
         // Trigger Trackier conversion tracking (same as Shopify)
-        if (typeof window !== "undefined" && window.TrackierWebSDK) {
-          this.triggerTrackierTrackConv(order);
-        }
+        // if (typeof window !== "undefined" && window.TrackierWebSDK) {
+        //   this.triggerTrackierTrackConv(order);
+        // }
 
         // Send order confirmation to kwikchat
         this.sendOrderToKwikchat(order);
@@ -545,6 +595,22 @@ export class CustomCheckoutService {
 
         // Clear cart storage (localStorage)
         this.clearCartStorage();
+        addSentryBreadcrumb("checkout", "Cart cleared after checkout");
+
+        // Send order confirmation email before navigation kills the page.
+        // The SDK order-complete payload lacks customer email, so pull it
+        // from GuestUserStorage (saved during user-login-successful).
+        const guestUser = GuestUserStorage.getGuestUserData();
+        sendOrderConfirmationEmail({
+          orderId,
+          orderData: {
+            ...order,
+            ...(guestUser?.email && { email: guestUser.email }),
+          },
+          gkAccessToken: readKwikTokenFromCookie(),
+          requestId: order?.request_id,
+          customerId: order?.customer_id || order?.customer?.id,
+        });
 
         // Call custom handler - this will trigger component's cart clearing and closing
         this.currentEventHandlers.onOrderComplete?.(order);
@@ -559,18 +625,18 @@ export class CustomCheckoutService {
           const requestId = order.request_id;
           const customerId = order.customer_id || order.customer?.id;
           const paymentMethod = order.payment_method;
+
+          // Persist order data so Thank You page can show order summary
+          try {
+            sessionStorage.setItem("gk_last_order", JSON.stringify(order));
+          } catch (_e) {
+            // sessionStorage unavailable – Thank You page will show zeros
+          }
+
           let finalRedirectPath = `/orders?orderId=${orderId}&requestId=${requestId}&paymentMethod=${paymentMethod}`;
 
           if (customerId) {
             finalRedirectPath += `&customerId=${customerId}`;
-          }
-
-          // Fire EDD without awaiting so it doesn't delay the redirect.
-          if (orderId && order.shipping_address?.pincode) {
-            this.createEDDForOrder(
-              orderId,
-              order.shipping_address.pincode
-            ).catch((err) => console.error("EDD creation failed:", err));
           }
 
           this.currentEventHandlers.navigate!(finalRedirectPath);
@@ -601,11 +667,17 @@ export class CustomCheckoutService {
           console.log("orderSuccess event received", event);
 
           const order = data.response;
+          addSentryBreadcrumb("checkout", "Order success (message event)", {
+            orderId: order?.order_name,
+          });
 
-          // Trigger Trackier conversion tracking if available
-          if (typeof window !== "undefined" && window.TrackierWebSDK) {
-            this.triggerTrackierTrackConv(order);
-          }
+          // Send order confirmation to kwikchat
+          this.sendOrderToKwikchat(order);
+
+          // // Trigger Trackier conversion tracking if available
+          // if (typeof window !== "undefined" && window.TrackierWebSDK) {
+          //   this.triggerTrackierTrackConv(order);
+          // }
 
           // Send order confirmation to kwikchat
           this.sendOrderToKwikchat(order);
@@ -616,6 +688,24 @@ export class CustomCheckoutService {
           // Clear cart storage (localStorage)
           this.clearCartStorage();
 
+          const msgOrderId =
+            order?.merchant_order_id ||
+            order?.order_name ||
+            order?.orderSuccessBody?.order_name ||
+            `temp-${Date.now()}`;
+          const guestUser = GuestUserStorage.getGuestUserData();
+          const innerOrder = order?.orderSuccessBody || order;
+          sendOrderConfirmationEmail({
+            orderId: msgOrderId,
+            orderData: {
+              ...order,
+              ...(guestUser?.email && { email: guestUser.email }),
+            },
+            gkAccessToken: readKwikTokenFromCookie(),
+            requestId: innerOrder?.request_id,
+            customerId: innerOrder?.customer_id || innerOrder?.customer?.id,
+          });
+
           // Call custom handler - this will trigger component's cart clearing and closing
           this.currentEventHandlers.onOrderComplete?.(order);
         }
@@ -625,9 +715,15 @@ export class CustomCheckoutService {
           data.type === "gokwik_events" &&
           data?.data?.eventname === "Started_Checkout_GK"
         ) {
+          addSentryBreadcrumb("checkout", "GoKwik tracking event", {
+            eventName: data?.data?.eventname,
+          });
           this.sendTrackingEvent();
         }
       } catch (error) {
+        captureSentryException(error, {
+          tags: { flow: "checkout", operation: "handleGoKwikMessage" },
+        });
         console.error("Error handling GoKwik message event:", error, event);
       }
     };
@@ -642,20 +738,34 @@ export class CustomCheckoutService {
   }
 
   /**
-   * Trigger Trackier conversion tracking
+   * Trigger Trackier conversion tracking.
+   * Accepts both GoKwik SDK callback payloads and the REST API order shape.
    */
-  private static triggerTrackierTrackConv(order: any): void {
-    const orderId = order?.order_name || order.orderSuccessBody?.order_name;
+  static triggerTrackierTrackConv(order: any): void {
+    // CashKaro expects the customer-facing order name (e.g. "TMC3212"),
+    // not the internal numeric merchant_order_id, so reconciliation matches
+    // the reference the customer sees.
+    const orderId =
+      order?.name ||
+      order?.external_order_number ||
+      order?.order_number ||
+      order?.id;
+    // GoKwik SDK callback uses `total` (rupees); orderSuccessBody uses
+    // `total_price` (rupees). The REST API order response uses `total_price`
+    // in paise, so divide by 100 to normalise to rupees.
     const orderAmount =
-      order?.total_price || order.orderSuccessBody?.total_price;
+      order?.total ??
+      order?.orderSuccessBody?.total_price ??
+      (order?.total_price != null ? Number(order.total_price) / 100 : 0);
+    const couponCode = order?.discounts?.[0]?.code ?? "";
 
-    window.TrackierWebSDK.trackConv(
+    window.TrackierWebSDK!.trackConv(
       "track.techtrack.in",
-      "6776449c8e7dea356102ea94",
+      process.env.NEXT_PUBLIC_CASHKARO_TRACKIER_GOAL_ID!,
       {
-        is_camp: true,
         txn_id: orderId,
         sale_amount: orderAmount,
+        coupon_code: couponCode,
         is_iframe: true,
       }
     );
@@ -694,31 +804,6 @@ export class CustomCheckoutService {
    */
   private static getCurrentcartToken(): string {
     return window.merchantInfo?.cart?.id || "";
-  }
-
-  /**
-   * Seed the order-tracking record (EDD) for a newly placed order.
-   * Fire-and-forget — never throws, never blocks the redirect.
-   */
-  private static async createEDDForOrder(
-    orderId: string,
-    pincode: string
-  ): Promise<void> {
-    try {
-      if (!orderId || !pincode) {
-        console.warn("Missing order ID or pincode for EDD creation");
-        return;
-      }
-      // Lazy-import the service so this file remains tree-shake-friendly
-      // and to avoid a static import cycle through @/services.
-      const { createEDDForOrder } = await import("@/services/order.service");
-      await createEDDForOrder({
-        orderNumber: orderId,
-        deliveryPincode: pincode,
-      });
-    } catch (error) {
-      console.error("Error creating EDD for order:", error);
-    }
   }
 
   /**

@@ -39,21 +39,6 @@
   // Replaced with real logger once we see `config.debug`.
   var logInfo = noop;
 
-  // Conversions GoKwik's hosted checkout reports itself. Both the runtime
-  // event name (InitiateCheckout) and the GA4 alias (BeginCheckout) are listed
-  // because the events map is merchant-authored and uses either spelling.
-  var GOKWIK_OWNED_EVENTS = [
-    "InitiateCheckout",
-    "BeginCheckout",
-    "AddShippingInfo",
-    "AddPaymentInfo",
-    "Purchase",
-  ];
-
-  function isGokwikOwned(eventName) {
-    return GOKWIK_OWNED_EVENTS.indexOf(eventName) !== -1;
-  }
-
   // ─── Helpers ───────────────────────────────────────────────────────────────
   function eid(event) {
     return (event && event.metadata && event.metadata.event_id) || "no-id";
@@ -205,25 +190,6 @@
           "no events configured — supply `conversionLabel` and/or `events` to register conversions"
         );
         return;
-      }
-
-      if (config.gokwikEnabled) {
-        var skipped = eventNames.filter(isGokwikOwned);
-        if (skipped.length > 0) {
-          eventNames = eventNames.filter(function (eventName) {
-            return !isGokwikOwned(eventName);
-          });
-          logWarn(
-            "gokwikEnabled — skipping conversions GoKwik reports itself: " +
-              skipped.join(", ")
-          );
-        }
-        if (eventNames.length === 0) {
-          logWarn(
-            "every configured conversion is GoKwik-owned — nothing left to subscribe"
-          );
-          return;
-        }
       }
 
       // ─── Idempotency: never double-register ──────────────────────────────

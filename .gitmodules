@@ -1,3 +1,0 @@
-[submodule "src/app/editor"]
-	path = src/app/editor
-	url = https://github.com/primathontech/storefront-editor-submodule.git

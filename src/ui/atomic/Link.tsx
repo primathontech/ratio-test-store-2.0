@@ -13,7 +13,11 @@ export interface LinkProps extends React.AnchorHTMLAttributes<HTMLAnchorElement>
    * Link variant
    */
   variant?:
-    "default" | "primary" | "secondary" | "underline" | "hover-underline";
+    | "default"
+    | "primary"
+    | "secondary"
+    | "underline"
+    | "hover-underline";
 
   /**
    * Link size

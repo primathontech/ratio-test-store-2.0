@@ -1,0 +1,299 @@
+"use client";
+
+import { useAuth } from "@shopkit/core/context";
+import { usePathname } from "next/navigation";
+import React, { useEffect, useState } from "react";
+import { getCustomerDetails } from "../api";
+import { getCustomerAddresses } from "../../Addresses/api";
+import { getCustomerPhoneFromStorage } from "../../Addresses/utils/customerUtils";
+import { defaultSettings, getDefaultNavigationItems } from "../common/constant";
+import { LeftSideBar } from "../common/LeftSideBar";
+import { AccountDetails } from "../components/AccountDetails";
+import { AccountProps } from "../types";
+
+export const AccountV1: React.FC<AccountProps> = ({ data, settings = {} }) => {
+  const pathname = usePathname();
+  const { accessToken, logout: authLogout } = useAuth();
+  const [customerData, setCustomerData] = useState<any>(null);
+  const [addressCount, setAddressCount] = useState<number>(() => {
+    if (typeof window === "undefined") {
+      return 0;
+    }
+    try {
+      const cached = sessionStorage.getItem("addressCount");
+      return cached !== null ? parseInt(cached, 10) : 0;
+    } catch {
+      return 0;
+    }
+  });
+  const [displayAddress, setDisplayAddress] = useState<any>(null);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string>("");
+
+  const gkToken =
+    typeof accessToken === "string"
+      ? accessToken
+      : ((accessToken as { accessToken?: string; token?: string } | null)
+          ?.accessToken ?? (accessToken as { token?: string } | null)?.token);
+
+  const fetchCustomerData = async () => {
+    try {
+      setLoading(true);
+      setError("");
+
+      const gkMerchantId = process.env.NEXT_PUBLIC_MERCHANT_ID || "";
+
+      const result = await getCustomerDetails(gkToken || "", gkMerchantId);
+
+      if (result) {
+        setCustomerData(result);
+
+        // Store customer details in localStorage
+        const customerDetails = {
+          email: result.email || result.defaultAddress?.email || "",
+          phone: result.phone || result.defaultAddress?.phone || "",
+          firstName: result.firstName || result.defaultAddress?.firstName || "",
+          lastName: result.lastName || result.defaultAddress?.lastName || "",
+        };
+        if (customerDetails.email || customerDetails.phone) {
+          localStorage.setItem(
+            "customerDetails",
+            JSON.stringify(customerDetails)
+          );
+        }
+
+        // Fetch addresses for count and display
+        const phoneNumber =
+          customerDetails.phone || getCustomerPhoneFromStorage();
+        if (phoneNumber && gkToken) {
+          const addressesResponse = await getCustomerAddresses(
+            phoneNumber,
+            gkToken
+          );
+          if (addressesResponse?.success && addressesResponse.data?.addresses) {
+            const addresses = addressesResponse.data.addresses;
+            setAddressCount(addresses.length);
+            try {
+              sessionStorage.setItem(
+                "addressCount",
+                addresses.length.toString()
+              );
+            } catch {
+              // ignore
+            }
+
+            // Use default address from profile if available, otherwise from list
+            if (result.defaultAddress) {
+              setDisplayAddress(result.defaultAddress);
+            } else if (addresses.length > 0) {
+              const defaultAddr = addresses.find(
+                (a: any) => a.isDefault || a.address_type === "default"
+              );
+              setDisplayAddress(defaultAddr || addresses[0]);
+            } else {
+              setDisplayAddress(null);
+            }
+          } else {
+            setAddressCount(0);
+            setDisplayAddress(null);
+          }
+        }
+      } else {
+        setError("Failed to fetch customer data");
+      }
+    } catch (err) {
+      console.error("Error fetching customer data:", err);
+      setError("An error occurred while fetching customer data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Re-fetch when navigating back to dashboard or when auth resolves
+  useEffect(() => {
+    if (gkToken) {
+      fetchCustomerData();
+    } else {
+      setLoading(false);
+    }
+  }, [pathname, gkToken]);
+
+  // Helper: get value from customer profile, then displayAddress, then fallback
+  const getFieldValue = (field: string) => {
+    // Map camelCase fields to snake_case API address fields
+    const addressFieldMap: Record<string, string> = {
+      firstName: "first_name",
+      lastName: "last_name",
+      address1: "address_line1",
+      address2: "address_line2",
+      zip: "pincode",
+      province: "state",
+    };
+    return (
+      customerData?.[field] ||
+      displayAddress?.[field] ||
+      displayAddress?.[addressFieldMap[field] ?? ""] ||
+      " "
+    );
+  };
+
+  // Extract customer information
+  const customerEmail = getFieldValue("email");
+  const firstName = getFieldValue("firstName").trim();
+  const lastName = getFieldValue("lastName").trim();
+  const hasName = Boolean(firstName || lastName);
+  const customerName = hasName
+    ? `${firstName} ${lastName}`.trim()
+    : customerEmail || "Guest";
+
+  const hasAddress = Boolean(displayAddress);
+
+  // Customer details configuration
+  const customerDetailsConfig = [
+    {
+      key: "name",
+      label: "Name",
+      value: customerName,
+      condition: customerName !== "Guest",
+    },
+    { key: "email", label: "E-mail", value: customerEmail },
+    { key: "address1", label: "Address 1", value: getFieldValue("address1") },
+    { key: "address2", label: "Address 2", value: getFieldValue("address2") },
+    {
+      key: "country",
+      label: "Country/region",
+      value: (() => {
+        const city = getFieldValue("city");
+        const country = getFieldValue("country");
+        const formattedCountry = country
+          ? country
+              .split(" ")
+              .map(
+                (w: string) =>
+                  w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()
+              )
+              .join(" ")
+          : "";
+        return [city, formattedCountry].filter((v) => v && v.trim()).join(", ");
+      })(),
+    },
+    { key: "zip", label: "Postal/ZIP code", value: getFieldValue("zip") },
+    { key: "phone", label: "Phone", value: getFieldValue("phone") },
+  ];
+
+  // Filter and create customer details array
+  const customerDetailsArray = customerDetailsConfig
+    .filter(
+      ({ key, value, condition = true }) =>
+        value && condition && (hasAddress || key === "name" || key === "email")
+    )
+    .map(({ label, value }) => ({ label, value }));
+
+  const handleLogout = () => {
+    localStorage.removeItem("customerDetails");
+    authLogout();
+    if (typeof window !== "undefined" && (window as any).handleLogout) {
+      (window as any).handleLogout("/");
+    }
+    window.location.replace("/");
+  };
+
+  // Merge settings with defaults
+  const config = {
+    ...defaultSettings,
+    ...settings,
+    navigationItems:
+      settings.navigationItems ||
+      getDefaultNavigationItems(
+        pathname === "/account",
+        false,
+        false,
+        addressCount
+      ),
+  };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="bg-white">
+        <div className="mx-auto">
+          <div className="flex items-center justify-center min-h-[400px]">
+            <div className="text-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading customer data...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      data-testid="momsco-account-container"
+      className="bg-white min-h-[600px] md:min-h-[341px]"
+    >
+      <div data-testid="momsco-account-inner-container" className="mx-auto">
+        <div
+          data-testid="momsco-account-grid"
+          className="grid grid-cols-1 md:grid-cols-[1fr_3fr] gap-[16px] px-[15px] md:px-[30px] xl:px-[70px]"
+        >
+          {/* Left Sidebar */}
+          <LeftSideBar
+            navigationItems={config.navigationItems}
+            onLogout={handleLogout}
+            isNavSticky
+          />
+
+          {/* Main Content Area */}
+          <main
+            key={pathname}
+            className="flex-1"
+            data-testid="momsco-account-main-content"
+          >
+            {error ? (
+              <div className="flex items-center justify-center min-h-[400px]">
+                <div className="text-center">
+                  <p className="text-red-600 mb-4">{error}</p>
+                  <button
+                    onClick={() => window.location.reload()}
+                    className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
+                  >
+                    Retry
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                {/* Greeting */}
+                <div>
+                  <p className="text-black text-[14px]">
+                    {config.greetingText} <strong>{customerName}</strong>{" "}
+                    {customerEmail && (
+                      <>
+                        ({config.notYouText} <strong>{customerName}</strong>?{" "}
+                        <button
+                          onClick={handleLogout}
+                          className="transition-colors duration-300 text-black hover:text-[#0089dd] font-normal underline underline-offset-4"
+                        >
+                          {config.logoutText}
+                        </button>
+                        )
+                      </>
+                    )}
+                  </p>
+                </div>
+
+                {/* Account Details */}
+                <AccountDetails
+                  customerDetails={customerDetailsArray}
+                  accountDetailsTitle={config.accountDetailsTitle}
+                />
+              </>
+            )}
+          </main>
+        </div>
+      </div>
+    </div>
+  );
+};

@@ -1,0 +1,105 @@
+/* ============================================================================
+   Nintara Baby — Category Tab Bar
+   Source: nintarababy.in/collections/all-products
+   Selector: .category-scroll-wrapper
+   ============================================================================ */
+
+:root {
+  /* --- Nintara Category Tab Bar tokens --- */
+  --nintara-ctb-pill-border-color: #3d7cc9;
+  --nintara-ctb-pill-text: #3d7cc9;
+  --nintara-ctb-pill-bg: transparent;
+  --nintara-ctb-pill-active-border-color: #c49330;
+  --nintara-ctb-pill-active-text: #000000;
+  --nintara-ctb-pill-font: var(--font-figtree, "Figtree"), sans-serif;
+  --nintara-ctb-pill-size-dk: 16px;
+  --nintara-ctb-pill-size-mb: 14px;
+  --nintara-ctb-pill-weight: 500;
+  --nintara-ctb-pill-padding: 5px 25px;
+  --nintara-ctb-pill-min-height: 42px;
+  --nintara-ctb-pill-radius: 4px;
+  --nintara-ctb-pill-gap: 10px;
+  --nintara-ctb-margin-dk: 20px 0 30px;
+  --nintara-ctb-margin-mb: 0 0 20px;
+  --nintara-ctb-transition: all 0.25s ease;
+}
+
+/* --- Outer wrapper (overflow container) --- */
+.nintara-ctb {
+  width: 100%;
+  overflow-x: auto;
+  margin: var(--nintara-ctb-margin-dk);
+}
+
+/* --- Scrollable flex row --- */
+.nintara-ctb__scroll {
+  display: flex;
+  gap: var(--nintara-ctb-pill-gap);
+  width: 100%;
+  padding: 0;
+  justify-content: center;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.nintara-ctb__scroll::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- Individual pill (default/inactive state) --- */
+.nintara-ctb__pill {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--nintara-ctb-pill-border-color);
+  padding: var(--nintara-ctb-pill-padding);
+  border-radius: var(--nintara-ctb-pill-radius);
+  min-height: var(--nintara-ctb-pill-min-height);
+  font-family: var(--nintara-ctb-pill-font);
+  font-size: var(--nintara-ctb-pill-size-dk);
+  font-weight: var(--nintara-ctb-pill-weight);
+  line-height: normal;
+  color: var(--nintara-ctb-pill-text);
+  background-color: var(--nintara-ctb-pill-bg);
+  text-align: center;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: var(--nintara-ctb-transition);
+}
+
+/* --- Active pill state (current collection) --- */
+.nintara-ctb__pill--active {
+  border: 2px solid var(--nintara-ctb-pill-active-border-color);
+  color: var(--nintara-ctb-pill-active-text);
+}
+
+/* --- Mobile overrides (<=767px) --- */
+@media (max-width: 767px) {
+  .nintara-ctb {
+    margin: var(--nintara-ctb-margin-mb);
+  }
+
+  .nintara-ctb__scroll {
+    justify-content: safe center;
+    overflow-x: scroll;
+    white-space: nowrap;
+    padding-bottom: 5px;
+  }
+
+  .nintara-ctb__pill {
+    font-size: var(--nintara-ctb-pill-size-mb);
+    padding: 2% 7%;
+  }
+}
+
+@media (max-width: 640px) {
+  .nintara-ctb {
+    padding-left: 2px;
+    padding-right: 2px;
+  }
+
+  .nintara-ctb__pill {
+    padding: 2% 5%;
+  }
+}
