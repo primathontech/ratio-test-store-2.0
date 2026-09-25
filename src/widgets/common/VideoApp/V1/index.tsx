@@ -1,7 +1,13 @@
 "use client";
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useCartStore } from "@shopkit/cart";
+import { getCartConfig, useCartStore } from "@shopkit/cart";
+
+import {
+  useCustomCheckout,
+  convertCartItemsForCheckout,
+} from "@/integrations/checkout-custom";
+import CheckoutScriptCustom from "@/integrations/checkout-custom/CheckoutScriptCustom";
 
 import type {
   VideoAppProductData,
@@ -139,6 +145,7 @@ export const V1: React.FC<VideoAppProps> = ({ data, settings }) => {
   const [hasContent, setHasContent] = useState<boolean | null>(null);
   const sectionRef = useRef<HTMLElement | null>(null);
   const addItems = useCartStore((s) => s.addItems);
+  const { startCheckout } = useCustomCheckout();
 
   /**
    * Resolve product id (or "homepage" sentinel for the home rail).
@@ -355,6 +362,66 @@ export const V1: React.FC<VideoAppProps> = ({ data, settings }) => {
     };
   }, [addItems]);
 
+  /* ── Checkout bridge: SDK emits, we start GoKwik checkout ── */
+  useEffect(() => {
+    const handleCheckout = async (event: Event) => {
+      const detail = (event as CustomEvent<VideoWidgetAddToCartDetail>).detail;
+      if (!detail) {
+        return;
+      }
+      // Synchronous so the SDK's dispatchEvent() returns false and waits for done().
+      (event as CustomEvent).preventDefault();
+
+      const pid = detail.productId ?? detail.item?.productId ?? detail.item?.id;
+      if (!pid) {
+        detail.done?.({ ok: false, error: "missing_product_id" });
+        return;
+      }
+      const variantId = detail.variantId ?? detail.item?.firstVariantId ?? pid;
+      const quantity = detail.quantity ?? 1;
+
+      try {
+        const { cartService, merchantName } = getCartConfig();
+        const cart = await cartService.createCart(merchantName);
+        if (!cart.token) {
+          detail.done?.({ ok: false, error: "missing_cart_token" });
+          return;
+        }
+        await cartService.addToCart(cart.token, [
+          {
+            productId: String(pid),
+            variantId: String(variantId),
+            quantity,
+          },
+        ]);
+        const fullCart = await cartService.getCart(cart.token);
+        await startCheckout({
+          cartToken: fullCart.token ?? cart.token,
+          items: convertCartItemsForCheckout(fullCart.items ?? []),
+          total: fullCart.totalAmount?.amount ?? 0,
+          currencyCode: fullCart.totalAmount?.currencyCode ?? "INR",
+          checkoutUrl: fullCart.checkoutUrl ?? "",
+        });
+        detail.done?.({ ok: true });
+      } catch (error) {
+        console.error("VideoWidget checkout failed", error);
+        detail.done?.({ ok: false, error: String(error) });
+      }
+    };
+
+    // eslint-disable-next-line no-restricted-syntax
+    window.addEventListener(
+      "video-widget:checkout",
+      handleCheckout as EventListener
+    );
+    return () => {
+      window.removeEventListener(
+        "video-widget:checkout",
+        handleCheckout as EventListener
+      );
+    };
+  }, [startCheckout]);
+
   /* ── Description-key injection for SDK metadata event ── */
   useEffect(() => {
     const handleVideoMetadata = (event: Event) => {
@@ -395,6 +462,7 @@ export const V1: React.FC<VideoAppProps> = ({ data, settings }) => {
 
   return (
     <div data-testid="video-app-wrapper" className="max-w-[1400px] mx-auto">
+      <CheckoutScriptCustom />
       <div
         data-testid="video-app-container"
         id={containerId}

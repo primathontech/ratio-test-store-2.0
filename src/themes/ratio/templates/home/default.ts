@@ -41,6 +41,34 @@ export const template: PageConfig = {
     },
 
     {
+      id: "video-app-section",
+      name: "Video App",
+      type: SECTION_TYPES.CONTENT_SECTION,
+      settings: {
+        layout: SECTION_LAYOUT_OPTIONS.FULL,
+        responsive: {
+          mobile: { padding: { top: 56, right: 16, bottom: 56, left: 16 } },
+          tablet: { padding: { top: 56, right: 16, bottom: 56, left: 16 } },
+          desktop: { padding: { top: 56, right: 16, bottom: 56, left: 16 } },
+        },
+      },
+      widgets: [
+        {
+          id: "video-app-home",
+          name: "Video App",
+          type: WIDGET_TYPES.VideoApp,
+          settings: {
+            variant: "v1",
+            title: "Watch & Shop",
+            layout: "grid",
+            itemsPerRow: 4,
+            enableCtaButton: false,
+          },
+        },
+      ],
+    },
+
+    {
       id: "ratio-form-section",
       name: "Ratio Form",
       type: SECTION_TYPES.CONTENT_SECTION,
