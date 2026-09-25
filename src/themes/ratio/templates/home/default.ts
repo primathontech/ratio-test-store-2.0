@@ -41,7 +41,7 @@ export const template: PageConfig = {
     },
 
     {
-      id: "ratio-form-section",
+      id: "ratio-video-section",
       name: "Ratio Form",
       type: SECTION_TYPES.CONTENT_SECTION,
       settings: {
@@ -54,13 +54,10 @@ export const template: PageConfig = {
       },
       widgets: [
         {
-          id: "ratio-form",
-          name: "Ratio Form",
-          type: WIDGET_TYPES.RatioForm,
-          settings: {
-            variant: "v1",
-            formId: "form_yZ25ONWPeLuYSDw3",
-          },
+          id: "ratio-video",
+          name: "Ratio Video",
+          type: WIDGET_TYPES.RatioVideo,
+          settings: { variant: "v1" },
         },
       ],
     },
