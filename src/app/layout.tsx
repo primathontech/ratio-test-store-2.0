@@ -209,7 +209,6 @@ export default async function RootLayout({
             <KwikCartRemounter />
           )}
         </AppShell>
-
         {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership */}
         <Script
           src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
@@ -222,7 +221,6 @@ export default async function RootLayout({
             window.gtag('js', new Date());
           `}
         </Script>
-
         {/* V2 Pixel SDKs — self-register with PixelRuntime */}
         <Script src="/scripts/meta-pixel-sdk.js" strategy="afterInteractive" />
         <Script src="/scripts/ga4-pixel-sdk.js" strategy="afterInteractive" />
@@ -231,6 +229,10 @@ export default async function RootLayout({
           strategy="afterInteractive"
         />
         <Script src="/scripts/gtm-pixel-sdk.js" strategy="afterInteractive" />
+        <Script
+          src="https://d2zzy348rbi2h3.cloudfront.net/qa/shopify-pixel-sdk.js"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
