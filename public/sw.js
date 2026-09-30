@@ -140,15 +140,9 @@ function isStaticAsset(request) {
   const url = new URL(request.url);
   const pathname = url.pathname.toLowerCase();
 
-  // Never cache JS bundles - they contain build hashes and change frequently.
-  // Caching them causes stale component code to render after hydration recovery.
-  if (pathname.match(/\.js$/i)) {
-    return false;
-  }
-
   return (
-    pathname.includes("/_next/static/css/") ||
-    pathname.match(/\.(css|woff|woff2|ttf|otf)$/i)
+    pathname.includes("/_next/static/") ||
+    pathname.match(/\.(css|js|woff|woff2|ttf|otf)$/i)
   );
 }
 

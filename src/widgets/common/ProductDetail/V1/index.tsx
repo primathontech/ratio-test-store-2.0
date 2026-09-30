@@ -1,0 +1,119 @@
+"use client";
+
+import React, { memo } from "react";
+
+import {
+  ProductDetailProps,
+  ProductImage,
+  ApiProduct,
+  ProductMetadataKey,
+} from "../types";
+import { ProductGallery } from "../components/ProductGallery";
+import { RatioProductInfo } from "../components/RatioProductInfo";
+import { getProductLabel } from "@/utils/metafield";
+
+/* ------------------------------------------------------------------ */
+/*  API → Widget data transformers                                     */
+/* ------------------------------------------------------------------ */
+
+function transformApiImages(product: ApiProduct): ProductImage[] {
+  return product.images.map((img) => ({
+    url: img.url,
+    altText: img.alt_text || product.title,
+    id: img.id,
+    type: img.media_type,
+    thumbnail_url: img.thumbnail_url ?? undefined,
+  }));
+}
+
+/* ------------------------------------------------------------------ */
+/*  Main V1 Component                                                  */
+/* ------------------------------------------------------------------ */
+
+export const V1 = memo(function V1({
+  data,
+  settings,
+  className,
+}: ProductDetailProps) {
+  const product = data?.success ? data.data : null;
+
+  // No product available — bail rather than render a broken section.
+  if (!product) {
+    return null;
+  }
+
+  const images: ProductImage[] = transformApiImages(product);
+
+  // Two-source ribbon — metafield wins (green pill), else tag fallback
+  // (resolved against `PRODUCT_TAG_LABELS_ARRAY`, e.g. "new-launch" → pink).
+  const productLabelsMeta =
+    product.metadata?.[ProductMetadataKey.PRODUCT_LABELS]?.value;
+  const productLabel =
+    getProductLabel(
+      productLabelsMeta,
+      product.tags?.map((tag) => tag.name)
+    ) ?? null;
+
+  // Optional template-driven copy overrides — passed through to
+  // RatioProductInfo. Each prop defaults to a ratio-tuned string inside
+  // the component, so anything left undefined falls through to that default.
+  const infoProps = {
+    addToCartText: settings?.addToCartText,
+    netContentText: settings?.netContentText ?? settings?.netContentLabel,
+    inclusiveOfAllTaxesText:
+      settings?.inclusiveOfAllTaxesText ?? settings?.taxInfo,
+    selectSizeText: settings?.selectSizeText ?? settings?.variantLabel,
+    reviewsText: settings?.reviewsText,
+    mrp: settings?.mrp,
+    discount: settings?.discount,
+    usp: settings?.usp,
+    rupeeSymbol: settings?.rupeeSymbol,
+    soldOutText: settings?.soldOutText,
+    showProductMarquee: settings?.showProductMarquee,
+    productMarqueeText: settings?.productMarqueeText,
+    productMarqueeCouponCode: settings?.productMarqueeCouponCode,
+    productMarqueeSpeed: settings?.productMarqueeSpeed,
+    productMarqueeHref: settings?.productMarqueeHref,
+  };
+
+  return (
+    <section
+      data-testid="product-gallery-with-info-container"
+      className={`w-full bg-secondary ${className ?? ""}`}
+    >
+      <div className="pt-0 pb-0 lg:pt-[47px] xl:pt-14 lg:pb-[27px] xl:pb-8">
+        <div className="px-0 md:px-[30px] xl:px-[70px] pt-4 md:pt-0">
+          {/* Mobile — info stacks above gallery (gallery slot is rendered
+              inside RatioProductInfo via `renderGallery`). */}
+          <div className="block md:hidden">
+            <RatioProductInfo
+              data={product}
+              renderGallery={
+                <ProductGallery images={images} productLabel={productLabel} />
+              }
+              {...infoProps}
+            />
+          </div>
+
+          {/* Desktop — two-column layout. */}
+          <div className="hidden md:flex gap-4 pt-0 pb-0 md:pt-[47px] lg:pt-0 md:pb-[27px] lg:pb-0 max-w-[1300px] mx-auto">
+            <div
+              data-testid="product-gallery-section-desktop"
+              className="flex-1 min-w-0"
+            >
+              <div className="sticky top-[30px]">
+                <ProductGallery images={images} productLabel={productLabel} />
+              </div>
+            </div>
+
+            <div data-testid="product-info-section" className="flex-1 min-w-0">
+              <div className="sticky top-[30px] pl-0 xl:pl-[13px]">
+                <RatioProductInfo data={product} {...infoProps} />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+});

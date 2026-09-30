@@ -3,7 +3,7 @@ import type { PageConfig } from "@shopkit/builder";
 
 const EDITOR_API_BASE =
   process.env.NEXT_PUBLIC_EDITOR_API_URL ||
-  "https://api-gw-v4.dev.gokwik.in/uat/os-editor";
+  "https://visual-editor-be.primathontech.co.in";
 
 /**
  * Fetch a shareable preview snapshot by id (and optional version) from the

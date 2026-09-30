@@ -33,7 +33,6 @@ build
 .vscode-test
 
 # Git
-.git
 .gitignore
 README.md
 

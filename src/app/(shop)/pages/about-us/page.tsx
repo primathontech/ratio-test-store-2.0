@@ -1,0 +1,50 @@
+// Rendered via @/bootstrap/builder → createPageBuildingEngine (shopkit page builder).
+import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
+import { getStaticLocale } from "@/bootstrap/i18n";
+import { getThemeName, getRouteTranslations } from "@/utils";
+import { getPageBuilder } from "@/bootstrap/builder";
+import { Metadata } from "next";
+import { getPageMetadata } from "@shopkit/seo";
+
+export async function generateMetadata(): Promise<Metadata> {
+  return getPageMetadata({
+    pageType: "page",
+    path: "/pages/about-us",
+    fallback: {
+      title: "About Us",
+      description: `Learn more about ${
+        process.env.NEXT_PUBLIC_SITE_NAME || "our store"
+      }.`,
+    },
+  });
+}
+
+export default async function AboutUsPage() {
+  const themeName = getThemeName();
+  const locale = getStaticLocale();
+
+  const routeContext = {
+    templateName: TEMPLATE_TYPES["about-us"],
+    path: "/pages/about-us",
+    params: {},
+    query: {},
+    fetchAPITemplate: true,
+  };
+
+  const messages = await getRouteTranslations({
+    themeName,
+    routeContext,
+    language: locale,
+  });
+
+  const pageBuilder = getPageBuilder();
+
+  const pageContent = await pageBuilder.renderPage({
+    merchantName: themeName,
+    routeContext,
+    locale,
+    messages,
+  });
+
+  return <>{pageContent}</>;
+}
