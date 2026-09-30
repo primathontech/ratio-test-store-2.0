@@ -1,0 +1,155 @@
+{
+  "common": {
+    "logo": "/ratio-logo.svg",
+    "site_name": "Ratio",
+    "product_card": {
+      "add_to_cart": "Add to cart",
+      "sold_out": "View",
+      "sold_out_in_pdp": "Sold Out"
+    },
+    "header": {
+      "logoSrc": {
+        "src": "/ratio-logo.svg",
+        "alt": "Ratio"
+      },
+      "searchSuggestions": [
+        "Search for products",
+        "Search by category",
+        "Find your favourites",
+        "Search the store"
+      ],
+      "get_app": {
+        "title": "Get this App",
+        "description": "For better experience and exclusive features",
+        "button_text": "Use app",
+        "logo_alt": "App Logo",
+        "logo_url": {
+          "src": "/ratio-logo.svg",
+          "alt": "App Logo"
+        },
+        "app_url": "https://onelink.to/zwhyy8"
+      }
+    },
+    "footer": {
+      "mobileFooterTagline__rich": "Your everyday essentials store - <strong>Ratio</strong>",
+      "logoUrl": {
+        "src": "/ratio-logo.svg",
+        "alt": "Ratio"
+      },
+      "logoAlt": "Ratio",
+      "appDownloadText": "Get the app",
+      "googlePlayUrl": "https://onelink.to/zwhyy8",
+      "appStoreUrl": "https://onelink.to/zwhyy8",
+      "googlePlayImage": {
+        "src": "/Footer/images/app-store-android.png",
+        "alt": "Download on Google Play"
+      },
+      "googlePlayAlt": "Download on Google Play",
+      "appStoreImage": {
+        "src": "/Footer/images/app-store-ios.png",
+        "alt": "Download on Apple App Store"
+      },
+      "appStoreAlt": "Download on Apple App Store",
+      "serviceSectionsIcons": [
+        {
+          "name": "Free Shipping",
+          "image": "",
+          "alt": "Free Shipping icon"
+        },
+        {
+          "name": "Easy Return",
+          "image": "",
+          "alt": "Easy Return icon"
+        },
+        {
+          "name": "COD Available",
+          "image": "",
+          "alt": "COD Available icon"
+        }
+      ],
+      "socialLinks": [
+        {
+          "name": "Facebook",
+          "href": "https://www.facebook.com/bbluntindia",
+          "icon": "facebook"
+        },
+        {
+          "name": "Twitter",
+          "href": "https://twitter.com/bbluntindia",
+          "icon": "twitter"
+        },
+        {
+          "name": "Instagram",
+          "href": "https://www.instagram.com/bbluntindia",
+          "icon": "instagram"
+        },
+        {
+          "name": "YouTube",
+          "href": "https://www.youtube.com/c/BBLUNTIndia/videos",
+          "icon": "youtube"
+        },
+        {
+          "name": "Email",
+          "href": "mailto:care@BBLUNT.com",
+          "icon": "email"
+        }
+      ],
+      "paymentProtectionText": "100% Payment Protection, Easy Return Policy",
+      "copyrightText": "All rights reserved.",
+      "paymentMethods": [
+        {
+          "name": "Visa",
+          "icon": "visa",
+          "image": "/Footer/icons/visa.svg"
+        },
+        {
+          "name": "Mastercard",
+          "icon": "master",
+          "image": "/Footer/icons/master.svg"
+        },
+        {
+          "name": "American Express",
+          "icon": "amex",
+          "image": "/Footer/icons/american_express.svg"
+        },
+        {
+          "name": "RuPay",
+          "icon": "rupay",
+          "image": "/Footer/icons/rupay.svg"
+        },
+        {
+          "name": "Net Banking",
+          "icon": "netbanking",
+          "image": "/Footer/icons/netbanking.svg"
+        },
+        {
+          "name": "Google Pay",
+          "icon": "gpay",
+          "image": "/Footer/icons/google_pay.svg"
+        },
+        {
+          "name": "Paytm",
+          "icon": "paytm",
+          "image": "/Footer/icons/paytm.svg"
+        }
+      ]
+    },
+    "announcement_bar__rich": [
+      {
+        "id": 0,
+        "text": "Free shipping on all prepaid orders",
+        "href": "/"
+      }
+    ],
+    "collection_page": {
+      "filter_title": "Filter",
+      "sort_dropdown_button_text": "Sort by"
+    },
+    "deleteAccount": {
+      "heading": "Delete Your Account",
+      "description": "Deleting your account will permanently remove your personal data, app activity, and any associated information. This action cannot be undone. To proceed, please verify your identity by entering your registered email address or phone number below. We'll send you a confirmation link or code to complete your account deletion request.",
+      "submitLabel": "Send",
+      "successMessage": "Thanks for contacting us. We'll get back to you as soon as possible."
+    }
+  }
+}

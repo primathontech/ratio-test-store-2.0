@@ -1,25 +1,60 @@
 # Claude Code Instructions for Storefront Builder
 
+# Agent Behavior Guidelines
+
+## Assertiveness Rules
+
+- Dont afraid to say no
+- Decline tasks outside your designated scope
+- Push back on unclear or incomplete requirements
+- Refuse approaches that violate architectural principles
+- Ask for clarification rather than assuming
+- Touch only what you must. Clean up only your own mess.
+- Minimum code that solves the problem. Nothing speculative.
+
+## How to Decline
+
+When saying no, always:
+
+1. State clearly that you're declining
+2. Explain why briefly
+3. Suggest an alternative or ask what's needed for you to proceed
+
+## When a bug is raised
+
+When I report a bug
+
+- Don't start by trying to fix it.
+- Instead, start by writing a test that reproduces the bug.
+- Then, have subagents try to fix the bug and prove it with a passing test.
+
+---
+
 ## Required Reading Before Any Task
 
 Before generating pages, widgets, templates, or integrations, **ALWAYS read these files first**:
 
 1. **`src/SYSTEM_ARCHITECTURE.md`** - How templates, widgets, themes work together
 2. **`AGENTS.md`** - Package APIs and common patterns
+3. **`MEGA-MENU-KT.md`** - **Read this whenever you build or restyle the Header or Footer.** This
+   storefront ships a working, admin-managed header + footer menu (desktop + mobile mega menu) via
+   `@shopkit/navigation`. The data wiring is done — you only restyle to brand. Reference code:
+   `src/widgets/common/Header/V1` + `Footer/V1`.
 
 ## Quick Command Reference
 
-| Task                 | Documentation Section                                            |
-| -------------------- | ---------------------------------------------------------------- |
-| Create new page      | `SYSTEM_ARCHITECTURE.md` → "Quick Start: Create a New Page"      |
-| Create new widget    | `SYSTEM_ARCHITECTURE.md` → "Creating New Widgets"                |
-| Create new template  | `SYSTEM_ARCHITECTURE.md` → "Creating New Templates"              |
-| Add integration      | `src/integrations/README.md`                                     |
-| Understand data flow | `SYSTEM_ARCHITECTURE.md` → "Page Rendering Flow"                 |
-| **Add to cart**      | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow"                |
-| **Checkout flow**    | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow"                |
-| **Data fetching**    | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow" → "Data Layer" |
-| **CLI commands**     | `SYSTEM_ARCHITECTURE.md` → "CLI Commands"                        |
+| Task                                | Documentation Section                                                    |
+| ----------------------------------- | ------------------------------------------------------------------------ |
+| Create new page                     | `SYSTEM_ARCHITECTURE.md` → "Quick Start: Create a New Page"              |
+| Create new widget                   | `SYSTEM_ARCHITECTURE.md` → "Creating New Widgets"                        |
+| Create new template                 | `SYSTEM_ARCHITECTURE.md` → "Creating New Templates"                      |
+| Add integration                     | `src/integrations/README.md`                                             |
+| Understand data flow                | `SYSTEM_ARCHITECTURE.md` → "Page Rendering Flow"                         |
+| **Add to cart**                     | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow"                        |
+| **Checkout flow**                   | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow"                        |
+| **Data fetching**                   | `SYSTEM_ARCHITECTURE.md` → "Commerce & Cart Flow" → "Data Layer"         |
+| **CLI commands**                    | `SYSTEM_ARCHITECTURE.md` → "CLI Commands"                                |
+| **Design/restyle Header or Footer** | `MEGA-MENU-KT.md` (admin-managed mega menu; restyle only, data is wired) |
 
 ## Essential CLI Commands
 
@@ -47,9 +82,9 @@ bun run perf:check           # Run all validations
 
 ### New Page
 
-1. Template: `src/themes/dawn/templates/{page-name}/default.ts`
+1. Template: `src/themes/ratio/templates/{page-name}/default.ts`
 2. Next.js Page: `src/app/{page-name}/page.tsx`
-3. Translations (optional): `src/themes/dawn/locales/pages/{page-name}/en.json`
+3. Translations (optional): `src/themes/ratio/locales/pages/{page-name}/en.json`
 
 ### New Widget
 

@@ -1,0 +1,40 @@
+{
+  "sections.shop_by_categories.heading__rich": "Shop by <strong>Categories</strong>",
+  "sections.shop_by_categories.tiles": [
+    {
+      "label": "Shampoo",
+      "href": "/collections/shampoo",
+      "desktopImage": "/ShopByCategories/images/shampoo-desktop.webp",
+      "mobileImage": "/ShopByCategories/images/shampoo-mobile.webp",
+      "alt": "Shampoo"
+    },
+    {
+      "label": "Conditioner",
+      "href": "/collections/conditioner",
+      "desktopImage": "/ShopByCategories/images/conditioner-desktop.webp",
+      "mobileImage": "/ShopByCategories/images/conditioner-mobile.webp",
+      "alt": "Conditioner"
+    },
+    {
+      "label": "Hair spray",
+      "href": "/collections/sprays",
+      "desktopImage": "/ShopByCategories/images/hair-spray-desktop.webp",
+      "mobileImage": "/ShopByCategories/images/hair-spray-mobile.webp",
+      "alt": "Hair spray"
+    },
+    {
+      "label": "Hair colour",
+      "href": "/collections/hair-colour",
+      "desktopImage": "/ShopByCategories/images/hair-colour-desktop.webp",
+      "mobileImage": "/ShopByCategories/images/hair-colour-mobile.webp",
+      "alt": "Hair colour"
+    },
+    {
+      "label": "Hair serum",
+      "href": "/collections/serum",
+      "desktopImage": "/ShopByCategories/images/hair-serum-desktop.webp",
+      "mobileImage": "/ShopByCategories/images/hair-serum-mobile.webp",
+      "alt": "Hair serum"
+    }
+  ]
+}

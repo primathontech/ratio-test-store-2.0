@@ -1,5 +1,4 @@
 import { THEMES } from "@/editor-integration/theme-constants";
-import { lazy } from "react";
 
 /**
  * Static templates registry with lazy loading.
@@ -11,22 +10,9 @@ import { lazy } from "react";
 
 // Theme-scoped registry with lazy components (created once)
 export const STATIC_TEMPLATES_REGISTRY = {
-  [THEMES.DAWN.id]: {
-    [THEMES.DAWN.static_templates.ABOUT_US]: lazy(
-      () => import("@/editor-integration/static-templates/about-us")
-    ),
-    [THEMES.DAWN.static_templates.PRIVACY_POLICY]: lazy(
-      () => import("@/editor-integration/static-templates/privacy-policy")
-    ),
-    [THEMES.DAWN.static_templates.SHIPPING_POLICY]: lazy(
-      () => import("@/editor-integration/static-templates/shipping-policy")
-    ),
-    [THEMES.DAWN.static_templates.CANCELLATION_POLICY]: lazy(
-      () => import("@/editor-integration/static-templates/cancellation-policy")
-    ),
-    [THEMES.DAWN.static_templates.TERMS_OF_USE]: lazy(
-      () => import("@/editor-integration/static-templates/terms-of-use")
-    ),
+  [THEMES.RATIO.id]: {
+    // Add static (non-page-builder) templates here, e.g.:
+    // [THEMES.RATIO.static_templates.PRIVACY_POLICY]: lazy(() => import("@/editor-integration/static-templates/privacy-policy")),
   },
 } as const;
 

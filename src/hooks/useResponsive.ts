@@ -8,6 +8,7 @@ export type Breakpoint = "mobile" | "tablet" | "desktop";
 const BREAKPOINTS = {
   mobile: 0,
   tablet: 768,
+  tabletWide: 992, // bblunt.com card-count split inside the tablet range
   desktop: 1024,
   mobileTab: 1150, // iPad and tablet range threshold
 } as const;
@@ -23,6 +24,7 @@ export function useResponsive() {
   const [breakpoint, setBreakpoint] = useState<Breakpoint>("desktop");
   const [isMobile, setIsMobile] = useState(false);
   const [isTablet, setIsTablet] = useState(false);
+  const [isTabletWide, setIsTabletWide] = useState(false);
   const [isDesktop, setIsDesktop] = useState(true);
   const [isMobileTab, setIsMobileTab] = useState(false);
 
@@ -33,19 +35,30 @@ export function useResponsive() {
       setBreakpoint("mobile");
       setIsMobile(true);
       setIsTablet(false);
+      setIsTabletWide(false);
       setIsDesktop(false);
       setIsMobileTab(true);
-    } else if (width < BREAKPOINTS.mobileTab) {
-      // iPad and tablet range (up to 1150px)
+    } else if (width < BREAKPOINTS.tabletWide) {
+      // Lower tablet range (768–991)
       setBreakpoint("tablet");
       setIsMobile(false);
       setIsTablet(true);
+      setIsTabletWide(false);
+      setIsDesktop(false);
+      setIsMobileTab(true);
+    } else if (width < BREAKPOINTS.mobileTab) {
+      // Upper tablet range (992–1149) — bblunt.com bumps to 4 cards here
+      setBreakpoint("tablet");
+      setIsMobile(false);
+      setIsTablet(true);
+      setIsTabletWide(true);
       setIsDesktop(false);
       setIsMobileTab(true);
     } else {
       setBreakpoint("desktop");
       setIsMobile(false);
       setIsTablet(false);
+      setIsTabletWide(false);
       setIsDesktop(true);
       setIsMobileTab(false);
     }
@@ -61,6 +74,7 @@ export function useResponsive() {
     setBreakpoint(previewBreakpoint);
     setIsMobile(mobile);
     setIsTablet(tablet);
+    setIsTabletWide(false);
     setIsDesktop(previewBreakpoint === "desktop");
     setIsMobileTab(mobile || tablet);
   }, [previewBreakpoint]);
@@ -82,6 +96,7 @@ export function useResponsive() {
     breakpoint,
     isMobile,
     isTablet,
+    isTabletWide,
     isDesktop,
     isMobileOrTablet: isMobile || isTablet,
     isMobileTab,

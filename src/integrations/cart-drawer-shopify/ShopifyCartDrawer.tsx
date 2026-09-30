@@ -30,7 +30,9 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
     closeCart,
     openCart,
     removeItem,
-    updateItemQuantity,
+    incrementItem,
+    decrementItem,
+    setItemQuantity,
     isLoading: isLoading,
     error,
     cartToken,
@@ -68,7 +70,7 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
   };
 
   const navigateToCollection = () => {
-    router.push("/collections/all");
+    router.push("/collections");
     closeCart();
   };
 
@@ -87,10 +89,7 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
   const handleQuantityIncrement = async (itemId: string) => {
     setItemLoading(itemId, "increment");
     try {
-      const item = items.find((i) => i.id === itemId);
-      if (item) {
-        await updateItemQuantity(itemId, item.quantity + 1);
-      }
+      await incrementItem(itemId);
     } finally {
       setItemLoading(itemId, null);
     }
@@ -99,10 +98,7 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
   const handleQuantityDecrement = async (itemId: string) => {
     setItemLoading(itemId, "decrement");
     try {
-      const item = items.find((i) => i.id === itemId);
-      if (item) {
-        await updateItemQuantity(itemId, item.quantity - 1);
-      }
+      await decrementItem(itemId);
     } finally {
       setItemLoading(itemId, null);
     }
@@ -144,7 +140,7 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
       setCursorPosition({ x: e.clientX, y: e.clientY });
 
       const cartDrawer = document.querySelector(
-        '[data-testid="bblunt-cart-drawer"]'
+        '[data-testid="ratio-cart-drawer"]'
       );
       if (!cartDrawer) {
         return;
@@ -201,14 +197,14 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
         }`}
         style={{ zIndex: 9998 }}
         onClick={closeCart}
-        data-testid="bblunt-cart-drawer-overlay"
+        data-testid="ratio-cart-drawer-overlay"
       />
       <Box
         className={`cart-drawer fixed top-0 right-0 w-full max-w-[90%] md:max-w-[460px] h-full overflow-hidden bg-white text-text shadow-xl flex flex-col transition-transform duration-300 ease-in-out cursor-auto ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
         style={{ zIndex: 9999 }}
-        data-testid="bblunt-cart-drawer"
+        data-testid="ratio-cart-drawer"
       >
         {/* Global loading overlay for cart operations */}
         <Flex
@@ -242,9 +238,9 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
 
         <div
           className="flex-1 overflow-y-scroll"
-          data-testid="bblunt-cart-drawer-content"
+          data-testid="ratio-cart-drawer-content"
         >
-          <div data-testid="bblunt-cart-drawer-offers">
+          <div data-testid="ratio-cart-drawer-offers">
             <CouponOffersComponent />
           </div>
 
@@ -252,7 +248,7 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
           {error && (
             <Box
               className="cart-error flex flex-col items-center justify-center py-[48px] text-center"
-              data-testid="bblunt-cart-drawer-error"
+              data-testid="ratio-cart-drawer-error"
             >
               <Text className="text-error mb-[16px] !font-body">
                 Error: {error}
@@ -260,7 +256,7 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
               <Button
                 className="bg-primary text-white border-none rounded-sm px-[16px] py-[8px] text-sm font-medium cursor-pointer transition-colors hover:opacity-90 !font-body"
                 onClick={handleRetry}
-                data-testid="bblunt-cart-drawer-retry-button"
+                data-testid="ratio-cart-drawer-retry-button"
               >
                 Try Again
               </Button>
@@ -273,13 +269,13 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
               {items.length === 0 ? (
                 <EmptyCartView onNavigateToCollection={navigateToCollection} />
               ) : (
-                <div data-testid="bblunt-cart-drawer-items-section">
+                <div data-testid="ratio-cart-drawer-items-section">
                   <p className="mx-[15px] mt-[16px] text-text-base font-semibold text-black tracking-[-0.333px] font-body">
                     Items in your cart
                   </p>
                   <Box
                     className="cart-items mx-[15px] flex flex-col divide-y divide-gray-200"
-                    data-testid="bblunt-cart-drawer-items"
+                    data-testid="ratio-cart-drawer-items"
                   >
                     {items.map((item) => (
                       <CartItem
@@ -287,7 +283,7 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
                         item={item}
                         finalCurrencyCode={finalCurrencyCode}
                         loadingStates={loadingStates}
-                        setItemQuantity={updateItemQuantity}
+                        setItemQuantity={setItemQuantity}
                         onQuantityIncrement={handleQuantityIncrement}
                         onQuantityDecrement={handleQuantityDecrement}
                         onItemRemove={handleItemRemove}
@@ -302,7 +298,7 @@ export function ShopifyCartDrawer({}: ShopifyCartDrawerProps) {
 
         {/* Cart Summary */}
         {!error && items?.length !== 0 && (
-          <div data-testid="bblunt-cart-drawer-summary">
+          <div data-testid="ratio-cart-drawer-summary">
             <ShopifyCartSummary
               isLoading={isLoading}
               totalAmount={cartTotal}

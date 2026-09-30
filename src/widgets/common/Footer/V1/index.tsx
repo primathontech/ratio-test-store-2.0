@@ -36,7 +36,7 @@ export const V1 = memo(function V1({ settings }: FooterProps) {
                 title: c.title,
                 href: c.href ?? "/",
                 image: c.image,
-                isExternal: false,
+                isExternal: c.isExternal,
               },
             ]
       );
@@ -81,13 +81,25 @@ export const V1 = memo(function V1({ settings }: FooterProps) {
           }
 
           // dropdown / mega → heading + its links. The heading is itself clickable
-          // when the group points somewhere (e.g. "Shop" → /collections/all).
+          // when the group points somewhere (e.g. "Shop" → /collections), and
+          // that link may be external.
           return (
             <div key={entry.id} className="sf-footer__col">
               {entry.href ? (
-                <Link href={entry.href} className="sf-footer__col-title">
-                  {entry.label}
-                </Link>
+                entry.isExternal ? (
+                  <a
+                    href={entry.href}
+                    className="sf-footer__col-title"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    {entry.label}
+                  </a>
+                ) : (
+                  <Link href={entry.href} className="sf-footer__col-title">
+                    {entry.label}
+                  </Link>
+                )
               ) : (
                 <span className="sf-footer__col-title">{entry.label}</span>
               )}

@@ -4,8 +4,11 @@
  * Cart Bootstrap - @shopkit/cart Configuration
  *
  * Configures the cart module with application-specific services.
- * Uses ResilientCartService that wraps DataLayerCartService and
- * falls back to local-only mode on cart API failures (503s are common).
+ * This is the composition root that wires together the cart package
+ * with this application's storage and service implementations.
+ *
+ * Uses DataLayerCartService to route cart operations through the
+ * unified @shopkit/data-layer client.
  *
  * @module bootstrap/cart
  */
@@ -24,12 +27,21 @@ import { createCartMapper } from "@shopkit/events/mappers";
 
 let _initialized = false;
 
+/**
+ * Configure the cart module for this application.
+ * Must be called on the client before any cart hooks are used.
+ * Safe to call multiple times — only configures once.
+ *
+ * @param merchantName - The merchant identifier for cart storage
+ */
 function setupCart(merchantName: string) {
   if (_initialized) {
     return;
   }
   _initialized = true;
 
+  // Use data-layer client for cart operations
+  // This routes all cart API calls through the unified commerce abstraction
   const dataLayerClient = getCommerceClient();
 
   // Wire cart events → analytics (AddToCart → Meta/GA4)

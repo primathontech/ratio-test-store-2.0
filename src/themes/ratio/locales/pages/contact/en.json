@@ -1,0 +1,27 @@
+{
+  "ratio_contact_default": {
+    "eyebrow": "We're here to help",
+    "title": "Contact Us",
+    "subtitle": "Have a question about an order, a product, or anything else? Reach out — we'd love to hear from you.",
+    "contact": {
+      "email": "support@example.com",
+      "phone": "+1 (000) 000-0000",
+      "address": "123 Commerce Street, Suite 100, Your City",
+      "hours": "Mon–Fri, 9:00 AM – 6:00 PM"
+    },
+    "sections": [
+      {
+        "heading": "Customer Support",
+        "body": "For questions about orders, shipping, returns, or products, email us or call during our support hours. We aim to respond to all enquiries within one business day."
+      },
+      {
+        "heading": "Order Enquiries",
+        "body": "Please have your order number ready when you contact us so we can assist you as quickly as possible."
+      },
+      {
+        "heading": "Wholesale & Partnerships",
+        "body": "Interested in stocking our products or partnering with us? Get in touch using the email above and our team will follow up."
+      }
+    ]
+  }
+}

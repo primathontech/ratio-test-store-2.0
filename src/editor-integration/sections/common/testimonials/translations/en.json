@@ -1,0 +1,29 @@
+{
+  "sections.testimonials.heading__rich": "What our <strong>customers are saying?</strong>",
+  "sections.testimonials.items": [
+    {
+      "heading": "Absolutely love it!",
+      "reviewText": "The quality exceeded my expectations and delivery was quick. I'll definitely be ordering again.",
+      "authorName": "Anita Agrawal",
+      "avatarSrc": "/images/testimonials/anita-agrawal.jpg",
+      "alt": "Anita Agrawal",
+      "stars": 5
+    },
+    {
+      "heading": "Highly recommend",
+      "reviewText": "Great value for money and the customer support team was really helpful throughout my purchase.",
+      "authorName": "Nikita Advani",
+      "avatarSrc": "/images/testimonials/nikita-advani.jpg",
+      "alt": "Nikita Advani",
+      "stars": 5
+    },
+    {
+      "heading": "A wonderful experience",
+      "reviewText": "Everything arrived exactly as described. The whole process was smooth and hassle-free.",
+      "authorName": "Tarini Menon",
+      "avatarSrc": "/images/testimonials/tarini-menon.jpg",
+      "alt": "Tarini Menon",
+      "stars": 4
+    }
+  ]
+}
