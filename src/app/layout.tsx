@@ -273,6 +273,16 @@ export default async function RootLayout({
             id="ratio-forms-sdk"
           />
         )}
+        {process.env.NEXT_PUBLIC_BOOLEAN_MATHS_PIXEL_ID &&
+          process.env.NEXT_PUBLIC_BOOLEAN_MATHS_PROJECT_ID && (
+            <Script
+              id="boolean-maths-ratio-pixel"
+              src="https://medront.s3.amazonaws.com/fileuploads/ratiopixel.js"
+              data-pixel-id={process.env.NEXT_PUBLIC_BOOLEAN_MATHS_PIXEL_ID}
+              data-project-id={process.env.NEXT_PUBLIC_BOOLEAN_MATHS_PROJECT_ID}
+              strategy="afterInteractive"
+            />
+          )}
         <LimeChatScript />
       </body>
     </html>
