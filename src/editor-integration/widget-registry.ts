@@ -1,4 +1,7 @@
 import { WIDGET_TYPES } from "@/widgets/.generated/types";
+import { HeroContract } from "@/widgets/common/Hero/contract";
+import { FaqContract } from "@/widgets/common/Faq/contract";
+import { AnnouncementContract } from "@/widgets/common/Announcement/contract";
 
 /**
  * Widget Registry for Visual Editor
@@ -22,7 +25,7 @@ import { WIDGET_TYPES } from "@/widgets/.generated/types";
  *   faq         – FAQ question/answer pairs
  *
  * Structure:
- *   commonWidgetSchemas  – registered for every merchant (CustomHtml, etc.)
+ *   commonWidgetSchemas  – registered for every merchant (RichText, etc.)
  *   Merchant-specific    – uncomment and extend per widget when forking
  */
 
@@ -43,6 +46,11 @@ const commonWidgetSchemas = {
       },
     },
   },
+  // Common Sections library — schema lives IN the section folder (contract.ts);
+  // this registry just points at it, so the folder stays the source of truth.
+  [WIDGET_TYPES.Hero]: HeroContract,
+  [WIDGET_TYPES.Faq]: FaqContract,
+  [WIDGET_TYPES.Announcement]: AnnouncementContract,
 };
 
 // =============================================================================
@@ -50,744 +58,1487 @@ const commonWidgetSchemas = {
 // =============================================================================
 
 const merchantWidgetSchemas = {
-  // ─── nintarababy ─────────────────────────────────────────────────────────
-
+  [WIDGET_TYPES.RatioForm]: {
+    type: WIDGET_TYPES.RatioForm,
+    name: "Ratio Form",
+    description:
+      "Mounts a Ratio Forms form by id (the SDK is loaded in the layout)",
+    settingsSchema: {
+      variant: {
+        type: "text" as const,
+        label: "Variant",
+        default: "v1",
+      },
+      formId: {
+        type: "text" as const,
+        label: "Form Id",
+        default: "",
+      },
+    },
+  },
+  // ── ratio chrome (forked from common Header/Footer) ──
+  // Navigation is admin-managed via useNav, so the editable settings are the
+  // menu handle(s) + branding/search/app fields. The old per-item nav label/
+  // link settings are gone (the menu now drives the nav).
+  [WIDGET_TYPES.RatioHeader]: {
+    type: WIDGET_TYPES.RatioHeader,
+    name: "Site Header",
+    description:
+      "Site header with logo, admin-managed navigation (useNav), search, and cart",
+    settingsSchema: {
+      menuHandle: {
+        type: "menu-select" as const,
+        label: "Navigation Menu",
+        default: "main-menu",
+      },
+      logoSrc: {
+        type: "image" as const,
+        label: "Logo Image",
+        default: { src: "", alt: "" },
+      },
+      searchSuggestions: {
+        type: "array" as const,
+        label: "Search Suggestions (rotating animation)",
+        default: [],
+      },
+      backgroundColor: {
+        type: "text" as const,
+        label: "Background Color (hex)",
+        default: "",
+      },
+      getApp_title: {
+        type: "text" as const,
+        label: "Get App: Title",
+        default: "",
+      },
+      getApp_description: {
+        type: "text" as const,
+        label: "Get App: Description",
+        default: "",
+      },
+      getApp_button_text: {
+        type: "text" as const,
+        label: "Get App: Button Text",
+        default: "",
+      },
+      getApp_logo_url: {
+        type: "image" as const,
+        label: "Get App: Logo Image",
+        default: { src: "", alt: "" },
+      },
+      getApp_logo_alt: {
+        type: "text" as const,
+        label: "Get App: Logo Alt Text",
+        default: "",
+      },
+      getApp_app_url: {
+        type: "text" as const,
+        label: "Get App: App URL",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.RatioFooter]: {
+    type: WIDGET_TYPES.RatioFooter,
+    name: "Site Footer",
+    description:
+      "Site footer. Each link column is admin-managed via its own nav menu (useNav); titles + links come from the menu.",
+    settingsSchema: {
+      // Per-section nav menus — section title + links come from these (useNav).
+      aboutMenuHandle: {
+        type: "menu-select" as const,
+        label: "About Section Menu",
+        default: "about-us",
+      },
+      usefulLinksMenuHandle: {
+        type: "menu-select" as const,
+        label: "Useful Links Menu",
+        default: "useful-links",
+      },
+      ourSalonsMenuHandle: {
+        type: "menu-select" as const,
+        label: "Our Salons Menu",
+        default: "our-salons",
+      },
+      categoriesMenuHandle: {
+        type: "menu-select" as const,
+        label: "Categories Menu",
+        default: "categories",
+      },
+      myAccountMenuHandle: {
+        type: "menu-select" as const,
+        label: "My Account Menu",
+        default: "my-account",
+      },
+      // Branding / app / misc (non-nav)
+      mobileFooterTagline: {
+        type: "richtext" as const,
+        label: "Mobile Footer Tagline (rich text)",
+        default: "",
+      },
+      logoUrl: {
+        type: "image" as const,
+        label: "Logo Image",
+        default: { src: "", alt: "" },
+      },
+      appDownloadText: {
+        type: "text" as const,
+        label: "App Download Text",
+        default: "",
+      },
+      googlePlayUrl: {
+        type: "text" as const,
+        label: "Google Play URL",
+        default: "",
+      },
+      appStoreUrl: {
+        type: "text" as const,
+        label: "App Store URL",
+        default: "",
+      },
+      googlePlayImage: {
+        type: "image" as const,
+        label: "Google Play Badge Image",
+        default: { src: "", alt: "" },
+      },
+      appStoreImage: {
+        type: "image" as const,
+        label: "App Store Badge Image",
+        default: { src: "", alt: "" },
+      },
+      serviceSectionsIcons: {
+        type: "objectArray" as const,
+        label: "Service Icons (Free Shipping, etc.)",
+        fields: ["name", "image:image", "alt"],
+        default: [],
+      },
+      socialLinks: {
+        type: "objectArray" as const,
+        label: "Social Links",
+        fields: ["name", "href", "icon"],
+        default: [],
+      },
+      paymentMethods: {
+        type: "objectArray" as const,
+        label: "Payment Methods",
+        fields: ["name", "icon", "image"],
+        fieldTypes: { image: "image" },
+        default: [],
+      },
+      paymentProtectionText: {
+        type: "text" as const,
+        label: "Payment Protection Text",
+        default: "",
+      },
+      copyrightText: {
+        type: "text" as const,
+        label: "Copyright Text",
+        default: "",
+      },
+    },
+  },
   [WIDGET_TYPES.AnnouncementBar]: {
     type: WIDGET_TYPES.AnnouncementBar,
     name: "Announcement Bar",
     description:
-      "A full-width promotional bar that auto-rotates between messages.",
+      "Marquee announcement strip displayed at the top of every page",
     settingsSchema: {
-      messages: {
+      items: {
         type: "objectArray" as const,
-        label: "Messages",
+        label: "Announcements",
+        fields: ["id", "text", "href"],
         default: [],
-        fields: ["text", "href"],
       },
-      autoPlayInterval: {
+      backgroundColor: {
+        type: "text" as const,
+        label: "Background Color (hex)",
+        default: "#000000",
+      },
+      textColor: {
+        type: "text" as const,
+        label: "Text Color (hex)",
+        default: "#ffffff",
+      },
+      speed: {
         type: "number" as const,
-        label: "Auto-play interval (ms)",
-        default: 4500,
-        min: 1000,
-        max: 10000,
-        step: 500,
+        label: "Marquee Speed (px/sec)",
+        default: 35,
       },
       pauseOnHover: {
         type: "boolean" as const,
-        label: "Pause on hover",
+        label: "Pause on Hover",
         default: true,
       },
-      transitionDuration: {
-        type: "number" as const,
-        label: "Transition duration (ms)",
-        default: 600,
-        min: 100,
-        max: 2000,
-        step: 100,
-      },
     },
   },
-
-  [WIDGET_TYPES.Header]: {
-    type: WIDGET_TYPES.Header,
-    name: "Header",
-    description: "Site header with navigation, search, and cart.",
+  [WIDGET_TYPES.SEOMetadata]: {
+    type: WIDGET_TYPES.SEOMetadata,
+    name: "SEO Metadata",
+    description:
+      "Page-level SEO metadata widget for title, description, and canonical URL.",
     settingsSchema: {
-      // Mega-menu source. Picks WHICH published menu feeds the nav — options are
-      // the merchant's live menus, fetched by the editor's "menu-select" control
-      // (no static list to maintain). The menu CONTENT (links, columns, panels)
-      // is still managed in the admin panel. `default` is the fallback handle.
-      menuHandle: {
-        type: "menu-select" as const,
-        label: "Menu",
-        default: "main-menu",
-      },
-      logoPath: {
+      title: {
         type: "text" as const,
-        label: "Logo image path",
-        default: "/assets/momsco/svg/momsco-logo.svg",
+        label: "Page Title",
+        default: "",
       },
-      isSticky: {
-        type: "boolean" as const,
-        label: "Sticky header",
-        default: true,
-      },
-      hideOnScrollDown: {
-        type: "boolean" as const,
-        label: "Hide on scroll down",
-        default: true,
-      },
-      searchPlaceholder: {
+      description: {
         type: "text" as const,
-        label: "Search placeholder text",
-        default: "Search for Products",
+        label: "Meta Description",
+        default: "",
       },
-      whatsappHref: {
+      canonical: {
         type: "text" as const,
-        label: "WhatsApp link",
-        default: "https://wa.me/8422873121",
+        label: "Canonical URL",
+        default: "",
       },
-      cartHref: {
-        type: "text" as const,
-        label: "Cart link",
-        default: "/cart",
-      },
-      navLinks: {
-        type: "objectArray" as const,
-        label: "Navigation Links",
-        default: [],
-        fields: ["text", "href"],
-      },
-      dropdownItems: {
-        type: "objectArray" as const,
-        label: "Dropdown Menu Items",
-        default: [],
-        fields: ["category", "text", "href"],
-      },
+      // NOTE: OG `image` is intentionally not an editor field — the widget reads
+      // it as {url, altText} from SEO/remote data, which the editor image
+      // control ({src, alt}) would not match. Driven by data, not per-instance.
     },
   },
-
-  [WIDGET_TYPES.HeroSlideshow]: {
-    type: WIDGET_TYPES.HeroSlideshow,
-    name: "Hero Slideshow",
-    description: "Full-width hero banner with image slideshow.",
-    settingsSchema: {
-      slides: {
-        type: "objectArray" as const,
-        label: "Slides",
-        default: [],
-        fields: ["desktopImage", "mobileImage", "href", "alt"],
-      },
-      autoplayMs: {
-        type: "number" as const,
-        label: "Autoplay interval (ms)",
-        default: 7000,
-        min: 1000,
-        max: 15000,
-        step: 500,
-      },
-      mobileBreakpoint: {
-        type: "number" as const,
-        label: "Mobile breakpoint (px)",
-        default: 550,
-        min: 320,
-        max: 1024,
-        step: 1,
-      },
-    },
-  },
-
-  [WIDGET_TYPES.Welcome]: {
-    type: WIDGET_TYPES.Welcome,
-    name: "Welcome",
-    description: "Welcome / about section with brand introduction.",
-    settingsSchema: {
-      headingPrefix: {
-        type: "text" as const,
-        label: "Heading prefix",
-        default: "Welcome to",
-      },
-      bodyText: {
-        type: "text" as const,
-        label: "Body text",
-        default:
-          "Parenthood is a beautiful journey, filled with moments that deserve comfort and joy. Guided by parents, we craft thoughtful baby essentials, designed to be luxuriously soft, safe, and made to last for your little one.",
-      },
-      logoPath: {
-        type: "text" as const,
-        label: "Logo image path",
-        default: "/assets/nintarababy/welcome/nintara-logo.webp",
-      },
-      bgDesktopPath: {
-        type: "text" as const,
-        label: "Background image (desktop)",
-        default: "/assets/nintarababy/welcome/bg-desktop.webp",
-      },
-      bgMobilePath: {
-        type: "text" as const,
-        label: "Background image (mobile)",
-        default: "/assets/nintarababy/welcome/bg-mobile.webp",
-      },
-      badges: {
-        type: "objectArray" as const,
-        label: "Certification badges",
-        default: [],
-        fields: ["label", "iconSrc", "alt"],
-      },
-    },
-  },
-
-  [WIDGET_TYPES.ShopByCategory]: {
-    type: WIDGET_TYPES.ShopByCategory,
-    name: "Shop by Category",
-    description: "Category grid for browsing product categories.",
+  [WIDGET_TYPES.FeaturedCollectionCarousel]: {
+    type: WIDGET_TYPES.FeaturedCollectionCarousel,
+    name: "Featured Collection Carousel",
+    description: "Product carousel for a single collection",
     settingsSchema: {
       heading: {
         type: "text" as const,
-        label: "Heading",
-        default: "Shop by Category",
+        label: "Section Heading (rich text)",
+        default: "",
       },
-      subtitle: {
+      viewAllCollectionHandle: {
         type: "text" as const,
-        label: "Subtitle",
-        default: "Find your perfect baby must-haves.",
+        label: "View All Collection Handle (override)",
+        default: "",
       },
-      categories: {
-        type: "objectArray" as const,
-        label: "Categories",
-        default: [],
-        fields: ["label", "image", "href", "hasNewBadge", "superscript"],
+      actionButtonText: {
+        type: "text" as const,
+        label: "Add to Cart Button Text",
+        default: "",
+      },
+      soldOutText: {
+        type: "text" as const,
+        label: "Sold Out Text",
+        default: "",
       },
     },
   },
-
-  [WIDGET_TYPES.FeaturedProducts]: {
-    type: WIDGET_TYPES.FeaturedProducts,
-    name: "Featured Products",
-    description: "Product grid showing featured/bestseller products.",
-    requiresDataSource: true,
-    compatibleDataSources: ["COLLECTION_BY_HANDLES"],
+  [WIDGET_TYPES.BannerCarousel]: {
+    type: WIDGET_TYPES.BannerCarousel,
+    name: "Banner Carousel",
+    description: "Hero banner carousel with image/video slides",
     settingsSchema: {
-      heading: {
+      mobileAspectRatio: {
         type: "text" as const,
-        label: "Heading",
-        default: "Featured Products",
+        label: "Mobile Aspect Ratio (e.g. 1/1)",
+        default: "",
       },
-      subtitle: {
+      desktopAspectRatio: {
         type: "text" as const,
-        label: "Subtitle",
-        default: "Our top picks, trusted by parents.",
+        label: "Desktop Aspect Ratio (e.g. 1440/529)",
+        default: "",
       },
-      viewAllText: {
-        type: "text" as const,
-        label: "View all button text",
-        default: "View all",
-      },
-      viewAllLink: {
-        type: "text" as const,
-        label: "View all button link",
-        default: "/collections/all-products",
-      },
-      collectionHandle: {
-        type: "text" as const,
-        label: "Collection handle (data source)",
-        default: "bestseller",
-      },
-      productLimit: {
-        type: "number" as const,
-        label: "Max products to show",
-        default: 8,
-        min: 1,
-        max: 20,
-        step: 1,
+      bannerCarousel: {
+        type: "objectArray" as const,
+        label: "Banner Slides",
+        // `type` is intended to be a select (IMAGE | VIDEO) but the current
+        // editor's ObjectArrayInput only renders plain text inputs inside
+        // an objectArray row. Merchants enter "IMAGE" or "VIDEO" verbatim.
+        fields: [
+          "id",
+          "type",
+          "href",
+          "image:desktopImage",
+          "image:mobileImage",
+          "video:desktopVideo",
+          "video:mobileVideo",
+          "image:posterSrc",
+          "alt",
+          "indicatorHeading",
+          "indicatorSubHeading",
+        ],
+        default: [],
       },
     },
   },
-
   [WIDGET_TYPES.Testimonials]: {
     type: WIDGET_TYPES.Testimonials,
     name: "Testimonials",
-    description: "Customer testimonial cards.",
+    description: "Customer testimonial cards with rich heading",
     settingsSchema: {
       heading: {
         type: "text" as const,
-        label: "Heading",
-        default: "Testimonials",
-      },
-      subtitle: {
-        type: "text" as const,
-        label: "Subtitle",
-        default: "Hear it from our Nintara parents",
+        label: "Section Heading (rich text)",
+        default: "",
       },
       testimonials: {
         type: "objectArray" as const,
         label: "Testimonials",
-        default: [],
         fields: [
+          "heading",
           "reviewText",
-          "reviewerName",
-          "cardImageSrc",
-          "productName",
-          "productHref",
-          "productThumbnailSrc",
+          "authorName",
+          "image:avatarSrc",
+          "alt",
+          "stars",
         ],
+        default: [],
+      },
+    },
+  },
+  [WIDGET_TYPES.ProductDetail]: {
+    type: WIDGET_TYPES.ProductDetail,
+    name: "Product Detail",
+    description:
+      "Product detail page hero (gallery + price + variants + ATC). Color/visual settings remain template-only.",
+    settingsSchema: {
+      // Coupon marquee
+      showProductMarquee: {
+        type: "boolean" as const,
+        label: "Show Coupon Marquee",
+        default: false,
+      },
+      productMarqueeText: {
+        type: "text" as const,
+        label: "Marquee Text",
+        default: "",
+      },
+      productMarqueeCouponCode: {
+        type: "text" as const,
+        label: "Marquee Coupon Code",
+        default: "",
+      },
+      productMarqueeSpeed: {
+        type: "text" as const,
+        label: "Marquee Speed (e.g. 8s)",
+        default: "",
+      },
+      productMarqueeHref: {
+        type: "text" as const,
+        label: "Marquee Link",
+        default: "",
+      },
+      // Right column copy
+      netContentText: {
+        type: "text" as const,
+        label: "Net Content Label",
+        default: "",
+      },
+      inclusiveOfAllTaxesText: {
+        type: "text" as const,
+        label: "Tax Note",
+        default: "",
+      },
+      reviewsText: {
+        type: "text" as const,
+        label: "Reviews Suffix",
+        default: "",
+      },
+      mrp: { type: "text" as const, label: "MRP Label", default: "" },
+      usp: { type: "text" as const, label: "USP Label", default: "" },
+      discount: {
+        type: "text" as const,
+        label: "Discount Suffix",
+        default: "",
+      },
+      selectSizeText: {
+        type: "text" as const,
+        label: "Select Size Heading",
+        default: "",
+      },
+      rupeeSymbol: {
+        type: "text" as const,
+        label: "Currency Symbol",
+        default: "",
+      },
+      addToCartText: {
+        type: "text" as const,
+        label: "Add to Cart Text",
+        default: "",
+      },
+      soldOutText: {
+        type: "text" as const,
+        label: "Sold Out Text",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.ReasonsToLove]: {
+    type: WIDGET_TYPES.ReasonsToLove,
+    name: "Reasons to Love",
+    description: "Product reasons-to-love section (data-driven from API)",
+    settingsSchema: {
+      sectionTitle: {
+        type: "text" as const,
+        label: "Section Title",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.ProductTabs]: {
+    type: WIDGET_TYPES.ProductTabs,
+    name: "Product Tabs",
+    description: "Accordion-style product info tabs (data-driven from API)",
+    settingsSchema: {},
+  },
+  [WIDGET_TYPES.ProductFAQ]: {
+    type: WIDGET_TYPES.ProductFAQ,
+    name: "Product FAQ",
+    description: "Accordion FAQ section for the product",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Section Title",
+        default: "",
+      },
+      defaultExpanded: {
+        type: "boolean" as const,
+        label: "Default Expanded",
+        default: true,
+      },
+    },
+  },
+  [WIDGET_TYPES.CustomerReviews]: {
+    type: WIDGET_TYPES.CustomerReviews,
+    name: "Customer Reviews",
+    description: "Customer reviews block with form and review list",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Section Title",
+        default: "",
+      },
+      allowWriteReview: {
+        type: "boolean" as const,
+        label: "Allow customers to write reviews",
+        default: false,
+      },
+      writeReviewButtonText: {
+        type: "text" as const,
+        label: "Write Review Button Text",
+        default: "",
+      },
+      cancelReviewButtonText: {
+        type: "text" as const,
+        label: "Cancel Review Button Text",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.RecentlyViewed]: {
+    type: WIDGET_TYPES.RecentlyViewed,
+    name: "Recently Viewed",
+    description:
+      "Recently-viewed product carousel (cards & colors stay template-only)",
+    settingsSchema: {
+      heading: {
+        type: "text" as const,
+        label: "Section Heading",
+        default: "",
+      },
+      actionButtonText: {
+        type: "text" as const,
+        label: "Add to Cart Text (desktop)",
+        default: "",
+      },
+      soldOutText: {
+        type: "text" as const,
+        label: "Sold Out Text (desktop)",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.AdditionalInformation]: {
+    type: WIDGET_TYPES.AdditionalInformation,
+    name: "Additional Information",
+    description: "Manufacturer / origin / care details accordion",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Section Title",
+        default: "",
+      },
+      sectionTitle: {
+        type: "text" as const,
+        label: "Section Title (override)",
+        default: "",
+      },
+      marketedBy: {
+        type: "text" as const,
+        label: "Marketed By",
+        default: "",
+      },
+      countryOfOrigin: {
+        type: "text" as const,
+        label: "Country of Origin",
+        default: "",
+      },
+      customerCareDetails: {
+        type: "text" as const,
+        label: "Customer Care Details",
+        default: "",
+      },
+      defaultExpanded: {
+        type: "boolean" as const,
+        label: "Default Expanded",
+        default: false,
+      },
+    },
+  },
+  [WIDGET_TYPES.ProductDisclaimer]: {
+    type: WIDGET_TYPES.ProductDisclaimer,
+    name: "Product Disclaimer",
+    description: "Product safety / disclaimer block",
+    settingsSchema: {
+      sectionTitle: {
+        type: "text" as const,
+        label: "Section Title",
+        default: "",
       },
     },
   },
 
-  [WIDGET_TYPES.Blog]: {
-    type: WIDGET_TYPES.Blog,
-    name: "Blog",
-    description: "Blog / content cards section.",
+  [WIDGET_TYPES.HeroBanner]: {
+    type: WIDGET_TYPES.HeroBanner,
+    name: "Hero Banner",
+    description: "Static hero image banner (desktop + mobile variants)",
+    settingsSchema: {
+      desktopImage: {
+        type: "image" as const,
+        label: "Desktop Image",
+        default: { src: "", alt: "" },
+      },
+      mobileImage: {
+        type: "image" as const,
+        label: "Mobile Image",
+        default: { src: "", alt: "" },
+      },
+      href: {
+        type: "text" as const,
+        label: "Link URL (optional)",
+        default: "",
+      },
+      mobileAspectRatio: {
+        type: "text" as const,
+        label: "Mobile Aspect Ratio (e.g. 1/1)",
+        default: "",
+      },
+      desktopAspectRatio: {
+        type: "text" as const,
+        label: "Desktop Aspect Ratio (e.g. 1440/529)",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.CountdownTimer]: {
+    type: WIDGET_TYPES.CountdownTimer,
+    name: "Countdown Timer",
+    description: "Standalone countdown to a target date",
+    settingsSchema: {
+      targetDate: {
+        type: "text" as const,
+        label: "Target Date (e.g. Apr 12, 2026 00:00:00)",
+        default: "",
+      },
+      heading: { type: "text" as const, label: "Heading", default: "" },
+      subheading: { type: "text" as const, label: "Subheading", default: "" },
+      expiredText: {
+        type: "text" as const,
+        label: "Expired Text",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.SalePageBanner]: {
+    type: WIDGET_TYPES.SalePageBanner,
+    name: "Sale Page Banner",
+    description:
+      "Promotional sale banner with offer, countdown timer, coupon code, and 'How to shop' modal",
+    settingsSchema: {
+      mobileSrc: {
+        type: "image" as const,
+        label: "Mobile Background Image",
+        default: { src: "", alt: "" },
+      },
+      desktopSrc: {
+        type: "image" as const,
+        label: "Desktop Background Image",
+        default: { src: "", alt: "" },
+      },
+      offerTitle: { type: "text" as const, label: "Offer Title", default: "" },
+      offerPrice: { type: "text" as const, label: "Offer Price", default: "" },
+      currencySymbol: {
+        type: "text" as const,
+        label: "Currency Symbol",
+        default: "₹",
+      },
+      couponCode: { type: "text" as const, label: "Coupon Code", default: "" },
+      expiryText: {
+        type: "text" as const,
+        label: "Expiry Text",
+        default: "",
+      },
+      counterTitle: {
+        type: "text" as const,
+        label: "Countdown Title",
+        default: "",
+      },
+      endDateString: {
+        type: "text" as const,
+        label: "Countdown End Date (e.g. Jan 22, 2026 12:59:59)",
+        default: "",
+      },
+      timerInterval: {
+        type: "number" as const,
+        label: "Timer Tick Interval (ms)",
+        default: 1000,
+      },
+      bannerCtaLabel: {
+        type: "text" as const,
+        label: "Banner CTA Label",
+        default: "",
+      },
+      howToShopTitle: {
+        type: "text" as const,
+        label: "How To Shop Modal Title",
+        default: "",
+      },
+      howToShopSteps: {
+        type: "objectArray" as const,
+        label: "How To Shop Steps (rich text)",
+        fields: ["id", "text"],
+        default: [],
+      },
+      termsAndConditionsTitle: {
+        type: "text" as const,
+        label: "Terms & Conditions Title",
+        default: "",
+      },
+      termsAndConditionsPoints: {
+        type: "text" as const,
+        label: "Terms & Conditions Points",
+        default: "",
+      },
+      primaryButtonLabel: {
+        type: "text" as const,
+        label: "Modal Primary Button Label",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.FeaturedCollectionGrid]: {
+    type: WIDGET_TYPES.FeaturedCollectionGrid,
+    name: "Featured Collection Grid",
+    description: "Product grid for a single collection handle",
+    settingsSchema: {
+      categoryTitle: {
+        type: "text" as const,
+        label: "Category Title",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.AboutUsHero]: {
+    type: WIDGET_TYPES.AboutUsHero,
+    name: "About Us Hero",
+    description: "Hero banner image for the About Us page",
+    settingsSchema: {
+      imageSrc: {
+        type: "image" as const,
+        label: "Banner Image",
+        default: { src: "", alt: "" },
+      },
+      href: {
+        type: "text" as const,
+        label: "Link Destination",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.AboutUsStory]: {
+    type: WIDGET_TYPES.AboutUsStory,
+    name: "About Us Story",
+    description: "Story section with heading + body content blocks",
+    settingsSchema: {
+      blocks: {
+        type: "objectArray" as const,
+        label: "Content Blocks",
+        fields: ["heading", "body"],
+        default: [],
+      },
+    },
+  },
+  [WIDGET_TYPES.AboutUsValues]: {
+    type: WIDGET_TYPES.AboutUsValues,
+    name: "About Us Values",
+    description: "Two-column icon grid with brand value items",
+    settingsSchema: {
+      items: {
+        type: "objectArray" as const,
+        label: "Value Items",
+        fields: ["image:iconSrc", "alt", "heading", "body"],
+        default: [],
+      },
+    },
+  },
+  [WIDGET_TYPES.DeleteAccount]: {
+    type: WIDGET_TYPES.DeleteAccount,
+    name: "Delete Account",
+    description:
+      "Account deletion request form with heading, description, submit button, and success message",
     settingsSchema: {
       heading: {
         type: "text" as const,
         label: "Heading",
-        default: "We\u2019re Here For You!",
+        default: "",
       },
-      seeAllText: {
+      description: {
+        type: "richtext" as const,
+        label: "Description",
+        default: "",
+      },
+      submitLabel: {
         type: "text" as const,
-        label: "See All button text",
-        default: "See All",
+        label: "Submit Button Label",
+        default: "",
       },
-      seeAllLink: {
+      successMessage: {
         type: "text" as const,
-        label: "See All button link",
-        default: "/blogs/blog",
-      },
-      posts: {
-        type: "objectArray" as const,
-        label: "Blog Posts",
-        default: [],
-        fields: [
-          "title",
-          "url",
-          "category",
-          "date",
-          "readTime",
-          "excerpt",
-          "desktopImage",
-          "mobileImage",
-        ],
+        label: "Success Message",
+        default: "",
       },
     },
   },
-
+  [WIDGET_TYPES.ShopByCategories]: {
+    type: WIDGET_TYPES.ShopByCategories,
+    name: "Shop by Categories",
+    description: "Carousel of category tiles with a section heading",
+    settingsSchema: {
+      heading: {
+        type: "text" as const,
+        label: "Section Heading (rich text)",
+        default: "",
+      },
+      tiles: {
+        type: "objectArray" as const,
+        label: "Category Tiles",
+        fields: [
+          "label",
+          "href",
+          "image:desktopImage",
+          "image:mobileImage",
+          "alt",
+        ],
+        default: [],
+      },
+    },
+  },
   [WIDGET_TYPES.Footer]: {
     type: WIDGET_TYPES.Footer,
     name: "Footer",
-    description: "Site footer with links, contact info, and social media.",
+    description:
+      "Site footer with link sections, social icons, payment methods, and app download",
     settingsSchema: {
-      // Mega-menu source. Picks WHICH published menu feeds the nav — options are
-      // the merchant's live menus, fetched by the editor's "menu-select" control
-      // (no static list to maintain). The menu CONTENT is still managed in the
-      // admin panel. `default` is the fallback handle.
       menuHandle: {
         type: "menu-select" as const,
         label: "Menu",
         default: "footer",
       },
-      seoHeading: {
-        type: "text" as const,
-        label: "SEO Heading",
-        default: "Best Baby Care Products Online",
+      mobileFooterTagline: {
+        type: "richtext" as const,
+        label: "Mobile Footer Tagline (rich text)",
+        default: "",
       },
-      contactAddress: {
-        type: "text" as const,
-        label: "Contact Address",
-        default:
-          "Grasper Global Private Limited 2nd & 3rd Floor, Unit No. 414, Sahas Apartment, Plot Number 1216, Private Road, Off Veer Savarkar Marg, Prabhadevi, Mumbai- 400025.",
+      logoUrl: {
+        type: "image" as const,
+        label: "Logo Image",
+        default: { src: "", alt: "" },
       },
-      contactWhatsapp: {
-        type: "text" as const,
-        label: "WhatsApp Number",
-        default: "+918422873121",
-      },
-      contactEmail: {
-        type: "text" as const,
-        label: "Email Address",
-        default: "hello@nintarababy.in",
-      },
-      newsletterHeading: {
-        type: "text" as const,
-        label: "Newsletter Heading",
-        default: "Subscribe to our newsletter",
-      },
-      facebookUrl: {
-        type: "text" as const,
-        label: "Facebook URL",
-        default: "https://www.facebook.com/profile.php?id=61561442655559",
-      },
-      instagramUrl: {
-        type: "text" as const,
-        label: "Instagram URL",
-        default: "https://www.instagram.com/nintarababyindia/",
-      },
-      helpLinks: {
-        type: "objectArray" as const,
-        label: "Help Links",
-        default: [],
-        fields: ["text", "href", "badge"],
-      },
-      otherLinks: {
-        type: "objectArray" as const,
-        label: "Other Links",
-        default: [],
-        fields: ["text", "href"],
-      },
-      categoryLinks: {
-        type: "objectArray" as const,
-        label: "Category Links",
-        default: [],
-        fields: ["text", "href"],
-      },
-    },
-  },
+      logoAlt: { type: "text" as const, label: "Logo Alt Text", default: "" },
 
-  [WIDGET_TYPES.BottomBar]: {
-    type: WIDGET_TYPES.BottomBar,
-    name: "Bottom Bar",
-    description: "Copyright and legal links bar.",
-    settingsSchema: {
+      appDownloadText: {
+        type: "text" as const,
+        label: "App Download Text",
+        default: "",
+      },
+      googlePlayUrl: {
+        type: "text" as const,
+        label: "Google Play URL",
+        default: "",
+      },
+      appStoreUrl: {
+        type: "text" as const,
+        label: "App Store URL",
+        default: "",
+      },
+      googlePlayImage: {
+        type: "image" as const,
+        label: "Google Play Badge Image",
+        default: { src: "", alt: "" },
+      },
+      googlePlayAlt: {
+        type: "text" as const,
+        label: "Google Play Image Alt Text",
+        default: "",
+      },
+      appStoreImage: {
+        type: "image" as const,
+        label: "App Store Badge Image",
+        default: { src: "", alt: "" },
+      },
+      appStoreAlt: {
+        type: "text" as const,
+        label: "App Store Image Alt Text",
+        default: "",
+      },
+
+      serviceSectionsIcons: {
+        type: "objectArray" as const,
+        label: "Service Icons (Free Shipping, etc.)",
+        fields: ["name", "image:image", "alt"],
+        default: [],
+      },
+
+      aboutTitle: {
+        type: "text" as const,
+        label: "About Section Title",
+        default: "",
+      },
+      aboutLinks: {
+        type: "objectArray" as const,
+        label: "About Links",
+        fields: ["name", "href"],
+        default: [],
+      },
+
+      usefulLinksTitle: {
+        type: "text" as const,
+        label: "Useful Links Section Title",
+        default: "",
+      },
+      usefulLinks: {
+        type: "objectArray" as const,
+        label: "Useful Links",
+        fields: ["name", "href"],
+        default: [],
+      },
+
+      ourSalonsTitle: {
+        type: "text" as const,
+        label: "Our Salons Section Title",
+        default: "",
+      },
+      ourSalonsLinks: {
+        type: "objectArray" as const,
+        label: "Our Salons Links",
+        fields: ["name", "href"],
+        default: [],
+      },
+
+      categoriesTitle: {
+        type: "text" as const,
+        label: "Categories Section Title",
+        default: "",
+      },
+      categoriesLinks: {
+        type: "objectArray" as const,
+        label: "Categories Links",
+        fields: ["name", "href"],
+        default: [],
+      },
+
+      myAccountTitle: {
+        type: "text" as const,
+        label: "My Account Section Title",
+        default: "",
+      },
+      myAccountLinks: {
+        type: "objectArray" as const,
+        label: "My Account Links",
+        fields: ["name", "href"],
+        default: [],
+      },
+
+      socialLinks: {
+        type: "objectArray" as const,
+        label: "Social Links",
+        fields: ["name", "href", "icon"],
+        default: [],
+      },
+
+      paymentProtectionText: {
+        type: "text" as const,
+        label: "Payment Protection Text",
+        default: "",
+      },
       copyrightText: {
         type: "text" as const,
         label: "Copyright Text",
-        default:
-          "\u00A9 2025 Grasper Global Private Limited. All rights reserved.",
+        default: "",
+      },
+      paymentMethods: {
+        type: "objectArray" as const,
+        label: "Payment Methods",
+        fields: ["name", "icon", "image"],
+        fieldTypes: { image: "image" },
+        default: [],
       },
     },
   },
+  [WIDGET_TYPES.Header]: {
+    type: WIDGET_TYPES.Header,
+    name: "Header",
+    description: "Site header with logo, navigation, search, and cart",
+    settingsSchema: {
+      menuHandle: {
+        type: "menu-select" as const,
+        label: "Menu",
+        default: "main-menu",
+      },
+      logoSrc: {
+        type: "image" as const,
+        label: "Logo Image",
+        default: { src: "", alt: "" },
+      },
+      searchPlaceholder: {
+        type: "text" as const,
+        label: "Search Placeholder",
+        default: "",
+      },
+      searchSuggestions: {
+        type: "array" as const,
+        label: "Search Suggestions (rotating animation)",
+        default: [],
+      },
 
-  // ─── Product page widgets ──────────────────────────────────────────────
+      // Product menu
+      product_label: {
+        type: "text" as const,
+        label: "Product Menu Label",
+        default: "",
+      },
+      product_href: {
+        type: "text" as const,
+        label: "Product Menu Link",
+        default: "",
+      },
+      product_items: {
+        type: "objectArray" as const,
+        label: "Product Dropdown Items",
+        fields: ["label", "href"],
+        default: [],
+      },
 
+      // Hair Care menu
+      hair_care_label: {
+        type: "text" as const,
+        label: "Hair Care Menu Label",
+        default: "",
+      },
+      hair_care_href: {
+        type: "text" as const,
+        label: "Hair Care Menu Link",
+        default: "",
+      },
+      hair_care_type_label: {
+        type: "text" as const,
+        label: "Hair Care: Product Type Category Label",
+        default: "",
+      },
+      hair_care_type_href: {
+        type: "text" as const,
+        label: "Hair Care: Product Type Category Link",
+        default: "",
+      },
+      hair_care_type_items: {
+        type: "objectArray" as const,
+        label: "Hair Care: Product Type Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+      hair_care_concern_label: {
+        type: "text" as const,
+        label: "Hair Care: Shop By Concern Category Label",
+        default: "",
+      },
+      hair_care_concern_href: {
+        type: "text" as const,
+        label: "Hair Care: Shop By Concern Category Link",
+        default: "",
+      },
+      hair_care_concern_items: {
+        type: "objectArray" as const,
+        label: "Hair Care: Shop By Concern Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+
+      // Hair Colour menu
+      hair_colour_label: {
+        type: "text" as const,
+        label: "Hair Colour Menu Label",
+        default: "",
+      },
+      hair_colour_href: {
+        type: "text" as const,
+        label: "Hair Colour Menu Link",
+        default: "",
+      },
+      hair_colour_items: {
+        type: "objectArray" as const,
+        label: "Hair Colour Dropdown Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+
+      // Hair Styling menu
+      hair_styling_label: {
+        type: "text" as const,
+        label: "Hair Styling Menu Label",
+        default: "",
+      },
+      hair_styling_href: {
+        type: "text" as const,
+        label: "Hair Styling Menu Link",
+        default: "",
+      },
+      hair_styling_items: {
+        type: "objectArray" as const,
+        label: "Hair Styling Dropdown Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+
+      // Salon menu
+      salon_label: {
+        type: "text" as const,
+        label: "Salon Menu Label",
+        default: "",
+      },
+      salon_href: {
+        type: "text" as const,
+        label: "Salon Menu Link",
+        default: "",
+      },
+      salon_items: {
+        type: "objectArray" as const,
+        label: "Salon Dropdown Items",
+        fields: ["label", "href"],
+        default: [],
+      },
+
+      // Mobile drawer "Get this App" banner
+      getApp_title: {
+        type: "text" as const,
+        label: "Get App: Title",
+        default: "",
+      },
+      getApp_description: {
+        type: "text" as const,
+        label: "Get App: Description",
+        default: "",
+      },
+      getApp_button_text: {
+        type: "text" as const,
+        label: "Get App: Button Text",
+        default: "",
+      },
+      getApp_logo_alt: {
+        type: "text" as const,
+        label: "Get App: Logo Alt Text",
+        default: "",
+      },
+      getApp_logo_url: {
+        type: "image" as const,
+        label: "Get App: Logo Image",
+        default: { src: "", alt: "" },
+      },
+      getApp_app_url: {
+        type: "text" as const,
+        label: "Get App: App URL",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.CollectionTimer]: {
+    type: WIDGET_TYPES.CollectionTimer,
+    name: "Collection Timer",
+    description:
+      "Countdown timer widget for collection pages with urgency text, sale label, and expiry messaging.",
+    settingsSchema: {
+      endDateString: {
+        type: "text",
+        label: "End Date (e.g. Apr 30, 2026 23:59:59)",
+        default: "",
+      },
+      urgencyText: {
+        type: "text",
+        label: "Urgency Text",
+        default: "Hurry Up!",
+      },
+      saleLabel: {
+        type: "text",
+        label: "Sale Label",
+        default: "Sale ends in:",
+      },
+      expiredText: {
+        type: "text",
+        label: "Expired Text",
+        default: "Oops! Offer is Expired",
+      },
+    },
+  },
+  [WIDGET_TYPES.CollectionHeroBanner]: {
+    type: WIDGET_TYPES.CollectionHeroBanner,
+    name: "Collection Hero Banner",
+    description:
+      "Collection page hero banner with customizable aspect ratios for mobile and desktop.",
+    settingsSchema: {
+      mobileAspectRatio: {
+        type: "text",
+        label: "Mobile Aspect Ratio (e.g. 1/1)",
+        default: "1/1",
+      },
+      desktopAspectRatio: {
+        type: "text",
+        label: "Desktop Aspect Ratio (e.g. 1440/530)",
+        default: "1440/530",
+      },
+    },
+    requiresDataSource: true,
+    compatibleDataSources: ["COLLECTION"],
+  },
+  [WIDGET_TYPES.CollectionPage]: {
+    type: WIDGET_TYPES.CollectionPage,
+    name: "Collection Widget",
+    description:
+      "Collection listing widget with product cards, actions, badges, ratings, and load-more support.",
+    settingsSchema: {
+      actionButtonText: {
+        type: "text",
+        label: "Action Button Text",
+        default: "",
+      },
+      showFilterAndSort: {
+        type: "boolean",
+        label: "Show Filter And Sort",
+        default: true,
+      },
+      autoLoadMore: {
+        type: "boolean",
+        label: "Auto Load More",
+        default: false,
+      },
+      showActionButton: {
+        type: "boolean",
+        label: "Show Action Button",
+        default: true,
+      },
+      showBadge: {
+        type: "boolean",
+        label: "Show Badge",
+        default: true,
+      },
+      showRating: {
+        type: "boolean",
+        label: "Show Rating",
+        default: true,
+      },
+      soldOutText: {
+        type: "text",
+        label: "Sold Out Text",
+        default: "",
+      },
+      filterTitle: {
+        type: "text",
+        label: "Filter Title",
+        default: "",
+      },
+      sortDropdownText: {
+        type: "text",
+        label: "Sort Dropdown Label",
+        default: "",
+      },
+      actionButtonTextColor: {
+        type: "text",
+        label: "Action Button Text Color (hex)",
+        default: "",
+      },
+      sectionTextColor: {
+        type: "text",
+        label: "Section Text Color (hex)",
+        default: "",
+      },
+      productCardBackgroundColor: {
+        type: "text",
+        label: "Product Card Background Color (hex)",
+        default: "",
+      },
+      title: {
+        type: "text",
+        label: "Collection Title (override)",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.FaqAccordion]: {
+    type: WIDGET_TYPES.FaqAccordion,
+    name: "Collection FAQ",
+    description:
+      "FAQ accordion widget for collection pages with a configurable title.",
+    settingsSchema: {
+      title: {
+        type: "text",
+        label: "Title",
+        default: "FAQ",
+      },
+    },
+  },
+  [WIDGET_TYPES.RichText]: {
+    type: WIDGET_TYPES.RichText,
+    name: "Rich Text",
+    description:
+      "Rich-text page (heading + long-form body) for policy pages and similar",
+    settingsSchema: {
+      body: {
+        type: "richtext" as const,
+        label: "Body (rich text)",
+        default: "",
+      },
+    },
+  },
+  [WIDGET_TYPES.HomeShowcase]: {
+    type: WIDGET_TYPES.HomeShowcase,
+    name: "Home Showcase",
+    description:
+      "Homepage hero + trust badges + featured products + shop-by-collection rail (data-driven from the commerce API)",
+    settingsSchema: {
+      heroEyebrow: {
+        type: "text" as const,
+        label: "Hero Eyebrow",
+        default: "New season, new essentials",
+      },
+      heroHeadline: {
+        type: "text" as const,
+        label: "Hero Headline",
+        default: "Everything you love, in one place",
+      },
+      heroSubtext: {
+        type: "text" as const,
+        label: "Hero Subtext",
+        default:
+          "Discover our full range of curated products — quality picks, honest prices, delivered to your door.",
+      },
+      heroCtaText: {
+        type: "text" as const,
+        label: "Hero CTA Text",
+        default: "Shop all products",
+      },
+      heroCtaHref: {
+        type: "text" as const,
+        label: "Hero CTA Link",
+        default: "/collections",
+      },
+      featuredHeading: {
+        type: "text" as const,
+        label: "Featured Products Heading",
+        default: "Featured products",
+      },
+      collectionsHeading: {
+        type: "text" as const,
+        label: "Collections Heading",
+        default: "Shop by collection",
+      },
+    },
+  },
+  [WIDGET_TYPES.StickyAddToCart]: {
+    type: WIDGET_TYPES.StickyAddToCart,
+    name: "Sticky Add To Cart",
+    description:
+      "Sticky bottom add-to-cart bar shown on the product detail page as the user scrolls",
+    settingsSchema: {
+      mrpLabel: {
+        type: "text" as const,
+        label: "MRP Label",
+        default: "M.R.P.",
+      },
+      inclusiveOfAllTaxesText: {
+        type: "text" as const,
+        label: "Tax Note",
+        default: "Incl. of all taxes",
+      },
+      buttonText: {
+        type: "text" as const,
+        label: "Add to Cart Button Text",
+        default: "Add to cart",
+      },
+      soldOutText: {
+        type: "text" as const,
+        label: "Sold Out Text",
+        default: "Sold Out",
+      },
+    },
+  },
+  [WIDGET_TYPES.CollectionHeading]: {
+    type: WIDGET_TYPES.CollectionHeading,
+    name: "Collection Heading",
+    description: "Collection title with an optional horizontal divider",
+    settingsSchema: {
+      title: {
+        type: "text" as const,
+        label: "Title",
+        default: "",
+      },
+      showDivider: {
+        type: "boolean" as const,
+        label: "Show Divider",
+        default: true,
+      },
+      dividerColor: {
+        type: "text" as const,
+        label: "Divider Color (hex/rgb)",
+        default: "rgb(217, 217, 217)",
+      },
+    },
+  },
+  [WIDGET_TYPES.CollectionList]: {
+    type: WIDGET_TYPES.CollectionList,
+    name: "Collection List",
+    description: "Paginated grid of all collections with a section heading",
+    settingsSchema: {
+      heading: {
+        type: "text" as const,
+        label: "Section Heading",
+        default: "All Collections",
+      },
+      pageSize: {
+        type: "number" as const,
+        label: "Collections Per Page",
+        default: 6,
+      },
+    },
+  },
   [WIDGET_TYPES.Breadcrumb]: {
     type: WIDGET_TYPES.Breadcrumb,
     name: "Breadcrumb",
-    description: "Navigation breadcrumb trail.",
-    settingsSchema: {},
-  },
-
-  [WIDGET_TYPES.ProductMain]: {
-    type: WIDGET_TYPES.ProductMain,
-    name: "Product Main",
     description:
-      "Main product display with gallery, title, price, and add-to-cart.",
-    requiresDataSource: true,
-    compatibleDataSources: ["PRODUCT"],
+      "Breadcrumb navigation trail. Falls back to these items when no product data is present.",
     settingsSchema: {
-      badgeText: {
-        type: "text" as const,
-        label: "Badge text",
-        default: "Parent's Choice",
-      },
-      saveLabel: {
-        type: "text" as const,
-        label: "Save label prefix",
-        default: "SAVE",
-      },
-      mrpNote: {
-        type: "text" as const,
-        label: "MRP note text",
-        default: "MRP inclusive of all taxes",
-      },
-      addToCartText: {
-        type: "text" as const,
-        label: "Add to cart button text",
-        default: "ADD TO CART",
-      },
-      addingText: {
-        type: "text" as const,
-        label: "Adding (loading) button text",
-        default: "ADDING...",
-      },
-      offerLabel: {
-        type: "text" as const,
-        label: "Offer accordion label",
-        default: "Available Offer",
-      },
-      offersCountSuffix: {
-        type: "text" as const,
-        label: "Offers count suffix",
-        default: "Offer(s)",
-      },
-      reviewsText: {
-        type: "text" as const,
-        label: "Reviews link text",
-        default: "reviews",
-      },
-      shippingEstimate: {
-        type: "text" as const,
-        label: "Shipping estimate text",
-        default: "Delivery in 2-5 business days",
-      },
-      offers: {
+      items: {
         type: "objectArray" as const,
-        label: "Promotional offers",
+        label: "Breadcrumb Items",
+        fields: ["text", "href"],
         default: [],
-        fields: ["code", "description"],
       },
     },
   },
-
-  [WIDGET_TYPES.KeyFeatures]: {
-    type: WIDGET_TYPES.KeyFeatures,
-    name: "Key Features",
-    description: "Product key features / highlights section.",
+  [WIDGET_TYPES.VideoApp]: {
+    type: WIDGET_TYPES.VideoApp,
+    name: "Video App",
+    description:
+      "Shoppable video rail rendered by the external Video Widget SDK. Settings are forwarded to the SDK config.",
     settingsSchema: {
-      heading: {
+      title: {
         type: "text" as const,
-        label: "Heading",
-        default: "The Little Details That Matter",
-      },
-      features: {
-        type: "objectArray" as const,
-        label: "Features",
-        default: [],
-        fields: ["label", "iconId"],
-      },
-    },
-  },
-
-  [WIDGET_TYPES.ProductTabs]: {
-    type: WIDGET_TYPES.ProductTabs,
-    name: "Product Tabs",
-    description: "Tabbed content for product details, ingredients, etc.",
-    settingsSchema: {
-      details: {
-        type: "objectArray" as const,
-        label: "Product Details",
-        default: [],
-        fields: ["label", "value"],
-      },
-      descriptionIntro: {
-        type: "text" as const,
-        label: "Description intro paragraph",
+        label: "Section Heading",
         default: "",
       },
-      descriptionItems: {
-        type: "objectArray" as const,
-        label: "Description feature items",
-        default: [],
-        fields: ["title", "body"],
+      layout: {
+        type: "select" as const,
+        label: "Layout",
+        options: [
+          { value: "grid", label: "Grid" },
+          { value: "carousel", label: "Carousel" },
+          { value: "slider", label: "Slider" },
+          { value: "stories", label: "Stories" },
+        ],
+        default: "carousel",
       },
-      descriptionImageUrl: {
+      itemsPerRow: {
+        type: "number" as const,
+        label: "Items Per Row (grid layout)",
+        default: 4,
+      },
+      autoplay: {
+        type: "boolean" as const,
+        label: "Autoplay Videos",
+        default: false,
+      },
+      muteByDefault: {
+        type: "boolean" as const,
+        label: "Mute By Default",
+        default: true,
+      },
+      showVideoControls: {
+        type: "boolean" as const,
+        label: "Show Video Controls",
+        default: false,
+      },
+      enableCtaButton: {
+        type: "boolean" as const,
+        label: "Show CTA Button",
+        default: false,
+      },
+      buttonText: {
         type: "text" as const,
-        label: "Description image URL",
+        label: "CTA Button Text",
         default: "",
       },
-      descriptionImageAlt: {
+      ctaButtonTextColor: {
         type: "text" as const,
-        label: "Description image alt text",
-        default: "Product Image",
-      },
-      deliveryReturns: {
-        type: "array" as const,
-        label: "Delivery & Returns paragraphs",
-        default: [],
-      },
-    },
-  },
-
-  [WIDGET_TYPES.TestimonialsCarousel]: {
-    type: WIDGET_TYPES.TestimonialsCarousel,
-    name: "Testimonials Carousel",
-    description: "Scrollable testimonial carousel.",
-    settingsSchema: {},
-  },
-
-  [WIDGET_TYPES.HowToUseInstructions]: {
-    type: WIDGET_TYPES.HowToUseInstructions,
-    name: "How to Use",
-    description: "Step-by-step usage instructions.",
-    settingsSchema: {},
-  },
-
-  [WIDGET_TYPES.VideoAndBrandValues]: {
-    type: WIDGET_TYPES.VideoAndBrandValues,
-    name: "Video & Brand Values",
-    description: "Brand video and values showcase.",
-    settingsSchema: {},
-  },
-
-  [WIDGET_TYPES.LovedByParentsCarousel]: {
-    type: WIDGET_TYPES.LovedByParentsCarousel,
-    name: "Loved by Parents",
-    description: "Social proof carousel from parents.",
-    settingsSchema: {
-      heading: {
-        type: "text" as const,
-        label: "Heading",
-        default: "Loved by Parents",
-      },
-    },
-  },
-
-  [WIDGET_TYPES.WhatsAppCommunity]: {
-    type: WIDGET_TYPES.WhatsAppCommunity,
-    name: "WhatsApp Community",
-    description: "WhatsApp community join CTA.",
-    settingsSchema: {},
-  },
-
-  [WIDGET_TYPES.FAQsAccordion]: {
-    type: WIDGET_TYPES.FAQsAccordion,
-    name: "FAQs",
-    description: "Frequently asked questions accordion.",
-    settingsSchema: {},
-  },
-
-  [WIDGET_TYPES.CustomerReviews]: {
-    type: WIDGET_TYPES.CustomerReviews,
-    name: "Customer Reviews",
-    description: "Customer reviews and ratings section.",
-    settingsSchema: {
-      heading: {
-        type: "text" as const,
-        label: "Heading",
-        default: "Customer Reviews",
-      },
-    },
-  },
-
-  // ─── Collection page widgets ───────────────────────────────────────────
-
-  [WIDGET_TYPES.CollectionBanner]: {
-    type: WIDGET_TYPES.CollectionBanner,
-    name: "Collection Banner",
-    description: "Banner image for collection pages.",
-    settingsSchema: {
-      desktopImageUrl: {
-        type: "text" as const,
-        label: "Desktop banner image URL",
+        label: "CTA Button Text Color (hex)",
         default: "",
       },
-      mobileImageUrl: {
+      ctaButtonBackgroundColor: {
         type: "text" as const,
-        label: "Mobile banner image URL",
+        label: "CTA Button Background Color (hex)",
         default: "",
       },
-      altText: {
+      destinationUrl: {
         type: "text" as const,
-        label: "Banner alt text",
-        default: "Shop All",
+        label: "CTA Destination URL",
+        default: "/products",
       },
     },
   },
-
-  [WIDGET_TYPES.CollectionHeader]: {
-    type: WIDGET_TYPES.CollectionHeader,
-    name: "Collection Header",
-    description: "Collection title and description header.",
+  [WIDGET_TYPES.PageContent]: {
+    type: WIDGET_TYPES.PageContent,
+    name: "Content Section",
+    description:
+      "Generic content block: eyebrow, title, intro, and text sections — for policy, info, and long-form pages",
     settingsSchema: {
-      heading: {
+      eyebrow: {
         type: "text" as const,
-        label: "Heading",
-        default:
-          "All baby products, thoughtfully designed for you and your little one!",
+        label: "Eyebrow (small label)",
+        default: "",
+      },
+      title: {
+        type: "text" as const,
+        label: "Title",
+        default: "",
       },
       subtitle: {
         type: "text" as const,
-        label: "Subtitle",
-        default: "Our collection, trusted by parents.",
-      },
-    },
-  },
-
-  [WIDGET_TYPES.CategoryTabBar]: {
-    type: WIDGET_TYPES.CategoryTabBar,
-    name: "Category Tab Bar",
-    description: "Horizontal tab bar for browsing categories.",
-    settingsSchema: {
-      activeHandle: {
-        type: "text" as const,
-        label: "Active category handle",
+        label: "Intro / Subtitle",
         default: "",
       },
-      categories: {
-        type: "objectArray" as const,
-        label: "Category pills",
-        default: [],
-        fields: ["label", "href"],
-      },
-    },
-  },
-
-  [WIDGET_TYPES.FilterSortBar]: {
-    type: WIDGET_TYPES.FilterSortBar,
-    name: "Filter & Sort Bar",
-    description: "Filtering and sorting controls for product listings.",
-    settingsSchema: {
-      activeSortValue: {
+      updatedAt: {
         type: "text" as const,
-        label: "Default sort value",
+        label: "Last updated (optional)",
         default: "",
       },
-      filterButtonText: {
-        type: "text" as const,
-        label: "Filter button text",
-        default: "Filter",
-      },
-      sortByLabel: {
-        type: "text" as const,
-        label: "Sort by label",
-        default: "Sort By",
-      },
-      clearAllText: {
-        type: "text" as const,
-        label: "Clear all button text",
-        default: "Clear All",
-      },
-      applyFiltersText: {
-        type: "text" as const,
-        label: "Apply filters button text",
-        default: "Apply Filters",
-      },
-      sortOptions: {
+      // NOTE: `contact` (email/phone/address/hours) is intentionally NOT an
+      // editor field. The widget sources it env-first via getStoreContact()
+      // (NEXT_PUBLIC_STORE_*) with the theme locale as fallback — merchant-
+      // agnostic by config, not per-instance editing.
+      sections: {
         type: "objectArray" as const,
-        label: "Sort options",
+        label: "Content Sections",
+        fields: ["heading", "body", "bullets"],
         default: [],
-        fields: ["label", "value"],
       },
     },
-  },
-
-  [WIDGET_TYPES.ProductGrid]: {
-    type: WIDGET_TYPES.ProductGrid,
-    name: "Product Grid",
-    description: "Grid layout for product listings.",
-    requiresDataSource: true,
-    compatibleDataSources: ["COLLECTION_BY_HANDLES"],
-    settingsSchema: {
-      addToCartText: {
-        type: "text" as const,
-        label: "Add to cart button text",
-        default: "ADD TO CART",
-      },
-      outOfStockText: {
-        type: "text" as const,
-        label: "Out of stock button text",
-        default: "OUT OF STOCK",
-      },
-      reviewsText: {
-        type: "text" as const,
-        label: "Reviews suffix text",
-        default: "reviews",
-      },
-      savePrefix: {
-        type: "text" as const,
-        label: "Save badge prefix",
-        default: "Save ",
-      },
-    },
-  },
-
-  [WIDGET_TYPES.LoadMorePagination]: {
-    type: WIDGET_TYPES.LoadMorePagination,
-    name: "Load More Pagination",
-    description: "Load more button for paginated product listings.",
-    settingsSchema: {
-      buttonText: {
-        type: "text" as const,
-        label: "Button text",
-        default: "Load More",
-      },
-    },
-  },
-
-  // ─── Utility widgets ──────────────────────────────────────────────────
-
-  [WIDGET_TYPES.FloatingActions]: {
-    type: WIDGET_TYPES.FloatingActions,
-    name: "Floating Actions",
-    description: "Floating action buttons (WhatsApp, scroll-to-top, etc.).",
-    settingsSchema: {},
-  },
-
-  [WIDGET_TYPES.MobileBottomBar]: {
-    type: WIDGET_TYPES.MobileBottomBar,
-    name: "Mobile Bottom Bar",
-    description: "Mobile-only bottom navigation bar.",
-    settingsSchema: {},
   },
 };
 

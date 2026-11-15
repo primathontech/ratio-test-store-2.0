@@ -11,11 +11,6 @@ import {
   dispatchCheckoutCompleteEvent,
   dispatchCheckoutStartEvent,
 } from "./events";
-import {
-  addSentryBreadcrumb,
-  captureSentryException,
-  captureSentryMessage,
-} from "@/lib/sentry/utils";
 // Global window interface for GoKwik
 declare global {
   interface Window {
@@ -96,13 +91,6 @@ export class ShopifyCheckoutService {
       eventHandlers = {},
     } = config;
 
-    addSentryBreadcrumb("checkout", "Checkout initializing", {
-      cartId,
-      total,
-      currencyCode,
-      itemCount: items.length,
-    });
-
     try {
       // Store event handlers and cart data for use in event listeners
       this.currentEventHandlers = eventHandlers;
@@ -121,26 +109,11 @@ export class ShopifyCheckoutService {
 
       // Trigger Gokwik checkout
       if (window.triggerGokwikCheckout && cartId) {
-        addSentryBreadcrumb("checkout", "GoKwik SDK checkout starting", {
-          cartId,
-        });
         window.triggerGokwikCheckout(cartId);
       } else {
-        captureSentryMessage("GoKwik checkout not available or no cart ID", {
-          level: "error",
-          tags: { flow: "checkout", errorType: "sdkUnavailable" },
-        });
         throw new Error("GoKwik checkout not available or no cart ID");
       }
     } catch (error) {
-      captureSentryException(error, {
-        tags: {
-          flow: "checkout",
-          operation: "initializeCheckout",
-          errorType: "checkout",
-        },
-        contexts: { checkout: { cartId, total, itemCount: items.length } },
-      });
       console.error("GoKwik checkout initialization error:", error);
       eventHandlers.onError?.(
         error instanceof Error ? error : new Error("Unknown checkout error")
@@ -202,9 +175,6 @@ export class ShopifyCheckoutService {
         console.log("orderSuccess event received", event);
 
         const order = event.data.response;
-        addSentryBreadcrumb("checkout", "Order success (message event)", {
-          orderId: order?.order_name,
-        });
 
         // Trigger Trackier conversion tracking if available
         if (typeof window !== "undefined" && window.TrackierWebSDK) {
@@ -234,7 +204,6 @@ export class ShopifyCheckoutService {
 
         // Clear cart storage (localStorage)
         this.clearCartStorage();
-        addSentryBreadcrumb("checkout", "Cart cleared after checkout");
 
         // Call custom handler - this will trigger component's cart clearing and closing
         this.currentEventHandlers.onOrderComplete?.(order);

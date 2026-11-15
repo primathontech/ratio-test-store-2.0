@@ -12,6 +12,7 @@ import type { NextRequest } from "next/server";
 
 import { getLocale, setLocaleCookie } from "./locale";
 import { getABTestCookies, handleABTestRewrites } from "./ab-testing";
+import { handleSectionAbTest } from "./section-ab";
 import { shouldSkipMiddleware } from "./utils";
 
 /**
@@ -31,6 +32,11 @@ export interface CreateMiddlewareOptions {
     product: string;
   };
 }
+
+// Page-level A/B — off. Section-level A/B replaces it; only one may rewrite a
+// request. A stale `_prima_ptr_ab_*=B` cookie is ignored, so the visitor gets
+// the ordinary page.
+const PAGE_LEVEL_AB_ENABLED = false;
 
 /**
  * Create a configured middleware function
@@ -68,7 +74,7 @@ export interface CreateMiddlewareOptions {
 export function createMiddleware(options: CreateMiddlewareOptions) {
   const { i18n, abTestCookies } = options;
 
-  return function middleware(request: NextRequest) {
+  return async function middleware(request: NextRequest) {
     const { pathname } = request.nextUrl;
 
     // Skip middleware for API routes, static files, etc.
@@ -77,9 +83,6 @@ export function createMiddleware(options: CreateMiddlewareOptions) {
     }
 
     let response = NextResponse.next();
-
-    // Extract A/B testing cookie values
-    const abCookies = getABTestCookies(request, abTestCookies);
 
     // Get locale (from cookie or detect from headers)
     const { locale, fromCookie } = getLocale(
@@ -97,17 +100,22 @@ export function createMiddleware(options: CreateMiddlewareOptions) {
       setLocaleCookie(response, i18n.cookieName, locale);
     }
 
-    // Handle A/B test rewrites
-    const abTestRewrite = handleABTestRewrites(
-      pathname,
-      request,
-      locale,
-      abCookies
-    );
-    if (abTestRewrite) {
-      response = abTestRewrite;
+    if (PAGE_LEVEL_AB_ENABLED) {
+      const abCookies = getABTestCookies(request, abTestCookies);
+      const abTestRewrite = handleABTestRewrites(
+        pathname,
+        request,
+        locale,
+        abCookies
+      );
+      if (abTestRewrite) {
+        response = abTestRewrite;
+      }
     }
 
-    return response;
+    // Section-level A/B. Runs LAST so it can see whether the PRT rewrite above
+    // already claimed this request, and skip rather than stack on top of it.
+    // Never throws: a failure returns `response` unchanged.
+    return handleSectionAbTest(request, response);
   };
 }

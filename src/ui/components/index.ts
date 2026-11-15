@@ -7,3 +7,5 @@
 export * from "./AuthGuard";
 export * from "./CartBadge";
 export * from "./LanguageSwitcher";
+export * from "./SwipeCarousel";
+export * from "./ProductCard";

@@ -8,12 +8,13 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState, useSyncExternalStore } from "react";
 import {
   CartItem,
   CheckoutConfig,
   CheckoutEventHandlers,
   CustomCheckoutService,
+  subscribeGokwikReady,
 } from "./CustomCheckoutService";
 
 export interface UseCustomCheckoutOptions {
@@ -235,41 +236,11 @@ export function useCustomCheckout(
     ]
   );
 
-  const [isGokwikAvailable, setIsGokwikAvailable] = useState(false);
-
-  // Check availability on client side only, with polling for script load
-  useEffect(() => {
-    const checkAvailability = () => {
-      const available = CustomCheckoutService.isGokwikAvailable();
-      if (available) {
-        setIsGokwikAvailable(true);
-        return true;
-      }
-      return false;
-    };
-
-    // Check immediately
-    if (checkAvailability()) {
-      return;
-    }
-
-    // Poll for script availability (script might load after component mounts)
-    const interval = setInterval(() => {
-      if (checkAvailability()) {
-        clearInterval(interval);
-      }
-    }, 100);
-
-    // Cleanup after 5 seconds if still not available
-    const timeout = setTimeout(() => {
-      clearInterval(interval);
-    }, 5000);
-
-    return () => {
-      clearInterval(interval);
-      clearTimeout(timeout);
-    };
-  }, []);
+  const isGokwikAvailable = useSyncExternalStore(
+    subscribeGokwikReady,
+    CustomCheckoutService.isGokwikAvailable,
+    () => false
+  );
 
   return {
     startCheckout,

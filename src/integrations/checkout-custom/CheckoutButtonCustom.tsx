@@ -95,8 +95,9 @@ export function CheckoutButtonCustom({
     }
   };
 
+  const isScriptLoading = !isGokwikAvailable;
   const isButtonDisabled =
-    disabled || items.length === 0 || !cartToken || !isGokwikAvailable;
+    disabled || items.length === 0 || !cartToken || isScriptLoading;
 
   return (
     <>
@@ -105,13 +106,21 @@ export function CheckoutButtonCustom({
 
       <button
         {...buttonProps}
-        className={className}
+        className={`${className ?? ""} disabled:opacity-60 disabled:cursor-not-allowed`}
         style={style}
         onClick={handleCheckout}
         disabled={isButtonDisabled}
+        aria-busy={isScriptLoading}
         type="button"
         data-debug="main hu checkout"
       >
+        {isScriptLoading && (
+          <span
+            role="status"
+            aria-label="Loading checkout"
+            className="inline-block shrink-0 mr-2 size-[16px] border-2 border-current border-t-transparent rounded-full animate-spin"
+          />
+        )}
         {children}
       </button>
 

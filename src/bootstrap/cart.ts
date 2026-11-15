@@ -4,8 +4,11 @@
  * Cart Bootstrap - @shopkit/cart Configuration
  *
  * Configures the cart module with application-specific services.
- * Uses ResilientCartService that wraps DataLayerCartService and
- * falls back to local-only mode on cart API failures (503s are common).
+ * This is the composition root that wires together the cart package
+ * with this application's storage and service implementations.
+ *
+ * Uses DataLayerCartService to route cart operations through the
+ * unified @shopkit/data-layer client.
  *
  * @module bootstrap/cart
  */
@@ -15,7 +18,9 @@ import {
   CartInitializer,
   DataLayerCartService,
   DefaultCartStorage,
+  type CartEvent,
 } from "@shopkit/cart";
+import { startFlow } from "@shopkit/observability/client";
 import { createElement, useRef } from "react";
 import { getCommerceClient } from "@/config/commerce";
 import { eventBus } from "@shopkit/events";
@@ -24,12 +29,42 @@ import { createCartMapper } from "@shopkit/events/mappers";
 
 let _initialized = false;
 
+/**
+ * Cart outcomes for monitoring: add to cart, and a cart that failed to load.
+ * `addItems` is left out: the cart reports its failures but not its successes.
+ */
+function trackCartOutcomes(event: CartEvent) {
+  if (event.type === "ADD_TO_CART") {
+    startFlow("add_to_cart").success();
+  }
+  if (event.type !== "CART_ERROR") {
+    return;
+  }
+  if (event.action === "addItem") {
+    startFlow("add_to_cart").fail("cart_api", event.error);
+  }
+  // Without a cart every add is silently skipped, so record why. Failures only: this
+  // runs on every page load, and page views are already counted.
+  if (event.action === "initializeCart") {
+    startFlow("cart_init").fail("cart_api", event.error);
+  }
+}
+
+/**
+ * Configure the cart module for this application.
+ * Must be called on the client before any cart hooks are used.
+ * Safe to call multiple times — only configures once.
+ *
+ * @param merchantName - The merchant identifier for cart storage
+ */
 function setupCart(merchantName: string) {
   if (_initialized) {
     return;
   }
   _initialized = true;
 
+  // Use data-layer client for cart operations
+  // This routes all cart API calls through the unified commerce abstraction
   const dataLayerClient = getCommerceClient();
 
   // Wire cart events → analytics (AddToCart → Meta/GA4)
@@ -41,7 +76,10 @@ function setupCart(merchantName: string) {
     cartService: new DataLayerCartService(dataLayerClient),
     cartStorage: new DefaultCartStorage(merchantName),
     defaultCurrencyCode: "INR",
-    onCartEvent: handleCartEvent,
+    onCartEvent: (event) => {
+      trackCartOutcomes(event);
+      handleCartEvent(event);
+    },
   });
 }
 

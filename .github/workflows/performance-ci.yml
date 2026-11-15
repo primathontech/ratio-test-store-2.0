@@ -1,0 +1,187 @@
+name: Performance CI
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_ENV: production
+  # Required for build - uses GitHub secrets with fallback placeholders
+  # Agencies should configure these secrets in their repo settings
+  PLATFORM: ${{ secrets.PLATFORM || 'shopify' }}
+  NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN: ${{ secrets.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN || 'placeholder.myshopify.com' }}
+  SHOPIFY_STORE_DOMAIN: ${{ secrets.SHOPIFY_STORE_DOMAIN || 'placeholder.myshopify.com' }}
+  NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${{ secrets.NEXT_PUBLIC_SHOPIFY_STOREFRONT_ACCESS_TOKEN || 'placeholder' }}
+  SHOPIFY_STOREFRONT_ACCESS_TOKEN: ${{ secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN || 'placeholder' }}
+  SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN || 'placeholder' }}
+  NEXT_PUBLIC_SHOPIFY_API_VERSION: ${{ secrets.SHOPIFY_API_VERSION || '2025-04' }}
+  SHOPIFY_API_VERSION: ${{ secrets.SHOPIFY_API_VERSION || '2025-04' }}
+  MERCHANT_NAME: ${{ secrets.MERCHANT_NAME || 'storefront' }}
+
+jobs:
+  performance-checks:
+    name: Performance Validation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: ${{ runner.os }}-bun-${{ hashFiles('**/bun.lockb') }}
+          restore-keys: |
+            ${{ runner.os }}-bun-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # ─────────────────────────────────────────────
+      # Get changed files in this PR
+      # ─────────────────────────────────────────────
+
+      - name: Get PR changed files
+        id: changed-files
+        run: |
+          # Get the list of files changed in this PR
+          git diff --name-only origin/${{ github.base_ref }}...HEAD > changed_files.txt
+          echo "Changed files in PR:"
+          cat changed_files.txt
+
+          # Export as space-separated for scripts
+          echo "ALL_FILES=$(cat changed_files.txt | tr '\n' ' ')" >> $GITHUB_ENV
+          echo "WIDGET_FILES=$(grep 'src/widgets/' changed_files.txt | tr '\n' ' ' || true)" >> $GITHUB_ENV
+          echo "TEMPLATE_FILES=$(grep 'src/themes/' changed_files.txt | tr '\n' ' ' || true)" >> $GITHUB_ENV
+          echo "ROUTE_FILES=$(grep -E 'src/app/.*page\.tsx' changed_files.txt | tr '\n' ' ' || true)" >> $GITHUB_ENV
+          echo "TS_FILES=$(grep -E '^src/.*\.(ts|tsx)$' changed_files.txt | tr '\n' ' ' || true)" >> $GITHUB_ENV
+          echo "ASSET_FILES=$(grep -E '\.(jpg|jpeg|png|gif|webp|avif|svg|mp4|webm|woff|woff2|ttf|otf)$' changed_files.txt | tr '\n' ' ' || true)" >> $GITHUB_ENV
+
+      # ─────────────────────────────────────────────
+      # Phase 1 Checks (on PR changed files)
+      # ─────────────────────────────────────────────
+
+      - name: Validate widget structure
+        if: env.WIDGET_FILES != ''
+        run: |
+          echo "Validating widgets: $WIDGET_FILES"
+          bun .perf/validate-widget.ts --files="$WIDGET_FILES"
+
+      - name: Validate template structure
+        if: env.TEMPLATE_FILES != ''
+        run: |
+          echo "Validating templates: $TEMPLATE_FILES"
+          bun .perf/validate-template.ts --files="$TEMPLATE_FILES"
+
+      - name: Validate route structure
+        if: env.ROUTE_FILES != ''
+        run: |
+          echo "Validating routes: $ROUTE_FILES"
+          bun .perf/validate-route.ts --files="$ROUTE_FILES"
+
+      - name: Run ESLint on changed files
+        if: env.TS_FILES != ''
+        run: |
+          echo "Linting files: $TS_FILES"
+          npx eslint $TS_FILES
+
+      - name: Calculate performance scores
+        id: perf-score
+        if: env.WIDGET_FILES != ''
+        run: |
+          echo "Scoring widgets: $WIDGET_FILES"
+          # Run scoring and save output (continue even if it fails to capture report)
+          bun .perf/score-widget.ts --files="$WIDGET_FILES" 2>&1 | tee perf-score-output.txt
+          exit ${PIPESTATUS[0]}
+
+      - name: Generate types
+        run: bun run generate
+
+      - name: TypeScript type check
+        if: env.TS_FILES != ''
+        run: |
+          echo "Running full TypeScript check..."
+          npx tsc --noEmit
+
+      # ─────────────────────────────────────────────
+      # Phase 2 Checks
+      # ─────────────────────────────────────────────
+
+      - name: Validate assets
+        if: env.ASSET_FILES != ''
+        run: |
+          echo "Validating assets: $ASSET_FILES"
+          bun .perf/validate-assets.ts --files="$ASSET_FILES"
+
+      - name: Validate critical widgets
+        run: bun .perf/validate-critical-widgets.ts
+        continue-on-error: false
+
+      - name: Audit third-party scripts
+        run: bun .perf/audit-third-party.ts
+        continue-on-error: true # Warning only, doesn't block
+
+      # ─────────────────────────────────────────────
+      # Build
+      # ─────────────────────────────────────────────
+
+      - name: Production build
+        run: bun run build
+        continue-on-error: false
+
+      # ─────────────────────────────────────────────
+      # Summary (in workflow logs)
+      # ─────────────────────────────────────────────
+
+      - name: Print validation summary
+        if: always()
+        run: |
+          echo ""
+          echo "════════════════════════════════════════════════════════════════════════════════"
+          echo "  🚀 PERFORMANCE CI SUMMARY"
+          echo "════════════════════════════════════════════════════════════════════════════════"
+          echo ""
+
+          # Count changed files
+          WIDGET_COUNT=$(grep "src/widgets/" changed_files.txt 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+          TEMPLATE_COUNT=$(grep "src/themes/" changed_files.txt 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+          ROUTE_COUNT=$(grep -E "src/app/.*page\.tsx" changed_files.txt 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+          ASSET_COUNT=$(grep -E "\.(jpg|jpeg|png|gif|webp|avif|svg)$" changed_files.txt 2>/dev/null | wc -l | tr -d ' ' || echo "0")
+
+          echo "  📁 Files Changed in PR:"
+          echo "     • Widgets:   $WIDGET_COUNT"
+          echo "     • Templates: $TEMPLATE_COUNT"
+          echo "     • Routes:    $ROUTE_COUNT"
+          echo "     • Assets:    $ASSET_COUNT"
+          echo ""
+
+          # Show performance scores if available
+          if [ -f perf-score-output.txt ]; then
+            echo "────────────────────────────────────────────────────────────────────────────────"
+            echo "  📊 WIDGET PERFORMANCE SCORES"
+            echo "────────────────────────────────────────────────────────────────────────────────"
+            echo ""
+            cat perf-score-output.txt
+            echo ""
+          else
+            echo "  ℹ️  No widget files changed - performance scoring skipped"
+            echo ""
+          fi
+
+          echo "════════════════════════════════════════════════════════════════════════════════"
+          echo "  See individual step logs above for detailed validation results."
+          echo "════════════════════════════════════════════════════════════════════════════════"

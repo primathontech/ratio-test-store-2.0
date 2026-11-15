@@ -1,0 +1,12 @@
+{
+  "sections.hero_banner.desktopImage": {
+    "src": "/HeroBanner/images/hero-desktop.jpg",
+    "alt": "Flat"
+  },
+  "sections.hero_banner.mobileImage": {
+    "src": "/HeroBanner/images/hero-mobile.jpg",
+    "alt": "Flat"
+  },
+  "sections.hero_banner.mobileAspectRatio": "1/1",
+  "sections.hero_banner.desktopAspectRatio": "1440/529"
+}

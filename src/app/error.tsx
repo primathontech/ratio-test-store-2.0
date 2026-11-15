@@ -1,6 +1,14 @@
 "use client";
 
-export default function Error({ error }: { error: Error }) {
+import { useReportError } from "@shopkit/observability/react";
+
+export default function Error({
+  error,
+}: {
+  error: Error & { digest?: string };
+}) {
+  useReportError(error, "app-error");
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
       <div className="max-w-2xl w-full text-center">

@@ -27,6 +27,7 @@ import { getMessages } from "next-intl/server";
 import type { RouteContext, VariantRegistryResult } from "@shopkit/builder";
 import { loadMessages } from "@/locales/.generated/manifest";
 import type { Locale, PageName } from "@/locales/.generated/types";
+import { osMerchantHeaders } from "@/utils/os-headers";
 
 // =============================================================================
 // TEMPLATE ID UTILITIES
@@ -96,9 +97,9 @@ function getTemplateId(args: GetTemplateIdArgs): string {
  * Extract page name from template ID
  * Template ID format: "{theme}_{page}_{variant}" -> extracts "{page}"
  * Examples:
- *   - "dawn_home_default" -> "home"
- *   - "dawn_collection_default" -> "collections" (mapped)
- *   - "dawn_products_default" -> "products"
+ *   - "ratio_home_default" -> "home"
+ *   - "ratio_collection_default" -> "collections" (mapped)
+ *   - "ratio_products_default" -> "products"
  */
 function extractPageName(templateId: string): string | undefined {
   if (!templateId || templateId === "common") {
@@ -107,11 +108,8 @@ function extractPageName(templateId: string): string | undefined {
 
   // Split by underscore: [theme, page, variant]
   const parts = templateId.split("_");
-
-  // Static template IDs have no underscores (e.g., "privacy-policy")
-  // Use the full templateId as the page name
   if (parts.length < 2) {
-    return templateId;
+    return undefined;
   }
 
   // The page name is the second part
@@ -215,6 +213,8 @@ export interface GetTranslationsParams {
   themeId: string;
   templateId: string;
   language: string;
+  /** Used when the editor has no translations for `templateId` (404). */
+  fallbackTemplateId?: string;
 }
 
 // Feature flag: only fetch translations from API when explicitly enabled
@@ -249,19 +249,42 @@ const isEditorChangesEnabled = () => {
 export async function getTranslations(
   params: GetTranslationsParams
 ): Promise<Record<string, any>> {
-  try {
-    const { themeId, templateId, language } = params;
+  const { themeId, templateId, language } = params;
 
-    // If editor changes are disabled, use local locale JSONs
-    if (!isEditorChangesEnabled()) {
-      // Map templateId to page name for local message loading
-      // templateId format: "common" or "dawn_home_default" -> page name: "home"
-      const pageName =
-        templateId === "common" ? undefined : extractPageName(templateId);
+  // Local locale JSONs for this template — src/themes/{theme}/locales/pages/.
+  //
+  // This mirrors TemplateResolver, which falls back to the FILESYSTEM template
+  // (loadMerchantTemplate) whenever the editor backend has no record for a
+  // templateId. The two layers have to agree: a template served from disk
+  // references its copy as "t:{templateId}.{key}", so its messages must come
+  // from disk too. next-intl's getMessages() is request-scoped and never
+  // contains an arbitrary page namespace, so using it here would leave those
+  // tokens unresolved and hand widgets a raw string.
+  //
+  // Not hypothetical: the editor backend hosts home/collection/products/
+  // collection-list/about-us but 404s contact, faq, privacy-policy,
+  // terms-of-service, refund-policy and shipping-policy, so every
+  // /pages/[handle] route takes this path on each render.
+  const localMessages = async (): Promise<Record<string, any>> => {
+    // templateId format: "common" or "ratio_home_default" -> page name: "home"
+    const pageName =
+      templateId === "common" ? undefined : extractPageName(templateId);
+    try {
       return await loadMessages(
         language as Locale,
         pageName as PageName | undefined
       );
+    } catch {
+      // No locale folder for this page — degrade to request-scoped messages
+      // rather than failing the render.
+      return await getMessages();
+    }
+  };
+
+  try {
+    // If editor changes are disabled, use local locale JSONs
+    if (!isEditorChangesEnabled()) {
+      return await localMessages();
     }
 
     const apiUrl = process.env.NEXT_PUBLIC_EDITOR_API_URL;
@@ -279,22 +302,36 @@ export async function getTranslations(
       response = await fetch(
         `${apiUrl}/api/v1/themes/${themeId}/translations/${templateId}/${language}`,
         {
-          cache: "no-store",
           headers: {
             "Content-Type": "application/json",
+            ...osMerchantHeaders(),
           },
           signal: controller.signal,
+          // Full ISR: tagged + time-revalidated (not no-store). Tag must match
+          // the revalidate webhook (single-merchant → no theme prefix).
+          next: {
+            tags: [`editor-i18n:${templateId}:${language}`],
+            revalidate: 3600,
+          },
         }
       );
     } finally {
       clearTimeout(timeoutId);
     }
 
+    if (response.status === 404 && params.fallbackTemplateId) {
+      return await getTranslations({
+        ...params,
+        templateId: params.fallbackTemplateId,
+        fallbackTemplateId: undefined,
+      });
+    }
+
     if (!response.ok) {
       console.warn(
         `[i18n] Translation API responded with status ${response.status}. Falling back to local messages.`
       );
-      return await getMessages();
+      return await localMessages();
     }
 
     // Parse JSON safely; fall back if parsing fails
@@ -306,7 +343,7 @@ export async function getTranslations(
         "[i18n] Failed to parse translation API response. Falling back to local messages.",
         parseError
       );
-      return await getMessages();
+      return await localMessages();
     }
 
     const translations = data?.data?.translations;
@@ -317,7 +354,7 @@ export async function getTranslations(
     console.warn(
       "[i18n] Translation API returned invalid shape. Falling back to local messages."
     );
-    return await getMessages();
+    return await localMessages();
   } catch (error) {
     console.error(
       `Error fetching translations for ${params.themeId}/${params.templateId}/${params.language}:`,
@@ -325,10 +362,10 @@ export async function getTranslations(
     );
     // Final fallback to local messages to keep the app functional
     try {
-      return await getMessages();
+      return await localMessages();
     } catch (localFallbackError) {
       console.error(
-        "[i18n] Failed to load local messages via getMessages() as a fallback:",
+        "[i18n] Failed to load local messages as a fallback:",
         localFallbackError
       );
       // Preserve the original error context but avoid crashing silently
@@ -386,10 +423,16 @@ export async function getRouteTranslations({
       variant: resolvedVariant,
     });
 
+    // A suffix template the editor doesn't have renders the default template
+    // (template-load-pipeline), so its copy must come from the default too.
     const templateTranslations = await getTranslations({
       themeId: themeName,
       templateId,
       language,
+      fallbackTemplateId:
+        resolvedVariant !== "default"
+          ? getTemplateId({ themeName, templateName, variant: "default" })
+          : undefined,
     });
 
     return { ...common, ...templateTranslations };

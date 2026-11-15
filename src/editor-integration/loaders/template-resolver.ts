@@ -1,5 +1,5 @@
 /* eslint-disable no-console */
-import { templateApiClient } from "./api-client";
+import { templateApiClient, TemplateNotFoundError } from "./api-client";
 import type {
   ITemplateLoader,
   PageConfig,
@@ -79,6 +79,15 @@ export class TemplateResolver {
         }
       }
     } catch (error) {
+      // An assigned template the editor doesn't have is not an outage: the
+      // loader falls back to the merchant's editor default, not the repo file.
+      if (
+        error instanceof TemplateNotFoundError &&
+        resolvedVariant !== "default"
+      ) {
+        throw error;
+      }
+
       console.error(
         `[TemplateResolver] Error loading template for ${merchantName}/${templateName}:`,
         error
@@ -128,11 +137,9 @@ export class TemplateResolver {
     templateId: string
   ): Promise<PageConfig> {
     try {
-      const isAvailable = await templateApiClient.isAvailable();
-      if (!isAvailable) {
-        throw new Error("Template API is not available");
-      }
-
+      // No isAvailable()/health preflight — it's an extra uncacheable fetch that
+      // throws DynamicServerError during static generation and silently drops to
+      // the filesystem. fetchTemplate has its own timeout + error handling.
       const response = await templateApiClient.fetchTemplate(
         merchantName,
         templateId
@@ -158,10 +165,14 @@ export class TemplateResolver {
 
       return pageConfig;
     } catch (error) {
-      console.error(
-        `[TemplateResolver] API fetch failed for ${merchantName}/${templateId}:`,
-        error
-      );
+      // A missing assigned template is normal (it falls back to the default),
+      // so only a real failure is logged as an error.
+      if (!(error instanceof TemplateNotFoundError)) {
+        console.error(
+          `[TemplateResolver] API fetch failed for ${merchantName}/${templateId}:`,
+          error
+        );
+      }
       throw error;
     }
   }

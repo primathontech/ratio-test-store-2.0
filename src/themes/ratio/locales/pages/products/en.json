@@ -1,0 +1,41 @@
+{
+  "ratio_products_default": {
+    "product_detail": {
+      "showProductMarquee": false,
+      "productMarqueeText": "Shop for ₹499 & Get 2 Bestsellers Free",
+      "productMarqueeCouponCode": "FREEHF",
+      "productMarqueeSpeed": "8s",
+      "productMarqueeHref": "https://bblunt.com/pages/shine-squad-weekly-offer",
+      "netContentText": "Net content",
+      "inclusiveOfAllTaxesText": "Incl. of all taxes",
+      "reviewsText": "reviews",
+      "mrp": "MRP.",
+      "usp": "USP",
+      "discount": "% off",
+      "selectSizeText": "Select size",
+      "rupeeSymbol": "₹"
+    },
+    "reasons_to_love": {
+      "section_title": "Reasons to Love"
+    },
+    "product_faq": {
+      "title": "Product FAQs",
+      "defaultExpanded": true
+    },
+    "customer_reviews": {
+      "title": "Customer Reviews",
+      "writeReviewButtonText": "Write a review",
+      "cancelReviewButtonText": "Cancel review"
+    },
+    "recently_viewed": {
+      "heading": "Recently Viewed"
+    },
+    "additional_information": {
+      "title": "Additional Information",
+      "defaultExpanded": false
+    },
+    "product_disclaimer": {
+      "sectionTitle": "Disclaimer"
+    }
+  }
+}

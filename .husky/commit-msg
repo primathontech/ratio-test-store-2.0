@@ -1,0 +1,34 @@
+#!/bin/sh
+
+commit_msg=$(cat "$1")
+
+# Allow merge commits (they start with "Merge")
+if echo "$commit_msg" | grep -q "^Merge"; then
+    echo "✅ Merge commit detected - skipping format validation"
+    echo "📝 Message: $commit_msg"
+    exit 0
+fi
+
+# Regular commit message validation
+commit_regex='^(feat|fix|docs|style|refactor|test|chore|perf|ci|build|revert)(\(.+\))?: .{1,50}'
+
+if ! echo "$commit_msg" | grep -qE "$commit_regex"; then
+    echo "🚨🚨 INVALID COMMIT MESSAGE FORMAT! 🚨🚨"
+    echo ""
+    echo "Your commit message must follow Conventional Commits format:"
+    echo ""
+    echo "  <type>[optional scope]: <description>"
+    echo ""
+    echo "Allowed types: feat, fix, docs, style, refactor, test, chore, perf, ci, build, revert"
+    echo ""
+    echo "Examples:"
+    echo "  feat: add newsletter signup widget"
+    echo "  fix(cart): resolve quantity update bug"
+    echo "  chore: update dependencies"
+    echo ""
+    echo "Your message was: $commit_msg"
+    exit 1
+fi
+
+echo "✅ Commit message format is valid!"
+echo "📝 Message: $commit_msg"

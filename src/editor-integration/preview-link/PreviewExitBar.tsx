@@ -2,6 +2,23 @@
 
 import { useEffect, useState } from "react";
 
+/**
+ * "Exit preview" control shown on the merchant site while viewing a shareable
+ * preview link (?editorPreview=true&previewId=…), including across sticky
+ * navigation (the middleware keeps a session via cookies).
+ *
+ * Deliberately a CLIENT component with ZERO server work:
+ *   • It never calls next/headers, so it does NOT make the layout dynamic and
+ *     cannot affect the editor's live-preview (editor-bridge) patching.
+ *   • It renders null on the server and first paint, then resolves on mount —
+ *     no hydration mismatch, no layout shift on normal pages.
+ *   • It hides itself inside the editor iframe (?editor=true / ?previewKey),
+ *     so the editing experience is untouched.
+ *
+ * Exit = navigate to ?editorPreview=false; the middleware clears the preview
+ * cookies and the page reloads in normal (live) mode. No other app behavior
+ * is touched.
+ */
 export function PreviewExitBar() {
   const [active, setActive] = useState(false);
 

@@ -6,15 +6,6 @@
 
 import { createCommerceClient, IClientConfig } from "@shopkit/data-layer";
 
-/**
- * Strip trailing /api/v1 from URLs to prevent double-pathing.
- * The custom backend adapter internally appends /api/{version}/...
- */
-function normalizeServiceBaseUrl(url: string): string {
-  const withoutQuotes = url.trim().replace(/^['"]|['"]$/g, "");
-  return withoutQuotes.replace(/\/api\/v\d+\/?$/i, "");
-}
-
 export const shopifyConfig: IClientConfig = {
   type: "shopify",
   config: {
@@ -32,19 +23,13 @@ export const customConfig: IClientConfig = {
     storeId: process.env.NEXT_PUBLIC_STORE_ID!,
     services: {
       product: {
-        apiBaseUrl: normalizeServiceBaseUrl(
-          process.env.NEXT_PUBLIC_CUSTOM_API_PRODUCT_URL!
-        ),
+        apiBaseUrl: process.env.NEXT_PUBLIC_CUSTOM_API_PRODUCT_URL!,
       },
       order: {
-        apiBaseUrl: normalizeServiceBaseUrl(
-          process.env.NEXT_PUBLIC_CUSTOM_API_CUSTOMER_URL!
-        ),
+        apiBaseUrl: process.env.NEXT_PUBLIC_CUSTOM_API_CUSTOMER_URL!,
       },
       cart: {
-        apiBaseUrl: normalizeServiceBaseUrl(
-          process.env.NEXT_PUBLIC_CUSTOM_API_CART_URL!
-        ),
+        apiBaseUrl: process.env.NEXT_PUBLIC_CUSTOM_API_CART_URL!,
       },
     },
   },
@@ -53,47 +38,13 @@ export const customConfig: IClientConfig = {
 export const isShopify = process.env.NEXT_PUBLIC_PLATFORM === "shopify";
 
 /**
- * Get the commerce client instance with collection method bridge.
+ * Get the commerce client instance
  * @returns The CommerceClient instance for the configured platform
  */
 export function getCommerceClient() {
   try {
     const config = isShopify ? shopifyConfig : customConfig;
-    const client = createCommerceClient(config);
-    const clientAny = client as any;
-
-    // Bridge: builder calls getCollectionsByHandler, but:
-    // - Shopify data-layer provides getCollectionsByHandles
-    // - Custom data-layer provides getCollectionsByHandels (typo in package)
-    const forwardCollections = (params: any): Promise<any> => {
-      const forwardParams = {
-        handles: params.handles ?? (params.handle ? [params.handle] : []),
-        ...(params.productLimit !== undefined
-          ? { productLimit: params.productLimit }
-          : {}),
-      };
-      if (
-        isShopify &&
-        typeof clientAny.getCollectionsByHandles === "function"
-      ) {
-        return clientAny.getCollectionsByHandles(forwardParams);
-      }
-      if (typeof clientAny.getCollectionsByHandels === "function") {
-        return clientAny.getCollectionsByHandels(forwardParams);
-      }
-      throw new Error(
-        "No getCollectionsByHandles/Handels method on commerce client"
-      );
-    };
-
-    if (!("getCollectionsByHandler" in client)) {
-      (client as any).getCollectionsByHandler = forwardCollections;
-    }
-    if (!("getCollectionsByHandles" in client)) {
-      (client as any).getCollectionsByHandles = forwardCollections;
-    }
-
-    return client;
+    return createCommerceClient(config);
   } catch (error) {
     console.error("Error getting commerce client:", error);
     throw new Error(

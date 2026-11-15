@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { captureSentryException } from "@/lib/sentry/utils";
+import { fetchWithTimeout } from "@/utils/serverFetch";
+import { voiceGuard } from "@/lib/voiceGuard";
 
 export async function GET(request: NextRequest) {
+  // Rate-limit: private customer endpoint — cap requests to blunt token brute/abuse.
+  const blocked = voiceGuard(request, "customer", 60);
+  if (blocked) return blocked;
   try {
     const gkAccessToken = request.headers.get("gk-access-token");
     const gkMerchantId = request.headers.get("gk-merchant-id");
@@ -27,7 +33,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const response = await fetch(
+    const response = await fetchWithTimeout(
       `${customerApiUrl}/storefront/customers/profile`,
       {
         method: "GET",
@@ -40,9 +46,9 @@ export async function GET(request: NextRequest) {
     );
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
+      // Generic error only — never echo the upstream message/body to the client.
       return NextResponse.json(
-        { error: errorData.message || "Failed to fetch customer profile" },
+        { error: "Failed to fetch customer profile" },
         { status: response.status }
       );
     }
@@ -50,6 +56,13 @@ export async function GET(request: NextRequest) {
     const data = await response.json();
     return NextResponse.json(data);
   } catch (error) {
+    captureSentryException(error, {
+      tags: {
+        flow: "customer",
+        operation: "fetchCustomer",
+        errorType: "customer",
+      },
+    });
     console.error("Error in customer API route:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },

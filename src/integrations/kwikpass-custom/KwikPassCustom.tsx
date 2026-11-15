@@ -4,6 +4,8 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import KwikPassScriptCustom from "./KwikPassScriptCustom";
 import { dispatchPageViewEvent } from "./events";
+import { trackAddToCart } from "./kwikAnalytics";
+import { eventBus, OpenStoreEventType } from "@shopkit/events";
 import { useAuth } from "@shopkit/core/context";
 import { useCartStore } from "@shopkit/cart";
 
@@ -99,6 +101,15 @@ export default function KwikPassCustom() {
       };
     }
   }, [scriptLoaded, handleKwikpassLogin]);
+
+  // Forward AddToCart to GoKwik KwikAnalytics, reusing the ad-pixel payload.
+  useEffect(() => {
+    const unsubscribe = eventBus.subscribe(
+      OpenStoreEventType.ADD_TO_CART,
+      (event) => trackAddToCart(event.data)
+    );
+    return unsubscribe;
+  }, []);
 
   // Effect hook to send page view event whenever the page changes
   useEffect(() => {

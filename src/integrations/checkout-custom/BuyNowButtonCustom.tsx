@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import React, { useState, useCallback } from "react";
+import React, { useState } from "react";
 import { BuyNowButtonCustomProps } from "./types";
 import { useCustomCheckout } from "./useCustomCheckout";
 import { getCartConfig } from "@shopkit/cart";
@@ -29,9 +29,6 @@ export function BuyNowButtonCustom({
   loadingContent,
   buttonProps,
 }: BuyNowButtonCustomProps) {
-  // State to track if GoKwik script is loaded
-  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
-  const [isScriptLoading, setIsScriptLoading] = useState(true);
   const [checkoutError, setCheckoutError] = useState<Error | null>(null);
 
   // Use the Custom checkout hook directly
@@ -44,14 +41,7 @@ export function BuyNowButtonCustom({
       },
     });
 
-  // Callback when script is loaded
-  const handleScriptLoaded = useCallback(() => {
-    setIsScriptLoaded(true);
-    setIsScriptLoading(false);
-  }, []);
-
-  // Check if GoKwik is ready (script loaded and SDK available)
-  const isGokwikReady = isScriptLoaded && isGokwikAvailable;
+  const isScriptLoading = !isGokwikAvailable;
 
   const handleBuyNow = async () => {
     // Validate required parameters
@@ -63,7 +53,7 @@ export function BuyNowButtonCustom({
       return;
     }
 
-    if (!isGokwikReady) {
+    if (isScriptLoading) {
       const error = new Error(
         "Cannot proceed with Buy Now: Gokwik service is not ready. Please wait for the script to load."
       );
@@ -126,28 +116,32 @@ export function BuyNowButtonCustom({
     }
   };
 
-  // Button is disabled if explicitly disabled, checkout is loading, script is loading, or Gokwik is not ready
-  const isButtonDisabled =
-    disabled || isCheckoutLoading || isScriptLoading || !isGokwikReady;
+  const isButtonDisabled = disabled || isCheckoutLoading || isScriptLoading;
 
   return (
     <>
       {/* Load GoKwik Checkout Script */}
-      <CustomCheckoutScript onLoaded={handleScriptLoaded} />
+      <CustomCheckoutScript />
 
       <button
         {...buttonProps}
-        className={className}
+        className={`${className ?? ""} disabled:opacity-60 disabled:cursor-not-allowed`}
         style={style}
         onClick={handleBuyNow}
         disabled={isButtonDisabled}
+        aria-busy={isScriptLoading}
         type="button"
       >
-        {isScriptLoading
-          ? (loadingContent ?? <span>Loading...</span>)
-          : isCheckoutLoading
-            ? (loadingContent ?? <span>Processing...</span>)
-            : children}
+        {isScriptLoading && (
+          <span
+            role="status"
+            aria-label="Loading checkout"
+            className="inline-block shrink-0 mr-2 size-[16px] border-2 border-current border-t-transparent rounded-full animate-spin"
+          />
+        )}
+        {isCheckoutLoading
+          ? (loadingContent ?? <span>Processing...</span>)
+          : children}
       </button>
 
       {/* Display error if any */}

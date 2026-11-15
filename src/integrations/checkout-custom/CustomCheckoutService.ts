@@ -13,28 +13,12 @@ import {
   dispatchCheckoutStartEvent,
 } from "./events";
 import { getCommerceClient } from "@/config";
+import { startFlow, type Flow } from "@shopkit/observability/client";
 import { getCheckoutConfig } from "./config";
-import {
-  addSentryBreadcrumb,
-  captureSentryException,
-  captureSentryMessage,
-} from "@/lib/sentry/utils";
-import { GuestUserStorage } from "./guest-user-storage";
-import { sendOrderConfirmationEmail } from "@/utils/orderConfirmationEmail";
+import { GuestUserStorage } from "@/widgets/common/ThankYou/V1/utils/guestUserStorage";
 
-function readKwikTokenFromCookie(): string {
-  if (typeof document === "undefined") {
-    return "";
-  }
-  const match = document.cookie
-    .split("; ")
-    .find((c) => /KWIKUSERTOKEN=/i.test(c));
-  if (!match) {
-    return "";
-  }
-  const value = match.split("=")[1];
-  return value ? decodeURIComponent(value) : "";
-}
+/** How long GoKwik gets to show the checkout before the attempt counts as failed. */
+const GOKWIK_REPLY_MS = 15_000;
 
 // Global window interface for GoKwik
 declare global {
@@ -145,6 +129,19 @@ interface GokwikOrder {
   billing_address?: GokwikOrderAddress;
 }
 
+const gokwikReadyListeners = new Set<() => void>();
+
+export function subscribeGokwikReady(listener: () => void): () => void {
+  gokwikReadyListeners.add(listener);
+  return () => {
+    gokwikReadyListeners.delete(listener);
+  };
+}
+
+export function notifyGokwikScriptReady(): void {
+  gokwikReadyListeners.forEach((listener) => listener());
+}
+
 export class CustomCheckoutService {
   private static eventListenersAttached = false;
   private static currentEventHandlers: CheckoutEventHandlers = {};
@@ -152,6 +149,33 @@ export class CustomCheckoutService {
   private static currentCartItems: CartItem[] = [];
   private static currentCartTotal: number = 0;
   private static checkoutUrl: string = "";
+  /** The attempt waiting for GoKwik to show the checkout (or fail to), with its deadline. */
+  private static pending: {
+    flow: Flow;
+    timer: ReturnType<typeof setTimeout>;
+  } | null = null;
+
+  /**
+   * GoKwik's events don't say which attempt they belong to, and only one checkout shows
+   * at a time, so the latest attempt owns them. A newer attempt ends the older one.
+   */
+  private static awaitGokwik(flow: Flow): void {
+    this.endPending((older) => older.fail("retried"));
+    const timer = setTimeout(
+      () => this.endPending((f) => f.fail("gokwik_no_response")),
+      GOKWIK_REPLY_MS
+    );
+    this.pending = { flow, timer };
+  }
+
+  private static endPending(end: (flow: Flow) => void): void {
+    if (!this.pending) {
+      return;
+    }
+    clearTimeout(this.pending.timer);
+    end(this.pending.flow);
+    this.pending = null;
+  }
 
   /**
    * Helper function to safely get cookies with proper error handling
@@ -407,7 +431,7 @@ export class CustomCheckoutService {
         keepalive: true,
       });
     } catch (error) {
-      captureSentryException(error, {
+      console.error(error, {
         tags: { flow: "checkout", operation: "sendOrderToKwikchat" },
       });
     }
@@ -424,13 +448,8 @@ export class CustomCheckoutService {
       currencyCode,
       eventHandlers = {},
     } = config;
-
-    addSentryBreadcrumb("checkout", "Checkout initializing", {
-      cartToken,
-      total,
-      currencyCode,
-      itemCount: items.length,
-    });
+    // Our side only: ends once GoKwik shows the checkout, or it fails to.
+    const flow = startFlow("checkout");
 
     try {
       const commerceClient = getCommerceClient();
@@ -443,15 +462,17 @@ export class CustomCheckoutService {
         },
       });
 
+      // Recorded only: GoKwik still opens today when this fails (the check below
+      // tests `message`, not `success`), and changing that needs GoKwik's input.
+      if (!checkoutResponse.success) {
+        flow.fail("checkout_api", checkoutResponse.error?.message);
+      }
+
       if (!checkoutResponse.message) {
         throw new Error(
           `Checkout API failed: ${checkoutResponse?.message || "Unknown error"} - ${checkoutResponse?.error || "API request failed"}`
         );
       }
-
-      addSentryBreadcrumb("checkout", "Checkout API response received", {
-        checkoutId: checkoutResponse?.data?.id,
-      });
 
       // Store event handlers and cart data for use in event listeners
       this.currentEventHandlers = eventHandlers;
@@ -471,10 +492,6 @@ export class CustomCheckoutService {
 
         const config = getCheckoutConfig();
 
-        addSentryBreadcrumb("checkout", "GoKwik SDK checkout starting", {
-          mid: config.mid,
-        });
-
         const gokwikPayload = {
           environment: config.environment,
           type: config.type,
@@ -492,25 +509,19 @@ export class CustomCheckoutService {
 
         try {
           window.gokwikSdk?.initCheckout(gokwikPayload);
+          // initCheckout returning only means GoKwik started loading: success is
+          // its "checkout-ready" event (see attachEventListeners).
+          this.awaitGokwik(flow);
         } catch (error) {
           console.error("Error initializing GoKwik checkout:", error);
+          flow.fail("gokwik_init", error);
         }
       } else {
-        captureSentryMessage("GoKwik checkout not available or no cart ID", {
-          level: "error",
-          tags: { flow: "checkout", errorType: "sdkUnavailable" },
-        });
+        flow.fail("gokwik_not_loaded");
         throw new Error("GoKwik checkout not available or no cart ID");
       }
     } catch (error) {
-      captureSentryException(error, {
-        tags: {
-          flow: "checkout",
-          operation: "initializeCheckout",
-          errorType: "checkout",
-        },
-        contexts: { checkout: { cartToken, total, itemCount: items.length } },
-      });
+      flow.fail("checkout_error", error);
       console.error("GoKwik checkout initialization error:", error);
       eventHandlers.onError?.(
         error instanceof Error ? error : new Error("Unknown checkout error")
@@ -566,6 +577,14 @@ export class CustomCheckoutService {
 
     this.eventListenersAttached = true;
 
+    // GoKwik's merchant events: the checkout loaded the cart, or couldn't start.
+    window.gokwikSdk?.on("checkout-ready", () =>
+      this.endPending((f) => f.success())
+    );
+    window.gokwikSdk?.on("checkout-initiation-failure", () =>
+      this.endPending((f) => f.fail("gokwik_checkout"))
+    );
+
     window.gokwikSdk?.on(
       "order-complete",
       (order: {
@@ -576,16 +595,13 @@ export class CustomCheckoutService {
         total_price: number;
         payment_method: string;
         discounts: any[];
+        shipping_address?: { pincode?: string };
       }) => {
         const orderId = order?.merchant_order_id || `temp-${Date.now()}`;
-        addSentryBreadcrumb("checkout", "Order complete", {
-          orderId,
-          paymentMethod: order?.payment_method,
-        });
         // Trigger Trackier conversion tracking (same as Shopify)
-        // if (typeof window !== "undefined" && window.TrackierWebSDK) {
-        //   this.triggerTrackierTrackConv(order);
-        // }
+        if (typeof window !== "undefined" && window.TrackierWebSDK) {
+          this.triggerTrackierTrackConv(order);
+        }
 
         // Send order confirmation to kwikchat
         this.sendOrderToKwikchat(order);
@@ -595,22 +611,6 @@ export class CustomCheckoutService {
 
         // Clear cart storage (localStorage)
         this.clearCartStorage();
-        addSentryBreadcrumb("checkout", "Cart cleared after checkout");
-
-        // Send order confirmation email before navigation kills the page.
-        // The SDK order-complete payload lacks customer email, so pull it
-        // from GuestUserStorage (saved during user-login-successful).
-        const guestUser = GuestUserStorage.getGuestUserData();
-        sendOrderConfirmationEmail({
-          orderId,
-          orderData: {
-            ...order,
-            ...(guestUser?.email && { email: guestUser.email }),
-          },
-          gkAccessToken: readKwikTokenFromCookie(),
-          requestId: order?.request_id,
-          customerId: order?.customer_id || order?.customer?.id,
-        });
 
         // Call custom handler - this will trigger component's cart clearing and closing
         this.currentEventHandlers.onOrderComplete?.(order);
@@ -625,18 +625,18 @@ export class CustomCheckoutService {
           const requestId = order.request_id;
           const customerId = order.customer_id || order.customer?.id;
           const paymentMethod = order.payment_method;
-
-          // Persist order data so Thank You page can show order summary
-          try {
-            sessionStorage.setItem("gk_last_order", JSON.stringify(order));
-          } catch (_e) {
-            // sessionStorage unavailable – Thank You page will show zeros
-          }
-
           let finalRedirectPath = `/orders?orderId=${orderId}&requestId=${requestId}&paymentMethod=${paymentMethod}`;
 
           if (customerId) {
             finalRedirectPath += `&customerId=${customerId}`;
+          }
+
+          // Fire EDD without awaiting so it doesn't delay the redirect.
+          if (orderId && order.shipping_address?.pincode) {
+            this.createEDDForOrder(
+              orderId,
+              order.shipping_address.pincode
+            ).catch((err) => console.error("EDD creation failed:", err));
           }
 
           this.currentEventHandlers.navigate!(finalRedirectPath);
@@ -667,17 +667,11 @@ export class CustomCheckoutService {
           console.log("orderSuccess event received", event);
 
           const order = data.response;
-          addSentryBreadcrumb("checkout", "Order success (message event)", {
-            orderId: order?.order_name,
-          });
 
-          // Send order confirmation to kwikchat
-          this.sendOrderToKwikchat(order);
-
-          // // Trigger Trackier conversion tracking if available
-          // if (typeof window !== "undefined" && window.TrackierWebSDK) {
-          //   this.triggerTrackierTrackConv(order);
-          // }
+          // Trigger Trackier conversion tracking if available
+          if (typeof window !== "undefined" && window.TrackierWebSDK) {
+            this.triggerTrackierTrackConv(order);
+          }
 
           // Send order confirmation to kwikchat
           this.sendOrderToKwikchat(order);
@@ -688,24 +682,6 @@ export class CustomCheckoutService {
           // Clear cart storage (localStorage)
           this.clearCartStorage();
 
-          const msgOrderId =
-            order?.merchant_order_id ||
-            order?.order_name ||
-            order?.orderSuccessBody?.order_name ||
-            `temp-${Date.now()}`;
-          const guestUser = GuestUserStorage.getGuestUserData();
-          const innerOrder = order?.orderSuccessBody || order;
-          sendOrderConfirmationEmail({
-            orderId: msgOrderId,
-            orderData: {
-              ...order,
-              ...(guestUser?.email && { email: guestUser.email }),
-            },
-            gkAccessToken: readKwikTokenFromCookie(),
-            requestId: innerOrder?.request_id,
-            customerId: innerOrder?.customer_id || innerOrder?.customer?.id,
-          });
-
           // Call custom handler - this will trigger component's cart clearing and closing
           this.currentEventHandlers.onOrderComplete?.(order);
         }
@@ -715,15 +691,9 @@ export class CustomCheckoutService {
           data.type === "gokwik_events" &&
           data?.data?.eventname === "Started_Checkout_GK"
         ) {
-          addSentryBreadcrumb("checkout", "GoKwik tracking event", {
-            eventName: data?.data?.eventname,
-          });
           this.sendTrackingEvent();
         }
       } catch (error) {
-        captureSentryException(error, {
-          tags: { flow: "checkout", operation: "handleGoKwikMessage" },
-        });
         console.error("Error handling GoKwik message event:", error, event);
       }
     };
@@ -738,34 +708,20 @@ export class CustomCheckoutService {
   }
 
   /**
-   * Trigger Trackier conversion tracking.
-   * Accepts both GoKwik SDK callback payloads and the REST API order shape.
+   * Trigger Trackier conversion tracking
    */
-  static triggerTrackierTrackConv(order: any): void {
-    // CashKaro expects the customer-facing order name (e.g. "TMC3212"),
-    // not the internal numeric merchant_order_id, so reconciliation matches
-    // the reference the customer sees.
-    const orderId =
-      order?.name ||
-      order?.external_order_number ||
-      order?.order_number ||
-      order?.id;
-    // GoKwik SDK callback uses `total` (rupees); orderSuccessBody uses
-    // `total_price` (rupees). The REST API order response uses `total_price`
-    // in paise, so divide by 100 to normalise to rupees.
+  private static triggerTrackierTrackConv(order: any): void {
+    const orderId = order?.order_name || order.orderSuccessBody?.order_name;
     const orderAmount =
-      order?.total ??
-      order?.orderSuccessBody?.total_price ??
-      (order?.total_price != null ? Number(order.total_price) / 100 : 0);
-    const couponCode = order?.discounts?.[0]?.code ?? "";
+      order?.total_price || order.orderSuccessBody?.total_price;
 
-    window.TrackierWebSDK!.trackConv(
+    window.TrackierWebSDK.trackConv(
       "track.techtrack.in",
-      process.env.NEXT_PUBLIC_CASHKARO_TRACKIER_GOAL_ID!,
+      "6776449c8e7dea356102ea94",
       {
+        is_camp: true,
         txn_id: orderId,
         sale_amount: orderAmount,
-        coupon_code: couponCode,
         is_iframe: true,
       }
     );
@@ -804,6 +760,31 @@ export class CustomCheckoutService {
    */
   private static getCurrentcartToken(): string {
     return window.merchantInfo?.cart?.id || "";
+  }
+
+  /**
+   * Seed the order-tracking record (EDD) for a newly placed order.
+   * Fire-and-forget — never throws, never blocks the redirect.
+   */
+  private static async createEDDForOrder(
+    orderId: string,
+    pincode: string
+  ): Promise<void> {
+    try {
+      if (!orderId || !pincode) {
+        console.warn("Missing order ID or pincode for EDD creation");
+        return;
+      }
+      // Lazy-import the service so this file remains tree-shake-friendly
+      // and to avoid a static import cycle through @/services.
+      const { createEDDForOrder } = await import("@/services/order.service");
+      await createEDDForOrder({
+        orderNumber: orderId,
+        deliveryPincode: pincode,
+      });
+    } catch (error) {
+      console.error("Error creating EDD for order:", error);
+    }
   }
 
   /**

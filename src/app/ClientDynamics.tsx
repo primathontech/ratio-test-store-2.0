@@ -12,8 +12,8 @@ const KwikPassCustom = dynamic(
 
 const CustomCartDrawer = dynamic(
   () =>
-    import("@/integrations/cart-drawer-custom").then((mod) => ({
-      default: mod.CustomCartDrawer,
+    import("@/widgets/common/CartDrawer").then((mod) => ({
+      default: mod.CartDrawer,
     })),
   { ssr: false }
 );
@@ -26,18 +26,11 @@ const KwikCartRemounter = dynamic(
   { ssr: false }
 );
 
-const FloatingActions = dynamic(
+// --- DEMO: voice assistant prototype (remove this block + import to uninstall) ---
+const VoiceAssistant = dynamic(
   () =>
-    import("@/widgets/nintarababy/FloatingActions").then((mod) => ({
-      default: mod.FloatingActions,
-    })),
-  { ssr: false }
-);
-
-const MobileBottomBar = dynamic(
-  () =>
-    import("@/widgets/nintarababy/MobileBottomBar").then((mod) => ({
-      default: mod.MobileBottomBar,
+    import("@/ui/voice/VoiceAssistantBoundary").then((mod) => ({
+      default: mod.VoiceAssistantBoundary,
     })),
   { ssr: false }
 );
@@ -57,8 +50,7 @@ export function ClientDynamics({
       ) : (
         <KwikCartRemounter />
       )}
-      <FloatingActions />
-      <MobileBottomBar />
+      <VoiceAssistant />
     </>
   );
 }

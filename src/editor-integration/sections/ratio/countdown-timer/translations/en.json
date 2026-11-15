@@ -1,0 +1,6 @@
+{
+  "sections.countdown_timer.targetDate": "Mar 31, 2026 23:59:59",
+  "sections.countdown_timer.heading": "Hurry Up!",
+  "sections.countdown_timer.subheading": "Hurry! Offer Will Expire in",
+  "sections.countdown_timer.expiredText": "Oops! Offer is Expired"
+}
