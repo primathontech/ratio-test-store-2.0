@@ -42,6 +42,14 @@ function validateCheckoutEnv(): void {
 }
 
 /**
+ * Single source for the GoKwik SDK URL: the root layout's <Script> and
+ * <CheckoutScriptCustom> must use the same src, or next/script loads it twice.
+ */
+export function getGokwikScriptUrl(): string {
+  return `${process.env.NEXT_PUBLIC_GOKWIK_SCRIPT_URL}/v4/build/gokwik.js`;
+}
+
+/**
  * Get Checkout Custom configuration object
  */
 export function getCheckoutConfig() {

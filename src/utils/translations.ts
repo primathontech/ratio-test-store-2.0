@@ -27,6 +27,7 @@ import { getMessages } from "next-intl/server";
 import type { RouteContext, VariantRegistryResult } from "@shopkit/builder";
 import { loadMessages } from "@/locales/.generated/manifest";
 import type { Locale, PageName } from "@/locales/.generated/types";
+import { osMerchantHeaders } from "@/utils/os-headers";
 
 // =============================================================================
 // TEMPLATE ID UTILITIES
@@ -212,6 +213,8 @@ export interface GetTranslationsParams {
   themeId: string;
   templateId: string;
   language: string;
+  /** Used when the editor has no translations for `templateId` (404). */
+  fallbackTemplateId?: string;
 }
 
 // Feature flag: only fetch translations from API when explicitly enabled
@@ -301,6 +304,7 @@ export async function getTranslations(
         {
           headers: {
             "Content-Type": "application/json",
+            ...osMerchantHeaders(),
           },
           signal: controller.signal,
           // Full ISR: tagged + time-revalidated (not no-store). Tag must match
@@ -313,6 +317,14 @@ export async function getTranslations(
       );
     } finally {
       clearTimeout(timeoutId);
+    }
+
+    if (response.status === 404 && params.fallbackTemplateId) {
+      return await getTranslations({
+        ...params,
+        templateId: params.fallbackTemplateId,
+        fallbackTemplateId: undefined,
+      });
     }
 
     if (!response.ok) {
@@ -411,10 +423,16 @@ export async function getRouteTranslations({
       variant: resolvedVariant,
     });
 
+    // A suffix template the editor doesn't have renders the default template
+    // (template-load-pipeline), so its copy must come from the default too.
     const templateTranslations = await getTranslations({
       themeId: themeName,
       templateId,
       language,
+      fallbackTemplateId:
+        resolvedVariant !== "default"
+          ? getTemplateId({ themeName, templateName, variant: "default" })
+          : undefined,
     });
 
     return { ...common, ...templateTranslations };

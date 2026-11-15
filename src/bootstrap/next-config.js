@@ -372,6 +372,10 @@ function createNextConfig(options = {}) {
     ...additionalHeaders,
   ];
 
+  const obsEnabled =
+    process.env.NODE_ENV === "production" &&
+    !!process.env.OTEL_EXPORTER_OTLP_TRACES_ENDPOINT;
+
   // Build base config
   let config = {
     ...(dockerBuild && { output: "standalone" }),
@@ -390,6 +394,17 @@ function createNextConfig(options = {}) {
 
     eslint,
     typescript,
+
+    // Browser monitoring: production builds with a collector configured. Inlined
+    // into client code at build time.
+    env: { OBS_ENABLED: String(obsEnabled) },
+    // Maps let /api/obs resolve minified browser stacks; only built when monitoring
+    // is on. `shopkit-move-sourcemaps` (run after the build) moves them out of the
+    // public folder.
+    productionBrowserSourceMaps: obsEnabled,
+    // Server writes <meta name="traceparent">; browser signals keep it as page.render_trace_id
+    // but start their own trace (cached HTML gives every shopper the same one).
+    experimental: { clientTraceMetadata: ["traceparent"] },
 
     compiler: {
       ...(removeConsoleInProduction &&

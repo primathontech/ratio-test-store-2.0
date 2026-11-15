@@ -3,6 +3,7 @@ import { SECTION_TYPES } from "@shopkit/builder";
 import { cookies, draftMode } from "next/headers";
 import { merchantTemplateLoader } from "./loaders/template-loader";
 import { TemplateResolver } from "./loaders/template-resolver";
+import { TemplateNotFoundError } from "./loaders/api-client";
 import { getResolvedPreview } from "./preview-link/fetch-preview";
 import {
   PREVIEW_ID_COOKIE,
@@ -89,12 +90,14 @@ export const editorTemplateLoader: ITemplateLoader = {
     // forces a specific template — but only when its type matches THIS route
     // (so chrome/header/footer rendered on the same page keep their own).
     let effectiveVariant = variant;
+    let previewId: string | undefined;
+    let previewVersion: string | null = null;
 
     const { isEnabled } = await draftMode();
     if (isEnabled) {
       const jar = await cookies();
-      const previewId = jar.get(PREVIEW_ID_COOKIE)?.value;
-      const previewVersion = jar.get(PREVIEW_VERSION_COOKIE)?.value ?? null;
+      previewId = jar.get(PREVIEW_ID_COOKIE)?.value;
+      previewVersion = jar.get(PREVIEW_VERSION_COOKIE)?.value ?? null;
 
       const suffixCookie = jar.get(PREVIEW_SUFFIX_COOKIE)?.value;
       if (suffixCookie) {
@@ -105,7 +108,9 @@ export const editorTemplateLoader: ITemplateLoader = {
           effectiveVariant = forcedSuffix;
         }
       }
+    }
 
+    const loadVariant = async (target: string): Promise<PageConfig> => {
       if (previewId) {
         // In preview mode we always ask the backend to resolve this route. The
         // backend owns the matching/mapping: it returns the draft for the page
@@ -115,7 +120,7 @@ export const editorTemplateLoader: ITemplateLoader = {
         const templateId = getTemplateId({
           merchantName,
           templateName,
-          variant: effectiveVariant || "default",
+          variant: target,
         });
         const resolved = await getResolvedPreview(
           previewId,
@@ -136,19 +141,35 @@ export const editorTemplateLoader: ITemplateLoader = {
             : stripChromeSections(resolved);
         }
       }
-    }
 
-    return resolver.resolveTemplate({
-      merchantName,
-      routeContext: {
-        templateName,
-        path: "",
-        params: {},
-        query: {},
-        fetchAPITemplate: true,
-      },
-      variant: effectiveVariant,
-    });
+      return resolver.resolveTemplate({
+        merchantName,
+        routeContext: {
+          templateName,
+          path: "",
+          params: {},
+          query: {},
+          fetchAPITemplate: true,
+        },
+        variant: target,
+      });
+    };
+
+    const requestedVariant = effectiveVariant || "default";
+    try {
+      return await loadVariant(requestedVariant);
+    } catch (error) {
+      // Assigned template the editor doesn't have → the merchant's default
+      // (Shopify parity). Handled here, not in the builder: the preview suffix
+      // cookie would re-force the suffix on the builder's retry.
+      if (
+        requestedVariant === "default" ||
+        !(error instanceof TemplateNotFoundError)
+      ) {
+        throw error;
+      }
+      return loadVariant("default");
+    }
   },
   loadVariantRegistry: (merchantName) =>
     merchantTemplateLoader.loadVariantRegistry

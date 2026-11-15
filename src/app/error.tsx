@@ -1,12 +1,14 @@
 "use client";
 
+import { useReportError } from "@shopkit/observability/react";
+
 export default function Error({
   error,
-  reset,
 }: {
-  error: Error;
-  reset: () => void;
+  error: Error & { digest?: string };
 }) {
+  useReportError(error, "app-error");
+
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-8">
       <div className="max-w-2xl w-full text-center">
@@ -44,14 +46,6 @@ export default function Error({
             <p>Due to a temporary outage, our site isn't loading right now.</p>
             <p>We're on it and expect things to return to normal soon.</p>
           </div>
-
-          <button
-            type="button"
-            onClick={() => reset()}
-            className="inline-flex items-center justify-center rounded-full bg-gray-900 px-6 py-3 text-base font-semibold text-white transition-colors hover:bg-gray-700"
-          >
-            Try again
-          </button>
         </div>
       </div>
     </div>

@@ -7,6 +7,11 @@ import {
   useCartStore,
   type CartItem,
 } from "@shopkit/cart";
+import {
+  convertCartItemsForCheckout,
+  CustomCheckoutService,
+  useCustomCheckout,
+} from "@/integrations/checkout-custom";
 // TODO(sentry): wire up Sentry here once `@/lib/sentry/utils` exists.
 // See src/feature-packs/post-order-flow/install/lib/sentry/utils.ts.example.
 // Until then we log to the console; the call sites below mark what each
@@ -20,6 +25,10 @@ import {
  *
  *   https://your-store.com/?cart_token=<token>&cart_open=true
  *
+ * or, to skip the cart and go straight to GoKwik checkout:
+ *
+ *   https://themomsco.com/?cart_token=<token>&checkout_open=true
+ *
  * The GoKwik KwikCart side-cart (`side-cart.js`) only auto-opens on its own
  * `?openCart=true` param and reads the cart from the `merchant_*_cartToken`
  * localStorage key / `X-Cart-Token` cookie. Our links use different param
@@ -28,7 +37,8 @@ import {
  *   2. Validate the token and populate @shopkit's own store (the header badge,
  *      and the CustomCartDrawer in KWIKCART_DISABLE mode, read from it).
  *   3. Open the cart — GoKwik side-cart in KwikCart mode, @shopkit drawer
- *      otherwise.
+ *      otherwise. With `checkout_open=true`, start GoKwik checkout instead
+ *      (falls back to opening the cart if the checkout SDK never loads).
  *   4. Strip the params from the URL so a refresh doesn't re-run the flow.
  *
  * The token is seeded in a layout effect — it flushes before CartInitializer's
@@ -56,6 +66,22 @@ type RecoveredCart = {
 
 export function CartRecoveryLink() {
   const seeded = useRef(false);
+  const { clearCart, closeCart } = useCartStore();
+  // Set by the recovery effect: opens the cart if checkout fails to start.
+  const checkoutFallback = useRef<(() => void) | null>(null);
+  const { startCheckout } = useCustomCheckout({
+    clearCart,
+    closeCart,
+    onCheckoutError: (err) => {
+      // sentry: captureException(err, { tags: { flow: "cart-recovery", operation: "checkout" } })
+      console.error("[cart-recovery] checkout failed", err);
+      checkoutFallback.current?.();
+      checkoutFallback.current = null;
+    },
+  });
+  // The recovery effect runs once; read the latest startCheckout via a ref.
+  const startCheckoutRef = useRef(startCheckout);
+  startCheckoutRef.current = startCheckout;
 
   // 1. Restore (seed) the token in a layout effect. It flushes before
   //    CartInitializer's passive init effect, so @shopkit adopts THIS token
@@ -93,13 +119,15 @@ export function CartRecoveryLink() {
     }
 
     const shouldOpen = params.get("cart_open") === "true";
+    const shouldCheckout = params.get("checkout_open") === "true";
     let cancelled = false;
 
-    // Strip cart_token / cart_open so a refresh or back-nav doesn't re-run this.
+    // Strip cart_token / cart_open / checkout_open so a refresh or back-nav doesn't re-run this.
     const clearParams = () => {
       const url = new URL(window.location.href);
       url.searchParams.delete("cart_token");
       url.searchParams.delete("cart_open");
+      url.searchParams.delete("checkout_open");
       window.history.replaceState(
         null,
         "",
@@ -147,6 +175,46 @@ export function CartRecoveryLink() {
           window.setTimeout(tick, OPEN_POLL_INTERVAL_MS);
         } else {
           void useCartStore.getState().openCart();
+        }
+      };
+      tick();
+    };
+
+    // Poll for the GoKwik checkout SDK (gokwik.js loads afterInteractive),
+    // then start checkout for the restored cart. Falls back to opening the
+    // cart so the shopper is still one tap from checkout.
+    const openCheckout = (cart: RecoveredCart) => {
+      const items = cart.items ?? [];
+      const total =
+        cart.totalAmount?.amount ??
+        items.reduce((sum, item) => {
+          const price =
+            typeof item.price === "number" ? item.price : item.price.amount;
+          return sum + price * item.quantity;
+        }, 0);
+      const currencyCode = cart.totalAmount?.currencyCode ?? "INR";
+
+      let tries = 0;
+      const tick = () => {
+        if (cancelled) {
+          return;
+        }
+        if (CustomCheckoutService.isGokwikAvailable()) {
+          checkoutFallback.current = openDrawer;
+          void startCheckoutRef.current({
+            cartToken,
+            items: convertCartItemsForCheckout(items),
+            total,
+            currencyCode,
+            checkoutUrl: cart.checkoutUrl ?? "",
+          });
+          return;
+        }
+        if (tries++ < OPEN_POLL_MAX_TRIES) {
+          window.setTimeout(tick, OPEN_POLL_INTERVAL_MS);
+        } else {
+          console.warn("[cart-recovery] GoKwik checkout SDK never loaded");
+          openDrawer();
         }
       };
       tick();
@@ -212,8 +280,11 @@ export function CartRecoveryLink() {
         isInitialized: true,
       });
 
-      // 3. Auto-open the drawer only when explicitly requested.
-      if (shouldOpen) {
+      // 3. Auto-open checkout or the drawer only when explicitly requested;
+      //    checkout wins when both params are present.
+      if (shouldCheckout && cart) {
+        openCheckout(cart);
+      } else if (shouldOpen) {
         openDrawer();
       }
       // 4. Clean the URL after a successful restoration.

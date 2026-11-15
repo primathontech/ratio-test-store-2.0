@@ -2,6 +2,7 @@ import { getStaticLocale } from "@/bootstrap/i18n";
 import { getThemeName, getRouteTranslations } from "@/utils";
 import { getPageBuilder } from "@/bootstrap/builder";
 import { getNavMenus } from "@shopkit/navigation";
+import type { PageConfig } from "@shopkit/builder";
 import { NavigationProvider, NavBoundary } from "@shopkit/navigation/client";
 
 /**
@@ -19,7 +20,23 @@ import { NavigationProvider, NavBoundary } from "@shopkit/navigation/client";
  * `@shopkit/builder` are unchanged. When unified slug routing lands, the
  * `[[...slug]]` catch-all becomes the single caller of this component (no rework).
  */
-export async function Chrome({ children }: { children: React.ReactNode }) {
+export async function Chrome({
+  children,
+  headerConfig,
+  footerConfig,
+}: {
+  children: React.ReactNode;
+  /**
+   * Pre-built header/footer configs, used instead of resolving the saved
+   * templates.
+   *
+   * Only the editor's live preview passes these: it holds the merchant's
+   * in-progress chrome, which is not saved anywhere yet. Shopper traffic omits
+   * them and resolves by template name exactly as before.
+   */
+  headerConfig?: PageConfig;
+  footerConfig?: PageConfig;
+}) {
   const themeName = getThemeName();
   const locale = getStaticLocale();
 
@@ -40,6 +57,8 @@ export async function Chrome({ children }: { children: React.ReactNode }) {
     merchantName: themeName,
     locale,
     messages: chromeMessages,
+    headerConfig,
+    footerConfig,
   });
   const menus = await getNavMenus(menuHandles);
 

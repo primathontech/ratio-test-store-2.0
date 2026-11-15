@@ -163,15 +163,15 @@ NEXT_PUBLIC_CUSTOM_API_ORDER_HISTORY_URL=https://your-api-url.com
 ### Script Loading Flow
 
 ```
-1. Layout renders <CheckoutCustom />
-   └── Renders <CheckoutScriptCustom />
-       └── Loads GoKwik SDK script via Next.js <Script>
-       └── window.gokwikSdk becomes available
+1. Root layout renders <Script id="gokwik-merchant-integration" src={getGokwikScriptUrl()} />
+   └── Next preloads it in <head> and runs it right after hydration
+   └── window.gokwikSdk becomes available
+   └── <CheckoutScriptCustom> (same id) joins this load to get the ready signal
 
 2. Cart drawer opens (later)
    └── <CheckoutButtonCustom /> mounts
        └── useCustomCheckout() hook runs
-           └── Polls for window.gokwikSdk.initCheckout
+           └── Subscribes to the script load event (no polling)
            └── Sets isGokwikAvailable = true when found
        └── Button becomes enabled
 ```

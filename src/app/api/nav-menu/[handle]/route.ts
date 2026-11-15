@@ -26,6 +26,8 @@ export async function GET(
     return NextResponse.json(null, { status: 400 });
   }
 
+  // No shopper IP forwarded: getNavMenu reads through the Data Cache, whose key
+  // includes request headers, so a per-shopper header would cache once per IP.
   const menu = await getNavMenu(handle);
   return NextResponse.json(menu);
 }

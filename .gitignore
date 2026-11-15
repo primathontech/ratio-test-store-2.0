@@ -81,3 +81,13 @@ src/themes/**/locales/.generated/
 # package-lock.json
 # yarn.lock
 **.generated
+
+# Local checkout of primathontech/storefront-editor-submodule. Removed as a
+# submodule in 8ed46309; ignored so a stray clone here can never be committed
+# back as an orphan gitlink (mode 160000 with no .gitmodules), which breaks
+# `git clone` and `git submodule update` for everyone else.
+/src/app/editor/
+
+# Apps Platform sandbox shell — copied from @shopkit/apps-platform's sandbox-shell build.
+# Regenerated, not authored here, so it stays out of the repo.
+public/apps-platform/

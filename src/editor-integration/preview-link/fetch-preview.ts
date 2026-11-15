@@ -1,9 +1,10 @@
 import { cache } from "react";
 import type { PageConfig } from "@shopkit/builder";
+import { osMerchantHeaders } from "@/utils/os-headers";
 
 const EDITOR_API_BASE =
   process.env.NEXT_PUBLIC_EDITOR_API_URL ||
-  "https://visual-editor-be.primathontech.co.in";
+  "https://api-gw-v4.dev.gokwik.in/uat/os-editor";
 
 /**
  * Fetch a shareable preview snapshot by id (and optional version) from the
@@ -32,7 +33,10 @@ async function fetchPreview(
 
   const res = await fetch(url, {
     cache: "no-store",
-    headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
+    headers: {
+      ...osMerchantHeaders(),
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+    },
   });
   if (!res.ok) {
     throw new Error(`Preview HTTP ${res.status}`);
@@ -101,7 +105,10 @@ export const getResolvedPreview = cache(
     try {
       const res = await fetch(url, {
         cache: "no-store",
-        headers: { "Cache-Control": "no-cache, no-store, must-revalidate" },
+        headers: {
+          ...osMerchantHeaders(),
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+        },
       });
       if (!res.ok) {
         return null;

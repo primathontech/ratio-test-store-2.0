@@ -1464,6 +1464,57 @@ export function ProductGrid({ products, columns, breakpoint }: ProductGridProps)
 }
 ```
 
+### Calling OS APIs from a Route Handler (gateway rate limits)
+
+The OS API gateway rate-limits per shopper (IP + path) and per merchant. A server call
+looks like ONE client unless it says who the shopper is. Three rules:
+
+1. **Every OS call sends `gk-merchant-id`.** Use `osMerchantHeaders()` from
+   `@/utils/os-headers` (data-layer, navigation, seo and apps-platform already do).
+2. **An uncached, shopper-triggered call forwards the shopper IP.** Spread
+   `shopperForwardHeaders(request)` from `@shopkit/data-layer` into its headers. It
+   reads the right-most `x-forwarded-for` entry (appended by our load balancer), so a
+   shopper cannot fake it with their own `x-forwarded-for` or `cf-connecting-ip`.
+3. **A cached call never forwards the shopper IP.** Next.js keys its fetch cache on
+   request headers, so a per-shopper header caches once per IP. ISR page renders and
+   anything using `next: { revalidate, tags }` (e.g. `/api/nav-menu`) send no IP.
+
+```typescript
+import { shopperForwardHeaders } from "@shopkit/data-layer";
+import { osMerchantHeaders } from "@/utils/os-headers";
+
+export async function GET(request: Request) {
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_SEARCH_API_URL}/products/search`,
+      {
+        cache: "no-store",
+        signal: AbortSignal.timeout(10_000),
+        headers: { ...osMerchantHeaders(), ...shopperForwardHeaders(request) },
+      }
+    );
+    if (res.ok) return Response.json(await res.json());
+
+    // 429 = back off: pass it and Retry-After to the browser, never retry here.
+    // Gateway error bodies may not be JSON, so they are not parsed.
+    const retryAfter = res.headers.get("retry-after");
+    return Response.json(
+      { error: "upstream_unavailable" },
+      {
+        status: res.status === 429 ? 429 : res.status >= 500 ? 502 : res.status,
+        headers: retryAfter ? { "retry-after": retryAfter } : {},
+      }
+    );
+  } catch {
+    // Timeout or network failure.
+    return Response.json({ error: "upstream_unavailable" }, { status: 502 });
+  }
+}
+```
+
+Use only the public API gateway host for OS APIs (`api-gw-v4.gokwik.io`,
+`api-gw.gokwik.io`), never a service host such as `os-search.gokwik.io`.
+
 ---
 
 ## Bootstrap Folder - Package Configuration

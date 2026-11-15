@@ -18,10 +18,15 @@ import { getTheme } from "@/bootstrap/theme";
 import { getMerchantName, getThemeName } from "@/utils";
 import { getMessages } from "next-intl/server";
 import Script from "next/script";
+import ReactDOM from "react-dom";
 
 import { AppShell, AppHead } from "@shopkit/app-shell";
+import { headStubScript } from "@shopkit/observability/head-stub";
+import { browserObservability } from "@/bootstrap/observability-client";
+import { themeTokensFromConfig } from "@shopkit/apps-platform-react/constants";
 import { AppCartInitializer } from "@/bootstrap/cart";
 import { ClientDynamics } from "./ClientDynamics";
+import { getGokwikScriptUrl } from "@/integrations/checkout-custom/config";
 import { AffiliateTracker } from "@shopkit/events/affiliate";
 import { EditorHostMount } from "@/editor-integration/EditorHostMount";
 // Client-only "Exit preview" bar. Direct import (not next/dynamic ssr:false,
@@ -52,8 +57,47 @@ export default async function RootLayout({
   const messages = await getMessages();
   const theme = await getTheme(themeName);
 
+  // Apps Platform. Each installed app renders inside its own sandboxed iframe; `merchantInfo` is
+  // the context handed to it at mount, and `shellUrl` is the page that hosts the sandbox.
+  const APPS_PLATFORM_ENABLED =
+    process.env.NEXT_PUBLIC_APPS_PLATFORM_ENABLED === "true";
+
+  const merchantInfo = {
+    mid: process.env.NEXT_PUBLIC_MERCHANT_ID ?? "",
+    domain: process.env.NEXT_PUBLIC_SHOPIFY_STORE_DOMAIN ?? "",
+    currency: process.env.NEXT_PUBLIC_CURRENCY ?? "INR",
+    locale,
+    country: "IN",
+    theme: themeName,
+    name: merchantName,
+  };
+
+  // Served from public/ so it is same-origin; the iframe itself is sandboxed to an opaque
+  // origin regardless, so this only decides where the shell document is fetched from.
+  const appsShellUrl =
+    process.env.RATIO_APPS_SHELL_URL ?? "/apps-platform/sandbox.html";
+
   const hasKwikcartDisabled =
     process.env.NEXT_PUBLIC_KWIKCART_DISABLE === "true";
+
+  // Front-load the A/B router (PRT) scripts ahead of everything else. Next renders
+  // the analytics <Script>s as <link rel=preload>s that React's resource system
+  // hoists to the TOP of <head>; those otherwise out-race the plain, un-preloaded
+  // PRT <script> tags and make the router lose the initial-load bandwidth race on
+  // slow networks. ReactDOM.preload goes through that same hoisting system, so its
+  // links land FIRST (and dedupe with the prtconfig/prt-ab preloads AppHead already
+  // emits, while also covering prt.min, which AppHead does not). A preload only
+  // warms the cache — it does NOT execute the script, so there is no double run.
+  // (`fetchPriority` renders camel-cased in the SSR HTML, but HTML attribute names
+  // are case-insensitive, so browsers still honour it.)
+  const prtScriptUrls = [
+    process.env.NEXT_PUBLIC_PRT_CONFIG_URL,
+    process.env.NEXT_PUBLIC_PRT_URL,
+    process.env.NEXT_PUBLIC_PRT_AB_URL,
+  ].filter((u): u is string => Boolean(u));
+  for (const prtUrl of prtScriptUrls) {
+    ReactDOM.preload(prtUrl, { as: "script", fetchPriority: "high" });
+  }
 
   // Chrome (header/footer) is NOT rendered here — it's app-side composition policy
   // (ADR-0004) so individual pages can opt out (e.g. the thank-you page). Pages that
@@ -64,10 +108,24 @@ export default async function RootLayout({
   return (
     <html lang={locale} className={fontVariables}>
       <head>
-        {/* Merchant A/B (PRT) scripts. Plain parser-blocking <script> tags, so
+        {/* Monitoring head stub: catches errors before the app's JS runs (incl. the
+            A/B scripts below) and reports a page whose app never starts. Inline,
+            no network fetch, so it doesn't compete with the PRT preloads. */}
+        {process.env.OBS_ENABLED === "true" && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: headStubScript(browserObservability),
+            }}
+          />
+        )}
+        {/* A/B router (PRT) scripts are preloaded first via ReactDOM.preload at the
+            top of RootLayout (above). Plain parser-blocking <script> tags, so
             they run before <body> is parsed — next/script `beforeInteractive`
             emits no real tag in the App Router and only loads after the
             framework bundle runs. Do not add async/defer, and keep them first. */}
+        {/* Priority is driven by the high-priority ReactDOM.preload() emitted at
+            the top of RootLayout for these same URLs — by the time the parser
+            reaches these parser-blocking tags the files are already cached. */}
         {process.env.NEXT_PUBLIC_PRT_CONFIG_URL && (
           // eslint-disable-next-line @next/next/no-sync-scripts
           <script src={process.env.NEXT_PUBLIC_PRT_CONFIG_URL} />
@@ -81,8 +139,13 @@ export default async function RootLayout({
           <script src={process.env.NEXT_PUBLIC_PRT_AB_URL} />
         )}
 
-        {/* AppHead handles: DNS prefetch, preloads, Clarity */}
-        <AppHead />
+        {/* AppHead handles: DNS prefetch, preloads, Clarity.
+            `abTesting.prtConfigUrl/prtAbUrl: ""` suppresses AppHead's own
+            beforeInteractive copies of prtconfig/prt-ab (injected via __next_s and
+            re-run late, after analytics on slow networks) — they're already loaded
+            once by the parser-blocking <script> tags above. Empty string is falsy
+            and gets past AppHead's `?? env` fallback, so no duplicate Script. */}
+        <AppHead config={{ abTesting: { prtConfigUrl: "", prtAbUrl: "" } }} />
 
         {/* Favicon */}
         <link rel="icon" href="/favicon.png" type="image/png" />
@@ -106,6 +169,17 @@ export default async function RootLayout({
             locale,
             messages,
             theme,
+            apps: APPS_PLATFORM_ENABLED
+              ? {
+                  merchantInfo,
+                  shellUrl: appsShellUrl,
+                  // Design tokens for the app sandbox. An app renders in an
+                  // opaque-origin iframe and inherits none of this theme's CSS,
+                  // so the colours have to travel as data or every app shows its
+                  // own hardcoded palette on this store.
+                  theme: themeTokensFromConfig(theme?.config),
+                }
+              : undefined,
             eventConfig: {
               pixelConfig: {
                 pixels: pixelConfig,
@@ -127,7 +201,16 @@ export default async function RootLayout({
             hasKwikcartDisabled={hasKwikcartDisabled}
           />
         </AppShell>
-
+        {/* GoKwik checkout SDK. A plain server-rendered <Script> (not a client
+            component, so no checkout code joins the first-load bundle): Next
+            preloads it in <head> and runs it right after hydration, so it is
+            ready before the cart can open. The cart's <CheckoutScriptCustom>
+            shares this id to get the load signal. */}
+        <Script
+          id="gokwik-merchant-integration"
+          src={getGokwikScriptUrl()}
+          strategy="afterInteractive"
+        />
         {/* GA4 gtag.js — loaded directly so Google's crawler can verify ownership.
             Only rendered when a GA id is configured; otherwise Next would emit a
             broken `gtag/js?id=undefined` request. */}

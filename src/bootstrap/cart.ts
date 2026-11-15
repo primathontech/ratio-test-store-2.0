@@ -18,7 +18,9 @@ import {
   CartInitializer,
   DataLayerCartService,
   DefaultCartStorage,
+  type CartEvent,
 } from "@shopkit/cart";
+import { startFlow } from "@shopkit/observability/client";
 import { createElement, useRef } from "react";
 import { getCommerceClient } from "@/config/commerce";
 import { eventBus } from "@shopkit/events";
@@ -26,6 +28,27 @@ import { createCartEventHandler } from "@shopkit/events/emitters";
 import { createCartMapper } from "@shopkit/events/mappers";
 
 let _initialized = false;
+
+/**
+ * Cart outcomes for monitoring: add to cart, and a cart that failed to load.
+ * `addItems` is left out: the cart reports its failures but not its successes.
+ */
+function trackCartOutcomes(event: CartEvent) {
+  if (event.type === "ADD_TO_CART") {
+    startFlow("add_to_cart").success();
+  }
+  if (event.type !== "CART_ERROR") {
+    return;
+  }
+  if (event.action === "addItem") {
+    startFlow("add_to_cart").fail("cart_api", event.error);
+  }
+  // Without a cart every add is silently skipped, so record why. Failures only: this
+  // runs on every page load, and page views are already counted.
+  if (event.action === "initializeCart") {
+    startFlow("cart_init").fail("cart_api", event.error);
+  }
+}
 
 /**
  * Configure the cart module for this application.
@@ -53,7 +76,10 @@ function setupCart(merchantName: string) {
     cartService: new DataLayerCartService(dataLayerClient),
     cartStorage: new DefaultCartStorage(merchantName),
     defaultCurrencyCode: "INR",
-    onCartEvent: handleCartEvent,
+    onCartEvent: (event) => {
+      trackCartOutcomes(event);
+      handleCartEvent(event);
+    },
   });
 }
 

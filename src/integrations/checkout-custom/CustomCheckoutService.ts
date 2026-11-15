@@ -13,8 +13,12 @@ import {
   dispatchCheckoutStartEvent,
 } from "./events";
 import { getCommerceClient } from "@/config";
+import { startFlow, type Flow } from "@shopkit/observability/client";
 import { getCheckoutConfig } from "./config";
 import { GuestUserStorage } from "@/widgets/common/ThankYou/V1/utils/guestUserStorage";
+
+/** How long GoKwik gets to show the checkout before the attempt counts as failed. */
+const GOKWIK_REPLY_MS = 15_000;
 
 // Global window interface for GoKwik
 declare global {
@@ -125,6 +129,19 @@ interface GokwikOrder {
   billing_address?: GokwikOrderAddress;
 }
 
+const gokwikReadyListeners = new Set<() => void>();
+
+export function subscribeGokwikReady(listener: () => void): () => void {
+  gokwikReadyListeners.add(listener);
+  return () => {
+    gokwikReadyListeners.delete(listener);
+  };
+}
+
+export function notifyGokwikScriptReady(): void {
+  gokwikReadyListeners.forEach((listener) => listener());
+}
+
 export class CustomCheckoutService {
   private static eventListenersAttached = false;
   private static currentEventHandlers: CheckoutEventHandlers = {};
@@ -132,6 +149,33 @@ export class CustomCheckoutService {
   private static currentCartItems: CartItem[] = [];
   private static currentCartTotal: number = 0;
   private static checkoutUrl: string = "";
+  /** The attempt waiting for GoKwik to show the checkout (or fail to), with its deadline. */
+  private static pending: {
+    flow: Flow;
+    timer: ReturnType<typeof setTimeout>;
+  } | null = null;
+
+  /**
+   * GoKwik's events don't say which attempt they belong to, and only one checkout shows
+   * at a time, so the latest attempt owns them. A newer attempt ends the older one.
+   */
+  private static awaitGokwik(flow: Flow): void {
+    this.endPending((older) => older.fail("retried"));
+    const timer = setTimeout(
+      () => this.endPending((f) => f.fail("gokwik_no_response")),
+      GOKWIK_REPLY_MS
+    );
+    this.pending = { flow, timer };
+  }
+
+  private static endPending(end: (flow: Flow) => void): void {
+    if (!this.pending) {
+      return;
+    }
+    clearTimeout(this.pending.timer);
+    end(this.pending.flow);
+    this.pending = null;
+  }
 
   /**
    * Helper function to safely get cookies with proper error handling
@@ -404,6 +448,8 @@ export class CustomCheckoutService {
       currencyCode,
       eventHandlers = {},
     } = config;
+    // Our side only: ends once GoKwik shows the checkout, or it fails to.
+    const flow = startFlow("checkout");
 
     try {
       const commerceClient = getCommerceClient();
@@ -415,6 +461,12 @@ export class CustomCheckoutService {
           attributes: getAffiliateParams() ?? undefined,
         },
       });
+
+      // Recorded only: GoKwik still opens today when this fails (the check below
+      // tests `message`, not `success`), and changing that needs GoKwik's input.
+      if (!checkoutResponse.success) {
+        flow.fail("checkout_api", checkoutResponse.error?.message);
+      }
 
       if (!checkoutResponse.message) {
         throw new Error(
@@ -457,13 +509,19 @@ export class CustomCheckoutService {
 
         try {
           window.gokwikSdk?.initCheckout(gokwikPayload);
+          // initCheckout returning only means GoKwik started loading: success is
+          // its "checkout-ready" event (see attachEventListeners).
+          this.awaitGokwik(flow);
         } catch (error) {
           console.error("Error initializing GoKwik checkout:", error);
+          flow.fail("gokwik_init", error);
         }
       } else {
+        flow.fail("gokwik_not_loaded");
         throw new Error("GoKwik checkout not available or no cart ID");
       }
     } catch (error) {
+      flow.fail("checkout_error", error);
       console.error("GoKwik checkout initialization error:", error);
       eventHandlers.onError?.(
         error instanceof Error ? error : new Error("Unknown checkout error")
@@ -518,6 +576,14 @@ export class CustomCheckoutService {
     }
 
     this.eventListenersAttached = true;
+
+    // GoKwik's merchant events: the checkout loaded the cart, or couldn't start.
+    window.gokwikSdk?.on("checkout-ready", () =>
+      this.endPending((f) => f.success())
+    );
+    window.gokwikSdk?.on("checkout-initiation-failure", () =>
+      this.endPending((f) => f.fail("gokwik_checkout"))
+    );
 
     window.gokwikSdk?.on(
       "order-complete",

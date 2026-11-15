@@ -1,3 +1,5 @@
+const SUFFIX_PATTERN = /^[a-z0-9_-]{1,100}$/;
+
 /**
  * Page Templates — resolve the template suffix assigned to a product/collection.
  *
@@ -20,7 +22,11 @@ export function getResourceTemplateSuffix(
     const raw = resource?.template_suffix ?? resource?.templateSuffix ?? null;
     const suffix = typeof raw === "string" ? raw.trim().toLowerCase() : "";
     // Empty / whitespace / "default" all mean "use the default template".
-    return suffix && suffix !== "default" ? suffix : undefined;
+    // Anything but a plain name too: the suffix goes into the editor URL and
+    // its gateway decodes %2F, so "x/../../home" would load another template.
+    return suffix && suffix !== "default" && SUFFIX_PATTERN.test(suffix)
+      ? suffix
+      : undefined;
   } catch {
     // Never let a malformed resource break rendering — no suffix ⇒ default.
     return undefined;

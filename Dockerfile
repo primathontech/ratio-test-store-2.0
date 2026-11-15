@@ -1,5 +1,6 @@
-# Base Bun image
-FROM oven/bun:1 AS base
+# Base Bun image. Pinned to match "packageManager" in package.json — a bare
+# `oven/bun:1` floats to whatever Bun ships next on every build.
+FROM oven/bun:1.4.4 AS base
 WORKDIR /app
 
 # Resolve editor submodule (handles uninitialized submodule in CI)
@@ -54,6 +55,8 @@ RUN groupadd --system --gid 1001 nodejs && \
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
+# Private browser source maps, read only by /api/obs (moved out of .next/static at build)
+COPY --from=builder /app/.next/obs-sourcemaps ./.next/obs-sourcemaps
 
 RUN chown -R nextjs:nodejs /app
 USER nextjs

@@ -17,6 +17,9 @@ import { getCommerceClient } from "@/config/commerce";
 const COLLECTION_LIMIT = 250;
 // Custom adapter caps getProducts.first at 100.
 const PRODUCT_LIMIT = 100;
+// Guards against a backend that never reports itself exhausted.
+const MAX_COLLECTION_PAGES = 20;
+const MAX_PRODUCT_PAGES = 20;
 
 type OptionSource = "collections" | "products";
 type Option = { value: string; label: string };
@@ -40,16 +43,98 @@ function listFrom(data: unknown, key: "collections" | "products"): unknown[] {
   return Array.isArray(nested) ? nested : [];
 }
 
+// A catalog can span more pages than a single request returns (some backends
+// cap page size below what `first` asks for). Follow pagination until
+// exhausted so the editor's picker isn't missing entries. Handles both
+// pagination shapes the adapters produce: numbered pages (custom adapter —
+// `pagination.hasNext`, no cursor, so the page number is advanced here) and
+// cursor-based (Shopify — GraphQL `pageInfo.hasNextPage` / `endCursor`).
+async function fetchAllCollections(
+  client: ReturnType<typeof getCommerceClient>
+): Promise<unknown[]> {
+  const items: unknown[] = [];
+  let after: string | undefined;
+  let page = 1;
+
+  for (let i = 0; i < MAX_COLLECTION_PAGES; i++) {
+    const res = await client.getCollections({ first: COLLECTION_LIMIT, after });
+    items.push(...listFrom(res?.data, "collections"));
+    if (items.length >= COLLECTION_LIMIT) {
+      break;
+    }
+
+    const pagination = (
+      res?.meta as { pagination?: Record<string, unknown> } | undefined
+    )?.pagination;
+    const hasMore = Boolean(
+      pagination?.hasNextPage ?? pagination?.hasNext ?? false
+    );
+    if (!hasMore) {
+      break;
+    }
+
+    if (typeof pagination?.endCursor === "string") {
+      after = pagination.endCursor;
+    } else {
+      page += 1;
+      after = String(page);
+    }
+  }
+
+  return items;
+}
+
+// Same shape as fetchAllCollections, but the products backend's pagination
+// is snake_case (`has_more`, `total_pages`) instead of collections'
+// camelCase — and unlike collections, sending `page`/`current_page` back in
+// the request is silently ignored; only `after` (a stringified page number)
+// actually advances the page. Verified directly against the backend, not
+// assumed from the collections shape.
+async function fetchAllProducts(
+  client: ReturnType<typeof getCommerceClient>
+): Promise<unknown[]> {
+  const items: unknown[] = [];
+  let after: string | undefined;
+  let page = 1;
+
+  for (let i = 0; i < MAX_PRODUCT_PAGES; i++) {
+    const res = await client.getProducts({ first: PRODUCT_LIMIT, after });
+    items.push(...listFrom(res?.data, "products"));
+
+    const pagination = (
+      res?.meta as { pagination?: Record<string, unknown> } | undefined
+    )?.pagination;
+    const hasMore = Boolean(
+      pagination?.hasNextPage ??
+      pagination?.hasNext ??
+      pagination?.has_more ??
+      false
+    );
+    if (!hasMore) {
+      break;
+    }
+
+    if (typeof pagination?.endCursor === "string") {
+      after = pagination.endCursor;
+    } else {
+      page += 1;
+      after = String(page);
+    }
+  }
+
+  return items;
+}
+
 async function fetchOptions(source: OptionSource): Promise<Option[]> {
   const client = getCommerceClient();
   if (source === "collections") {
-    const res = await client.getCollections({ first: COLLECTION_LIMIT });
-    return listFrom(res?.data, "collections")
+    const items = await fetchAllCollections(client);
+    return items
       .map((i) => toOption(i as Record<string, unknown>))
       .filter((o): o is Option => o !== null);
   }
-  const res = await client.getProducts({ first: PRODUCT_LIMIT });
-  return listFrom(res?.data, "products")
+  const items = await fetchAllProducts(client);
+  return items
     .map((i) => toOption(i as Record<string, unknown>))
     .filter((o): o is Option => o !== null);
 }

@@ -44,6 +44,7 @@
 
 import {
   getPageBuilder as getPageBuilderCore,
+  createFileSystemPageBuilder,
   createSectionRendererFromComponent,
   type PageBuilder,
   type IThemeLoader,
@@ -55,11 +56,19 @@ import {
 } from "@shopkit/builder";
 
 // App-specific imports - these are WHY this file must be separate from the package
+import {
+  AppBlockZone,
+  AppBlock,
+  AppAccount,
+} from "@shopkit/apps-platform-react";
+import { APPS_PLATFORM_WIDGET_TYPES } from "@shopkit/apps-platform-react/constants";
+
 import { WIDGET_MANIFEST as PROD_WIDGET_MANIFEST } from "@/widgets/.generated/manifest";
 // Editor manifest — every widget routed through a "use client" shim, picked when isEditor is true.
 import { WIDGET_MANIFEST as EDITOR_WIDGET_MANIFEST } from "@/widgets/.generated/manifest.editor";
 import { getCommerceClient } from "@/config/commerce";
 import { SectionWrapper } from "@/ui/layout/SectionWrapper";
+import { WidgetBoundary } from "@/components/WidgetBoundary";
 
 // Editor integration — only wired in when NEXT_PUBLIC_ENABLE_EDITOR_CHANGES is "true".
 import { editorTemplateLoader } from "@/editor-integration/template-load-pipeline";
@@ -225,14 +234,34 @@ const sectionRenderer = createSectionRendererFromComponent(SectionWrapper);
  *
  * @internal
  */
+/**
+ * Apps Platform surfaces, merged ahead of the app's own widgets.
+ *
+ * `AppBlockZone` is what a template places to host an installed app. Without it registered the
+ * builder logs "Widget type not found" and renders null — silently, which is the failure mode
+ * this whole surface is prone to.
+ */
+const APPS_PLATFORM_ENABLED =
+  process.env.NEXT_PUBLIC_APPS_PLATFORM_ENABLED === "true";
+
+const APPS_PLATFORM_WIDGETS = [
+  { type: APPS_PLATFORM_WIDGET_TYPES.AppBlockZone, component: AppBlockZone },
+  { type: APPS_PLATFORM_WIDGET_TYPES.AppBlock, component: AppBlock },
+  { type: APPS_PLATFORM_WIDGET_TYPES.AppAccount, component: AppAccount },
+];
+
 const pageBuilderOptions: FileSystemPresetOptions = {
-  widgets: PROD_WIDGET_MANIFEST,
+  widgets: [
+    ...(APPS_PLATFORM_ENABLED ? APPS_PLATFORM_WIDGETS : []),
+    ...PROD_WIDGET_MANIFEST,
+  ],
   commerceClient: getBuilderCommerceClient(),
   themeLoader,
   templateLoader: isEditorChangesEnabled
     ? editorTemplateLoader
     : templateLoader,
   sectionRenderer,
+  widgetBoundary: WidgetBoundary,
   defaultLocale: "en",
 };
 
@@ -270,9 +299,19 @@ export function getPageBuilder({
 }: { isEditor?: boolean } = {}): PageBuilder {
   if (isEditor) {
     if (!editorPageBuilderInstance) {
-      editorPageBuilderInstance = getPageBuilderCore({
+      // `createFileSystemPageBuilder`, not `getPageBuilderCore`: the core `getPageBuilder` is a
+      // module-level singleton whose FIRST call fixes the widget registry for the whole process.
+      // Calling it for both instances meant whichever branch ran first won, and the other one
+      // silently rendered against the wrong manifest.
+      editorPageBuilderInstance = createFileSystemPageBuilder({
         ...pageBuilderOptions,
-        widgets: EDITOR_WIDGET_MANIFEST,
+        // Apps widgets must be spread in here too — this overrides `widgets` wholesale, and
+        // editor preview renders through THIS instance. Without them the preview shows an empty
+        // slot while the published page renders fine.
+        widgets: [
+          ...(APPS_PLATFORM_ENABLED ? APPS_PLATFORM_WIDGETS : []),
+          ...EDITOR_WIDGET_MANIFEST,
+        ],
       });
     }
     return editorPageBuilderInstance;

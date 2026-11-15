@@ -1,4 +1,5 @@
 import { Chrome } from "@/components/Chrome";
+import { ArmScope } from "@/bootstrap/ab/ArmSync";
 
 /**
  * Layout for storefront CONTENT pages — wraps them in shared chrome (header/footer)
@@ -12,10 +13,14 @@ export default function ShopLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Chrome>
-      {/* Primary landmark for assistive tech + skip-link target (see root
-          layout). Non-visual wrapper — block-level like the previous fragment. */}
-      <main id="main-content">{children}</main>
-    </Chrome>
+    <>
+      {/* Clears A/B reporting on pages that are in no test — see ArmScope. */}
+      <ArmScope />
+      <Chrome>
+        {/* Primary landmark for assistive tech + skip-link target (see root
+            layout). Non-visual wrapper — block-level like the previous fragment. */}
+        <main id="main-content">{children}</main>
+      </Chrome>
+    </>
   );
 }

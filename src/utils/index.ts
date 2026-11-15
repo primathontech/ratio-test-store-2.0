@@ -70,12 +70,9 @@ export function generateId(): string {
 // Translation utilities
 export { getRouteTranslations } from "./translations";
 
-/**
- * Get the theme name from environment variables
- */
-export function getThemeName(): string {
-  return process.env.NEXT_PUBLIC_THEME_NAME || "ratio";
-}
+// Theme name — defined in its own module so the A/B edge middleware can import
+// it without pulling this barrel's React hooks into the edge bundle.
+export { getThemeName } from "./theme-name";
 
 /**
  * Get the merchant name from environment variables

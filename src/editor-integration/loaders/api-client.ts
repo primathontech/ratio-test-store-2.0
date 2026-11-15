@@ -1,3 +1,5 @@
+import { osMerchantHeaders } from "@/utils/os-headers";
+
 export interface TemplateApiResponse {
   data: {
     template: {
@@ -23,13 +25,21 @@ export interface TemplateApiResponse {
   };
 }
 
+/** The editor has no template with this id (404), as opposed to being unreachable. */
+export class TemplateNotFoundError extends Error {
+  constructor(templateId: string) {
+    super(`Template ${templateId} not found in the editor`);
+    this.name = "TemplateNotFoundError";
+  }
+}
+
 export class TemplateApiClient {
   private baseUrl: string;
 
   constructor() {
     this.baseUrl =
       process.env.NEXT_PUBLIC_EDITOR_API_URL ||
-      "https://visual-editor-be.primathontech.co.in";
+      "https://api-gw-v4.dev.gokwik.in/uat/os-editor";
   }
 
   /**
@@ -49,7 +59,7 @@ export class TemplateApiClient {
 
       const response = await fetch(url, {
         method: "GET",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...osMerchantHeaders() },
         signal: controller.signal,
         // Full ISR: tagged + time-revalidated so the template is cacheable and
         // always sourced from the backend (no filesystem fallback). Tag must
@@ -62,6 +72,9 @@ export class TemplateApiClient {
 
       clearTimeout(timeoutId);
 
+      if (response.status === 404) {
+        throw new TemplateNotFoundError(templateId);
+      }
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -69,6 +82,9 @@ export class TemplateApiClient {
       const data = await response.json();
       return data as TemplateApiResponse;
     } catch (error) {
+      if (error instanceof TemplateNotFoundError) {
+        throw error;
+      }
       console.error(`Error fetching template from ${url}:`, error);
       throw new Error(
         `Failed to fetch template: ${error instanceof Error ? error.message : String(error)}`
