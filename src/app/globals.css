@@ -793,3 +793,13 @@ section.ratio-shimmer-host ~ section:not(:has(footer)) {
     display: none;
   }
 }
+
+/* The KwikPass SDK injects an unscoped `input,textarea{border:none}`, which
+   breaks Tailwind preflight's `*{border-width:0;border-style:solid}` contract and
+   silently disables every border-* utility on inputs. Re-assert the contract;
+   width stays 0, so this adds no border unless a utility asks for one. */
+html input,
+html textarea,
+html select {
+  border-style: solid;
+}
