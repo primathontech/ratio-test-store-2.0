@@ -62,6 +62,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
   const [errors, setErrors] = useState<ValidationErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
+  const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [mediaUrl, setMediaUrl] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState<boolean>(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -80,6 +81,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
     if (mediaPreview) {
       URL.revokeObjectURL(mediaPreview);
     }
+    setMediaType(file.type.startsWith("video/") ? "video" : "image");
     setMediaPreview(URL.createObjectURL(file));
     setIsUploading(true);
     const result = await uploadReviewMedia(file);
@@ -96,6 +98,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
       URL.revokeObjectURL(mediaPreview);
     }
     setMediaPreview(null);
+    setMediaType(null);
     setMediaUrl(null);
     setUploadError(null);
     setIsUploading(false);
@@ -104,6 +107,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const validateField = (field: string, value: any): string | undefined => {
     switch (field) {
       case "rating":
@@ -145,6 +149,7 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
     setErrors((prev) => ({ ...prev, [field]: error }));
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleChange = (field: string, value: any) => {
     switch (field) {
       case "rating":
@@ -480,30 +485,45 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                   className="mb-6 md:flex md:flex-col md:items-center"
                 >
                   <label className="block text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] font-system text-[#333333] font-normal mb-2 text-center">
-                    Photo (optional)
+                    Photo / Video (optional)
                   </label>
                   <input
                     ref={fileInputRef}
                     type="file"
-                    accept="image/*"
+                    accept="image/*,video/*"
                     onChange={handleFileSelect}
                     className="hidden"
                     id="review-media-input"
-                    aria-label="Upload a photo for your review"
+                    aria-label="Upload a photo or video for your review"
                   />
                   {mediaPreview ? (
                     <div className="w-full md:w-[568px] flex items-center gap-3 rounded-[20px] border border-gray-200 px-4 py-3">
-                      {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img
-                        src={mediaPreview}
-                        alt="Review photo preview"
-                        className="w-16 h-16 rounded-lg object-cover"
-                      />
+                      {mediaType === "video" ? (
+                        // eslint-disable-next-line no-restricted-syntax
+                        <video
+                          src={mediaPreview}
+                          width={64}
+                          height={64}
+                          muted
+                          playsInline
+                          controls
+                          className="h-16 w-16 rounded-lg object-cover"
+                        />
+                      ) : (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                          src={mediaPreview}
+                          alt="Review media preview"
+                          className="h-16 w-16 rounded-lg object-cover"
+                        />
+                      )}
                       <div className="flex-1 text-[12px] min-[375px]:text-[14px] text-[#636E6E]">
                         {isUploading
                           ? "Uploading..."
                           : mediaUrl
-                            ? "Photo added"
+                            ? mediaType === "video"
+                              ? "Video added"
+                              : "Photo added"
                             : uploadError || "Not uploaded"}
                       </div>
                       <button
@@ -518,9 +538,23 @@ export const ReviewFormCustom: React.FC<ReviewFormCustomProps> = ({
                   ) : (
                     <label
                       htmlFor="review-media-input"
-                      className="w-full md:w-[568px] cursor-pointer rounded-[20px] border border-dashed border-gray-300 px-4 py-6 text-center text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#636E6E] hover:border-[#636E6E] transition-colors flex items-center justify-center"
+                      className="w-full md:w-[568px] cursor-pointer rounded-[20px] border border-dashed border-gray-300 px-4 py-6 text-center text-[12px] min-[375px]:text-[14px] leading-[16.8px] min-[375px]:leading-[19.6px] text-[#636E6E] hover:border-[#636E6E] transition-colors flex flex-col items-center justify-center gap-2"
                     >
-                      Add a photo
+                      <svg
+                        className="h-7 w-7 text-[#636E6E]"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.8"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden
+                      >
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 5 17 10" />
+                        <line x1="12" y1="5" x2="12" y2="15" />
+                      </svg>
+                      <span>Add a photo or video</span>
                     </label>
                   )}
                   {uploadError && (

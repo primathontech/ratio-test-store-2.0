@@ -8,6 +8,9 @@ import { getProductReviews } from "@/widgets/common/CustomerReviews/utils/get-re
 /** Max characters before truncating review body with "Read more" */
 const REVIEW_BODY_TRUNCATE_LENGTH = 180;
 
+const isVideoUrl = (url: string): boolean =>
+  /\.(mp4|webm|ogg|mov|m4v|avi|mkv)(\?|#|$)/i.test(url);
+
 interface Review {
   id: string;
   name: string;
@@ -406,24 +409,37 @@ const ReviewsListCustom: React.FC<ReviewsListCustomProps> = ({
                       data-testid={`review-photos-${review.id}`}
                       className="mt-3 flex flex-wrap gap-2"
                     >
-                      {review.images.map((img, i) => (
-                        <a
-                          key={i}
-                          href={img}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="block"
-                        >
-                          <Image
+                      {review.images.map((img, i) =>
+                        isVideoUrl(img) ? (
+                          // eslint-disable-next-line no-restricted-syntax
+                          <video
+                            key={i}
                             src={img}
-                            alt={`Review photo ${i + 1}`}
                             width={80}
                             height={80}
+                            controls
+                            playsInline
                             className="h-20 w-20 rounded-lg border border-[#E0E0E0] object-cover"
-                            unoptimized
                           />
-                        </a>
-                      ))}
+                        ) : (
+                          <a
+                            key={i}
+                            href={img}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="block"
+                          >
+                            <Image
+                              src={img}
+                              alt={`Review photo ${i + 1}`}
+                              width={80}
+                              height={80}
+                              className="h-20 w-20 rounded-lg border border-[#E0E0E0] object-cover"
+                              unoptimized
+                            />
+                          </a>
+                        )
+                      )}
                     </div>
                   )}
                 </div>
