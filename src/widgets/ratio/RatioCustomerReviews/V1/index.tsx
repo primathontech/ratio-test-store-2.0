@@ -5,7 +5,7 @@ import KwikPassScriptCustom from "@/integrations/kwikpass-custom/KwikPassScriptC
 import type React from "react";
 import { useEffect, useState } from "react";
 import { ReviewFormCustom } from "../components/ReviewFormCustom";
-import ReviewsListCustom from "@/widgets/common/CustomerReviews/components/ReviewListCustom";
+import ReviewsListCustom from "../components/ReviewListCustom";
 import {
   ReviewSortDropdown,
   type ReviewSortOption,
