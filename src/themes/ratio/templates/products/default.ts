@@ -190,7 +190,7 @@ export const template: PageConfig = {
         {
           id: "ratio-customer-reviews",
           name: "Customer Reviews",
-          type: WIDGET_TYPES.CustomerReviews,
+          type: WIDGET_TYPES.RatioCustomerReviews,
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
