@@ -1,5 +1,5 @@
 // app/page.tsx
-import { TEMPLATE_TYPES } from "@/themes/dawn/templates/.generated/types";
+import { TEMPLATE_TYPES } from "@/themes/ratio/templates/.generated/types";
 import { getStaticLocale } from "@/bootstrap/i18n";
 import { getPageMetadata } from "@shopkit/seo";
 import { getRouteTranslations, getThemeName } from "@/utils";
