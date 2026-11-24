@@ -190,15 +190,12 @@ export const template: PageConfig = {
         {
           id: "ratio-customer-reviews",
           name: "Customer Reviews",
-          type: WIDGET_TYPES.CustomerReviews,
+          type: WIDGET_TYPES.RatioCustomerReviews,
           dataSourceKey: "productData",
           settings: {
             variant: "v1",
             title: "t:ratio_products_default.customer_reviews.title",
-            // Read-only reviews for the demo: show ratings/reviews but hide the
-            // "Write a review" flow (no review-submit backend / upload key
-            // needed). Set true once a merchant has a review provider wired.
-            allowWriteReview: false,
+            allowWriteReview: true,
             writeReviewButtonText:
               "t:ratio_products_default.customer_reviews.writeReviewButtonText",
             cancelReviewButtonText:
